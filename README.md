@@ -4,7 +4,7 @@
 
 Cortex TMS is a **meta-framework** for organizing project documentation to maximize AI agent performance. It's not a runtime library—it's a **structural pattern** that separates high-signal "Source of Truth" from noisy "Historical Context."
 
-**Current Status**: 🚧 **In Active Development** (Phase 1: Dogfooding Complete)
+**Current Status**: 🚧 **In Active Development** (Phase 2: Template Library Complete)
 
 ---
 
@@ -107,22 +107,20 @@ cat NEXT-TASKS.md
 
 See `NEXT-TASKS.md` for current sprint and `FUTURE-ENHANCEMENTS.md` for backlog.
 
-**Current Phase**: Phase 1 + 1.5 - Foundation & Maintenance Protocol (✅ Complete)
-- [x] Apply TMS to Cortex itself (Phase 1)
-- [x] Populate `docs/core/` with Cortex-specific content (Phase 1)
-- [x] Create `FUTURE-ENHANCEMENTS.md` backlog (Phase 1)
-- [x] Populate all template files with opinionated scaffolding (Phase 1.5)
-- [x] Implement Maintenance Protocol & Truth Syncing workflows (Phase 1.5)
+**Completed Phases**:
+- [x] **Phase 1**: Dogfood the System - Apply TMS to Cortex itself
+- [x] **Phase 1.5**: Resolve Rule 4 Violation - Modularize Git standards
+- [x] **Phase 2**: Complete Template Library - All 15 templates built and validated
 
-**Next Phase**: Phase 2 - Template Library
-- [ ] Complete all template files
-- [ ] Add inline documentation
-- [ ] Test templates in sample projects
+**Current Phase**: Phase 3 - Build Example App (🔄 In Progress)
+- [ ] Initialize Next.js 15 + TypeScript + Shadcn project
+- [ ] Populate example app with Cortex TMS templates
+- [ ] Build functional todo app with CRUD operations
+- [ ] Validate templates work in real-world scenario
 
 **Future Phases**:
-- Phase 3: Build example Next.js 15 app
-- Phase 4: Create Node.js CLI tool
-- Phase 5: Write documentation guides
+- Phase 4: Create Node.js CLI tool (`npx cortex-tms init`)
+- Phase 5: Write documentation guides (Quick Start, Migration, Best Practices)
 - Phase 6: Publish to npm + GitHub Template
 
 ---
@@ -220,6 +218,6 @@ MIT
 ## Status
 
 **Version**: 2.0 (In Development)
-**Last Updated**: 2026-01-11
-**Current Sprint**: Phase 1 - Dogfooding ✅ Complete
-**Next Sprint**: Phase 2 - Template Library
+**Last Updated**: 2026-01-12
+**Current Sprint**: Phase 3 - Example App 🔄 In Progress
+**Completed Sprints**: Phase 1, 1.5, 2 (see `docs/archive/sprint-2026-01.md`)
