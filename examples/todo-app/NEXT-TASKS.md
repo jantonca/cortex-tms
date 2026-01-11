@@ -9,7 +9,7 @@
 | **Initialize Project** - Next.js 16 + Shadcn + TMS templates | - | 1h | 🔴 HIGH | ✅ Done |
 | **Build Data Layer** - TypeScript types + localStorage abstraction | - | 30min | 🔴 HIGH | ✅ Done |
 | **Add Shadcn Components** - Button, Input, Card, Checkbox, Dialog | - | 20min | 🔴 HIGH | ✅ Done |
-| **Build TodoForm** - Add new todo input component | - | 30min | 🔴 HIGH | ⬜ Todo |
+| **Build TodoForm** - Add new todo input component | - | 30min | 🔴 HIGH | ✅ Done |
 | **Build TodoItem** - Individual todo with edit/delete/complete | - | 45min | 🔴 HIGH | ⬜ Todo |
 | **Build TodoList** - List container with filtering | - | 45min | 🔴 HIGH | ⬜ Todo |
 | **Build Main Page** - Assemble components with state management | - | 45min | 🔴 HIGH | ⬜ Todo |
@@ -38,4 +38,4 @@
 
 ## 📝 Current Focus
 
-UI primitives installed. Next: Build TodoForm component (controlled input with Add button).
+TodoForm complete. Next: Build TodoItem component (checkbox, inline edit, delete dialog).
