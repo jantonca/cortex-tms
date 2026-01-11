@@ -11,7 +11,7 @@
 | **Add Shadcn Components** - Button, Input, Card, Checkbox, Dialog | - | 20min | 🔴 HIGH | ✅ Done |
 | **Build TodoForm** - Add new todo input component | - | 30min | 🔴 HIGH | ✅ Done |
 | **Build TodoItem** - Individual todo with edit/delete/complete | - | 45min | 🔴 HIGH | ✅ Done |
-| **Build TodoList** - List container with filtering | - | 45min | 🔴 HIGH | ⬜ Todo |
+| **Build TodoList** - List container with filtering | - | 45min | 🔴 HIGH | ✅ Done |
 | **Build Main Page** - Assemble components with state management | - | 45min | 🔴 HIGH | ⬜ Todo |
 | **Add Polish** - Styling, transitions, responsive design | - | 30min | 🟡 MED | ⬜ Todo |
 | **Validate Templates** - Ensure docs match implementation | - | 30min | 🟡 MED | ⬜ Todo |
@@ -38,4 +38,4 @@
 
 ## 📝 Current Focus
 
-TodoItem complete. Next: Build TodoList component (Card wrapper with filtering logic).
+TodoList complete. Next: Build Main Page (global state + localStorage sync + TodoFilters).
