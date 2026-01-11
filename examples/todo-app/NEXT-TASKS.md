@@ -10,7 +10,7 @@
 | **Build Data Layer** - TypeScript types + localStorage abstraction | - | 30min | 🔴 HIGH | ✅ Done |
 | **Add Shadcn Components** - Button, Input, Card, Checkbox, Dialog | - | 20min | 🔴 HIGH | ✅ Done |
 | **Build TodoForm** - Add new todo input component | - | 30min | 🔴 HIGH | ✅ Done |
-| **Build TodoItem** - Individual todo with edit/delete/complete | - | 45min | 🔴 HIGH | ⬜ Todo |
+| **Build TodoItem** - Individual todo with edit/delete/complete | - | 45min | 🔴 HIGH | ✅ Done |
 | **Build TodoList** - List container with filtering | - | 45min | 🔴 HIGH | ⬜ Todo |
 | **Build Main Page** - Assemble components with state management | - | 45min | 🔴 HIGH | ⬜ Todo |
 | **Add Polish** - Styling, transitions, responsive design | - | 30min | 🟡 MED | ⬜ Todo |
@@ -38,4 +38,4 @@
 
 ## 📝 Current Focus
 
-TodoForm complete. Next: Build TodoItem component (checkbox, inline edit, delete dialog).
+TodoItem complete. Next: Build TodoList component (Card wrapper with filtering logic).
