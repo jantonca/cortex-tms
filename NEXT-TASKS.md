@@ -7,7 +7,8 @@
 | Task | Effort | Priority | Status |
 | :--- | :----- | :------- | :----- |
 | **Phase 1: Dogfood the System** - Apply TMS to Cortex itself | 2h | 🔴 HIGH | ✅ Done |
-| **Phase 2: Complete Template Library** - Fill all template files with real content | 4h | 🔴 HIGH | ⬜ Todo |
+| **Phase 1.5: Resolve Rule 4 Violation** - Modularize Git standards | 1h | 🔴 HIGH | ✅ Done |
+| **Phase 2: Complete Template Library** - Fill all template files with real content | 4h | 🔴 HIGH | 🔄 In Progress |
 | **Phase 3: Build Example App** - Next.js 15 + Shadcn todo app | 6h | 🔴 HIGH | ⬜ Todo |
 | **Phase 4: Create CLI Tool** - Node.js CLI for `npx cortex-tms init` | 4h | 🟡 MED | ⬜ Todo |
 | **Phase 5: Documentation** - Quick Start, Migration Guide, Best Practices | 3h | 🟡 MED | ⬜ Todo |
@@ -19,10 +20,14 @@
 
 ### Immediate Tasks (This Session)
 - [x] Phase 1 complete (foundation + dogfooding + maintenance protocol)
-- [ ] Complete all `templates/docs/core/*.md` files
-- [ ] Add `templates/FUTURE-ENHANCEMENTS.md`
-- [ ] Add `templates/README.md` template
-- [ ] Test templates by copying into sample project
+- [x] Resolve Rule 4 violation (modularize Git standards)
+- [x] Complete all `templates/docs/core/*.md` files
+  - [x] ARCHITECTURE.md (102 lines)
+  - [x] GLOSSARY.md (66 lines)
+  - [x] DECISIONS.md (83 lines)
+- [x] Add `templates/FUTURE-ENHANCEMENTS.md` (79 lines)
+- [x] Add `templates/README.md` template (172 lines)
+- [ ] Test templates by copying into sample project (validation step)
 
 ---
 
