@@ -75,14 +75,22 @@ These are the immutable laws of the Tiered Memory System. AI agents working on C
 |:-----|:----------|:----------|
 | `NEXT-TASKS.md` | 200 | One sprint maximum |
 | `.github/copilot-instructions.md` | 100 | Critical rules only |
-| `docs/core/PATTERNS.md` | 500 | 10-15 patterns max |
-| `docs/core/DOMAIN-LOGIC.md` | 300 | Core rules only |
+
+**WARM files have relaxed limits but should still be concise:**
+
+| File | Max Lines | Reasoning |
+|:-----|:----------|:----------|
+| `docs/core/PATTERNS.md` | 650 | Reference manual with index |
+| `docs/core/DOMAIN-LOGIC.md` | 400 | Includes Maintenance Protocol |
+| `docs/core/GIT-STANDARDS.md` | 250 | Git & PM conventions |
+| `docs/core/ARCHITECTURE.md` | 500 | System design documentation |
 
 **Enforcement**: When a file exceeds its limit, move content to:
 - `docs/archive/` (for historical content)
 - `FUTURE-ENHANCEMENTS.md` (for backlog items)
+- New modular file in `docs/core/` (if topic is independent)
 
-**Why**: Every line in a HOT file "costs" context window tokens. Keep them lean.
+**Why**: Every line in a HOT file "costs" context window tokens. WARM files are read on-demand, so limits can be higher, but bloat still wastes context.
 
 ---
 

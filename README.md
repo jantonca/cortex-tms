@@ -31,6 +31,7 @@ Traditional repos drown AI agents in thousands of lines of historical tasks and 
 | `docs/core/ARCHITECTURE.md` | System design & tech stack | **WARM** (Read on Demand) |
 | `docs/core/PATTERNS.md` | Canonical code examples (Do/Don't) | **WARM** (Read on Demand) |
 | `docs/core/DOMAIN-LOGIC.md` | Immutable project rules | **WARM** (Read on Demand) |
+| `docs/core/GIT-STANDARDS.md` | Git & PM conventions | **WARM** (Read on Demand) |
 | `docs/core/DECISIONS.md` | Architecture Decision Records | **WARM** (Read on Demand) |
 | `docs/core/GLOSSARY.md` | Project terminology | **WARM** (Read on Demand) |
 | `docs/core/SCHEMA.md` | Data models (optional) | **WARM** (Read on Demand) |

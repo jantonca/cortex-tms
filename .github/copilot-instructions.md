@@ -17,7 +17,8 @@ AI agents MUST follow this order before proposing code:
 1. `NEXT-TASKS.md` (Current sprint and immediate tasks)
 2. `docs/core/DOMAIN-LOGIC.md` (TMS principles and rules)
 3. `docs/core/PATTERNS.md` (Template design patterns)
-4. `docs/core/ARCHITECTURE.md` (System design)
+4. `docs/core/GIT-STANDARDS.md` (Git & PM conventions - read before commits)
+5. `docs/core/ARCHITECTURE.md` (System design)
 
 ## 🎯 Project-Specific Rules
 
@@ -66,4 +67,4 @@ After completing a task, follow the **Maintenance Protocol** in `CLAUDE.md`:
 **Git Standards**:
 - Format: `type(scope): [ID] subject`
 - Add co-authorship: `Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>`
-- See: `docs/core/PATTERNS.md#pattern-11`
+- See: `docs/core/GIT-STANDARDS.md`
