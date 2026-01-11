@@ -4,9 +4,14 @@
 
 **Why this matters**: [Briefly describe user value or technical necessity]
 
-| Task                                 | Effort | Priority | Status  |
-| :----------------------------------- | :----- | :------- | :------ |
-| **Feature Setup** - Initial scaffold | 2h     | 🟡 MED   | ⬜ Todo |
+| Task | Ref | Effort | Priority | Status |
+| :--- | :--- | :----- | :------- | :----- |
+| **Feature Setup** - Initial scaffold | - | 2h | 🟡 MED | ⬜ Todo |
+
+**Ref Column**:
+- `[#123]` = GitHub Issue
+- `[PROJ-123]` = Jira/other PM tool
+- `-` = No external reference
 
 ## 🎯 Definition of Done
 

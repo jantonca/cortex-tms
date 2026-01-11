@@ -205,6 +205,39 @@ These are the immutable laws of the Tiered Memory System. AI agents working on C
 
 ---
 
+#### 6F. Small Task Exception (Chores)
+
+**Some tasks don't warrant the full Maintenance Protocol.**
+
+**Small Tasks** ("Chores"):
+- Typo fixes
+- Formatting/linting
+- Dependency updates
+- Comment additions
+- README tweaks
+
+**Simplified Protocol for Chores**:
+1. ✅ Make the change
+2. ✅ Commit with conventional format
+3. ❌ Skip Truth Syncing (no architectural impact)
+4. ❌ Skip Archive (not tracked in NEXT-TASKS.md)
+
+**Decision Test**: "Does this change system behavior or architecture?"
+- **Yes** → Full Maintenance Protocol
+- **No** → Chore (simplified protocol)
+
+**Examples**:
+```
+Chore: Fix typo in README.md → Just commit
+Chore: Update dependency version → Just commit
+Feature: Add new CLI command → Full protocol
+Fix: Resolve validation bug → Full protocol
+```
+
+**Why**: The protocol exists to prevent documentation drift. If there's no drift risk (typos don't change architecture), the overhead isn't justified.
+
+---
+
 **Why This Rule Exists**: Historical context is noise for AI agents. Archive = "out of sight, out of context." The Maintenance Protocol ensures `NEXT-TASKS.md` never exceeds its 200-line limit while keeping `docs/core/` synchronized with reality.
 
 ---

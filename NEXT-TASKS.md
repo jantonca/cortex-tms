@@ -6,7 +6,7 @@
 
 | Task | Effort | Priority | Status |
 | :--- | :----- | :------- | :----- |
-| **Phase 1: Dogfood the System** - Apply TMS to Cortex itself | 2h | 🔴 HIGH | ✅ In Progress |
+| **Phase 1: Dogfood the System** - Apply TMS to Cortex itself | 2h | 🔴 HIGH | ✅ Done |
 | **Phase 2: Complete Template Library** - Fill all template files with real content | 4h | 🔴 HIGH | ⬜ Todo |
 | **Phase 3: Build Example App** - Next.js 15 + Shadcn todo app | 6h | 🔴 HIGH | ⬜ Todo |
 | **Phase 4: Create CLI Tool** - Node.js CLI for `npx cortex-tms init` | 4h | 🟡 MED | ⬜ Todo |
@@ -15,18 +15,14 @@
 
 ---
 
-## 📋 Current Focus: Phase 1 - Dogfooding
+## 📋 Current Focus: Phase 2 - Template Library
 
 ### Immediate Tasks (This Session)
-- [x] Update `NEXT-TASKS.md` with implementation plan
-- [ ] Update `.github/copilot-instructions.md` with Cortex-specific rules
-- [ ] Update `CLAUDE.md` with pnpm commands
-- [ ] Create `docs/core/ARCHITECTURE.md` for Cortex TMS
-- [ ] Update `docs/core/DOMAIN-LOGIC.md` with TMS principles
-- [ ] Update `docs/core/PATTERNS.md` with template patterns
-- [ ] Update `docs/core/DECISIONS.md` with ADRs (Node.js CLI, GitHub Template)
-- [ ] Create `FUTURE-ENHANCEMENTS.md`
-- [ ] Update `README.md` to reflect current state
+- [x] Phase 1 complete (foundation + dogfooding + maintenance protocol)
+- [ ] Complete all `templates/docs/core/*.md` files
+- [ ] Add `templates/FUTURE-ENHANCEMENTS.md`
+- [ ] Add `templates/README.md` template
+- [ ] Test templates by copying into sample project
 
 ---
 

@@ -53,36 +53,17 @@ AI agents MUST follow this order before proposing code:
 - [ ] Documentation updated in `docs/core/`
 - [ ] Changes follow patterns in `docs/core/PATTERNS.md`
 
-## 🧹 Post-Task Protocol (Maintenance Loop)
+## 🧹 Post-Task Protocol
 
-After completing a task, the AI MUST execute these steps in order:
+After completing a task, follow the **Maintenance Protocol** in `CLAUDE.md`:
+1. Archive completed tasks
+2. Update source of truth (Truth Syncing)
+3. Suggest next priority (if < 3 tasks)
+4. Follow Git & commit standards
 
-### Step 1: Verify Archive-Ready
-- [ ] Tests passing (if applicable)
-- [ ] Changes committed to git
-- [ ] Documentation updated (Truth Syncing complete)
+**Exception**: Small tasks (typos, formatting) only require git commit.
 
-### Step 2: Update Source of Truth (Truth Syncing)
-
-Before archiving, update the relevant documentation:
-
-| What Changed | Update This File | Section |
-|:-------------|:----------------|:--------|
-| Milestone reached | `README.md` | Current Phase |
-| Architecture change | `docs/core/ARCHITECTURE.md` | Relevant section |
-| Rule change | `docs/core/DOMAIN-LOGIC.md` | Specific rule |
-| New pattern | `docs/core/PATTERNS.md` | Add pattern entry |
-| New decision | `docs/core/DECISIONS.md` | Add ADR |
-| Tech stack change | `docs/core/ARCHITECTURE.md` | Tech decisions |
-
-### Step 3: Archive Completed Task
-- Move task from `NEXT-TASKS.md` to `docs/archive/sprint-YYYY-MM.md`
-- Include completion date and outcome summary
-- Reference which docs were updated (Truth Syncing)
-
-### Step 4: Suggest Next Priority (If Applicable)
-- If `NEXT-TASKS.md` has < 3 active tasks, ask user:
-  > "Sprint is light (X tasks remaining). Should I promote tasks from FUTURE-ENHANCEMENTS.md?"
-- Wait for user approval before promoting
-
-**Critical Rule**: Never archive a task without completing Truth Syncing first. Outdated documentation is worse than no documentation.
+**Git Standards**:
+- Format: `type(scope): [ID] subject`
+- Add co-authorship: `Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>`
+- See: `docs/core/PATTERNS.md#pattern-11`

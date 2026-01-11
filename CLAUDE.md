@@ -49,6 +49,35 @@ After completing a task, execute the TMS Maintenance Loop:
 - Clear `NEXT-TASKS.md`
 - Promote next sprint from `FUTURE-ENHANCEMENTS.md`
 
+### E. Git & Ticket Protocol
+
+**Before starting a task**:
+1. Check if task has external reference (Ref column in NEXT-TASKS.md)
+2. If creating a branch, use format: `type/ID-description`
+   - Example: `feat/TMS-42-cli-init` or `docs/update-readme`
+
+**Before committing**:
+1. Follow Conventional Commits: `type(scope): [ID] subject`
+   - Example: `feat(cli): [TMS-42] add init command`
+   - Example: `docs: update installation guide`
+2. Verify commit message matches task in NEXT-TASKS.md
+3. Add Co-Authorship footer: `Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>`
+
+**Commit Message Checklist**:
+- [ ] Type prefix present (feat, fix, docs, etc.)
+- [ ] Subject < 50 characters
+- [ ] Imperative mood ("add" not "added")
+- [ ] Reference ID included (if external task)
+- [ ] Co-authorship added
+
+**Before opening PR** (when applicable):
+1. PR title follows conventional format
+2. Fill out PR template (`.github/PULL_REQUEST_TEMPLATE.md`)
+3. Include TMS Maintenance Checklist in description
+4. Reference related issues/tickets
+
+**See**: `docs/core/PATTERNS.md#pattern-11-git--project-management-standards`
+
 ### Archive-Ready Checklist
 
 Before archiving a task, verify:

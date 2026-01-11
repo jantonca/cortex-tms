@@ -301,6 +301,103 @@ This document records key architectural decisions made during Cortex TMS develop
 
 ---
 
+## [2026-01-11] - Engineering Standards Integration (Git & PM)
+
+**Context**: We needed to ensure AI agents commit code professionally, indistinguishable from (or superior to) human developers.
+
+**Problem**:
+- AI agents produce vague commits ("update files", "fix bug")
+- No traceability to requirements (Jira/GitHub Issues)
+- Git history becomes useless for debugging, auditing, or changelog generation
+- No standard for branch naming or PR descriptions
+
+**Decision**: Integrate engineering standards directly into TMS by creating **Pattern 11: Git & Project Management Standards**.
+
+**Implementation**:
+
+1. **Conventional Commits**: Enforce `type(scope): [ID] subject` format
+   - Example: `feat(cli): [TMS-42] add init command`
+   - Validation: Regex pattern for commit message structure
+   - Tooling: Can use conventional-changelog for automated changelogs
+
+2. **Branch Naming**: Format `type/ID-description`
+   - Example: `feat/TMS-42-cli-init`
+   - Monorepo variant: `feat/scope-ID-description`
+
+3. **Task Reference Linking**: Add Ref column to NEXT-TASKS.md
+   - `[#123]` = GitHub Issue
+   - `[PROJ-123]` = Jira ticket
+   - `-` = No external reference (internal task)
+
+4. **PR Template**: `.github/PULL_REQUEST_TEMPLATE.md`
+   - Includes TMS Maintenance Checklist
+   - Forces documentation updates
+   - Links to related issues/tickets
+
+5. **Co-Authorship**: Always credit AI assistance
+   - `Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>`
+   - Transparency and tracking
+
+**Reasoning**:
+
+**Why Conventional Commits**:
+- Machine-readable history (changelog automation)
+- Semantic versioning integration
+- Industry standard (widely understood)
+- Enables tooling (commitlint, semantic-release)
+
+**Why External References (Optional)**:
+- Traceability to requirements
+- Context preservation ("why was this changed?")
+- Compliance/auditing support
+- Optional to support teams without PM tools
+
+**Why PR Template**:
+- Forces TMS compliance (Truth Syncing, archiving)
+- Standardizes review process
+- Ensures AI-generated PRs are professional
+
+**Why Co-Authorship**:
+- Transparency (users know AI was involved)
+- Credit (AI contribution is real work)
+- Tracking (understand AI's impact on codebase)
+
+**Trade-offs**:
+- **More Process**: Every commit requires format checking (adds overhead)
+- **Learning Curve**: Teams must learn conventional commit format
+- **Optional Refs**: Some projects don't use external PM tools (must support `-`)
+
+**Mitigation**:
+- Make Ref column optional (use `-` for internal tasks)
+- Provide validation regex for commit messages
+- Add examples in PATTERNS.md for quick reference
+- Include commit checklist in CLAUDE.md and copilot-instructions.md
+
+**Validation**:
+- Pattern 11 added to `docs/core/PATTERNS.md`
+- Git Protocol added to `CLAUDE.md` Maintenance Protocol
+- Git rules added to `.github/copilot-instructions.md`
+- PR template created at `.github/PULL_REQUEST_TEMPLATE.md`
+- NEXT-TASKS.md template updated with Ref column
+
+**Alternative Considered**: No standards, let AI/humans commit freely
+
+**Rejected Because**:
+- Vague history makes debugging impossible
+- Can't trace changes to requirements
+- Can't auto-generate changelogs
+- Professional engineering requires standards
+
+**Impact**:
+- Git history becomes valuable asset (not noise)
+- Changelogs can be auto-generated from commits
+- Requirements traceability built-in
+- AI agents function as professional contributors
+
+**Reference**: Conventional Commits Specification (https://www.conventionalcommits.org/)
+
+---
+
 ## Decision Log Summary
 
 | Date | Decision | Status |
@@ -316,3 +413,4 @@ This document records key architectural decisions made during Cortex TMS develop
 | 2026-01-11 | Strict Line Limits | ✅ Active |
 | 2026-01-11 | ADR Format | ✅ Active |
 | 2026-01-11 | Maintenance Protocol & Truth Syncing | ✅ Active |
+| 2026-01-11 | Engineering Standards Integration (Git & PM) | ✅ Active |
