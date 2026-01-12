@@ -1,0 +1,19 @@
+name: "Cortex TMS Project"
+description: "Universal AI-Optimized Project Boilerplate with Tiered Memory System"
+
+# Files to exclude from template repositories
+exclude:
+  - "examples/"
+  - "src/__tests__/"
+  - "vitest.config.ts"
+  - ".github/workflows/"
+  - "node_modules/"
+  - "dist/"
+  - "pnpm-lock.yaml"
+  - "CHANGELOG.md"
+
+# Optional: Define template labels
+labels:
+  - "tms"
+  - "ai-optimized"
+  - "boilerplate"

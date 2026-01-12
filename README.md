@@ -1,10 +1,38 @@
 # Cortex TMS 🧠
 
-**The Universal AI-Optimized Project Boilerplate (v2.0)**
+**The Universal AI-Optimized Project Boilerplate (v2.1.0)**
 
 Cortex TMS is a **meta-framework** for organizing project documentation to maximize AI agent performance. It's not a runtime library—it's a **structural pattern** that separates high-signal "Source of Truth" from noisy "Historical Context."
 
-**Current Status**: 🚧 **In Active Development** (Phase 3: Gold Standard Todo App Complete ✅ | Phase 4: CLI Tool In Progress 🔄)
+**Current Status**: ✅ **Production Ready** | [NPM Package](https://www.npmjs.com/package/cortex-tms) | [GitHub Template](https://github.com/cortex-tms/cortex-tms)
+
+---
+
+## 🚀 Quick Start
+
+### Option 1: CLI Tool (Recommended)
+
+Get started in under 60 seconds:
+
+```bash
+mkdir my-project && cd my-project
+npx cortex-tms init
+```
+
+Choose your scope (Nano/Standard/Enterprise) and start building with AI-optimized documentation.
+
+### Option 2: GitHub Template
+
+Click "Use this template" on the repository homepage to create a new project with all TMS files pre-configured.
+
+### Option 3: Manual Installation
+
+```bash
+npm install -g cortex-tms
+cortex-tms init --scope standard
+```
+
+📖 **New here?** Read the [Quick Start Guide](docs/guides/QUICK-START.md) or [Migration Guide](docs/guides/MIGRATION-GUIDE.md) for existing projects.
 
 ---
 

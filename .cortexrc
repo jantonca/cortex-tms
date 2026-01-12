@@ -1,0 +1,25 @@
+{
+  "version": "1.0.0",
+  "scope": "standard",
+  "paths": {
+    "docs": "docs/core",
+    "tasks": "NEXT-TASKS.md",
+    "archive": "docs/archive"
+  },
+  "limits": {},
+  "validation": {
+    "ignorePatterns": [],
+    "ignoreFiles": [
+      "NEXT-TASKS.md",
+      "docs/core/PATTERNS.md",
+      "docs/core/DOMAIN-LOGIC.md",
+      "docs/core/TROUBLESHOOTING.md",
+      "docs/core/SCHEMA.md",
+      "docs/core/DECISIONS.md"
+    ]
+  },
+  "metadata": {
+    "created": "2026-01-12T00:00:00.000Z",
+    "projectName": "cortex-tms"
+  }
+}

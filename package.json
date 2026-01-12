@@ -1,0 +1,69 @@
+{
+  "name": "cortex-tms",
+  "version": "2.1.0",
+  "description": "The Universal AI-Optimized Project Boilerplate - CLI tool for bootstrapping TMS-structured projects",
+  "type": "module",
+  "bin": {
+    "cortex-tms": "./bin/cortex-tms.js"
+  },
+  "files": [
+    "bin/",
+    "dist/",
+    "templates/",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "build": "pnpm run cli:build",
+    "prepublishOnly": "pnpm run build",
+    "cli:dev": "tsx src/cli.ts",
+    "cli:build": "tsc -p tsconfig.cli.json",
+    "cli:test": "node bin/cortex-tms.js --help",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src/**/*.ts",
+    "format": "prettier --write \"src/**/*.ts\""
+  },
+  "keywords": [
+    "documentation",
+    "boilerplate",
+    "ai",
+    "copilot",
+    "claude",
+    "tms",
+    "cli",
+    "generator",
+    "template"
+  ],
+  "author": "Cortex TMS Contributors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/cortex-tms/cortex-tms.git"
+  },
+  "bugs": {
+    "url": "https://github.com/cortex-tms/cortex-tms/issues"
+  },
+  "homepage": "https://github.com/cortex-tms/cortex-tms#readme",
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "commander": "^12.1.0",
+    "fs-extra": "^11.2.0",
+    "inquirer": "^10.2.2",
+    "ora": "^8.1.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4",
+    "@types/inquirer": "^9.0.7",
+    "@types/node": "^20.17.10",
+    "eslint": "^9.17.0",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^4.0.17"
+  }
+}
