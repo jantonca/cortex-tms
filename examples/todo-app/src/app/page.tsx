@@ -6,6 +6,7 @@ import { storage } from "@/lib/storage";
 import { TodoForm } from "@/components/todo-form";
 import { TodoList } from "@/components/todo-list";
 import { TodoFilters } from "@/components/todo-filters";
+import { Button } from "@/components/ui/button";
 import { ListTodo } from "lucide-react";
 
 export default function TodoApp() {
@@ -16,6 +17,7 @@ export default function TodoApp() {
   // Initialize: Load todos from storage on mount
   useEffect(() => {
     const savedTodos = storage.getTodos();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Valid pattern for hydration-safe localStorage loading in Next.js
     setTodos(savedTodos);
     setIsLoaded(true);
   }, []);
@@ -44,6 +46,13 @@ export default function TodoApp() {
   const handleDeleteTodo = (id: string) => {
     updateTodos(todos.filter((t) => t.id !== id));
   };
+
+  const handleClearCompleted = () => {
+    updateTodos(todos.filter((t) => !t.completed));
+  };
+
+  // Derived state
+  const hasCompleted = todos.some((t) => t.completed);
 
   // Prevent flash of empty state during hydration
   if (!isLoaded) return null;
@@ -75,8 +84,20 @@ export default function TodoApp() {
               currentFilter={filter}
               onFilterChange={setFilter}
             />
-            <div className="text-xs text-muted-foreground text-center sm:text-right italic">
-              {todos.filter(t => !t.completed).length} items remaining
+            <div className="flex items-center gap-4 justify-between sm:justify-end">
+              {hasCompleted && (
+                <Button
+                  variant="link"
+                  size="sm"
+                  onClick={handleClearCompleted}
+                  className="text-xs text-destructive h-auto p-0 hover:text-destructive/80"
+                >
+                  Clear completed
+                </Button>
+              )}
+              <div className="text-xs text-muted-foreground italic">
+                {todos.filter(t => !t.completed).length} items remaining
+              </div>
             </div>
           </div>
 

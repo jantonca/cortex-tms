@@ -136,7 +136,7 @@ export function TodoItem({ todo, onToggle, onEdit, onDelete }: TodoItemProps) {
                     This action cannot be undone. This will permanently delete the task:
                     <br />
                     <span className="font-semibold text-foreground mt-2 inline-block italic">
-                      "{todo.text}"
+                      &ldquo;{todo.text}&rdquo;
                     </span>
                   </DialogDescription>
                 </DialogHeader>

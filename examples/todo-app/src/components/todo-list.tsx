@@ -58,12 +58,20 @@ export function TodoList({ todos, filter, onToggle, onEdit, onDelete }: TodoList
       </CardHeader>
       <CardContent className="p-0">
         {isEmpty ? (
-          <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-            <p className="text-sm text-muted-foreground italic">
-              {filter === "all"
-                ? "No tasks found. Add one above to get started!"
-                : `No ${filter} tasks found.`}
-            </p>
+          <div className="flex flex-col items-center justify-center py-20 px-4 text-center space-y-3">
+            <div className="rounded-full bg-muted p-3">
+              <ListChecks className="h-6 w-6 text-muted-foreground/50" />
+            </div>
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-foreground">
+                {filter === "all" ? "No tasks yet" : `No ${filter} tasks`}
+              </p>
+              <p className="text-xs text-muted-foreground max-w-[200px]">
+                {filter === "all"
+                  ? "Get started by adding your first task in the input above."
+                  : `You don't have any tasks marked as ${filter}.`}
+              </p>
+            </div>
           </div>
         ) : (
           <div className="flex flex-col">
