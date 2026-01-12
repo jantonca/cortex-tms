@@ -94,7 +94,7 @@ async function runValidate(options: ValidateCommandOptions): Promise<void> {
 
   try {
     const result = await validateProject(cwd, {
-      strict: options.strict,
+      strict: options.strict || false,
     });
 
     spinner.stop();

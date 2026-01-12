@@ -13,7 +13,6 @@ import type {
   ValidationResult,
   LineLimits,
   MandatoryFile,
-  CortexConfig,
 } from '../types/cli.js';
 import {
   loadConfig,

@@ -193,7 +193,7 @@ export function mergeConfig(
         ...(userConfig.validation?.ignoreFiles || []),
       ],
     },
-    metadata: userConfig.metadata,
+    ...(userConfig.metadata && { metadata: userConfig.metadata }),
   };
 }
 
@@ -229,17 +229,22 @@ export function createConfigFromScope(
     throw new Error(`Unknown scope: ${scope}`);
   }
 
-  return {
+  const config: CortexConfig = {
     version: CONFIG_VERSION,
     scope,
-    paths: DEFAULT_CONFIG.paths,
+    paths: { ...DEFAULT_CONFIG.paths },
     limits: preset.lineLimits,
-    validation: DEFAULT_CONFIG.validation,
-    metadata: {
+    validation: { ...DEFAULT_CONFIG.validation },
+  };
+
+  if (projectName) {
+    config.metadata = {
       created: new Date().toISOString(),
       projectName,
-    },
-  };
+    };
+  }
+
+  return config;
 }
 
 /**

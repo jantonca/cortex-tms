@@ -101,8 +101,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
 
     answers = {
       projectName: defaultName,
-      description: undefined,
-      scope: options.minimal ? 'nano' : 'standard',
+      scope: (options.minimal ? 'nano' : 'standard') as 'nano' | 'standard' | 'enterprise',
       overwrite: true,
     };
 

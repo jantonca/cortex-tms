@@ -22,7 +22,8 @@ export async function runInitPrompts(
 ): Promise<InitPromptAnswers> {
   const defaultName = getDefaultProjectName(cwd);
 
-  const answers = await inquirer.prompt<InitPromptAnswers>([
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const answers = (await (inquirer.prompt as any)([
     {
       type: 'input',
       name: 'projectName',
@@ -54,7 +55,7 @@ export async function runInitPrompts(
       })),
       default: 'standard',
     },
-  ]);
+  ])) as InitPromptAnswers;
 
   // Add overwrite confirmation if files exist
   if (context.existingFiles.length > 0) {

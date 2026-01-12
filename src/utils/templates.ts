@@ -9,7 +9,7 @@ import fs from 'fs-extra';
 import { join, relative } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import type { TemplateFile, ProjectScope } from '../types/cli.js';
+import type { TemplateFile } from '../types/cli.js';
 import { getScopePreset } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
