@@ -4,7 +4,7 @@
 
 Cortex TMS is a **meta-framework** for organizing project documentation to maximize AI agent performance. It's not a runtime library—it's a **structural pattern** that separates high-signal "Source of Truth" from noisy "Historical Context."
 
-**Current Status**: 🚧 **In Active Development** (Phase 2: Template Library Complete)
+**Current Status**: 🚧 **In Active Development** (Phase 3: Gold Standard Todo App Complete ✅ | Phase 4: CLI Tool In Progress 🔄)
 
 ---
 
@@ -111,15 +111,22 @@ See `NEXT-TASKS.md` for current sprint and `FUTURE-ENHANCEMENTS.md` for backlog.
 - [x] **Phase 1**: Dogfood the System - Apply TMS to Cortex itself
 - [x] **Phase 1.5**: Resolve Rule 4 Violation - Modularize Git standards
 - [x] **Phase 2**: Complete Template Library - All 15 templates built and validated
+- [x] **Phase 3**: Build Example App - Gold Standard Next.js 15 Todo App ✨
+  - ✅ Full CRUD operations (create, read, update, delete, clear completed)
+  - ✅ Polished UX with empty states, bulk actions, and accessibility features
+  - ✅ Complete TMS documentation (ARCHITECTURE, PATTERNS, DOMAIN-LOGIC, SCHEMA)
+  - ✅ 10 documented implementation patterns with canonical examples
+  - ✅ Production build verified, TypeScript strict mode, lint passing
+  - 📍 **Location**: [`examples/todo-app/`](./examples/todo-app/)
 
-**Current Phase**: Phase 3 - Build Example App (🔄 In Progress)
-- [ ] Initialize Next.js 15 + TypeScript + Shadcn project
-- [ ] Populate example app with Cortex TMS templates
-- [ ] Build functional todo app with CRUD operations
-- [ ] Validate templates work in real-world scenario
+**Current Phase**: Phase 4 - Create CLI Tool (🔄 In Progress)
+- [ ] Design CLI architecture with Commander.js
+- [ ] Implement interactive prompts with Inquirer.js
+- [ ] Add template copy with placeholder replacement
+- [ ] Support greenfield and brownfield scenarios
+- [ ] Test `npx cortex-tms init` workflow
 
 **Future Phases**:
-- Phase 4: Create Node.js CLI tool (`npx cortex-tms init`)
 - Phase 5: Write documentation guides (Quick Start, Migration, Best Practices)
 - Phase 6: Publish to npm + GitHub Template
 
@@ -162,7 +169,7 @@ cortex-tms/
 │   └── archive/
 │       └── v1.0-CHANGELOG.md
 ├── examples/                  # Reference implementations
-│   └── todo-app/             # (Coming in Phase 3)
+│   └── todo-app/             # ✅ Gold Standard Next.js 15 Todo App
 ├── bin/                       # CLI tool entry point
 └── src/                       # CLI tool source code
 ```
@@ -217,7 +224,7 @@ MIT
 
 ## Status
 
-**Version**: 2.0 (In Development)
+**Version**: 2.1 (In Development)
 **Last Updated**: 2026-01-12
-**Current Sprint**: Phase 3 - Example App 🔄 In Progress
-**Completed Sprints**: Phase 1, 1.5, 2 (see `docs/archive/sprint-2026-01.md`)
+**Current Sprint**: Phase 4 - CLI Tool 🔄 In Progress
+**Completed Sprints**: Phase 1, 1.5, 2, 3 (see `docs/archive/sprint-2026-01.md`)

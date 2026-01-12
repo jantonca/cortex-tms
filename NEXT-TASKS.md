@@ -9,45 +9,63 @@
 | **Phase 1: Dogfood the System** - Apply TMS to Cortex itself | 2h | 🔴 HIGH | ✅ Done |
 | **Phase 1.5: Resolve Rule 4 Violation** - Modularize Git standards | 1h | 🔴 HIGH | ✅ Done |
 | **Phase 2: Complete Template Library** - Fill all template files with real content | 4h | 🔴 HIGH | ✅ Done |
-| **Phase 3: Build Example App** - Next.js 15 + Shadcn todo app | 6h | 🔴 HIGH | 🔄 In Progress |
-| **Phase 4: Create CLI Tool** - Node.js CLI for `npx cortex-tms init` | 4h | 🟡 MED | ⬜ Todo |
+| **Phase 3: Build Example App** - Next.js 15 + Shadcn todo app | 6h | 🔴 HIGH | ✅ Done |
+| **Phase 4: Create CLI Tool** - Node.js CLI for `npx cortex-tms init` | 4h | 🔴 HIGH | 🔄 In Progress |
 | **Phase 5: Documentation** - Quick Start, Migration Guide, Best Practices | 3h | 🟡 MED | ⬜ Todo |
 | **Phase 6: Distribution** - GitHub Template + NPM Package | 2h | 🟢 LOW | ⬜ Todo |
 
 ---
 
-## 📋 Current Focus: Phase 3 - Example App
+## 📋 Current Focus: Phase 4 - CLI Tool
+
+### Phase 3 Achievements 🎉
+
+**Gold Standard Todo App Complete!**
+- ✅ Fully functional Next.js 15 app with TypeScript strict mode
+- ✅ Complete CRUD operations (create, read, update, delete, clear completed)
+- ✅ Polished UX (empty states, bulk actions, inline editing, confirmation dialogs)
+- ✅ All TMS documentation validated and synchronized with implementation
+- ✅ 10 documented patterns with canonical examples
+- ✅ Production build verified
+- ✅ Accessibility compliant (ARIA labels, semantic HTML, keyboard navigation)
+
+**Location**: `examples/todo-app/`
+
+---
+
+## 🎯 Phase 4 Objectives: CLI Distribution Tool
+
+**Goal**: Create `npx cortex-tms init` command for one-click TMS setup.
 
 ### Immediate Tasks (This Session)
-- [x] Phase 2 complete (all templates built + validated)
-- [x] Create validation document (`docs/validation/phase2-sandbox.md`)
-- [x] Archive Phase 1, 1.5, and 2 to `docs/archive/sprint-2026-01.md`
-- [ ] Plan Phase 3 architecture (Next.js 15 + Shadcn todo app)
-- [ ] Create `examples/todo-app/` directory structure
-- [ ] Initialize Next.js 15 project with TypeScript
-- [ ] Populate example app with Cortex TMS templates
-- [ ] Build core todo functionality (CRUD operations)
-- [ ] Add Shadcn UI components
-- [ ] Validate templates work in real-world scenario
+- [ ] Design CLI architecture and command structure
+- [ ] Initialize Node.js package in `bin/` and `src/`
+- [ ] Set up Commander.js for CLI framework
+- [ ] Implement interactive prompts (Inquirer.js)
+- [ ] Add file operations (copy templates with placeholders)
+- [ ] Implement project detection (greenfield vs brownfield)
+- [ ] Add template selection (full vs minimal)
+- [ ] Test CLI in sample projects
 
 ---
 
-## 🎯 Definition of Done (Phase 3)
+## 🎯 Definition of Done (Phase 4)
 
-- [ ] Next.js 15 app runs without errors (`pnpm dev`)
-- [ ] All Cortex TMS templates populated in `examples/todo-app/`
-- [ ] Todo app has functional CRUD operations
-- [ ] Shadcn UI components integrated (Button, Input, Card, etc.)
-- [ ] `examples/todo-app/docs/core/ARCHITECTURE.md` reflects actual implementation
-- [ ] App serves as "Gold Standard" reference for Cortex TMS users
-- [ ] Templates validated to work with complex real-world project
+- [ ] `npx cortex-tms init` runs without errors
+- [ ] Interactive prompts for project name and template selection
+- [ ] Safe file operations (never overwrites without confirmation)
+- [ ] Detects existing package.json and git repo
+- [ ] Replaces `[Project Name]` placeholders automatically
+- [ ] Supports both greenfield and brownfield scenarios
+- [ ] Published as npm package (dry-run)
+- [ ] CLI tested in at least 3 different project types
 
 ---
 
-## 🚀 Next Sprint Preview: Phase 4 - CLI Tool
+## 🚀 Next Sprint Preview: Phase 5 - Documentation Guides
 
-Once Phase 3 completes, we'll:
-1. Build Node.js CLI tool for `npx cortex-tms init`
-2. Implement interactive prompts (project name, tech stack, templates to include)
-3. Add safe file operations (never overwrite without confirmation)
-4. Test CLI in both greenfield and brownfield scenarios
+Once Phase 4 completes, we'll:
+1. Write Quick Start guide for new users
+2. Write Migration Guide for existing projects
+3. Write Best Practices guide for TMS patterns
+4. Create video walkthrough (optional)
