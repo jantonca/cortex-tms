@@ -121,3 +121,60 @@ export interface ValidateCommandOptions {
   strict?: boolean; // Treat warnings as errors
   verbose?: boolean; // Show detailed output
 }
+
+/**
+ * Project scope - determines which templates are included
+ */
+export type ProjectScope = 'nano' | 'standard' | 'enterprise';
+
+/**
+ * Cortex TMS project configuration (.cortexrc)
+ */
+export interface CortexConfig {
+  /** Config schema version (for future migrations) */
+  version: string;
+
+  /** Project scope - determines template set and validation rules */
+  scope: ProjectScope;
+
+  /** Custom paths for TMS files */
+  paths?: {
+    /** Documentation directory (default: 'docs/core') */
+    docs?: string;
+    /** Tasks file (default: 'NEXT-TASKS.md') */
+    tasks?: string;
+    /** Archive directory (default: 'docs/archive') */
+    archive?: string;
+  };
+
+  /** Custom line limits (overrides Rule 4 defaults) */
+  limits?: Partial<LineLimits>;
+
+  /** Validation configuration */
+  validation?: {
+    /** File patterns to ignore (glob syntax) */
+    ignorePatterns?: string[];
+    /** Specific files to ignore */
+    ignoreFiles?: string[];
+  };
+
+  /** Metadata */
+  metadata?: {
+    /** When this config was created */
+    created?: string;
+    /** Project name */
+    projectName?: string;
+  };
+}
+
+/**
+ * Scope preset - defines which files are included in each scope
+ */
+export interface ScopePreset {
+  name: ProjectScope;
+  displayName: string;
+  description: string;
+  mandatoryFiles: string[];
+  optionalFiles: string[];
+  lineLimits: Partial<LineLimits>;
+}

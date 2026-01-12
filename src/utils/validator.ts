@@ -13,7 +13,13 @@ import type {
   ValidationResult,
   LineLimits,
   MandatoryFile,
+  CortexConfig,
 } from '../types/cli.js';
+import {
+  loadConfig,
+  mergeConfig,
+  getEffectiveLineLimits,
+} from './config.js';
 
 /**
  * Default line limits for TMS files (Rule 4)
@@ -179,7 +185,10 @@ export function validateMandatoryFiles(cwd: string): ValidationCheck[] {
 /**
  * Validate no unreplaced placeholders
  */
-export async function validatePlaceholders(cwd: string): Promise<ValidationCheck[]> {
+export async function validatePlaceholders(
+  cwd: string,
+  ignoreFiles: string[] = []
+): Promise<ValidationCheck[]> {
   const checks: ValidationCheck[] = [];
 
   // Files to scan for placeholders
@@ -194,6 +203,11 @@ export async function validatePlaceholders(cwd: string): Promise<ValidationCheck
   ];
 
   for (const file of filesToScan) {
+    // Skip if file is in ignore list
+    if (ignoreFiles.includes(file)) {
+      continue;
+    }
+
     const filePath = join(cwd, file);
 
     if (!existsSync(filePath)) {
@@ -289,14 +303,24 @@ export async function validateProject(
   cwd: string,
   options: { strict?: boolean; limits?: LineLimits } = {}
 ): Promise<ValidationResult> {
-  const { strict = false, limits = DEFAULT_LINE_LIMITS } = options;
+  const { strict = false } = options;
+
+  // Load configuration (if exists)
+  const userConfig = await loadConfig(cwd);
+  const config = mergeConfig(userConfig);
+
+  // Get effective line limits (config overrides > scope presets > defaults)
+  const limits = options.limits || getEffectiveLineLimits(config);
+
+  // Get ignore list for placeholder validation
+  const ignoreFiles = config.validation?.ignoreFiles || [];
 
   // Run all checks in parallel
   const [fileSizeChecks, mandatoryChecks, placeholderChecks, archiveChecks] =
     await Promise.all([
       validateFileSizes(cwd, limits),
       Promise.resolve(validateMandatoryFiles(cwd)),
-      validatePlaceholders(cwd),
+      validatePlaceholders(cwd, ignoreFiles),
       validateArchiveStatus(cwd),
     ]);
 
