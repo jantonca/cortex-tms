@@ -19,9 +19,10 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **Release v2.2.0** - NPM Publish & GitHub Release | [#24] | 10m | 🔴 HIGH | ✅ Done |
-| **Dry Run Preview** - Add `--dry-run` flag to `init` | [#25] | 2h | 🔴 HIGH | ⬜ Todo |
-| **Validation Fix** - Add `--fix` flag to `validate` | [#26] | 3h | 🟡 MED | ⬜ Todo |
-| **VS Code Snippets** - TMS snippet library for docs | [#27] | 2h | 🟢 LOW | ⬜ Todo |
+| **Template Audit & Sync** - Update todo-app to v2.2.0 enterprise | [TMS-230] | 45m | 🔴 HIGH | ✅ Done |
+| **Dry Run Preview** - Add `--dry-run` and `--scope` flags | [TMS-231] | 2h | 🔴 HIGH | ✅ Done |
+| **Validation Fix** - Add `--fix` flag to `validate` | [TMS-233] | 3h | 🟡 MED | ⬜ Todo |
+| **VS Code Snippets** - TMS snippet library for docs | [TMS-234] | 2h | 🟢 LOW | ⬜ Todo |
 
 ---
 
@@ -42,6 +43,7 @@
 ---
 
 ## 🎯 Definition of Done (v2.3)
-- [ ] Users can preview all file changes before committing (`--dry-run`).
+- [x] Users can preview all file changes before committing (`--dry-run`).
+- [x] Non-interactive mode works in CI/CD environments (`--scope` flag).
 - [ ] Validation command can auto-fix common issues (`--fix`).
 - [ ] VS Code users have snippet library for rapid TMS documentation.
