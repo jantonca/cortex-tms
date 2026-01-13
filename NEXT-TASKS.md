@@ -18,7 +18,7 @@
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Release v2.2.0** - NPM Publish & GitHub Release | [#24] | 10m | 🔴 HIGH | ⬜ Todo |
+| **Release v2.2.0** - NPM Publish & GitHub Release | [#24] | 10m | 🔴 HIGH | ✅ Done |
 | **Dry Run Preview** - Add `--dry-run` flag to `init` | [#25] | 2h | 🔴 HIGH | ⬜ Todo |
 | **Validation Fix** - Add `--fix` flag to `validate` | [#26] | 3h | 🟡 MED | ⬜ Todo |
 | **VS Code Snippets** - TMS snippet library for docs | [#27] | 2h | 🟢 LOW | ⬜ Todo |
