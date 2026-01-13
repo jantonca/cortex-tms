@@ -13,11 +13,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Auto-installed during `init` for Standard/Enterprise scopes
   - Reduces documentation friction with instant scaffolding
   - Installed to `.vscode/tms.code-snippets`
-- **TMS-235 Task**: Added status command task to backlog for v2.3 completion
+- **Status Command**: New `cortex-tms status` dashboard for project health visibility (TMS-235)
+  - High-level project dashboard showing scope, sprint progress, and health
+  - Visual progress bar for current sprint completion percentage
+  - Task breakdown (done/in progress/todo) extracted from NEXT-TASKS.md
+  - Backlog size from FUTURE-ENHANCEMENTS.md
+  - Quick action suggestions based on project state
+  - Fast, read-only operation ideal for daily standups and context switching
 
 ### Improved
 - **Init Workflow**: Added interactive prompt for VS Code snippet installation
-- **CLI Documentation**: Comprehensive VS Code snippets section in CLI-USAGE.md with examples and usage tips
+- **CLI Documentation**: Comprehensive sections for VS Code snippets and status command with examples and usage tips
 
 ## [2.2.0] - 2026-01-13
 

@@ -23,7 +23,7 @@
 | **Dry Run Preview** - Add `--dry-run` and `--scope` flags | [TMS-231] | 2h | 🔴 HIGH | ✅ Done |
 | **Validation Fix** - Add `--fix` flag to `validate` | [TMS-233] | 3h | 🟡 MED | ✅ Done |
 | **VS Code Snippets** - TMS snippet library for docs | [TMS-234] | 2h | 🟡 MED | ✅ Done |
-| **Status Command** - Add `cortex-tms status` dashboard | [TMS-235] | 1h | 🟢 LOW | ⬜ Todo |
+| **Status Command** - Add `cortex-tms status` dashboard | [TMS-235] | 1h | 🟢 LOW | ✅ Done |
 
 ---
 
@@ -48,4 +48,4 @@
 - [x] Non-interactive mode works in CI/CD environments (`--scope` flag).
 - [x] Validation command can auto-fix common issues (`--fix`).
 - [x] VS Code users have snippet library for rapid TMS documentation.
-- [ ] Status command provides project health dashboard with scope, tasks, and validation results.
+- [x] Status command provides project health dashboard with scope, tasks, and validation results.

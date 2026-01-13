@@ -14,6 +14,7 @@ The Cortex TMS CLI is a command-line tool for initializing and validating AI-opt
 3. [Commands](#commands)
    - [init](#init-command)
    - [validate](#validate-command)
+   - [status](#status-command)
 4. [VS Code Snippets](#vs-code-snippets)
 5. [Project Scopes](#project-scopes)
 6. [Configuration (.cortexrc)](#configuration)
@@ -221,6 +222,95 @@ npx cortex-tms validate --verbose
 # Shows all checks, even passing ones
 # Includes line counts and file details
 ```
+
+---
+
+### `status` Command
+
+Display a high-level project health dashboard showing scope, sprint progress, validation summary, and backlog size.
+
+#### Usage
+
+```bash
+cortex-tms status
+```
+
+#### What It Shows
+
+The status command provides an at-a-glance view of your TMS project:
+
+**1. Project Identity**
+- Project name (from `.cortexrc`)
+- Scope (Nano/Standard/Enterprise)
+- TMS configuration version
+
+**2. Project Health**
+- Health status (Healthy / Issues Found)
+- Validation check summary (passed/warnings/errors)
+- Quick indication if action is needed
+
+**3. Current Sprint**
+- Sprint name and focus (from `NEXT-TASKS.md`)
+- Visual progress bar showing completion percentage
+- Task breakdown (done/in progress/todo)
+
+**4. Backlog**
+- Count of pending enhancements (from `FUTURE-ENHANCEMENTS.md`)
+- Gives context on future work pipeline
+
+**5. Quick Actions**
+- Suggests next steps based on project state
+- Points to relevant commands for common tasks
+
+#### Example Output
+
+```bash
+$ npx cortex-tms status
+
+📊 Cortex TMS Status Dashboard
+
+🏷️  Project Identity
+  Name: my-awesome-app
+  Scope: Standard 📦
+  TMS Version: 1.0.0
+
+💚 Project Health
+  ✅ Healthy
+  Checks: 11/11 passed
+
+🎯 Current Sprint
+  Name: v1.0 - MVP Features
+  Focus: Building core functionality with user authentication and data persistence
+  Progress: [██████████████░░░░░░] 70%
+  Tasks: 7 done, 2 in progress, 1 todo
+
+📋 Backlog
+  Future Enhancements: 15 items pending
+
+⚡ Quick Actions
+  Run cortex-tms validate for detailed health checks
+  Edit NEXT-TASKS.md to update sprint tasks
+```
+
+#### When to Use
+
+**Daily Standups**: Quickly share sprint progress with your team
+
+**Context Switching**: Get oriented after returning to a project
+
+**Sprint Planning**: See current progress before planning next sprint
+
+**Health Checks**: Quick validation that project is in good shape
+
+**Motivation**: Visual progress bar provides psychological boost
+
+#### Notes
+
+- Non-interactive command (no prompts)
+- Fast execution (< 1 second)
+- Combines data from multiple TMS files
+- Runs lightweight validation in the background
+- Safe to run anytime (read-only operation)
 
 ---
 
