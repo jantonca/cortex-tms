@@ -32,6 +32,10 @@ async function createMinimalProject(dir: string): Promise<void> {
     join(dir, '.github/copilot-instructions.md'),
     '# Instructions\n'
   );
+
+  // Create .cortexrc configuration
+  const config = createConfigFromScope('standard', 'test-project');
+  await saveConfig(dir, config);
 }
 
 /**

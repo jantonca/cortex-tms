@@ -76,6 +76,8 @@ export interface ValidationCheck {
   details?: string;
   file?: string;
   line?: number;
+  /** Optional fix function that can remediate the issue */
+  fix?: (cwd: string) => Promise<void>;
 }
 
 /**

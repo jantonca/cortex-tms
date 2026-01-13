@@ -99,9 +99,54 @@ async function runValidate(options: ValidateCommandOptions): Promise<void> {
 
     spinner.stop();
 
+    // If --fix flag is present, attempt to fix issues
+    if (options.fix) {
+      const fixableIssues = result.checks.filter((c) => !c.passed && c.fix);
+
+      if (fixableIssues.length > 0) {
+        console.log(chalk.bold.yellow(`\n🔧 Auto-fixing ${fixableIssues.length} issue(s)...\n`));
+
+        for (const check of fixableIssues) {
+          const fixSpinner = ora(`Fixing: ${check.message}`).start();
+
+          try {
+            await check.fix!(cwd);
+            fixSpinner.succeed(chalk.green(`Fixed: ${check.file || check.name}`));
+          } catch (error) {
+            fixSpinner.fail(
+              chalk.red(
+                `Failed to fix ${check.file || check.name}: ${
+                  error instanceof Error ? error.message : 'Unknown error'
+                }`
+              )
+            );
+          }
+        }
+
+        console.log(chalk.bold.green('\n✨ Auto-fix complete! Re-running validation...\n'));
+
+        // Re-run validation to show updated results
+        const revalidateSpinner = ora('Re-validating...').start();
+        const updatedResult = await validateProject(cwd, {
+          strict: options.strict || false,
+        });
+        revalidateSpinner.stop();
+
+        // Update result with re-validation
+        result.checks = updatedResult.checks;
+        result.summary = updatedResult.summary;
+        result.passed = updatedResult.passed;
+      } else {
+        console.log(chalk.gray('\nNo auto-fixable issues found.\n'));
+      }
+    }
+
     // Group checks by category
     const mandatoryChecks = result.checks.filter((c) =>
       c.name.startsWith('Mandatory File')
+    );
+    const configChecks = result.checks.filter((c) =>
+      c.name === 'Configuration File'
     );
     const fileSizeChecks = result.checks.filter((c) =>
       c.name.startsWith('File Size')
@@ -117,6 +162,13 @@ async function runValidate(options: ValidateCommandOptions): Promise<void> {
     if (mandatoryChecks.length > 0) {
       console.log(chalk.bold('\n📋 Mandatory Files'));
       mandatoryChecks.forEach((check) => {
+        console.log(formatCheck(check, options.verbose || false));
+      });
+    }
+
+    if (configChecks.length > 0) {
+      console.log(chalk.bold('\n⚙️  Configuration'));
+      configChecks.forEach((check) => {
         console.log(formatCheck(check, options.verbose || false));
       });
     }
@@ -200,6 +252,16 @@ async function runValidate(options: ValidateCommandOptions): Promise<void> {
     // Helpful tips
     if (summary.errors > 0 || summary.warnings > 0) {
       console.log(chalk.bold('\n💡 Tips:\n'));
+
+      const hasFixableIssues = result.checks.some((c) => !c.passed && c.fix);
+
+      if (hasFixableIssues && !options.fix) {
+        console.log(
+          chalk.gray('  • Run'),
+          chalk.cyan('cortex-tms validate --fix'),
+          chalk.gray('to auto-fix common issues')
+        );
+      }
 
       if (result.checks.some((c) => c.message.includes('missing'))) {
         console.log(

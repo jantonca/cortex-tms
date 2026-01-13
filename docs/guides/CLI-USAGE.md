@@ -1,6 +1,6 @@
 # CLI Usage Guide
 
-**Version**: 2.1.0
+**Version**: 2.2.0
 **Last Updated**: January 2026
 
 The Cortex TMS CLI is a command-line tool for initializing and validating AI-optimized project documentation. This guide covers installation, commands, and configuration.
@@ -88,6 +88,8 @@ cortex-tms init [options]
 | `--force` | `-f` | Skip confirmation prompts and overwrite existing files |
 | `--minimal` | `-m` | Install minimal template set only (equivalent to Nano scope) |
 | `--verbose` | `-v` | Show detailed output during initialization |
+| `--dry-run` | | Preview changes without writing files (safe mode) |
+| `--scope <type>` | | Set project scope non-interactively: `nano`, `standard`, or `enterprise` |
 
 #### Interactive Prompts
 
@@ -167,7 +169,7 @@ cortex-tms validate [options]
 |--------|-------|-------------|
 | `--strict` | `-s` | Treat warnings as errors (fails CI/CD on any issue) |
 | `--verbose` | `-v` | Show detailed check information |
-| `--fix` | `-f` | Auto-fix issues where possible (future feature) |
+| `--fix` | `-f` | Auto-fix issues where possible |
 
 #### What Gets Checked
 

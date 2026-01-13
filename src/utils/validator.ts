@@ -7,7 +7,7 @@
 
 import { readFile } from 'fs/promises';
 import { existsSync } from 'fs';
-import { join } from 'path';
+import { join, basename } from 'path';
 import type {
   ValidationCheck,
   ValidationResult,
@@ -18,7 +18,10 @@ import {
   loadConfig,
   mergeConfig,
   getEffectiveLineLimits,
+  saveConfig,
+  createConfigFromScope,
 } from './config.js';
+import { getTemplatesDir, processTemplate } from './templates.js';
 
 /**
  * Default line limits for TMS files (Rule 4)
@@ -116,6 +119,25 @@ function hasArchiveDirectory(cwd: string): boolean {
 }
 
 /**
+ * Fix function: Restore missing mandatory file from template
+ */
+async function fixMissingFile(cwd: string, file: string): Promise<void> {
+  const templatesDir = getTemplatesDir();
+  const sourcePath = join(templatesDir, file);
+  const destPath = join(cwd, file);
+
+  // Use project directory name as default project name
+  const projectName = basename(cwd);
+  const replacements = {
+    'Project Name': projectName,
+    'project-name': projectName.toLowerCase().replace(/[^a-z0-9-]/g, '-'),
+    Description: `A project powered by Cortex TMS`,
+  };
+
+  await processTemplate(sourcePath, destPath, replacements);
+}
+
+/**
  * Validate file size limits (Rule 4)
  */
 export async function validateFileSizes(
@@ -175,10 +197,59 @@ export function validateMandatoryFiles(cwd: string): ValidationCheck[] {
         ? `${file} exists`
         : `${file} is missing (required for TMS)`,
       file,
+      // Add fix function for missing files
+      ...(!exists && {
+        fix: async (cwd: string) => fixMissingFile(cwd, file),
+      }),
     });
   }
 
   return checks;
+}
+
+/**
+ * Fix function: Generate missing .cortexrc configuration
+ */
+async function fixMissingConfig(cwd: string): Promise<void> {
+  // Try to detect scope from existing files
+  const hasGlossary = existsSync(join(cwd, 'docs/core/GLOSSARY.md'));
+  const hasSchema = existsSync(join(cwd, 'docs/core/SCHEMA.md'));
+  const hasArchitecture = existsSync(join(cwd, 'docs/core/ARCHITECTURE.md'));
+
+  let scope: 'nano' | 'standard' | 'enterprise' = 'standard';
+
+  if (hasGlossary || hasSchema) {
+    scope = 'enterprise';
+  } else if (!hasArchitecture) {
+    scope = 'nano';
+  }
+
+  const projectName = basename(cwd);
+  const config = createConfigFromScope(scope, projectName);
+  await saveConfig(cwd, config);
+}
+
+/**
+ * Validate .cortexrc configuration exists
+ */
+export function validateConfig(cwd: string): ValidationCheck[] {
+  const configPath = join(cwd, '.cortexrc');
+  const exists = existsSync(configPath);
+
+  return [
+    {
+      name: 'Configuration File',
+      passed: exists,
+      level: exists ? 'info' : 'error',
+      message: exists
+        ? '.cortexrc configuration exists'
+        : '.cortexrc is missing (required for TMS validation)',
+      file: '.cortexrc',
+      ...(!exists && {
+        fix: fixMissingConfig,
+      }),
+    },
+  ];
 }
 
 /**
@@ -315,16 +386,18 @@ export async function validateProject(
   const ignoreFiles = config.validation?.ignoreFiles || [];
 
   // Run all checks in parallel
-  const [fileSizeChecks, mandatoryChecks, placeholderChecks, archiveChecks] =
+  const [fileSizeChecks, mandatoryChecks, configChecks, placeholderChecks, archiveChecks] =
     await Promise.all([
       validateFileSizes(cwd, limits),
       Promise.resolve(validateMandatoryFiles(cwd)),
+      Promise.resolve(validateConfig(cwd)),
       validatePlaceholders(cwd, ignoreFiles),
       validateArchiveStatus(cwd),
     ]);
 
   const checks = [
     ...mandatoryChecks,
+    ...configChecks,
     ...fileSizeChecks,
     ...placeholderChecks,
     ...archiveChecks,
