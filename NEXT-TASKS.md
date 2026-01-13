@@ -12,15 +12,26 @@
 
 ---
 
-## Active Sprint: v2.3 - TBD
+## Active Sprint: v2.3 - Confidence & Comfort
 
-**Why this matters**: With v2.2 foundation complete, we can now focus on [to be defined].
+**Why this matters**: With automation and templates solid, we now focus on user trust (Dry Run) and developer comfort (VS Code integration).
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **CI Setup** - Add GitHub Action for `validate` | [#18] | 2h | 🔴 HIGH | ✅ Done |
-| **Refine Init** - Prompt for specific docs selection | [#19] | 4h | 🔴 HIGH | ✅ Done |
-| **Template Polish** - Complete ARCHITECTURE.md sections | [#20] | 1h | 🔴 HIGH | ✅ Done |
+| **Release v2.2.0** - NPM Publish & GitHub Release | [#24] | 10m | 🔴 HIGH | ⬜ Todo |
+| **Dry Run Preview** - Add `--dry-run` flag to `init` | [#25] | 2h | 🔴 HIGH | ⬜ Todo |
+| **Validation Fix** - Add `--fix` flag to `validate` | [#26] | 3h | 🟡 MED | ⬜ Todo |
+| **VS Code Snippets** - TMS snippet library for docs | [#27] | 2h | 🟢 LOW | ⬜ Todo |
+
+---
+
+## 📋 v2.2 Sprint Completed (2026-01-13)
+
+| Task | Ref | Status |
+| :--- | :--- | :----- |
+| **CI Setup** - Add GitHub Action for `validate` | [#18] | ✅ Done |
+| **Refine Init** - Prompt for specific docs selection | [#19] | ✅ Done |
+| **Template Polish** - Complete ARCHITECTURE.md sections | [#20] | ✅ Done |
 
 ---
 ## ✅ v2.2 Definition of Done (Complete)
@@ -30,8 +41,7 @@
 
 ---
 
-## 🎯 Backlog (v2.3+ Candidates)
-| Task | Ref | Effort | Priority | Status |
-| :--- | :--- | :----- | :------- | :----- |
-| **Refine Init** - Add "Dry Run" visual preview | - | 1h | 🟡 MED | ⬜ Todo |
-| **VS Code Support** - Snippet library research | - | 4h | 🟢 LOW | ⬜ Todo |
+## 🎯 Definition of Done (v2.3)
+- [ ] Users can preview all file changes before committing (`--dry-run`).
+- [ ] Validation command can auto-fix common issues (`--fix`).
+- [ ] VS Code users have snippet library for rapid TMS documentation.

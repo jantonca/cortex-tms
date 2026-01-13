@@ -5,6 +5,24 @@ All notable changes to Cortex TMS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-01-13
+
+### Added
+- **Custom File Selection**: Users can now cherry-pick specific files during `init` using the "Custom" scope with interactive checkbox interface
+- **Enterprise Architecture Template**: Updated `ARCHITECTURE.md` template with professional Observability & Monitoring, Scalability & Performance, and Infrastructure as Code sections
+- **Branch Cleanup Policy**: Codified the "Clean Trunk" policy in `GIT-STANDARDS.md` and `CLAUDE.md` to prevent branch rot
+- **Post-Task Protocol**: Added comprehensive 7-step maintenance workflow in `CLAUDE.md` for systematic task completion
+
+### Improved
+- **CI/CD Governance**: Added GitHub Action that automatically runs `cortex-tms validate --strict` on all PRs and pushes to main
+- **AI Agent Attention**: Moved Git Protocol to CRITICAL RULES section at top of `copilot-instructions.md` for better agent compliance
+- **Validation Engine**: Enhanced scope-aware line limits and improved placeholder detection logic
+- **Git Standards**: Elevated Git Protocol to "ZERO TOLERANCE" status with mandatory branch-first workflow
+
+### Changed
+- **NEXT-TASKS.md**: Transitioned from v2.2 to v2.3 cycle planning
+- **Custom Scope**: Added fourth scope option to init flow (Nano/Standard/Enterprise/Custom)
+
 ## [2.1.1] - 2026-01-13
 
 ### Fixed

@@ -1,6 +1,6 @@
 {
   "name": "cortex-tms",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "The Universal AI-Optimized Project Boilerplate - CLI tool for bootstrapping TMS-structured projects",
   "type": "module",
   "bin": {
