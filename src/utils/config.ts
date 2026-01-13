@@ -117,6 +117,14 @@ export const SCOPE_PRESETS: ScopePreset[] = [
       'TROUBLESHOOTING.md': 600,
     },
   },
+  {
+    name: 'custom',
+    displayName: 'Custom',
+    description: 'Choose specific files to include (advanced)',
+    mandatoryFiles: [], // Will be determined by user selection
+    optionalFiles: [], // Will be determined by user selection
+    lineLimits: DEFAULT_LINE_LIMITS,
+  },
 ];
 
 /**
@@ -221,7 +229,8 @@ export async function saveConfig(
  */
 export function createConfigFromScope(
   scope: ProjectScope,
-  projectName?: string
+  projectName?: string,
+  customFiles?: string[]
 ): CortexConfig {
   const preset = SCOPE_PRESETS.find((p) => p.name === scope);
 
@@ -241,6 +250,7 @@ export function createConfigFromScope(
     config.metadata = {
       created: new Date().toISOString(),
       projectName,
+      ...(scope === 'custom' && customFiles && { customFiles }),
     };
   }
 

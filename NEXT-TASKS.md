@@ -7,10 +7,10 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **CI Setup** - Add GitHub Action for `validate` | [#18] | 2h | 🔴 HIGH | ✅ Done |
+| **Refine Init** - Prompt for specific docs selection | [#19] | 4h | 🔴 HIGH | ✅ Done |
 | **Template Polish** - Complete ARCHITECTURE.md sections | - | 2h | 🟡 MED | ⬜ Todo |
-| **Refine Init** - Prompt for specific docs selection | - | 4h | 🟡 MED | ⬜ Todo |
 
 ---
 ## 🎯 Definition of Done (v2.2)
 - [x] Every PR is auto-validated by GitHub Actions.
-- [ ] Users can cherry-pick specific .md files during `init`.
+- [x] Users can cherry-pick specific .md files during `init`.

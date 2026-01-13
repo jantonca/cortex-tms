@@ -10,6 +10,23 @@ import { getDefaultProjectName } from './detection.js';
 import { SCOPE_PRESETS } from './config.js';
 
 /**
+ * Available template files with user-friendly labels
+ */
+const AVAILABLE_TEMPLATES = [
+  { value: 'NEXT-TASKS.md', name: 'NEXT-TASKS.md - Active sprint tasks (mandatory)' },
+  { value: 'CLAUDE.md', name: 'CLAUDE.md - Agent workflow config (mandatory)' },
+  { value: '.github/copilot-instructions.md', name: '.github/copilot-instructions.md - AI rules (recommended)' },
+  { value: 'FUTURE-ENHANCEMENTS.md', name: 'FUTURE-ENHANCEMENTS.md - Backlog & ideas' },
+  { value: 'docs/core/ARCHITECTURE.md', name: 'ARCHITECTURE.md - System design' },
+  { value: 'docs/core/PATTERNS.md', name: 'PATTERNS.md - Code conventions' },
+  { value: 'docs/core/DOMAIN-LOGIC.md', name: 'DOMAIN-LOGIC.md - Business rules' },
+  { value: 'docs/core/DECISIONS.md', name: 'DECISIONS.md - Architecture decisions' },
+  { value: 'docs/core/GLOSSARY.md', name: 'GLOSSARY.md - Project terminology' },
+  { value: 'docs/core/SCHEMA.md', name: 'SCHEMA.md - Data models' },
+  { value: 'docs/core/TROUBLESHOOTING.md', name: 'TROUBLESHOOTING.md - Common issues' },
+];
+
+/**
  * Run interactive prompts for the init command
  *
  * @param context - Detected project context
@@ -57,6 +74,30 @@ export async function runInitPrompts(
     },
   ])) as InitPromptAnswers;
 
+  // If custom scope is selected, prompt for specific files
+  if (answers.scope === 'custom') {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { customFiles } = await (inquirer.prompt as any)({
+      type: 'checkbox',
+      name: 'customFiles',
+      message: 'Select files to include (use space to select, enter to confirm):',
+      choices: AVAILABLE_TEMPLATES,
+      default: ['NEXT-TASKS.md', 'CLAUDE.md', '.github/copilot-instructions.md'],
+      validate: (input: string[]) => {
+        // Must include at least NEXT-TASKS.md (core requirement)
+        if (!input.includes('NEXT-TASKS.md')) {
+          return 'You must include NEXT-TASKS.md (mandatory for TMS)';
+        }
+        if (input.length === 0) {
+          return 'You must select at least one file';
+        }
+        return true;
+      },
+    });
+
+    answers.customFiles = customFiles;
+  }
+
   // Add overwrite confirmation if files exist
   if (context.existingFiles.length > 0) {
     const { overwrite } = await inquirer.prompt<{ overwrite: boolean }>([
@@ -91,9 +132,15 @@ export function showInitSummary(
   if (answers.description) {
     console.log(`  Description: ${answers.description}`);
   }
-  console.log(
-    `  Scope: ${preset?.displayName || answers.scope} (${preset?.mandatoryFiles.length || 0} mandatory files)`
-  );
+
+  if (answers.scope === 'custom' && answers.customFiles) {
+    console.log(`  Scope: ${preset?.displayName || answers.scope} (${answers.customFiles.length} files selected)`);
+    console.log(`  Files: ${answers.customFiles.join(', ')}`);
+  } else {
+    console.log(
+      `  Scope: ${preset?.displayName || answers.scope} (${(preset?.mandatoryFiles.length || 0) + (preset?.optionalFiles.length || 0)} files)`
+    );
+  }
 
   if (context.isGitRepo) {
     console.log(`  Git: Repository detected ✓`);

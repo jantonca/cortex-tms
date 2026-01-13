@@ -142,22 +142,30 @@ export async function copyTemplates(
   replacements: Record<string, string>,
   options: {
     overwrite?: boolean;
-    scope?: 'nano' | 'standard' | 'enterprise';
+    scope?: 'nano' | 'standard' | 'enterprise' | 'custom';
+    customFiles?: string[]; // Only used when scope is 'custom'
   } = {}
 ): Promise<{ copied: number; skipped: number }> {
-  const { overwrite = false, scope = 'standard' } = options;
+  const { overwrite = false, scope = 'standard', customFiles } = options;
 
   const allFiles = await getTemplateFiles(templatesDir);
 
-  // Get scope preset to determine which files to copy
-  const preset = getScopePreset(scope);
+  let allowedFiles: string[];
 
-  if (!preset) {
-    throw new Error(`Unknown scope: ${scope}`);
+  // Handle custom scope with explicit file list
+  if (scope === 'custom' && customFiles) {
+    allowedFiles = customFiles;
+  } else {
+    // Get scope preset to determine which files to copy
+    const preset = getScopePreset(scope);
+
+    if (!preset) {
+      throw new Error(`Unknown scope: ${scope}`);
+    }
+
+    // Combine mandatory and optional files for this scope
+    allowedFiles = [...preset.mandatoryFiles, ...preset.optionalFiles];
   }
-
-  // Combine mandatory and optional files for this scope
-  const allowedFiles = [...preset.mandatoryFiles, ...preset.optionalFiles];
 
   // Filter files based on scope - match against full destination path
   const filesToCopy = allFiles.filter((f) => {

@@ -101,7 +101,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
 
     answers = {
       projectName: defaultName,
-      scope: (options.minimal ? 'nano' : 'standard') as 'nano' | 'standard' | 'enterprise',
+      scope: (options.minimal ? 'nano' : 'standard') as 'nano' | 'standard' | 'enterprise' | 'custom',
       overwrite: true,
     };
 
@@ -150,6 +150,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     const result = await copyTemplates(templatesDir, cwd, replacements, {
       overwrite,
       scope: answers.scope,
+      ...(answers.customFiles && { customFiles: answers.customFiles }),
     });
 
     copySpinner.succeed(
@@ -160,7 +161,11 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     const configSpinner = ora('Creating .cortexrc configuration...').start();
 
     try {
-      const config = createConfigFromScope(answers.scope, answers.projectName);
+      const config = createConfigFromScope(
+        answers.scope,
+        answers.projectName,
+        answers.customFiles
+      );
       await saveConfig(cwd, config);
       configSpinner.succeed('Configuration saved');
     } catch (error) {

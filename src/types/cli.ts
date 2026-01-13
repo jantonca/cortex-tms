@@ -11,6 +11,7 @@ export interface InitPromptAnswers {
   projectName: string;
   description?: string;
   scope: ProjectScope;
+  customFiles?: string[]; // Only present when scope is 'custom'
   overwrite: boolean;
 }
 
@@ -125,7 +126,7 @@ export interface ValidateCommandOptions {
 /**
  * Project scope - determines which templates are included
  */
-export type ProjectScope = 'nano' | 'standard' | 'enterprise';
+export type ProjectScope = 'nano' | 'standard' | 'enterprise' | 'custom';
 
 /**
  * Cortex TMS project configuration (.cortexrc)
