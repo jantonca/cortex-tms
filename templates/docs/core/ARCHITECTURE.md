@@ -50,8 +50,58 @@
 
 - **Environment**: [e.g., Vercel, AWS Lambda, Local CLI, Docker]
 - **CI/CD**: [e.g., GitHub Actions, GitLab CI]
-- **Observability**: [e.g., Sentry for errors, CloudWatch for logs]
 - **Database**: [e.g., PostgreSQL on Railway, SQLite local-first]
+- **IaC (Infrastructure as Code)**: [e.g., Terraform, Pulumi, Manual, N/A for CLI tools]
+
+---
+
+## 📊 Observability & Monitoring
+
+**Error Tracking**:
+- **Tool**: [e.g., Sentry, Rollbar, CloudWatch]
+- **Coverage**: [e.g., All production errors, API failures, Critical paths only]
+- **Alert Threshold**: [e.g., >10 errors/min triggers PagerDuty]
+
+**Logging**:
+- **Strategy**: [e.g., Structured JSON logs, Plain text, Winston logger]
+- **Levels**: [e.g., ERROR (always), WARN (production), INFO (debug mode)]
+- **Retention**: [e.g., 30 days in CloudWatch, 7 days local]
+- **Sensitive Data**: [e.g., Never log passwords, PII masked, API keys redacted]
+
+**Metrics & Analytics**:
+- **Performance**: [e.g., Datadog APM, New Relic, None]
+- **Business Metrics**: [e.g., User signups/day, API calls/min, CLI installs]
+- **Health Checks**: [e.g., `/health` endpoint, Database connectivity, External API status]
+
+**Alerting**:
+- **Critical**: [e.g., Service down → PagerDuty → On-call engineer]
+- **Warning**: [e.g., High error rate → Slack #alerts → Team review]
+- **Info**: [e.g., Deployment complete → Slack #releases]
+
+---
+
+## 📈 Scalability & Performance
+
+**Current Load Profile**:
+- **Users**: [e.g., 1,000 DAU, 50 concurrent, CLI tool (N/A)]
+- **Request Volume**: [e.g., 10K requests/day, 100 requests/sec peak]
+- **Data Size**: [e.g., 10GB database, 1M records, Local files only]
+
+**Performance Targets**:
+- **API Response Time**: [e.g., p95 < 200ms, p99 < 500ms]
+- **Page Load Time**: [e.g., First Contentful Paint < 1.5s]
+- **CLI Execution**: [e.g., `init` command < 2s]
+
+**Scaling Strategy**:
+- **Horizontal Scaling**: [e.g., Auto-scale on AWS ECS, Stateless API servers, N/A]
+- **Caching**: [e.g., Redis for session data, CDN for static assets, In-memory caching]
+- **Database**: [e.g., Read replicas for scaling, Connection pooling, Indexed queries]
+- **Bottlenecks**: [e.g., Third-party API rate limits, File I/O for large operations]
+
+**Known Limits**:
+- **Single-point failures**: [e.g., Primary database, Payment gateway, None]
+- **Rate Limits**: [e.g., GitHub API 5000/hour, Stripe 100 req/sec]
+- **Resource Constraints**: [e.g., Lambda 15min timeout, 512MB memory limit]
 
 ---
 
