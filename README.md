@@ -1,6 +1,6 @@
 # Cortex TMS 🧠
 
-**The Universal AI-Optimized Project Boilerplate (v2.1.0)**
+**The Universal AI-Optimized Project Boilerplate (v2.1.1)**
 
 Cortex TMS is a **meta-framework** for organizing project documentation to maximize AI agent performance. It's not a runtime library—it's a **structural pattern** that separates high-signal "Source of Truth" from noisy "Historical Context."
 

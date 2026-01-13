@@ -5,6 +5,12 @@ All notable changes to Cortex TMS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.1] - 2026-01-13
+
+### Fixed
+- **CLI Runtime Error**: Fixed "Cannot find package 'tsx'" error during `npx cortex-tms init`.
+- **Binary Optimization**: Simplified entry point to use standard Node.js without `tsx` wrapper.
+
 ## [2.1.0] - 2026-01-13
 
 ### 🎉 Initial Stable Release
