@@ -21,7 +21,7 @@
 | **Release v2.2.0** - NPM Publish & GitHub Release | [#24] | 10m | 🔴 HIGH | ✅ Done |
 | **Template Audit & Sync** - Update todo-app to v2.2.0 enterprise | [TMS-230] | 45m | 🔴 HIGH | ✅ Done |
 | **Dry Run Preview** - Add `--dry-run` and `--scope` flags | [TMS-231] | 2h | 🔴 HIGH | ✅ Done |
-| **Validation Fix** - Add `--fix` flag to `validate` | [TMS-233] | 3h | 🟡 MED | ⬜ Todo |
+| **Validation Fix** - Add `--fix` flag to `validate` | [TMS-233] | 3h | 🟡 MED | ✅ Done |
 | **VS Code Snippets** - TMS snippet library for docs | [TMS-234] | 2h | 🟢 LOW | ⬜ Todo |
 
 ---
@@ -45,5 +45,5 @@
 ## 🎯 Definition of Done (v2.3)
 - [x] Users can preview all file changes before committing (`--dry-run`).
 - [x] Non-interactive mode works in CI/CD environments (`--scope` flag).
-- [ ] Validation command can auto-fix common issues (`--fix`).
+- [x] Validation command can auto-fix common issues (`--fix`).
 - [ ] VS Code users have snippet library for rapid TMS documentation.
