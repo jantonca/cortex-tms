@@ -9,11 +9,26 @@ import fs from 'fs-extra';
 import { join, relative } from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import chalk from 'chalk';
 import type { TemplateFile } from '../types/cli.js';
 import { getScopePreset } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
+
+/**
+ * File change status for impact analysis
+ */
+export type FileStatus = 'CREATE' | 'UPDATE' | 'SKIP' | 'CONFLICT';
+
+/**
+ * File change information for dry-run mode
+ */
+export interface FileChange {
+  path: string;
+  status: FileStatus;
+  reason?: string;
+}
 
 /**
  * Get the absolute path to the templates directory
@@ -144,9 +159,10 @@ export async function copyTemplates(
     overwrite?: boolean;
     scope?: 'nano' | 'standard' | 'enterprise' | 'custom';
     customFiles?: string[]; // Only used when scope is 'custom'
+    dryRun?: boolean; // Preview changes without writing
   } = {}
-): Promise<{ copied: number; skipped: number }> {
-  const { overwrite = false, scope = 'standard', customFiles } = options;
+): Promise<{ copied: number; skipped: number; changes?: FileChange[] }> {
+  const { overwrite = false, scope = 'standard', customFiles, dryRun = false } = options;
 
   const allFiles = await getTemplateFiles(templatesDir);
 
@@ -180,22 +196,140 @@ export async function copyTemplates(
 
   let copied = 0;
   let skipped = 0;
+  const changes: FileChange[] = [];
 
   for (const file of filesToCopy) {
     const destPath = join(destDir, file.destination);
+    const exists = await fs.pathExists(destPath);
 
-    // Skip if file exists and overwrite is false
-    if (!overwrite && (await fs.pathExists(destPath))) {
-      skipped++;
-      continue;
+    if (dryRun) {
+      // Dry-run mode: analyze impact without writing
+      if (!exists) {
+        changes.push({
+          path: file.destination,
+          status: 'CREATE',
+        });
+        copied++;
+      } else if (overwrite) {
+        // Check if content would actually change
+        const existingContent = await fs.readFile(destPath, 'utf-8');
+        const templateContent = await fs.readFile(file.source, 'utf-8');
+        const processedContent = replacePlaceholders(templateContent, replacements);
+
+        if (existingContent !== processedContent) {
+          changes.push({
+            path: file.destination,
+            status: 'UPDATE',
+            reason: 'Content differs from template',
+          });
+          copied++;
+        } else {
+          changes.push({
+            path: file.destination,
+            status: 'SKIP',
+            reason: 'Already up to date',
+          });
+          skipped++;
+        }
+      } else {
+        changes.push({
+          path: file.destination,
+          status: 'CONFLICT',
+          reason: 'File exists (use --force to overwrite)',
+        });
+        skipped++;
+      }
+    } else {
+      // Normal mode: write files
+      // Skip if file exists and overwrite is false
+      if (!overwrite && exists) {
+        skipped++;
+        continue;
+      }
+
+      // Process template with placeholder replacement
+      await processTemplate(file.source, destPath, replacements);
+      copied++;
     }
-
-    // Process template with placeholder replacement
-    await processTemplate(file.source, destPath, replacements);
-    copied++;
   }
 
-  return { copied, skipped };
+  // Print impact report in dry-run mode
+  if (dryRun && changes.length > 0) {
+    printImpactReport(changes);
+  }
+
+  return { copied, skipped, ...(dryRun && { changes }) };
+}
+
+/**
+ * Print a formatted impact report showing planned changes
+ */
+function printImpactReport(changes: FileChange[]): void {
+  console.log(chalk.bold('\n📋 IMPACT ANALYSIS:\n'));
+
+  // Group changes by status
+  const byStatus: Record<FileStatus, FileChange[]> = {
+    CREATE: [],
+    UPDATE: [],
+    SKIP: [],
+    CONFLICT: [],
+  };
+
+  changes.forEach((change) => {
+    byStatus[change.status].push(change);
+  });
+
+  // Print each status group
+  const statusConfig: Record<
+    FileStatus,
+    { icon: string; color: typeof chalk.green; label: string }
+  > = {
+    CREATE: { icon: '✨', color: chalk.green, label: 'CREATE' },
+    UPDATE: { icon: '🔄', color: chalk.blue, label: 'UPDATE' },
+    CONFLICT: { icon: '⚠️ ', color: chalk.yellow, label: 'CONFLICT' },
+    SKIP: { icon: '⏭️ ', color: chalk.gray, label: 'SKIP' },
+  };
+
+  for (const status of ['CREATE', 'UPDATE', 'CONFLICT', 'SKIP'] as FileStatus[]) {
+    const items = byStatus[status];
+    if (items.length === 0) continue;
+
+    const config = statusConfig[status];
+    console.log(config.color.bold(`${config.icon} ${config.label} (${items.length}):`));
+
+    items.forEach((item) => {
+      const reasonText = item.reason ? chalk.gray(` - ${item.reason}`) : '';
+      console.log(`  ${config.color(item.path)}${reasonText}`);
+    });
+
+    console.log();
+  }
+
+  // Summary and recommendations
+  const conflicts = byStatus.CONFLICT.length;
+  const updates = byStatus.UPDATE.length;
+
+  if (conflicts > 0) {
+    console.log(
+      chalk.yellow.bold('⚠️  WARNING:'),
+      chalk.yellow(
+        `${conflicts} file(s) will be skipped due to conflicts. Use --force to overwrite.`
+      )
+    );
+  }
+
+  if (updates > 0) {
+    console.log(
+      chalk.blue.bold('ℹ️  INFO:'),
+      chalk.blue(
+        `${updates} file(s) will be updated with new template content. Review changes carefully.`
+      )
+    );
+  }
+
+  console.log(
+    chalk.gray('\n💡 Tip: Run without --dry-run to apply these changes.')
+  );
 }
 
 /**

@@ -52,6 +52,8 @@ export interface InitCommandOptions {
   force?: boolean; // Skip confirmation prompts
   minimal?: boolean; // Install minimal template set only
   verbose?: boolean; // Show detailed output
+  scope?: ProjectScope; // Specify scope for non-interactive mode
+  dryRun?: boolean; // Preview changes without writing to disk
 }
 
 /**
