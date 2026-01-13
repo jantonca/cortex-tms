@@ -98,6 +98,24 @@ export async function runInitPrompts(
     answers.customFiles = customFiles;
   }
 
+  // Ask about VS Code snippets for Standard, Enterprise, or substantial Custom setups
+  const shouldOfferSnippets =
+    answers.scope === 'standard' ||
+    answers.scope === 'enterprise' ||
+    (answers.scope === 'custom' && (answers.customFiles?.length ?? 0) >= 3);
+
+  if (shouldOfferSnippets) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { installSnippets } = await (inquirer.prompt as any)({
+      type: 'confirm',
+      name: 'installSnippets',
+      message: 'Install VS Code snippet library for TMS documentation? (Recommended)',
+      default: true,
+    });
+
+    answers.installSnippets = installSnippets;
+  }
+
   // Add overwrite confirmation if files exist
   if (context.existingFiles.length > 0) {
     const { overwrite } = await inquirer.prompt<{ overwrite: boolean }>([
@@ -150,6 +168,10 @@ export function showInitSummary(
     console.log(
       `  Package Manager: ${context.packageManager !== 'unknown' ? context.packageManager : 'npm (default)'}`
     );
+  }
+
+  if (answers.installSnippets) {
+    console.log(`  VS Code Snippets: Will install to .vscode/`);
   }
 
   if (answers.overwrite) {

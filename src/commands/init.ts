@@ -7,7 +7,7 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
-import { basename } from 'path';
+import { basename, join } from 'path';
 import { detectContext, isSafeToInitialize } from '../utils/detection.js';
 import {
   runInitPrompts,
@@ -130,10 +130,14 @@ async function runInit(options: InitCommandOptions): Promise<void> {
       scope = 'standard';
     }
 
+    // Auto-install snippets for Standard and Enterprise scopes in non-interactive mode
+    const installSnippets = scope === 'standard' || scope === 'enterprise';
+
     answers = {
       projectName: defaultName,
       scope,
       overwrite: options.force ?? false,
+      installSnippets,
     };
 
     if (options.verbose) {
@@ -141,6 +145,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
       console.log(chalk.gray(`  Project Name: ${answers.projectName}`));
       console.log(chalk.gray(`  Scope: ${answers.scope}`));
       console.log(chalk.gray(`  Overwrite: ${answers.overwrite}`));
+      console.log(chalk.gray(`  Install Snippets: ${answers.installSnippets}`));
       console.log();
     }
   } else {
@@ -211,7 +216,40 @@ async function runInit(options: InitCommandOptions): Promise<void> {
         : `Templates copied: ${chalk.bold(result.copied)} files${result.skipped > 0 ? chalk.gray(` (skipped ${result.skipped})`) : ''}`
     );
 
-    // Step 7: Save .cortexrc configuration (skip in dry-run mode)
+    // Step 7: Install VS Code snippets if requested (skip in dry-run mode)
+    if (!options.dryRun && answers.installSnippets) {
+      const snippetsSpinner = ora('Installing VS Code snippets...').start();
+
+      try {
+        const templatesDir = getTemplatesDir();
+        const snippetSource = join(templatesDir, 'vscode', 'tms.code-snippets');
+        const snippetDest = join(cwd, '.vscode', 'tms.code-snippets');
+
+        // Check if source snippet file exists
+        const fs = (await import('fs-extra')).default;
+        if (await fs.pathExists(snippetSource)) {
+          // Ensure .vscode directory exists
+          await fs.ensureDir(join(cwd, '.vscode'));
+
+          // Copy snippet file
+          await fs.copyFile(snippetSource, snippetDest);
+          snippetsSpinner.succeed('VS Code snippets installed to .vscode/tms.code-snippets');
+        } else {
+          snippetsSpinner.warn('Snippet file not found, skipping');
+        }
+      } catch (error) {
+        snippetsSpinner.fail('Failed to install snippets');
+        if (options.verbose) {
+          console.error(
+            chalk.gray('Error details:'),
+            error instanceof Error ? error.message : 'Unknown error'
+          );
+        }
+        // Don't throw - snippets are optional
+      }
+    }
+
+    // Step 8: Save .cortexrc configuration (skip in dry-run mode)
     if (!options.dryRun) {
       const configSpinner = ora('Creating .cortexrc configuration...').start();
 
@@ -229,7 +267,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
       }
     }
 
-    // Step 8: Success message
+    // Step 9: Success message
     if (options.dryRun) {
       console.log(
         chalk.green.bold('\n✨ Dry run complete!'),
@@ -249,6 +287,16 @@ async function runInit(options: InitCommandOptions): Promise<void> {
         chalk.cyan('.github/copilot-instructions.md'),
         chalk.gray('for AI rules')
       );
+
+      if (answers.installSnippets) {
+        console.log(
+          chalk.gray('\n  💡 Tip: Use'),
+          chalk.cyan('tms-adr'),
+          chalk.gray('or'),
+          chalk.cyan('tms-pattern'),
+          chalk.gray('snippets in VS Code for rapid documentation')
+        );
+      }
 
       if (!context.isGitRepo) {
         console.log(

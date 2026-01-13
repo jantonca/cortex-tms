@@ -1,0 +1,225 @@
+{
+  "TMS: Architecture Decision Record": {
+    "scope": "markdown",
+    "prefix": "tms-adr",
+    "description": "Insert a complete Architecture Decision Record (ADR) entry",
+    "body": [
+      "## [${1:YYYY-MM-DD}] - ${2:Decision Title}",
+      "",
+      "**Context**: ${3:What problem were we solving? What constraints existed?}",
+      "",
+      "**Decision**: ${4:What did we choose? Be specific}",
+      "",
+      "**Reasoning**:",
+      "- **Pro**: ${5:Advantage 1}",
+      "- **Pro**: ${6:Advantage 2}",
+      "- **Con**: ${7:Trade-off 1}",
+      "- **Alternative Considered**: ${8:What we didn't choose and why}",
+      "",
+      "**Consequences**:",
+      "- ✅ ${9:Positive outcome}",
+      "- ⚠️ ${10:Trade-off or limitation}",
+      "",
+      "**Status**: ${11|Active,Deprecated,Superseded|}",
+      "",
+      "---",
+      ""
+    ]
+  },
+  "TMS: Implementation Pattern": {
+    "scope": "markdown",
+    "prefix": "tms-pattern",
+    "description": "Insert a new implementation pattern entry",
+    "body": [
+      "## [${1|UI,Data,Auth,API,Testing,Config,Deployment|}] ${2:Pattern Name}",
+      "",
+      "**Rule**: ${3:Short, imperative statement of the rule}",
+      "",
+      "### ❌ Anti-Pattern (What NOT to do)",
+      "",
+      "- ${4:Description of common AI mistake}",
+      "- ${5:Why it fails in this project}",
+      "",
+      "### ✅ Canonical Example",
+      "",
+      "**Source File**: \\`${6:path/to/best-example-file.ts}\\`",
+      "",
+      "\\`\\`\\`${7|typescript,javascript,python,rust,go|}",
+      "${8:// A concise, perfect implementation of the pattern}",
+      "\\`\\`\\`",
+      "",
+      "### 🔗 References",
+      "",
+      "- **Domain Logic**: \\`DOMAIN-LOGIC.md#${9:Section}\\`",
+      "- **Gotchas**: \\`TROUBLESHOOTING.md#${10:Section}\\`",
+      "",
+      "---",
+      ""
+    ]
+  },
+  "TMS: Glossary Term": {
+    "scope": "markdown",
+    "prefix": "tms-term",
+    "description": "Insert a glossary term definition",
+    "body": [
+      "### ${1:Term Name}",
+      "**Definition**: ${2:Clear, concise explanation of what this means in your project}",
+      "**Example**: ${3:Usage in context}",
+      "**Related Terms**: ${4:Links to related concepts}",
+      ""
+    ]
+  },
+  "TMS: Glossary Acronym": {
+    "scope": "markdown",
+    "prefix": "tms-acronym",
+    "description": "Insert a glossary acronym table row",
+    "body": [
+      "| ${1:ACRONYM} | ${2:Stands For} | ${3:Meaning in This Project} |"
+    ]
+  },
+  "TMS: Task Row": {
+    "scope": "markdown",
+    "prefix": "tms-task",
+    "description": "Insert a task row for NEXT-TASKS.md",
+    "body": [
+      "| **${1:Task Name}** - ${2:Description} | [${3:TMS-XXX}] | ${4:2h} | ${5|🔴 HIGH,🟡 MED,🟢 LOW|} | ${6|⬜ Todo,🔄 In Progress,✅ Done|} |"
+    ]
+  },
+  "TMS: Sprint Section": {
+    "scope": "markdown",
+    "prefix": "tms-sprint",
+    "description": "Insert a complete sprint section for NEXT-TASKS.md",
+    "body": [
+      "## Active Sprint: ${1:v2.X} - ${2:Sprint Theme}",
+      "",
+      "**Why this matters**: ${3:Explain the value and focus of this sprint}",
+      "",
+      "| Task | Ref | Effort | Priority | Status |",
+      "| :--- | :--- | :----- | :------- | :----- |",
+      "| **${4:Task Name}** - ${5:Description} | [${6:TMS-XXX}] | ${7:2h} | 🔴 HIGH | ⬜ Todo |",
+      "",
+      "---",
+      ""
+    ]
+  },
+  "TMS: Domain Logic Section": {
+    "scope": "markdown",
+    "prefix": "tms-domain",
+    "description": "Insert a domain logic section",
+    "body": [
+      "## ${1:Domain Area Name}",
+      "",
+      "### 🎯 Purpose",
+      "${2:Why this domain area exists and what problems it solves}",
+      "",
+      "### 📐 Rules",
+      "",
+      "1. **${3:Rule Name}**: ${4:Rule description}",
+      "   - **Why**: ${5:Justification}",
+      "   - **Example**: ${6:Concrete example}",
+      "",
+      "2. **${7:Rule Name}**: ${8:Rule description}",
+      "   - **Why**: ${9:Justification}",
+      "   - **Example**: ${10:Concrete example}",
+      "",
+      "### 🔗 Related",
+      "- **Patterns**: \\`PATTERNS.md#${11:Section}\\`",
+      "- **Schema**: \\`SCHEMA.md#${12:Section}\\`",
+      "",
+      "---",
+      ""
+    ]
+  },
+  "TMS: Troubleshooting Entry": {
+    "scope": "markdown",
+    "prefix": "tms-trouble",
+    "description": "Insert a troubleshooting entry",
+    "body": [
+      "### ${1:Error/Issue Name}",
+      "",
+      "**Symptoms**: ${2:How does this problem manifest?}",
+      "",
+      "**Root Cause**: ${3:Why does this happen?}",
+      "",
+      "**Solution**:",
+      "\\`\\`\\`${4|bash,typescript,javascript,python|}",
+      "${5:Code or command to fix the issue}",
+      "\\`\\`\\`",
+      "",
+      "**Prevention**: ${6:How to avoid this in the future}",
+      "",
+      "---",
+      ""
+    ]
+  },
+  "TMS: Architecture Section": {
+    "scope": "markdown",
+    "prefix": "tms-arch",
+    "description": "Insert an architecture section",
+    "body": [
+      "## ${1:Component/Layer Name}",
+      "",
+      "### 🎯 Purpose",
+      "${2:What this component does and why it exists}",
+      "",
+      "### 🏗️ Structure",
+      "",
+      "\\`\\`\\`",
+      "${3:Directory structure or component diagram}",
+      "\\`\\`\\`",
+      "",
+      "### 🔌 Dependencies",
+      "",
+      "- **Depends On**: ${4:What this component needs}",
+      "- **Used By**: ${5:What depends on this component}",
+      "",
+      "### 🔑 Key Decisions",
+      "",
+      "- ${6:Important architectural choice 1}",
+      "- ${7:Important architectural choice 2}",
+      "",
+      "### 🔗 Related",
+      "- **ADRs**: \\`DECISIONS.md#${8:Section}\\`",
+      "- **Patterns**: \\`PATTERNS.md#${9:Section}\\`",
+      "",
+      "---",
+      ""
+    ]
+  },
+  "TMS: Code Block with Language": {
+    "scope": "markdown",
+    "prefix": "tms-code",
+    "description": "Insert a code block with language selection",
+    "body": [
+      "\\`\\`\\`${1|typescript,javascript,python,rust,go,bash,json,yaml,sql|}",
+      "${2:code}",
+      "\\`\\`\\`"
+    ]
+  },
+  "TMS: Cross-Reference Section": {
+    "scope": "markdown",
+    "prefix": "tms-xref",
+    "description": "Insert a cross-reference section",
+    "body": [
+      "## 🔗 Cross-References",
+      "",
+      "- **Architecture**: See \\`docs/core/ARCHITECTURE.md\\` for ${1:topic}",
+      "- **Patterns**: See \\`docs/core/PATTERNS.md\\` for ${2:topic}",
+      "- **Decisions**: See \\`docs/core/DECISIONS.md\\` for ${3:topic}",
+      "- **Glossary**: See \\`docs/core/GLOSSARY.md\\` for ${4:topic}",
+      ""
+    ]
+  },
+  "TMS: Definition of Done": {
+    "scope": "markdown",
+    "prefix": "tms-dod",
+    "description": "Insert a Definition of Done checklist",
+    "body": [
+      "## 🎯 Definition of Done (${1:v2.X})",
+      "- [ ] ${2:Completion criteria 1}",
+      "- [ ] ${3:Completion criteria 2}",
+      "- [ ] ${4:Completion criteria 3}",
+      ""
+    ]
+  }
+}

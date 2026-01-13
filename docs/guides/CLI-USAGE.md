@@ -1,6 +1,6 @@
 # CLI Usage Guide
 
-**Version**: 2.2.0
+**Version**: 2.3.0
 **Last Updated**: January 2026
 
 The Cortex TMS CLI is a command-line tool for initializing and validating AI-optimized project documentation. This guide covers installation, commands, and configuration.
@@ -14,10 +14,11 @@ The Cortex TMS CLI is a command-line tool for initializing and validating AI-opt
 3. [Commands](#commands)
    - [init](#init-command)
    - [validate](#validate-command)
-4. [Project Scopes](#project-scopes)
-5. [Configuration (.cortexrc)](#configuration)
-6. [Examples](#examples)
-7. [Troubleshooting](#troubleshooting)
+4. [VS Code Snippets](#vs-code-snippets)
+5. [Project Scopes](#project-scopes)
+6. [Configuration (.cortexrc)](#configuration)
+7. [Examples](#examples)
+8. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -220,6 +221,156 @@ npx cortex-tms validate --verbose
 # Shows all checks, even passing ones
 # Includes line counts and file details
 ```
+
+---
+
+## VS Code Snippets
+
+### What Are TMS Snippets?
+
+The Cortex TMS CLI can install a VS Code snippet library that accelerates documentation writing. These snippets provide instant scaffolding for common TMS document patterns.
+
+### Installation
+
+Snippets are automatically offered during `init` for **Standard** and **Enterprise** scopes:
+
+```bash
+npx cortex-tms init
+? Install VS Code snippet library for TMS documentation? (Recommended) Yes
+```
+
+**File Location**: `.vscode/tms.code-snippets`
+
+### Available Snippets
+
+Type these prefixes in any Markdown file within VS Code and press `Tab` to expand:
+
+| Prefix | Description | Use In |
+|--------|-------------|--------|
+| `tms-adr` | Complete Architecture Decision Record | `DECISIONS.md` |
+| `tms-pattern` | Implementation pattern entry | `PATTERNS.md` |
+| `tms-term` | Glossary term definition | `GLOSSARY.md` |
+| `tms-acronym` | Glossary acronym table row | `GLOSSARY.md` |
+| `tms-task` | Task row for sprint table | `NEXT-TASKS.md` |
+| `tms-sprint` | Complete sprint section | `NEXT-TASKS.md` |
+| `tms-domain` | Domain logic section | `DOMAIN-LOGIC.md` |
+| `tms-trouble` | Troubleshooting entry | `TROUBLESHOOTING.md` |
+| `tms-arch` | Architecture component section | `ARCHITECTURE.md` |
+| `tms-code` | Code block with language selector | Any `.md` file |
+| `tms-xref` | Cross-reference section | Any `.md` file |
+| `tms-dod` | Definition of Done checklist | `NEXT-TASKS.md` |
+
+### Example Usage
+
+#### Architecture Decision Record (ADR)
+
+1. Open `docs/core/DECISIONS.md`
+2. Type `tms-adr` and press `Tab`
+3. Fill in the tab stops:
+   - Date
+   - Decision title
+   - Context
+   - Reasoning (pros/cons/alternatives)
+   - Consequences
+   - Status
+
+**Result**:
+```markdown
+## [2026-01-13] - Use PostgreSQL for Primary Database
+
+**Context**: We needed a database for user data and transactions...
+
+**Decision**: Use PostgreSQL with Prisma ORM
+
+**Reasoning**:
+- **Pro**: ACID compliance for financial transactions
+- **Pro**: Strong TypeScript support via Prisma
+- **Con**: More complex than SQLite for local dev
+- **Alternative Considered**: MongoDB - Too flexible for relational data
+
+**Consequences**:
+- ✅ Can use transactions for multi-table updates
+- ⚠️ Requires Docker for local development
+
+**Status**: Active
+```
+
+#### Implementation Pattern
+
+1. Open `docs/core/PATTERNS.md`
+2. Type `tms-pattern` and press `Tab`
+3. Select category (UI/Data/Auth/API/etc.)
+4. Fill in pattern details
+
+**Result**:
+```markdown
+## [UI] Always Use Semantic HTML
+
+**Rule**: Never use <div> when a semantic element exists
+
+### ❌ Anti-Pattern (What NOT to do)
+- Using <div class="button"> instead of <button>
+- Hurts accessibility and keyboard navigation
+
+### ✅ Canonical Example
+
+**Source File**: `src/components/Button.tsx`
+
+\`\`\`typescript
+export function Button({ children, onClick }: Props) {
+  return <button onClick={onClick}>{children}</button>;
+}
+\`\`\`
+
+### 🔗 References
+- **Domain Logic**: `DOMAIN-LOGIC.md#Accessibility`
+- **Gotchas**: `TROUBLESHOOTING.md#Click-Handlers`
+```
+
+### Non-Interactive Installation
+
+When using `--force` or `--scope` flags, snippets are automatically installed for Standard/Enterprise:
+
+```bash
+# Snippets auto-installed
+npx cortex-tms init --scope standard --force
+
+# No snippets (Nano scope)
+npx cortex-tms init --scope nano --force
+```
+
+### Manual Installation
+
+If you declined snippets during `init`, you can manually copy them:
+
+```bash
+# From your Cortex TMS installation
+mkdir -p .vscode
+cp node_modules/cortex-tms/templates/vscode/tms.code-snippets .vscode/
+```
+
+Or from the GitHub repository:
+```bash
+curl -o .vscode/tms.code-snippets \
+  https://raw.githubusercontent.com/yourusername/cortex-tms/main/templates/vscode/tms.code-snippets
+```
+
+### Benefits
+
+**Speed**: Type 7 characters (`tms-adr`) instead of 20+ lines of boilerplate
+
+**Consistency**: All ADRs follow the same structure automatically
+
+**Reduced Friction**: Eliminates "blank page" paralysis when documenting
+
+**AI Training**: Consistent structure = better AI agent comprehension
+
+### Tips
+
+1. **Learn the shortcuts**: Memorize the 3-5 snippets you use most
+2. **Customize if needed**: Edit `.vscode/tms.code-snippets` to fit your workflow
+3. **Share with team**: Commit `.vscode/` to Git so everyone benefits
+4. **Use tab stops**: Press `Tab` to jump between editable fields in expanded snippets
 
 ---
 

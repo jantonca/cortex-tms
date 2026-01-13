@@ -13,6 +13,7 @@ export interface InitPromptAnswers {
   scope: ProjectScope;
   customFiles?: string[]; // Only present when scope is 'custom'
   overwrite: boolean;
+  installSnippets?: boolean; // VS Code snippet library installation
 }
 
 /**

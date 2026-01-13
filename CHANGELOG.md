@@ -5,6 +5,20 @@ All notable changes to Cortex TMS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- **VS Code Snippet Library**: Complete snippet collection for TMS documentation patterns (TMS-234)
+  - 12 snippets covering ADRs, patterns, glossary terms, tasks, and more
+  - Auto-installed during `init` for Standard/Enterprise scopes
+  - Reduces documentation friction with instant scaffolding
+  - Installed to `.vscode/tms.code-snippets`
+- **TMS-235 Task**: Added status command task to backlog for v2.3 completion
+
+### Improved
+- **Init Workflow**: Added interactive prompt for VS Code snippet installation
+- **CLI Documentation**: Comprehensive VS Code snippets section in CLI-USAGE.md with examples and usage tips
+
 ## [2.2.0] - 2026-01-13
 
 ### Added
