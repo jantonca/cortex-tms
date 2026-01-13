@@ -1,7 +1,16 @@
-# AI Pair Programmer: Collaboration Protocol (Cortex TMS v2.0)
+# AI Pair Programmer: Collaboration Protocol (Cortex TMS v2.1.1)
 
-## ⚡ Critical Rules (Always Apply)
+## ⚡ CRITICAL RULES (ZERO TOLERANCE)
 
+### Git Protocol (Mandatory - No Exceptions)
+1. **Branch First**: ALL work MUST start on a branch using format `type/ID-description` or `type/description`
+2. **Never Direct Main**: NEVER commit directly to `main` unless explicitly instructed by the user
+3. **Conventional Commits**: ALL commits MUST follow `type(scope): [ID] subject` format
+4. **Co-Authorship**: ALL commits MUST include `Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>`
+5. **Validate Before Commit**: Run `node bin/cortex-tms.js validate` before every commit
+6. **See Full Spec**: Read `docs/core/GIT-STANDARDS.md` for complete rules
+
+### Project Essentials
 - **Project Type**: Developer tool / CLI / Boilerplate system (Cortex TMS)
 - **Tech Stack**: Node.js, TypeScript, pnpm (package manager)
 - **Node Version Manager**: FN (Fast Node Manager) is used
