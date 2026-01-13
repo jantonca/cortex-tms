@@ -178,6 +178,59 @@ git commit -m "feat: this is a very long commit message that exceeds the fifty c
 
 ---
 
+## ✅ Branch Cleanup (Clean Trunk Policy)
+
+**Rule**: Delete feature branches immediately after merging to maintain a "clean trunk."
+
+**Why**: Merged branches are **Historical Noise**. The code is in `main`, the history is in the merge commit. Keeping stale branches wastes context and confuses AI agents.
+
+### Automatic Cleanup (GitHub)
+
+Enable "Automatically delete head branches" in repository settings:
+- Navigate to: `Settings → General → Pull Requests`
+- Check: ✅ "Automatically delete head branches"
+
+### Manual Cleanup (Local)
+
+After merging a PR:
+
+```bash
+# 1. Switch to main
+git checkout main
+
+# 2. Pull latest changes
+git pull origin main
+
+# 3. Delete the merged branch
+git branch -d <feature-branch-name>
+
+# Example:
+git branch -d feat/TMS-221-custom-selection
+```
+
+**Safe Delete**: The `-d` flag only deletes if the branch is fully merged. Use `-D` (force delete) only if you're certain.
+
+### Cleanup All Merged Branches
+
+```bash
+# List branches merged into main
+git branch --merged main
+
+# Delete all merged branches (except main)
+git branch --merged main | grep -v "^\* main" | xargs -n 1 git branch -d
+```
+
+### AI Agent Protocol
+
+When completing a task that involved a branch:
+1. Merge to main (via PR or direct merge)
+2. Immediately delete the local branch
+3. Verify with `git branch` (should only show `main` and active branches)
+
+**Exception**: Only keep branches that represent **Active Work**.
+
+---
+
 ## ✅ Changelog Generation (Future)
 
 With conventional commits, changelogs can be auto-generated:
