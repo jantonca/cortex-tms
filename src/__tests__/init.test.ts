@@ -61,7 +61,7 @@ describe('Init Command - Scope Filtering', () => {
       overwrite: true,
     });
 
-    expect(result.copied).toBe(9);
+    expect(result.copied).toBe(10);
     expect(result.skipped).toBe(0);
 
     // Verify mandatory files
@@ -70,12 +70,13 @@ describe('Init Command - Scope Filtering', () => {
     expect(await fileExists(join(tempDir, '.github/copilot-instructions.md'))).toBe(true);
 
     // Verify optional files
+    expect(await fileExists(join(tempDir, 'PROMPTS.md'))).toBe(true);
     expect(await fileExists(join(tempDir, 'FUTURE-ENHANCEMENTS.md'))).toBe(true);
     expect(await fileExists(join(tempDir, 'docs/core/ARCHITECTURE.md'))).toBe(true);
     expect(await fileExists(join(tempDir, 'docs/core/PATTERNS.md'))).toBe(true);
   });
 
-  it('should copy exactly 11 files when scope is "enterprise"', async () => {
+  it('should copy exactly 12 files when scope is "enterprise"', async () => {
     const templatesDir = getTemplatesDir();
     const replacements = generateReplacements('test-project');
 
@@ -84,7 +85,7 @@ describe('Init Command - Scope Filtering', () => {
       overwrite: true,
     });
 
-    expect(result.copied).toBe(11);
+    expect(result.copied).toBe(12);
     expect(result.skipped).toBe(0);
 
     // Verify enterprise-specific files

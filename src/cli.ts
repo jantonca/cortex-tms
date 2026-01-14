@@ -40,11 +40,13 @@ import { initCommand } from './commands/init.js';
 import { validateCommand } from './commands/validate.js';
 import { statusCommand } from './commands/status.js';
 import { migrateCommand } from './commands/migrate.js';
+import { promptCommand } from './commands/prompt.js';
 
 program.addCommand(initCommand);
 program.addCommand(validateCommand);
 program.addCommand(statusCommand);
 program.addCommand(migrateCommand);
+program.addCommand(promptCommand);
 
 // Handle unknown commands
 program.on('command:*', () => {

@@ -77,6 +77,7 @@ export const SCOPE_PRESETS: ScopePreset[] = [
       '.github/copilot-instructions.md',
     ],
     optionalFiles: [
+      'PROMPTS.md',
       'FUTURE-ENHANCEMENTS.md',
       'docs/core/ARCHITECTURE.md',
       'docs/core/PATTERNS.md',
@@ -96,6 +97,7 @@ export const SCOPE_PRESETS: ScopePreset[] = [
       '.github/copilot-instructions.md',
     ],
     optionalFiles: [
+      'PROMPTS.md',
       'FUTURE-ENHANCEMENTS.md',
       'docs/core/ARCHITECTURE.md',
       'docs/core/PATTERNS.md',
