@@ -75,11 +75,13 @@ cortex-tms status  # Visual dashboard with progress bars
 ```
 
 ### `cortex-tms migrate`
-Intelligent version management—detect outdated templates and custom modifications.
+Intelligent version management—detect outdated templates and automatically upgrade with safety backups.
 
 ```bash
-cortex-tms migrate           # Analyze version status
-cortex-tms migrate --dry-run # Preview migration plan
+cortex-tms migrate              # Analyze version status
+cortex-tms migrate --apply      # Auto-upgrade OUTDATED files (creates backup)
+cortex-tms migrate --apply --force # Upgrade ALL files including customized
+cortex-tms migrate --dry-run    # Preview migration plan
 ```
 
 **Status Categories**:
@@ -87,6 +89,11 @@ cortex-tms migrate --dry-run # Preview migration plan
 - `OUTDATED`: Safe to auto-upgrade (matches old template)
 - `CUSTOMIZED`: Manual review needed (has user changes)
 - `MISSING`: Optional file not installed
+
+**Safety Features**:
+- Automatic backups in `.cortex/backups/` before any changes
+- Timestamped snapshots with manifest files
+- Rollback-ready restoration points
 
 ### `cortex-tms prompt`
 Access project-aware AI prompts from the Essential 7 library.

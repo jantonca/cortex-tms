@@ -11,6 +11,7 @@ import { join } from 'path';
 import { existsSync } from 'fs';
 import { loadConfig, getScopePreset } from '../utils/config.js';
 import { getPackageVersion, extractVersion, getTemplatesDir } from '../utils/templates.js';
+import { createBackup } from '../utils/backup.js';
 import fs from 'fs-extra';
 
 /**
@@ -37,7 +38,8 @@ export function createMigrateCommand(): Command {
 
   migrateCommand
     .description('Upgrade TMS files to the current template version')
-    .option('-f, --force', 'Force upgrade even for customized files')
+    .option('-a, --apply', 'Apply automatic upgrades (creates backup first)')
+    .option('-f, --force', 'Force upgrade even for customized files (requires --apply)')
     .option('-v, --verbose', 'Show detailed output')
     .option('-d, --dry-run', 'Preview changes without applying them')
     .action(async (options) => {
@@ -56,12 +58,13 @@ export const migrateCommand = createMigrateCommand();
  * Main migrate command logic
  */
 async function runMigrate(options: {
+  apply?: boolean;
   force?: boolean;
   verbose?: boolean;
   dryRun?: boolean;
 }): Promise<void> {
   const cwd = process.cwd();
-  const { force: _force = false, verbose: _verbose = false, dryRun = false } = options;
+  const { apply = false, force = false, verbose: _verbose = false, dryRun = false } = options;
 
   console.log(chalk.bold.cyan('\n🔄 Cortex TMS Migration\n'));
 
@@ -149,18 +152,125 @@ async function runMigrate(options: {
   }
 
   if (dryRun) {
-    printNextSteps(outdated.length, customized.length);
+    printNextSteps(outdated.length, customized.length, apply);
     return;
   }
 
-  // Phase 2: Automatic upgrades coming in v2.5
-  printNextSteps(outdated.length, customized.length);
+  // If --apply flag is set, perform automatic upgrades
+  if (apply) {
+    await applyMigration(cwd, migrations, targetVersion, force);
+  } else {
+    printNextSteps(outdated.length, customized.length, apply);
+  }
+}
+
+/**
+ * Apply automatic migration with backup
+ */
+async function applyMigration(
+  projectRoot: string,
+  migrations: FileMigration[],
+  targetVersion: string,
+  force: boolean
+): Promise<void> {
+  const outdated = migrations.filter((m) => m.status === 'OUTDATED');
+  const customized = migrations.filter((m) => m.status === 'CUSTOMIZED');
+
+  // Determine which files to upgrade
+  const filesToUpgrade = force ? [...outdated, ...customized] : outdated;
+
+  if (filesToUpgrade.length === 0) {
+    console.log(chalk.yellow('\n⚠️  No files to upgrade.\n'));
+    return;
+  }
+
+  // Show what will be upgraded
+  console.log(chalk.bold('\n🔄 Files to be upgraded:\n'));
+  filesToUpgrade.forEach((file) => {
+    const icon = file.status === 'CUSTOMIZED' ? '⚠️ ' : '✓';
+    console.log(chalk.blue(`  ${icon} ${file.path}`));
+  });
+
+  if (!force && customized.length > 0) {
+    console.log(
+      chalk.yellow(
+        `\n⚠️  ${customized.length} CUSTOMIZED file(s) skipped. Use --force to upgrade them.\n`
+      )
+    );
+  }
+
+  // Create backup
+  console.log(chalk.bold('\n💾 Creating backup...\n'));
+  const spinner = ora('Backing up files...').start();
+
+  const filePaths = filesToUpgrade.map((m) => join(projectRoot, m.path));
+  const backupResult = await createBackup(
+    projectRoot,
+    filePaths,
+    `migrate to v${targetVersion}`,
+    targetVersion
+  );
+
+  if (!backupResult.success) {
+    spinner.fail('Backup failed');
+    console.log(chalk.red('\n❌ Error:'), backupResult.error);
+    console.log(chalk.gray('Migration aborted to prevent data loss.\n'));
+    process.exit(1);
+  }
+
+  spinner.succeed(`Backup created: ${chalk.cyan(backupResult.backupPath)}`);
+  console.log(
+    chalk.gray(
+      `   ${backupResult.filesBackedUp} file(s) backed up safely\n`
+    )
+  );
+
+  // Apply upgrades
+  console.log(chalk.bold('🚀 Applying upgrades...\n'));
+  const upgradeSpinner = ora('Updating files...').start();
+
+  let upgradedCount = 0;
+  const templatesDir = getTemplatesDir();
+
+  for (const migration of filesToUpgrade) {
+    const filePath = join(projectRoot, migration.path);
+    const templatePath = join(templatesDir, migration.path);
+
+    // Skip if template doesn't exist
+    if (!existsSync(templatePath)) {
+      continue;
+    }
+
+    try {
+      // Copy template to destination
+      await fs.copyFile(templatePath, filePath);
+      upgradedCount++;
+    } catch (error) {
+      upgradeSpinner.warn(`Failed to upgrade ${migration.path}`);
+      console.log(
+        chalk.yellow(
+          `   ${error instanceof Error ? error.message : 'Unknown error'}`
+        )
+      );
+    }
+  }
+
+  upgradeSpinner.succeed(
+    `Upgraded ${upgradedCount} file(s) to v${targetVersion}`
+  );
+
+  // Success message
+  console.log(chalk.green.bold('\n✨ Migration complete!\n'));
+  console.log(chalk.gray('💡 Tip: Review changes with:'));
+  console.log(chalk.cyan('   git diff\n'));
+  console.log(chalk.gray('💡 To rollback, restore from:'));
+  console.log(chalk.cyan(`   ${backupResult.backupPath}\n`));
 }
 
 /**
  * Print next steps and guidance for manual migration
  */
-function printNextSteps(outdatedCount: number, customizedCount: number): void {
+function printNextSteps(outdatedCount: number, customizedCount: number, applyAvailable: boolean): void {
   console.log(chalk.bold('\n📋 Next Steps:\n'));
 
   if (outdatedCount > 0) {
@@ -188,13 +298,23 @@ function printNextSteps(outdatedCount: number, customizedCount: number): void {
     chalk.cyan('     https://github.com/cortex-tms/cortex-tms/tree/main/templates')
   );
 
-  console.log(
-    chalk.bold.cyan('\n🚀 Coming in v2.5:'),
-    chalk.gray('Automatic upgrades with backup/rollback')
-  );
-  console.log(
-    chalk.gray('   For now, please manually review and update files as needed.\n')
-  );
+  if (applyAvailable && (outdatedCount > 0 || customizedCount > 0)) {
+    console.log(chalk.bold.cyan('\n🚀 Automatic Upgrade Available:\n'));
+
+    if (outdatedCount > 0) {
+      console.log(chalk.blue('   cortex-tms migrate --apply'));
+      console.log(chalk.gray('   → Safely upgrade OUTDATED files (creates backup)\n'));
+    }
+
+    if (customizedCount > 0) {
+      console.log(chalk.yellow('   cortex-tms migrate --apply --force'));
+      console.log(chalk.gray('   → Upgrade ALL files including customized (use with caution)\n'));
+    }
+  } else {
+    console.log(
+      chalk.gray('   Or manually review and update files as needed.\n')
+    );
+  }
 }
 
 /**
