@@ -16,14 +16,16 @@
 
 ## Active Sprint: v2.5 - Guidance & Growth
 
-**Why this matters**: With the infrastructure for scaling in place (version tracking + prompt engine), v2.5 focuses on making Cortex TMS self-teaching and self-healing. The Zero-Drift governance suite eliminates manual version management, while future work on interactive tutorials and auto-upgrades will enable seamless evolution.
+**Why this matters**: With the infrastructure for scaling in place (version tracking + prompt engine), v2.5 focuses on making Cortex TMS self-teaching and self-healing. The Zero-Drift governance suite eliminates manual version management, while the Safe-Fail Migration Engine enables worry-free template evolution.
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **Sync Engine** - Automated version synchronization script | [TMS-250] | 1h | 🔴 HIGH | ✅ Done |
 | **CI Guardian** - Multi-file version validation in CI | [TMS-251] | 30m | 🔴 HIGH | ✅ Done |
 | **Prompt Refinement** - Command-driven maintenance protocol | [TMS-252] | 15m | 🔴 HIGH | ✅ Done |
-| **Auto-Upgrade Logic** - `migrate --apply` with backup/rollback | [TMS-236-P2] | 6h | 🔴 HIGH | ⬜ Todo |
+| **Backup Engine** - Atomic snapshot utility | [TMS-236-P2A] | 2h | 🔴 HIGH | ✅ Done |
+| **Apply Logic** - Non-destructive `migrate --apply` | [TMS-236-P2B] | 4h | 🔴 HIGH | ✅ Done |
+| **Rollback Command** - `migrate --rollback` capability | [TMS-236-P2C] | 2h | 🟡 MED | ⬜ Todo |
 | **Interactive Tutorial** - In-CLI onboarding walkthrough | [TMS-238] | 3h | 🟡 MED | ⬜ Todo |
 | **Custom Templates** - User-defined template support | [TMS-241] | 4h | 🟡 MED | ⬜ Todo |
 
@@ -78,9 +80,9 @@
 - [x] Automated version synchronization script eliminates manual updates.
 - [x] CI validates documentation sync before merging PRs.
 - [x] Maintenance protocol references automated tooling instead of manual steps.
-- [ ] Users can automatically upgrade templates with `migrate --apply`.
-- [ ] Backup system creates restore points before migrations.
-- [ ] Rollback command can undo template upgrades.
+- [x] Users can automatically upgrade templates with `migrate --apply`.
+- [x] Backup system creates restore points before migrations.
+- [ ] Rollback command can restore from backups.
 - [ ] First-time users can complete an interactive tutorial inside the CLI.
 - [ ] Custom template directories can be specified for team-specific patterns.
 
