@@ -28,6 +28,9 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
+      - name: Validate Documentation Sync
+        run: pnpm run docs:check
+
       - name: Build CLI
         run: pnpm run cli:build
 

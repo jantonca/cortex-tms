@@ -42,7 +42,13 @@ We need to decide on `[TOPIC]`. Draft a new Architecture Decision Record in `doc
 
 ## finish
 
-Task complete. Execute the Maintenance Protocol: update `NEXT-TASKS.md`, sync truth to `docs/core/`, and suggest the next priority.
+Task complete. Execute the Maintenance Protocol:
+
+1. Run `pnpm run docs:sync` to ensure version integrity across documentation
+2. Update `NEXT-TASKS.md` with task status and next priorities
+3. Run `node bin/cortex-tms.js validate --strict` to verify project health
+4. Follow Git Protocol: commit with conventional format and co-authorship
+5. Suggest next priority from backlog
 
 ---
 
@@ -52,4 +58,4 @@ Task complete. Execute the Maintenance Protocol: update `NEXT-TASKS.md`, sync tr
 - Customize these prompts to match your team's vocabulary and workflow
 - Run `cortex-tms prompt --list` to see all available prompts
 
-<!-- @cortex-tms-version 2.3.0 -->
+<!-- @cortex-tms-version 2.4.1 -->

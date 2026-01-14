@@ -22,6 +22,8 @@
     "cli:dev": "tsx src/cli.ts",
     "cli:build": "tsc -p tsconfig.cli.json",
     "cli:test": "node bin/cortex-tms.js --help",
+    "docs:sync": "node scripts/sync-project.js",
+    "docs:check": "node scripts/sync-project.js --check",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
