@@ -1,30 +1,38 @@
-# NEXT: Upcoming Tasks (v2.4 cycle)
+# NEXT: Upcoming Tasks (v2.5 cycle)
 
-## 🎉 v2.3 "Confidence & Comfort" Sprint Complete!
+## 🎉 v2.4 "Scaling Intelligence" Sprint Complete!
 
 **Achievements**:
-- ✅ Status Dashboard with visual progress bars and health metrics
-- ✅ VS Code Snippet Library (12 snippets for rapid documentation)
-- ✅ Self-Healing Validation with `--fix` flag
-- ✅ Dry Run Preview with `--dry-run` for safe exploration
-- ✅ Non-Interactive Mode with `--scope` for CI/CD
+- ✅ Migration Auditor with version tracking and customization detection
+- ✅ Prompt Engine with Essential 7 library
+- ✅ Version metadata infrastructure across all templates
+- ✅ Automatic clipboard integration for frictionless AI workflows
+- ✅ Project-local prompt customization via PROMPTS.md
 
-**Sprint Closed**: 2026-01-13
-**Release**: [v2.3.0](https://github.com/jantonca/cortex-tms/releases/tag/v2.3.0)
+**Sprint Closed**: 2026-01-14
+**Release**: [v2.4.0](https://github.com/jantonca/cortex-tms/releases/tag/v2.4.0)
 
 ---
 
-## Active Sprint: v2.4 - Migration & Interaction Scaling
+## Active Sprint: v2.5 - Guidance & Growth
 
-**Why this matters**: As the template library grows, users need visibility into their file versions and ways to interact with AI agents more effectively. This sprint delivers a migration auditor for version awareness and a prompt engine for streamlined AI collaboration.
+**Why this matters**: With the infrastructure for scaling in place (version tracking + prompt engine), v2.5 focuses on making Cortex TMS self-teaching and self-healing. The interactive tutorial removes onboarding friction, while automatic upgrades enable seamless template evolution.
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Migration Auditor** - Version tagging & `migrate` command | [TMS-236] | 6h | 🔴 HIGH | ✅ Done |
-| **Prompt Engine** - CLI command & `PROMPTS.md` | [TMS-240] | 4h | 🔴 HIGH | 🔄 In Progress |
+| **Auto-Upgrade Logic** - `migrate --apply` with backup/rollback | [TMS-236-P2] | 6h | 🔴 HIGH | ⬜ Todo |
 | **Interactive Tutorial** - In-CLI onboarding walkthrough | [TMS-238] | 3h | 🟡 MED | ⬜ Todo |
+| **Custom Templates** - User-defined template support | [TMS-241] | 4h | 🟡 MED | ⬜ Todo |
 
-**Phase 1 Complete**: Migration Auditor shipped with version detection, customization analysis, and status reporting.
+---
+
+## 📋 v2.4 Sprint Completed (2026-01-14)
+
+| Task | Ref | Status |
+| :--- | :--- | :----- |
+| **Migration Engine** - Version tagging infrastructure | [TMS-237] | ✅ Done |
+| **Migration Auditor** - `cortex-tms migrate` command | [TMS-236] | ✅ Done |
+| **Prompt Engine** - `cortex-tms prompt` & Essential 7 | [TMS-240] | ✅ Done |
 
 ---
 
@@ -52,23 +60,29 @@
 
 ---
 
-## 🎯 Definition of Done (v2.4)
+## ✅ v2.4 Definition of Done (Complete)
 - [x] Templates include machine-readable version metadata for detection.
 - [x] Migration command detects version status and identifies customizations.
 - [x] Version conflicts are clearly reported with upgrade guidance.
-- [ ] Prompt engine provides project-aware AI interaction templates.
-- [ ] First-time users can complete an interactive tutorial inside the CLI.
+- [x] Prompt engine provides project-aware AI interaction templates.
+- [x] Essential 7 library covers full development lifecycle.
 
-## 📦 v2.5 Backlog
-| Task | Ref | Priority | Notes |
-| :--- | :--- | :------- | :--- |
-| **Auto-Upgrade Logic** - `migrate --apply` with backups | [TMS-236-P2] | 🟡 MED | Automatic template upgrades |
-| **Rollback System** - `migrate --rollback` | [TMS-236-P3] | 🟢 LOW | Undo migration changes |
+**Archive**: See `docs/archive/sprint-v2.4-scaling-intelligence.md` for full sprint retrospective.
+
+---
+
+## 🎯 Definition of Done (v2.5)
+- [ ] Users can automatically upgrade templates with `migrate --apply`.
+- [ ] Backup system creates restore points before migrations.
+- [ ] Rollback command can undo template upgrades.
+- [ ] First-time users can complete an interactive tutorial inside the CLI.
+- [ ] Custom template directories can be specified for team-specific patterns.
 
 ---
 
 ## 🗂️ Sprint Archive Links
 
+- **v2.4**: [Scaling Intelligence](docs/archive/sprint-v2.4-scaling-intelligence.md) - Migration Auditor, Prompt Engine, Version Infrastructure
 - **v2.3**: [Confidence & Comfort](docs/archive/sprint-v2.3-confidence-comfort.md) - Status Dashboard, Snippets, Self-Healing
 - **v2.2**: [Automation & Precision](docs/archive/sprint-2026-01.md) - CI/CD, Custom Init, Branch Hygiene
 - **v2.1**: [Foundation](docs/archive/sprint-2026-01-dogfooding.md) - CLI Launch, Validation Engine, Template System

@@ -5,6 +5,70 @@ All notable changes to Cortex TMS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.4.0] - 2026-01-14
+
+### 🎉 "Scaling Intelligence" Release
+
+This release transforms Cortex TMS from a static boilerplate into an interactive operating system for AI-assisted development. By introducing version tracking infrastructure and an intelligent prompt engine, v2.4 enables both **Repository Scaling** (safe template evolution) and **Interaction Scaling** (frictionless AI collaboration).
+
+### Added
+
+#### Prompt Engine (TMS-240) - The Activation Layer
+- **`cortex-tms prompt` command**: Access project-aware AI prompt templates
+  - **Essential 7 Library**: Curated prompts covering the entire development lifecycle
+    - `init-session`: Session initialization and planning
+    - `feature`: New feature implementation with architectural anchors
+    - `debug`: Troubleshooting guidance with known issues lookup
+    - `review`: Code review against project patterns
+    - `refactor`: Structural improvement while maintaining domain logic
+    - `decision`: Architecture decision record creation
+    - `finish`: Maintenance protocol execution
+  - **Interactive Selection**: Fuzzy-search interface powered by inquirer
+  - **Direct Access**: `cortex-tms prompt init-session` for instant retrieval
+  - **Automatic Clipboard**: Selected prompts copied automatically for instant paste
+  - **List Mode**: `--list` flag to browse all available prompts
+  - **Project Customization**: Prompts stored in `PROMPTS.md` for team-specific vocabulary
+- **`PROMPTS.md`**: New HOT-tier file included in Standard & Enterprise scopes
+  - Markdown-based format for human and AI readability
+  - Version-tagged for migration detection
+  - Customizable per-project without CLI changes
+
+#### Migration Auditor (TMS-236/TMS-237) - Repository Intelligence
+- **`cortex-tms migrate` command**: Intelligent template version management
+  - **Status Detection**: Categorizes files into 4 states
+    - `LATEST`: Already on target version
+    - `OUTDATED`: Old version matching template (safe to upgrade)
+    - `CUSTOMIZED`: Old version with user modifications (manual review needed)
+    - `MISSING`: Optional file not installed
+  - **Customization Analysis**: Compares user files against templates
+  - **Dry-Run Mode**: Preview migration plan without modifications
+  - **User Guidance**: Clear next steps with template comparison links
+- **Version Metadata Infrastructure**: All generated markdown files now include `@cortex-tms-version` tags
+  - Hidden comments for lifecycle tracking
+  - Retroactively applied to all 26 template files (v2.3.0 baseline)
+  - Enables safe future upgrades and conflict detection
+- **Version Utilities**: Parser functions for extracting and injecting version metadata
+
+### Improved
+- **Scope Integration**: `PROMPTS.md` automatically included when using Standard or Enterprise scopes
+- **Test Coverage**: Updated integration tests to reflect new file counts (10 for Standard, 12 for Enterprise)
+- **Template System**: Enhanced with version injection during `init` command
+
+### Dependencies
+- **Added**: `clipboardy` (v4.0.0) - Clipboard integration for prompt engine
+
+### Documentation
+- Updated NEXT-TASKS.md with v2.5 roadmap (Interactive Tutorial, Auto-Upgrade Logic)
+- Added prompt usage examples and customization guide in PROMPTS.md
+
+### Technical Details
+- Migration Auditor ships as "report-only" in v2.4 (safe foundation)
+- Automatic upgrade logic with backup/rollback deferred to v2.5 based on user feedback strategy
+- Prompt parser handles markdown sections with graceful error handling
+- Clipboard operations include fallback for SSH/headless environments
+
+---
+
 ## [2.3.0] - 2026-01-13
 
 ### 🎉 "Confidence & Comfort" Release
