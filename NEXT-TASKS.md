@@ -16,10 +16,13 @@
 
 ## Active Sprint: v2.5 - Guidance & Growth
 
-**Why this matters**: With the infrastructure for scaling in place (version tracking + prompt engine), v2.5 focuses on making Cortex TMS self-teaching and self-healing. The interactive tutorial removes onboarding friction, while automatic upgrades enable seamless template evolution.
+**Why this matters**: With the infrastructure for scaling in place (version tracking + prompt engine), v2.5 focuses on making Cortex TMS self-teaching and self-healing. The Zero-Drift governance suite eliminates manual version management, while future work on interactive tutorials and auto-upgrades will enable seamless evolution.
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
+| **Sync Engine** - Automated version synchronization script | [TMS-250] | 1h | 🔴 HIGH | ✅ Done |
+| **CI Guardian** - Multi-file version validation in CI | [TMS-251] | 30m | 🔴 HIGH | ✅ Done |
+| **Prompt Refinement** - Command-driven maintenance protocol | [TMS-252] | 15m | 🔴 HIGH | ✅ Done |
 | **Auto-Upgrade Logic** - `migrate --apply` with backup/rollback | [TMS-236-P2] | 6h | 🔴 HIGH | ⬜ Todo |
 | **Interactive Tutorial** - In-CLI onboarding walkthrough | [TMS-238] | 3h | 🟡 MED | ⬜ Todo |
 | **Custom Templates** - User-defined template support | [TMS-241] | 4h | 🟡 MED | ⬜ Todo |
@@ -72,6 +75,9 @@
 ---
 
 ## 🎯 Definition of Done (v2.5)
+- [x] Automated version synchronization script eliminates manual updates.
+- [x] CI validates documentation sync before merging PRs.
+- [x] Maintenance protocol references automated tooling instead of manual steps.
 - [ ] Users can automatically upgrade templates with `migrate --apply`.
 - [ ] Backup system creates restore points before migrations.
 - [ ] Rollback command can undo template upgrades.
@@ -87,4 +93,4 @@
 - **v2.2**: [Automation & Precision](docs/archive/sprint-2026-01.md) - CI/CD, Custom Init, Branch Hygiene
 - **v2.1**: [Foundation](docs/archive/sprint-2026-01-dogfooding.md) - CLI Launch, Validation Engine, Template System
 
-<!-- @cortex-tms-version 2.3.0 -->
+<!-- @cortex-tms-version 2.4.1 -->
