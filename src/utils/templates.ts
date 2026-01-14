@@ -44,6 +44,26 @@ export function injectVersionMetadata(content: string, version: string): string 
 }
 
 /**
+ * Extract version metadata from file content
+ *
+ * Parses the @cortex-tms-version comment to determine the template version.
+ * Returns null if no version metadata is found (pre-versioned files).
+ *
+ * @param filePath - Absolute path to file to check
+ * @returns Version string (e.g., "2.3.0") or null if not found
+ */
+export async function extractVersion(filePath: string): Promise<string | null> {
+  try {
+    const content = await fs.readFile(filePath, 'utf-8');
+    const match = content.match(/<!-- @cortex-tms-version ([\d.]+) -->/);
+    return match?.[1] ?? null;
+  } catch (error) {
+    // File doesn't exist or can't be read
+    return null;
+  }
+}
+
+/**
  * File change status for impact analysis
  */
 export type FileStatus = 'CREATE' | 'UPDATE' | 'SKIP' | 'CONFLICT';
