@@ -245,4 +245,4 @@ interface UserProfile {
 - **Database Docs**: [Link to PostgreSQL/MongoDB/etc. docs]
 - **Migration Guide**: [Link to your migration strategy doc]
 
-<!-- @cortex-tms-version 2.3.0 -->
+<!-- @cortex-tms-version 2.5.0 -->

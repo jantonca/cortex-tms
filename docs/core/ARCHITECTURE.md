@@ -207,4 +207,4 @@ Cortex enforces a **three-tier hierarchy** of documentation:
 
 See `FUTURE-ENHANCEMENTS.md` for full backlog.
 
-<!-- @cortex-tms-version 2.3.0 -->
+<!-- @cortex-tms-version 2.5.0 -->

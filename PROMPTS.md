@@ -58,4 +58,4 @@ Task complete. Execute the Maintenance Protocol:
 - Customize these prompts to match your team's vocabulary and workflow
 - Run `cortex-tms prompt --list` to see all available prompts
 
-<!-- @cortex-tms-version 2.4.1 -->
+<!-- @cortex-tms-version 2.5.0 -->
