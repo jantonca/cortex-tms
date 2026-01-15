@@ -47,7 +47,7 @@ Traditional repos drown AI agents in thousands of lines of historical tasks and 
 
 ## 🛠️ CLI Commands
 
-Cortex TMS provides 6 production-ready commands:
+Cortex TMS provides 6 production-ready commands (v2.5.0):
 
 ### `cortex-tms tutorial`
 Interactive walkthrough teaching the "Cortex Way" - perfect for first-time users.
@@ -156,25 +156,31 @@ cortex-tms prompt --list       # Browse all prompts
 
 ---
 
-## 🚀 What's New in v2.4.0
+## 🚀 What's New in v2.5.0
 
-### Migration Auditor (Repository Scaling)
-- **Version Tracking**: All templates include `@cortex-tms-version` metadata
-- **Customization Detection**: Compares your files against original templates
-- **Safe Upgrades**: Never lose custom changes during template evolution
-- **Status Reports**: Clear categorization of file states (LATEST, OUTDATED, CUSTOMIZED)
+### Interactive Tutorial (Onboarding Experience)
+- **5-Lesson Guided Walkthrough**: Learn TMS workflows hands-on in <15 minutes
+- **Interactive Curriculum**: Real-time feedback and progress tracking
+- **Context-Aware Guidance**: Adapts to your current project state
+- **Jump to Any Lesson**: `--lesson N` flag for direct access
 
-### Prompt Engine (Interaction Scaling)
-- **Essential 7 Library**: Curated prompts for the entire development lifecycle
-- **Clipboard Integration**: One command, instant activation
-- **Project-Aware**: Prompts reference YOUR architecture, patterns, and domain logic
-- **Customizable**: Edit `PROMPTS.md` to match team vocabulary
+### Safe-Fail Migration Engine (Worry-Free Upgrades)
+- **Automatic Backups**: Timestamped snapshots in `.cortex/backups/` before any changes
+- **One-Click Apply**: `migrate --apply` automatically upgrades templates
+- **Interactive Rollback**: `migrate --rollback` restores from any backup
+- **100% Data Protection**: Fail-safe design prevents data loss during template evolution
 
-### Enhanced Developer Experience
+### Zero-Drift Governance Suite (Automated Version Management)
+- **Sync Engine**: `pnpm run docs:sync` eliminates manual version updates
+- **CI Guardian**: Blocks PRs if documentation is out of sync
+- **Command-Driven Protocol**: AI agents execute commands instead of manual edits
+- **75% Reduction**: in manual release steps
+
+### What's in v2.4.0 and Earlier
+- **Migration Auditor**: Version tracking and customization detection
+- **Prompt Engine**: Essential 7 library with clipboard integration
 - **Status Dashboard**: Visual progress bars and health metrics
 - **Self-Healing Validation**: `--fix` flag auto-repairs common issues
-- **Dry-Run Mode**: Preview all changes before applying
-- **VS Code Snippets**: 12 productivity snippets for rapid documentation
 
 ---
 
@@ -213,20 +219,21 @@ cortex-tms status  # Visual dashboard with current tasks
 - [x] **Phase 1**: Dogfood the System - Applied TMS to Cortex itself
 - [x] **Phase 2**: Complete Template Library - All templates built and validated
 - [x] **Phase 3**: Build Example App - Gold Standard Next.js 15 Todo App
-- [x] **Phase 4**: Create CLI Tool - Full-featured CLI with 5 commands
+- [x] **Phase 4**: Create CLI Tool - Full-featured CLI with 6 commands
 - [x] **Phase 5**: Documentation & Guides - Status dashboard, snippets, validation
 - [x] **Phase 6**: Publish & Scale - npm package + GitHub releases
 
-**Current Version**: v2.4.0 "Scaling Intelligence"
-- ✅ Migration Auditor with version tracking
-- ✅ Prompt Engine with Essential 7 library
-- ✅ Clipboard integration for frictionless workflows
-- ✅ Project-local prompt customization
+**Current Version**: v2.5.0 "Onboarding & Safety" ✅
+- ✅ Interactive Tutorial with 5-lesson guided walkthrough
+- ✅ Safe-Fail Migration Engine (backup → apply → rollback)
+- ✅ Zero-Drift Governance Suite (automated version sync)
+- ✅ CI Guardian preventing version drift
+- ✅ 100% data protection during template upgrades
 
-**Next Phase (v2.5)**: "Guidance & Growth"
-- Auto-upgrade logic with `migrate --apply`
-- Interactive CLI tutorial for onboarding
+**Next Phase (v2.6)**: "Custom Extensibility"
 - Custom template directory support
+- User-defined pattern sets
+- Optional telemetry for usage insights
 
 See `NEXT-TASKS.md` for current sprint details and `CHANGELOG.md` for full version history.
 
@@ -245,8 +252,8 @@ cortex-tms/
 │   └── copilot-instructions.md # HOT: AI guardrails
 ├── bin/                       # CLI executable
 ├── src/                       # CLI source code
-│   ├── commands/              # CLI commands (init, validate, status, migrate, prompt)
-│   ├── utils/                 # Template processing, validation, prompt parsing
+│   ├── commands/              # CLI commands (init, validate, status, migrate, prompt, tutorial)
+│   ├── utils/                 # Template processing, validation, prompt parsing, backup
 │   └── types/                 # TypeScript definitions
 ├── templates/                 # User-facing boilerplate
 │   ├── NEXT-TASKS.md
@@ -346,8 +353,8 @@ MIT
 ## Status
 
 **Version**: 2.5.0 (Stable / Production Ready)
-**Last Updated**: 2026-01-14
-**Current Sprint**: v2.5 Planning - "Guidance & Growth"
-**Completed Sprints**: v2.1, v2.2, v2.3, v2.4 (see `docs/archive/`)
+**Last Updated**: 2026-01-15
+**Current Sprint**: v2.6 Planning - "Custom Extensibility"
+**Completed Sprints**: v2.1, v2.2, v2.3, v2.4, v2.5 (see `docs/archive/`)
 
 <!-- @cortex-tms-version 2.5.0 -->
