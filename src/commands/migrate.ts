@@ -7,11 +7,12 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
+import inquirer from 'inquirer';
 import { join } from 'path';
 import { existsSync } from 'fs';
 import { loadConfig, getScopePreset } from '../utils/config.js';
 import { getPackageVersion, extractVersion, getTemplatesDir } from '../utils/templates.js';
-import { createBackup } from '../utils/backup.js';
+import { createBackup, listBackups, restoreBackup, formatBackupSize, getBackupSize } from '../utils/backup.js';
 import fs from 'fs-extra';
 
 /**
@@ -39,6 +40,7 @@ export function createMigrateCommand(): Command {
   migrateCommand
     .description('Upgrade TMS files to the current template version')
     .option('-a, --apply', 'Apply automatic upgrades (creates backup first)')
+    .option('-r, --rollback', 'Restore files from a previous backup')
     .option('-f, --force', 'Force upgrade even for customized files (requires --apply)')
     .option('-v, --verbose', 'Show detailed output')
     .option('-d, --dry-run', 'Preview changes without applying them')
@@ -59,12 +61,19 @@ export const migrateCommand = createMigrateCommand();
  */
 async function runMigrate(options: {
   apply?: boolean;
+  rollback?: boolean;
   force?: boolean;
   verbose?: boolean;
   dryRun?: boolean;
 }): Promise<void> {
   const cwd = process.cwd();
-  const { apply = false, force = false, verbose: _verbose = false, dryRun = false } = options;
+  const { apply = false, rollback = false, force = false, verbose: _verbose = false, dryRun = false } = options;
+
+  // Handle rollback mode
+  if (rollback) {
+    await runRollback(cwd);
+    return;
+  }
 
   console.log(chalk.bold.cyan('\n🔄 Cortex TMS Migration\n'));
 
@@ -263,8 +272,117 @@ async function applyMigration(
   console.log(chalk.green.bold('\n✨ Migration complete!\n'));
   console.log(chalk.gray('💡 Tip: Review changes with:'));
   console.log(chalk.cyan('   git diff\n'));
-  console.log(chalk.gray('💡 To rollback, restore from:'));
-  console.log(chalk.cyan(`   ${backupResult.backupPath}\n`));
+  console.log(chalk.gray('💡 To rollback, run:'));
+  console.log(chalk.cyan('   cortex-tms migrate --rollback\n'));
+}
+
+/**
+ * Rollback to a previous backup
+ */
+async function runRollback(projectRoot: string): Promise<void> {
+  console.log(chalk.bold.cyan('\n⏪ Cortex TMS Rollback\n'));
+
+  // List available backups
+  const spinner = ora('Searching for backups...').start();
+  const backups = await listBackups(projectRoot);
+
+  if (backups.length === 0) {
+    spinner.fail('No backups found');
+    console.log(chalk.yellow('\n⚠️  No backup snapshots available.'));
+    console.log(chalk.gray('Backups are created automatically when using:'));
+    console.log(chalk.cyan('   cortex-tms migrate --apply\n'));
+    return;
+  }
+
+  spinner.succeed(`Found ${backups.length} backup(s)`);
+
+  // Format backup choices for inquirer
+  const choices = await Promise.all(
+    backups.slice(0, 5).map(async (backup) => {
+      const backupPath = join(projectRoot, '.cortex', 'backups', backup.timestamp);
+      const size = await getBackupSize(backupPath);
+      const formattedSize = formatBackupSize(size);
+      const fileCount = backup.files.length;
+
+      return {
+        name: `${chalk.cyan(backup.timestamp)} - ${chalk.gray(`v${backup.version}`)} - ${chalk.blue(`${fileCount} file(s)`)} - ${chalk.gray(formattedSize)}`,
+        value: backup.timestamp,
+        short: backup.timestamp,
+      };
+    })
+  );
+
+  // Add cancel option
+  choices.push({
+    name: chalk.gray('Cancel'),
+    value: 'cancel',
+    short: 'Cancel',
+  });
+
+  // Prompt user to select backup
+  const { selectedBackup } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'selectedBackup',
+      message: 'Select a backup to restore:',
+      choices,
+      pageSize: 10,
+    },
+  ]);
+
+  if (selectedBackup === 'cancel') {
+    console.log(chalk.gray('\n✓ Rollback cancelled.\n'));
+    return;
+  }
+
+  // Get selected backup manifest
+  const selectedManifest = backups.find((b) => b.timestamp === selectedBackup);
+  if (!selectedManifest) {
+    console.log(chalk.red('\n❌ Error:'), 'Backup not found.\n');
+    return;
+  }
+
+  // Show what will be restored
+  console.log(chalk.bold('\n📋 Files to be restored:\n'));
+  selectedManifest.files.forEach((file) => {
+    console.log(chalk.blue(`  ✓ ${file.relativePath}`));
+  });
+
+  // Confirm restoration
+  const { confirmed } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'confirmed',
+      message: chalk.yellow('This will overwrite current files. Continue?'),
+      default: false,
+    },
+  ]);
+
+  if (!confirmed) {
+    console.log(chalk.gray('\n✓ Rollback cancelled.\n'));
+    return;
+  }
+
+  // Perform rollback
+  console.log(chalk.bold('\n⏪ Restoring backup...\n'));
+  const restoreSpinner = ora('Restoring files...').start();
+
+  try {
+    const backupPath = join(projectRoot, '.cortex', 'backups', selectedBackup);
+    const restoredCount = await restoreBackup(backupPath);
+
+    restoreSpinner.succeed(`Restored ${restoredCount} file(s) from backup`);
+
+    // Success message
+    console.log(chalk.green.bold('\n✨ Rollback complete!\n'));
+    console.log(chalk.gray('💡 Tip: Review restored files with:'));
+    console.log(chalk.cyan('   git diff\n'));
+  } catch (error) {
+    restoreSpinner.fail('Rollback failed');
+    console.log(chalk.red('\n❌ Error:'), error instanceof Error ? error.message : 'Unknown error');
+    console.log(chalk.gray('Files may be partially restored.\n'));
+    process.exit(1);
+  }
 }
 
 /**
