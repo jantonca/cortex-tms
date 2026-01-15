@@ -39,3 +39,5 @@
 ## 📝 Current Focus
 
 **MVP COMPLETE!** All tasks done. Todo app is fully functional with polished UX and validated documentation. Ready for Phase 3 closure and archival.
+
+<!-- @cortex-tms-version 2.5.0 -->
