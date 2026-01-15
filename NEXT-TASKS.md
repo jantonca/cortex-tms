@@ -14,13 +14,73 @@
 
 ---
 
-## Active Sprint: v2.6 - Custom Extensibility (Upcoming)
+## Active Sprint: v2.6 - Integrity & Atomicity
 
-**Status**: Planning Phase
+**Status**: In Progress (2/6 tasks complete)
+
+**Theme**: "Workflow Hardening" - Moving from manual discipline to automated integrity through atomic operations and intelligent guardrails.
+
+**Sprint Started**: 2026-01-16
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Custom Templates** - User-defined template support | [TMS-241] | 4h | 🟡 MED | ⬜ Todo |
+| **Sync Engine Expansion** - Glob-based scanner for all tagged files | [TMS-265a] | 1h | 🔴 HIGH | ✅ Done |
+| **Integrity Verification** - Comprehensive validation and documentation | [TMS-265b] | 30min | 🔴 HIGH | 🔵 Active |
+| **Example App Integrity** - Add version tags & update stale content | [TMS-267] | 30min | 🔴 HIGH | ⬜ Todo |
+| **Atomic Release Engine** - Single-command release with rollback | [TMS-264] | 4h | 🔴 HIGH | ⬜ Todo |
+| **Git Guardian + Husky** - Pre-commit hooks with safety valve | [TMS-260] | 1.5h | 🔴 HIGH | ⬜ Todo |
+| **Emergency Hotfix Path** - `pnpm run release:hotfix` command | [TMS-266] | 1h | 🟡 MED | ⬜ Todo |
+
+**Total Effort**: 8.5 hours | **Completed**: 1.5h | **Remaining**: 7h
+
+### 🎯 Achievements So Far
+
+**TMS-265a (Sync Engine Expansion)** - ✅ Complete
+- Implemented glob-based file discovery system
+- Expanded coverage from 3 to 29 files (860% increase)
+- Synchronized 26 files from v2.3.0/v2.4.1 → v2.5.0
+- Added `glob@11.0.0` dependency
+- All validation passing: `docs:check`, `migrate`, `validate --strict`
+
+**TMS-265b (Integrity Verification)** - 🔵 In Progress
+- Comprehensive validation suite complete
+- Documentation of v2.6 roadmap in progress
+
+### 📋 Next Steps
+
+1. Complete TMS-265b documentation
+2. Address Example App version tags (TMS-267)
+3. Build Atomic Release Engine with backup/rollback (TMS-264)
+4. Implement Git Guardian with emergency path (TMS-260, TMS-266)
+
+### ✅ Validation Results (TMS-265b)
+
+**Comprehensive Health Check** - All systems passing
+
+```bash
+# 1. Version Sync Check
+$ pnpm run docs:check
+✅ All 29 files synchronized with v2.5.0
+
+# 2. Migration Health
+$ cortex-tms migrate
+✅ 9 files up-to-date
+✅ 0 files outdated
+⚠️  1 file customized (copilot-instructions.md - expected)
+
+# 3. Project Validation
+$ cortex-tms validate --strict
+✅ All 11 checks passed
+✅ Mandatory files present
+✅ Configuration valid
+✅ Archive status healthy
+
+# 4. Example App Status
+✅ 4 markdown files detected
+⚠️  0 version tags (TMS-267 pending)
+```
+
+**Integrity Status**: 100% synchronized | 0 drift detected | Production ready
 
 ---
 
