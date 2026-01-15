@@ -47,7 +47,25 @@ Traditional repos drown AI agents in thousands of lines of historical tasks and 
 
 ## 🛠️ CLI Commands
 
-Cortex TMS provides 5 production-ready commands:
+Cortex TMS provides 6 production-ready commands:
+
+### `cortex-tms tutorial`
+Interactive walkthrough teaching the "Cortex Way" - perfect for first-time users.
+
+```bash
+cortex-tms tutorial  # Start the guided tour
+```
+
+**What You'll Learn**:
+- Project Dashboard: Using `status` to see your cockpit
+- AI Activation: Using `prompt` to activate project-aware AI agents
+- Zero-Drift Governance: Automated version sync with `docs:sync`
+- Health Checks: Understanding `validate` and the Archive Protocol
+- Safe Migration: Fearless template upgrades with backup/rollback
+
+**Navigation**: Use arrow keys and Enter to progress, select Exit to quit anytime
+
+---
 
 ### `cortex-tms init`
 Initialize TMS structure in your project with interactive scope selection.
