@@ -16,7 +16,7 @@
 
 ## Active Sprint: v2.6 - Integrity & Atomicity
 
-**Status**: In Progress (4/6 tasks complete)
+**Status**: In Progress (5/6 tasks complete)
 
 **Theme**: "Workflow Hardening" - Moving from manual discipline to automated integrity through atomic operations and intelligent guardrails.
 
@@ -28,10 +28,10 @@
 | **Integrity Verification** - Comprehensive validation and documentation | [TMS-265b] | 30min | 🔴 HIGH | ✅ Done |
 | **Example App Integrity** - Add version tags & update stale content | [TMS-267] | 30min | 🔴 HIGH | ✅ Done |
 | **Atomic Release Engine** - Single-command release with rollback | [TMS-264] | 4h | 🔴 HIGH | ✅ Done |
-| **Git Guardian + Husky** - Pre-commit hooks with safety valve | [TMS-260] | 1.5h | 🔴 HIGH | ⬜ Todo |
+| **Git Guardian + Husky** - Pre-commit hooks with safety valve | [TMS-260] | 1.5h | 🔴 HIGH | ✅ Done |
 | **Emergency Hotfix Path** - `pnpm run release:hotfix` command | [TMS-266] | 1h | 🟡 MED | ⬜ Todo |
 
-**Total Effort**: 8.5 hours | **Completed**: 6h (71%) | **Remaining**: 2.5h (29%)
+**Total Effort**: 8.5 hours | **Completed**: 7.5h (88%) | **Remaining**: 1h (12%)
 
 ### 🎯 Achievements So Far
 
@@ -61,11 +61,23 @@
 - Dry-run mode for safe preview
 - NPM scripts: `release`, `release:patch`, `release:minor`, `release:major`, `release:dry-run`
 
+**TMS-260 (Git Guardian + Husky)** - ✅ Complete (1.5h)
+- Implemented "Doors vs Walls" pre-commit hooks (308 LOC)
+- Code Guardian: Strictly blocks .ts/.js/.json commits to main
+- Doc Guardian: Warns about .md commits to main (allows with guidance)
+- Bypass mechanism: BYPASS_GUARDIAN=true with audit logging
+- File categorization: code vs docs vs config
+- Comprehensive error messages with 3-step fix instructions
+- Audit trail in .guardian-bypass.log (gitignored)
+- Installed Husky 9.1.7 for Git hook management
+- Fail-safe design (allows commit if guardian errors)
+- Silent on feature branches (zero friction)
+
 ### 📋 Next Steps
 
-1. Implement Git Guardian with Husky (TMS-260) - 1.5h
-2. Build Emergency Hotfix Path command (TMS-266) - 1h
-3. Complete v2.6 sprint and prepare for v2.7 planning
+1. Build Emergency Hotfix Path command (TMS-266) - 1h
+2. Complete v2.6 sprint retrospective
+3. Plan v2.7 objectives
 
 ### ✅ Validation Results (TMS-265b)
 
