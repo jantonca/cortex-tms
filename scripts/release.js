@@ -120,13 +120,26 @@ class AtomicRelease {
     log.detail(`Current branch: ${this.originalBranch}`);
 
     if (this.originalBranch !== 'main') {
-      throw new Error('Must be on main branch to create a release');
+      throw new Error(
+        `Must be on main branch to create a release.\n\n` +
+        `Current branch: ${this.originalBranch}\n\n` +
+        `To switch to main:\n` +
+        `  git checkout main\n` +
+        `  git pull origin main`
+      );
     }
 
     // Check workspace is clean
     const status = this.exec('git status --porcelain', { silent: true });
     if (status.trim() !== '') {
-      throw new Error('Working directory must be clean (no uncommitted changes)');
+      throw new Error(
+        `Working directory must be clean (no uncommitted changes).\n\n` +
+        `To fix:\n` +
+        `  Option 1 (commit): git add -A && git commit -m "your message"\n` +
+        `  Option 2 (stash):  git stash push -m "temp changes"\n\n` +
+        `Current status:\n${status.split('\n').slice(0, 5).join('\n')}` +
+        (status.split('\n').length > 5 ? '\n  ... and more' : '')
+      );
     }
     log.detail('✓ Workspace is clean');
 
@@ -231,7 +244,14 @@ class AtomicRelease {
         this.newVersion = `${major}.${minor}.${patch + 1}`;
         break;
       default:
-        throw new Error(`Invalid bump type: ${this.bumpType}`);
+        throw new Error(
+          `Invalid bump type: ${this.bumpType}\n\n` +
+          `Valid options:\n` +
+          `  patch - Bump patch version (2.5.0 → 2.5.1)\n` +
+          `  minor - Bump minor version (2.5.0 → 2.6.0)\n` +
+          `  major - Bump major version (2.5.0 → 3.0.0)\n\n` +
+          `Usage: node scripts/release.js [patch|minor|major]`
+        );
     }
 
     log.detail(`${currentVersion} → ${this.newVersion} (${this.bumpType})`);
@@ -381,6 +401,8 @@ See CHANGELOG.md for full details.`;
       return;
     }
 
+    const rollbackSteps = [];
+
     try {
       // Restore files from backup
       if (this.backupPath && fs.existsSync(this.backupPath)) {
@@ -398,25 +420,30 @@ See CHANGELOG.md for full details.`;
         }
 
         log.detail('✓ Restored files from backup');
+        rollbackSteps.push('files_restored');
       }
 
       // Reset Git state
       this.exec('git reset --hard HEAD', { silent: true, ignoreError: true });
+      rollbackSteps.push('git_reset');
 
       // Return to original branch
       if (this.originalBranch) {
         this.exec(`git checkout ${this.originalBranch}`, { silent: true, ignoreError: true });
+        rollbackSteps.push('branch_restored');
       }
 
       // Delete release branch if it exists
       if (this.releaseBranch) {
         this.exec(`git branch -D ${this.releaseBranch}`, { silent: true, ignoreError: true });
+        rollbackSteps.push('branch_deleted');
       }
 
       // Delete remote tag if it was created
       if (this.newVersion) {
         this.exec(`git tag -d v${this.newVersion}`, { silent: true, ignoreError: true });
         this.exec(`git push origin :refs/tags/v${this.newVersion}`, { silent: true, ignoreError: true });
+        rollbackSteps.push('tag_deleted');
       }
 
       log.success('✓ Rollback complete - workspace restored to pre-release state');
@@ -424,6 +451,41 @@ See CHANGELOG.md for full details.`;
     } catch (error) {
       log.error('⚠️  Rollback failed - manual intervention required');
       log.detail(error.message);
+
+      // Provide specific recovery instructions
+      log.step('\n🔧 Manual Recovery Steps:\n');
+
+      if (!rollbackSteps.includes('files_restored') && this.backupPath) {
+        log.detail('1. Restore files from backup:');
+        log.detail(`   cp -r ${this.backupPath}/* ${this.projectRoot}/`);
+      }
+
+      if (!rollbackSteps.includes('git_reset')) {
+        log.detail('2. Reset Git workspace:');
+        log.detail('   git reset --hard HEAD');
+      }
+
+      if (!rollbackSteps.includes('branch_restored') && this.originalBranch) {
+        log.detail('3. Return to original branch:');
+        log.detail(`   git checkout ${this.originalBranch}`);
+      }
+
+      if (!rollbackSteps.includes('branch_deleted') && this.releaseBranch) {
+        log.detail('4. Delete release branch:');
+        log.detail(`   git branch -D ${this.releaseBranch}`);
+        log.detail(`   git push origin --delete ${this.releaseBranch} (if pushed)`);
+      }
+
+      if (!rollbackSteps.includes('tag_deleted') && this.newVersion) {
+        log.detail('5. Delete release tag:');
+        log.detail(`   git tag -d v${this.newVersion}`);
+        log.detail(`   git push origin :refs/tags/v${this.newVersion} (if pushed)`);
+      }
+
+      log.step('\n💡 After cleanup, check status:');
+      log.detail('   git status');
+      log.detail('   git branch -a');
+      log.detail('   git tag -l\n');
     }
   }
 

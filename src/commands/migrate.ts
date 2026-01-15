@@ -100,7 +100,11 @@ async function runMigrate(options: {
   // Step 2: Get file list from scope
   const preset = getScopePreset(config.scope);
   if (!preset) {
-    console.log(chalk.red('\n❌ Error:'), `Unknown scope: ${config.scope}\n`);
+    console.log(chalk.red('\n❌ Error:'), `Unknown scope: ${config.scope}`);
+    console.log(
+      chalk.gray('\nValid scopes: nano, micro, standard, enterprise, custom')
+    );
+    console.log(chalk.gray('Update your .cortexrc with a valid scope.\n'));
     process.exit(1);
   }
 
@@ -223,7 +227,11 @@ async function applyMigration(
   if (!backupResult.success) {
     spinner.fail('Backup failed');
     console.log(chalk.red('\n❌ Error:'), backupResult.error);
-    console.log(chalk.gray('Migration aborted to prevent data loss.\n'));
+    console.log(chalk.gray('\nMigration aborted to prevent data loss.'));
+    console.log(chalk.bold('\n💡 Troubleshooting:'));
+    console.log(chalk.gray('  • Check disk space: df -h'));
+    console.log(chalk.gray('  • Check permissions: ls -la .cortex/'));
+    console.log(chalk.gray('  • Ensure .cortex/ is not read-only\n'));
     process.exit(1);
   }
 
@@ -338,7 +346,10 @@ async function runRollback(projectRoot: string): Promise<void> {
   // Get selected backup manifest
   const selectedManifest = backups.find((b) => b.timestamp === selectedBackup);
   if (!selectedManifest) {
-    console.log(chalk.red('\n❌ Error:'), 'Backup not found.\n');
+    console.log(chalk.red('\n❌ Error:'), 'Backup not found.');
+    console.log(chalk.gray('\n💡 To debug:'));
+    console.log(chalk.cyan('   ls -la .cortex/backups/'));
+    console.log(chalk.gray('\nIf backups are missing, they may have been deleted.\n'));
     return;
   }
 
@@ -380,7 +391,13 @@ async function runRollback(projectRoot: string): Promise<void> {
   } catch (error) {
     restoreSpinner.fail('Rollback failed');
     console.log(chalk.red('\n❌ Error:'), error instanceof Error ? error.message : 'Unknown error');
-    console.log(chalk.gray('Files may be partially restored.\n'));
+    console.log(chalk.yellow('\n⚠️  Files may be partially restored.'));
+    console.log(chalk.bold('\n🔧 Manual Recovery:'));
+    console.log(chalk.gray(`  1. Check backup: ls -la .cortex/backups/${selectedBackup}/`));
+    console.log(chalk.gray('  2. Manually copy files if needed:'));
+    console.log(chalk.cyan(`     cp .cortex/backups/${selectedBackup}/<file> ./`));
+    console.log(chalk.gray('  3. Verify restoration: git diff'));
+    console.log(chalk.gray('  4. If corrupted, restore from Git: git checkout HEAD -- <file>\n'));
     process.exit(1);
   }
 }
