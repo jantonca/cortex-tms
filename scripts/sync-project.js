@@ -13,6 +13,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { glob } from 'glob';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,8 +22,15 @@ const __dirname = path.dirname(__filename);
 const ROOT_DIR = path.join(__dirname, '..');
 const PACKAGE_JSON_PATH = path.join(ROOT_DIR, 'package.json');
 
-// Target files with version patterns
-const TARGET_FILES = [
+// Universal version tag pattern (applies to ALL markdown files)
+const UNIVERSAL_TAG_PATTERN = {
+  regex: /(<!-- @cortex-tms-version )\d+\.\d+\.\d+( -->)/,
+  replacement: (version) => `$1${version}$2`,
+  description: 'Version metadata tag'
+};
+
+// Explicit patterns for specific files (non-tag version references)
+const EXPLICIT_FILE_PATTERNS = [
   {
     name: 'README.md',
     path: path.join(ROOT_DIR, 'README.md'),
@@ -37,11 +45,7 @@ const TARGET_FILES = [
         replacement: (version) => `$1${version}`,
         description: 'Status section version'
       },
-      {
-        regex: /(<!-- @cortex-tms-version )\d+\.\d+\.\d+( -->)/,
-        replacement: (version) => `$1${version}$2`,
-        description: 'Version metadata tag'
-      }
+      UNIVERSAL_TAG_PATTERN
     ]
   },
   {
@@ -52,7 +56,8 @@ const TARGET_FILES = [
         regex: /(\*\*Cortex TMS v)\d+\.\d+\.\d+(\*\*)/,
         replacement: (version) => `$1${version}$2`,
         description: 'Template version header'
-      }
+      },
+      UNIVERSAL_TAG_PATTERN
     ]
   },
   {
@@ -63,10 +68,66 @@ const TARGET_FILES = [
         regex: /(\*\*Version\*\*: )\d+\.\d+\.\d+/,
         replacement: (version) => `$1${version}`,
         description: 'CLI guide version'
-      }
+      },
+      UNIVERSAL_TAG_PATTERN
     ]
   }
 ];
+
+/**
+ * Scans the repository for all markdown files containing @cortex-tms-version tags
+ * @returns {Promise<Array>} Array of file configurations
+ */
+async function discoverTaggedFiles() {
+  const patterns = [
+    '*.md',
+    'templates/**/*.md',
+    'docs/**/*.md',
+    'examples/**/CLAUDE.md',
+    'examples/**/NEXT-TASKS.md',
+    'examples/**/FUTURE-ENHANCEMENTS.md',
+    'examples/**/PROMPTS.md'
+  ];
+
+  const allFiles = [];
+
+  for (const pattern of patterns) {
+    const files = await glob(pattern, {
+      cwd: ROOT_DIR,
+      absolute: false,
+      ignore: ['node_modules/**', '.next/**', 'dist/**']
+    });
+    allFiles.push(...files);
+  }
+
+  // Filter files that actually contain the version tag
+  const taggedFiles = [];
+  const explicitPaths = new Set(EXPLICIT_FILE_PATTERNS.map(f => path.relative(ROOT_DIR, f.path)));
+
+  for (const file of allFiles) {
+    const fullPath = path.join(ROOT_DIR, file);
+
+    // Skip files already in explicit patterns (they have custom patterns)
+    if (explicitPaths.has(file)) {
+      continue;
+    }
+
+    try {
+      const content = fs.readFileSync(fullPath, 'utf-8');
+      if (UNIVERSAL_TAG_PATTERN.regex.test(content)) {
+        taggedFiles.push({
+          name: file,
+          path: fullPath,
+          patterns: [UNIVERSAL_TAG_PATTERN]
+        });
+      }
+    } catch (error) {
+      // Skip unreadable files
+    }
+  }
+
+  return taggedFiles;
+}
 
 // ANSI color codes
 const colors = {
@@ -157,7 +218,7 @@ function syncFile(fileConfig, targetVersion, mode) {
   return { changed: changesDetected, skipped: false };
 }
 
-function main() {
+async function main() {
   const args = process.argv.slice(2);
   const isDryRun = args.includes('--dry-run');
   const isCheck = args.includes('--check');
@@ -181,13 +242,20 @@ function main() {
     log(`     Add a changelog entry before syncing documentation`, 'gray');
   }
 
+  // Discover all tagged files
+  log('\n🔎 Discovering tagged files...', 'blue');
+  const discoveredFiles = await discoverTaggedFiles();
+  const allFiles = [...EXPLICIT_FILE_PATTERNS, ...discoveredFiles];
+
+  log(`  Found ${allFiles.length} files to sync (${EXPLICIT_FILE_PATTERNS.length} explicit + ${discoveredFiles.length} discovered)`, 'gray');
+
   // Sync files
   log('\n📄 Synchronizing documentation files...\n', 'blue');
 
   let totalChanged = 0;
   let totalSkipped = 0;
 
-  for (const fileConfig of TARGET_FILES) {
+  for (const fileConfig of allFiles) {
     const result = syncFile(fileConfig, version, mode);
     if (result.changed) totalChanged++;
     if (result.skipped) totalSkipped++;
