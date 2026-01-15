@@ -14,13 +14,12 @@
 
 ---
 
-## Active Sprint: v2.6 - Polish & Growth (Upcoming)
+## Active Sprint: v2.6 - Custom Extensibility (Upcoming)
 
 **Status**: Planning Phase
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Interactive Tutorial** - In-CLI onboarding walkthrough | [TMS-238] | 3h | 🟡 MED | ⬜ Todo |
 | **Custom Templates** - User-defined template support | [TMS-241] | 4h | 🟡 MED | ⬜ Todo |
 
 ---
@@ -30,9 +29,12 @@
 **Major Achievements**:
 - ✅ Zero-Drift Governance Suite (automated version management)
 - ✅ Safe-Fail Migration Engine (backup → apply → rollback)
-- ✅ 6 high-priority tasks completed in single sprint
+- ✅ Interactive Tutorial (onboarding walkthrough)
+- ✅ 7 high-priority tasks completed across 2 days
 
-**Archive**: See `docs/archive/sprint-v2.5-guidance-growth.md` for detailed retrospective with all tasks, metrics, and lessons learned.
+**Theme Complete**: "Guidance & Growth" - Both guidance (tutorial) and growth (migration) infrastructure delivered.
+
+**Archive**: See `docs/archive/sprint-v2.5-guidance-growth.md` for detailed retrospective (will be updated with tutorial milestone).
 
 ---
 
