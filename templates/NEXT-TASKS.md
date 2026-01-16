@@ -19,4 +19,4 @@
 - [ ] Documentation updated in `docs/core/`
 - [ ] Code follows `docs/core/PATTERNS.md`
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->

@@ -729,5 +729,5 @@ Build systems humans trust, not systems humans disable.
 ---
 
 **Last Updated**: 2026-01-16
-**Version**: 2.6.0-beta
+**Version**: 2.6.0-beta.0
 **Maintainer**: Cortex TMS Team

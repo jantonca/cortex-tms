@@ -289,4 +289,4 @@ Before opening PR:
 - **Semantic Versioning**: https://semver.org/
 - **Co-Authorship**: Git documentation on multiple authors
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->

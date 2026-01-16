@@ -362,4 +362,4 @@ interface ValidationResult {
 - **CLI Implementation**: See `bin/cortex-tms.js` (when implemented)
 - **Validation Logic**: See `src/validators.ts` (when implemented)
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->

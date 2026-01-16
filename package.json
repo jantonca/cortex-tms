@@ -1,6 +1,6 @@
 {
   "name": "cortex-tms",
-  "version": "2.6.0-beta.0",
+  "version": "2.6.0-beta.1",
   "description": "The Universal AI-Optimized Project Boilerplate - CLI tool for bootstrapping TMS-structured projects",
   "type": "module",
   "bin": {
@@ -52,12 +52,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/cortex-tms/cortex-tms.git"
+    "url": "https://github.com/jantonca/cortex-tms.git"
   },
   "bugs": {
-    "url": "https://github.com/cortex-tms/cortex-tms/issues"
+    "url": "https://github.com/jantonca/cortex-tms/issues"
   },
-  "homepage": "https://github.com/cortex-tms/cortex-tms#readme",
+  "homepage": "https://github.com/jantonca/cortex-tms#readme",
   "dependencies": {
     "chalk": "^5.3.0",
     "clipboardy": "^4.0.0",

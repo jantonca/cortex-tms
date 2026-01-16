@@ -151,4 +151,4 @@
 - **Decisions**: See `docs/core/DECISIONS.md` for detailed ADRs
 - **Schema**: See `docs/core/SCHEMA.md` for data models (if applicable)
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->

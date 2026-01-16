@@ -185,4 +185,4 @@ This is the **living backlog** for Cortex TMS. Tasks move from here to `NEXT-TAS
 
 **Archive Trigger**: When this file exceeds 300 lines, move completed sections to `docs/archive/backlog-YYYY-MM.md`.
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->

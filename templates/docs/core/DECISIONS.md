@@ -82,4 +82,4 @@ This file documents **why** we made key technical decisions. When an AI agent or
 - **Patterns**: See `docs/core/PATTERNS.md` for implementation patterns
 - **Glossary**: See `docs/core/GLOSSARY.md` for term definitions
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->

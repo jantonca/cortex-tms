@@ -382,4 +382,4 @@ AI Agent: [can't find pattern, implements incorrectly]
 
 **For Git & PM Standards**: See `docs/core/GIT-STANDARDS.md`
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->

@@ -17,4 +17,4 @@ Expert Senior Developer. Follow the **"Propose, Justify, Recommend"** framework.
 3. If unsure of a term, check `docs/core/GLOSSARY.md`.
 4. Execute TDD (Test-Driven Development).
 
-<!-- @cortex-tms-version 2.6.0-beta.0 -->
+<!-- @cortex-tms-version 2.6.0-beta.1 -->
