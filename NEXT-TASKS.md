@@ -100,7 +100,7 @@
 ### 📋 Next Steps: v2.6.0 Stable Release (After Monitoring Completes)
 
 **Target Date**: 2026-01-18 (after 48-hour monitoring period)
-**Detailed Plan**: See `/temp/PLAN-v2.6-stable-release.md` for step-by-step execution
+**Detailed Plan**: See `/temp/technical/planning/PLAN-v2.6-stable-release.md` for step-by-step execution
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
