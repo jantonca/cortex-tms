@@ -1,7 +1,7 @@
 {
   "name": "cortex-tms",
   "version": "2.6.0-beta.1",
-  "description": "The Universal AI-Optimized Project Boilerplate - CLI tool for bootstrapping TMS-structured projects",
+  "description": "AI-powered project scaffolding CLI for documentation, task management, and workflow automation. Optimized for Claude Code, GitHub Copilot, and LLM-assisted development.",
   "type": "module",
   "bin": {
     "cortex-tms": "./bin/cortex-tms.js"
@@ -41,12 +41,18 @@
     "documentation",
     "boilerplate",
     "ai",
-    "copilot",
+    "ai-assistant",
+    "llm",
     "claude",
-    "tms",
+    "copilot",
     "cli",
     "generator",
-    "template"
+    "scaffolding",
+    "project-structure",
+    "task-management",
+    "workflow",
+    "typescript",
+    "starter-kit"
   ],
   "author": "Cortex TMS Contributors",
   "license": "MIT",

@@ -2,7 +2,7 @@
 
 **The Universal AI-Optimized Project Boilerplate (v2.6.0-beta.1)**
 
-Cortex TMS is an **interactive operating system for AI-assisted development**. It's not just documentation—it's an **activation layer** that turns your repository into a machine-legible project constitution with intelligent tooling for version management and AI collaboration.
+Cortex TMS is a **CLI tool for AI-assisted development** that provides **project scaffolding**, **task management**, and **workflow automation**. It's an **interactive documentation system** optimized for **Claude Code**, **GitHub Copilot**, and **LLM-assisted development**—transforming your repository into a machine-legible project structure with intelligent tooling for version management and AI collaboration.
 
 **Current Status**: ✅ **Stable / Production Ready** | [NPM Package](https://www.npmjs.com/package/cortex-tms) | [GitHub Repository](https://github.com/jantonca/cortex-tms)
 
