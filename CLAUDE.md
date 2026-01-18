@@ -42,4 +42,36 @@ After completing a task, follow the **Maintenance Protocol**:
 
 **Exception**: Small tasks (typos, formatting) only require git commit and branch cleanup.
 
+## 🔒 Confidentiality & Repository Strategy
+
+**Two-Tier Repository System**:
+
+### Public Repository (cortex-tms/cortex-tms)
+**What Goes Here**: ✅
+- Open source code (CLI, templates, examples)
+- Technical documentation (non-sensitive)
+- Public task lists (sanitized, no business strategy)
+- Community-facing content
+
+### Private Repository (cortex-tms/internal)
+**What Goes Here**: ✅
+- Business strategy and monetization plans
+- Pricing strategies and financial projections
+- Commercial roadmap and feature priorities
+- Internal decision-making documents (ADRs with commercial context)
+- Sensitive client work (migration retrospectives, custom implementations)
+- Full task details with business rationale
+
+**CRITICAL RULES**: ❌
+- **NEVER** reference `cortex-tms/internal` in public commits, issues, or PRs
+- **NEVER** copy content from private repo to public without sanitization
+- **NEVER** discuss pricing, monetization, or commercial strategy in public files
+- **NEVER** commit business strategy documents to public repository
+
+**Workflow Guidance**:
+- Public implementation tasks → Work in `cortex-tms/cortex-tms`
+- Strategic planning, commercial features → Work in `cortex-tms/internal`
+- Hybrid tasks → Implementation public, rationale private
+- When in doubt → Keep it private (better safe than leaked)
+
 <!-- @cortex-tms-version 2.6.0 -->
