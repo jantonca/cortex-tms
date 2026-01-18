@@ -27,7 +27,7 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **Domain Registration** - cortex-tms.org (primary), .dev, cortextms.dev | [TMS-270a] | 30m | 🔴 HIGH | ✅ Done |
-| **GitHub Organization** - Create cortex-tms org | [TMS-270b] | 1h | 🔴 HIGH | ⬜ Todo |
+| **GitHub Organization** - Create cortex-tms org, transfer repo | [TMS-270b] | 1h | 🔴 HIGH | ✅ Done |
 | **Repository Decision** - Monorepo vs split strategy | [TMS-270c] | 2h | 🔴 HIGH | ⬜ Todo |
 | **Starlight Setup** - Initialize docs site project | [TMS-270d] | 4h | 🔴 HIGH | ⬜ Todo |
 | **Home Page** - Hero, value props, quick start | [TMS-270e] | 6h | 🔴 HIGH | ⬜ Todo |
