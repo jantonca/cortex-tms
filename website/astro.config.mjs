@@ -49,6 +49,12 @@ export default defineConfig({
             content: 'summary_large_image',
           },
         },
+        {
+          tag: 'script',
+          attrs: {
+            src: '/external-links.js',
+          },
+        },
       ],
     }),
   ],
