@@ -348,8 +348,8 @@ cortex-tms/
 
 - **Bug Reports**: [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues/new) - Report bugs or technical issues
 - **Feature Requests**: [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues/new) - Suggest new features or improvements
-- **Questions & Discussions**: [GitHub Discussions](https://github.com/cortex-tms/cortex-tms/discussions) - Get help and discuss ideas
-- **Security Issues**: Use [GitHub Security Advisories](https://github.com/cortex-tms/cortex-tms/security/advisories/new) for responsible disclosure
+- **Questions & Support**: [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues/new) - Get help and ask questions
+- **Security Issues**: [GitHub Security Advisories](https://github.com/cortex-tms/cortex-tms/security/advisories/new) - Responsible disclosure
 
 ---
 
