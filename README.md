@@ -4,7 +4,7 @@
 
 Cortex TMS is a **CLI tool for AI-assisted development** that provides **project scaffolding**, **task management**, and **workflow automation**. It's an **interactive documentation system** optimized for **Claude Code**, **GitHub Copilot**, and **LLM-assisted development**—transforming your repository into a machine-legible project structure with intelligent tooling for version management and AI collaboration.
 
-**Current Status**: ✅ **Stable / Production Ready** | [NPM Package](https://www.npmjs.com/package/cortex-tms) | [GitHub Repository](https://github.com/jantonca/cortex-tms)
+**Current Status**: ✅ **Stable / Production Ready** | [NPM Package](https://www.npmjs.com/package/cortex-tms) | [GitHub Repository](https://github.com/jantonca/cortex-tms) | [Documentation](https://cortex-tms.dev) (coming soon)
 
 ---
 
