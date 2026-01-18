@@ -1,0 +1,599 @@
+---
+title: Zero-Drift Governance
+description: Automated validation that ensures documentation always matches reality
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside, Steps } from '@astrojs/starlight/components';
+
+**Zero-Drift Governance** is the practice of continuously validating that your documentation matches your codebase reality. No more outdated ADRs, broken links, or forgotten task lists.
+
+## The Documentation Drift Problem
+
+Traditional projects suffer from **documentation drift**: docs become stale as code evolves.
+
+### Common Drift Scenarios
+
+<CardGrid>
+  <Card title="Stale Task Lists" icon="error">
+    `TODO.md` says "Implement auth"
+
+    Reality: Auth shipped 3 months ago
+  </Card>
+
+  <Card title="Outdated Architecture" icon="warning">
+    `ARCHITECTURE.md` says "Uses MongoDB"
+
+    Reality: Migrated to PostgreSQL last quarter
+  </Card>
+
+  <Card title="Broken Links" icon="information">
+    Docs link to `src/utils/auth.ts`
+
+    Reality: File moved to `src/middleware/auth.ts`
+  </Card>
+
+  <Card title="Violated Size Limits" icon="star">
+    `NEXT-TASKS.md` should be under 200 lines
+
+    Reality: Grew to 450 lines over 6 months
+  </Card>
+</CardGrid>
+
+**The problem**: AI agents trust documentation. When docs drift, AI hallucinates or makes bad decisions.
+
+---
+
+## The Zero-Drift Solution
+
+**Zero-Drift** means documentation is validated automatically and continuously:
+
+```bash
+cortex-tms validate --strict
+```
+
+**Output**:
+```
+✓ NEXT-TASKS.md exists and is well-formed
+✓ File size under limit (185/200 lines)
+✓ All internal links resolve
+✓ No placeholder text ([Project Name] found and fixed)
+✓ copilot-instructions.md follows schema
+✓ All ADRs follow naming convention
+✓ No dead links in documentation
+
+Project health: EXCELLENT
+```
+
+<Aside type="tip" title="Continuous Validation">
+  Run validation in CI/CD pipelines to catch drift before it reaches production. Failed validation = failed build.
+</Aside>
+
+---
+
+## What Gets Validated
+
+### 1. File Existence
+
+**Rule**: Required files must exist in expected locations.
+
+<Tabs>
+  <TabItem label="Validation">
+    ```bash
+    cortex-tms validate
+    ```
+
+    **Checks**:
+    - ✓ `NEXT-TASKS.md` exists
+    - ✓ `CLAUDE.md` exists
+    - ✓ `.github/copilot-instructions.md` exists
+    - ✓ `docs/core/` directory exists
+  </TabItem>
+
+  <TabItem label="Failure Example">
+    ```
+    ✗ NEXT-TASKS.md not found
+    ✗ docs/core/PATTERNS.md not found
+
+    Recommendations:
+    - Run `cortex-tms init` to scaffold missing files
+    - Check that you're in the project root directory
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### 2. File Size Limits (Context Budget Enforcement)
+
+**Rule**: HOT files must respect size limits to preserve AI context budget.
+
+**Validated limits**:
+
+| File | Max Lines | Current | Status |
+|------|-----------|---------|--------|
+| `NEXT-TASKS.md` | 200 | 185 | ✓ OK |
+| `.github/copilot-instructions.md` | 100 | 95 | ✓ OK |
+
+<Aside type="caution">
+  **Why strict limits?**
+
+  Every line in a HOT file costs context window tokens. A 500-line `NEXT-TASKS.md` wastes 2,000+ tokens **every AI session**.
+
+  See [Context Budget](/concepts/context-budget/) for details.
+</Aside>
+
+**Violation example**:
+```
+✗ NEXT-TASKS.md exceeds limit (245/200 lines)
+
+Recommendations:
+- Archive completed tasks to docs/archive/sprint-YYYY-MM.md
+- Move backlog items to FUTURE-ENHANCEMENTS.md
+- Break large tasks into smaller increments
+```
+
+---
+
+### 3. Internal Link Validation
+
+**Rule**: Documentation links must resolve to real files.
+
+**Checks**:
+```markdown
+<!-- In PATTERNS.md -->
+**Canonical Example**: `src/components/Button.tsx:15`
+```
+
+**Validation**:
+- ✓ `src/components/Button.tsx` exists
+- ✓ File has at least 15 lines
+
+**Failure**:
+```
+✗ Broken link in docs/core/PATTERNS.md:42
+  Target: src/components/Button.tsx (not found)
+
+Recommendations:
+- File moved? Update link to new location
+- File deleted? Remove link or document deprecation
+```
+
+<Aside type="note">
+  **Why this matters**: Broken links confuse AI agents. They hallucinate implementations when they can't find the canonical example.
+</Aside>
+
+---
+
+### 4. Schema Validation
+
+**Rule**: Structured files must follow expected formats.
+
+#### NEXT-TASKS.md Schema
+
+Required sections:
+- `## Active Sprint: [Name]`
+- `**Why this matters**: [Context]`
+- At least one task (checkbox format)
+
+**Valid**:
+```markdown
+## Active Sprint: User Authentication
+
+**Why this matters**: Mobile app needs secure API access
+
+- [ ] JWT token generation
+- [ ] Token validation middleware
+```
+
+**Invalid**:
+```markdown
+## Tasks
+
+- Implement auth
+```
+
+**Validation error**:
+```
+✗ NEXT-TASKS.md malformed
+  Missing required section: ## Active Sprint
+  Missing context: **Why this matters**
+
+Recommendations:
+- Add sprint name with descriptive title
+- Add "Why this matters" to provide AI context
+```
+
+#### copilot-instructions.md Schema
+
+Required sections:
+- Tech stack declaration
+- Critical rules (if any)
+- Read order for AI agents
+
+**See**: `.github/copilot-instructions.md` template for full schema
+
+---
+
+### 5. Naming Conventions
+
+**Rule**: ADRs (Architectural Decision Records) must follow naming pattern.
+
+**Expected**: `NNNN-lowercase-with-dashes.md`
+
+**Valid**:
+- ✓ `0001-use-postgresql-for-storage.md`
+- ✓ `0023-migrate-to-react-18.md`
+
+**Invalid**:
+- ✗ `use-postgresql.md` (missing number)
+- ✗ `0001_UsePostgreSQL.md` (wrong format)
+
+**Validation**:
+```
+✗ Invalid ADR filename: docs/decisions/use-postgresql.md
+  Expected format: NNNN-lowercase-with-dashes.md
+
+Recommendations:
+- Rename to: 0001-use-postgresql-for-storage.md
+```
+
+---
+
+### 6. Placeholder Detection
+
+**Rule**: Production docs should not contain unreplaced placeholders.
+
+**Placeholders** use `[Bracket Syntax]`:
+- `[Project Name]`
+- `[e.g., Next.js 15, Vue 3]`
+- `[Briefly describe...]`
+
+**Validation**:
+```bash
+cortex-tms validate --strict
+```
+
+**If found**:
+```
+⚠ Placeholders found in production files:
+  - CLAUDE.md:5 - [Project Name]
+  - docs/core/ARCHITECTURE.md:12 - [Frontend Framework]
+
+Recommendations:
+- Replace placeholders before committing
+- Use plain text for production docs
+```
+
+<Aside type="note" title="Templates vs Production">
+  Placeholders are **expected** in `templates/` directory but **forbidden** in production docs after initialization.
+</Aside>
+
+---
+
+## Validation Levels
+
+### Standard Validation
+
+```bash
+cortex-tms validate
+```
+
+**Checks**:
+- File existence
+- Basic schema compliance
+- Critical size limits
+
+**Use when**: Running locally during development
+
+### Strict Validation
+
+```bash
+cortex-tms validate --strict
+```
+
+**Additional checks**:
+- All internal links resolve
+- No placeholder text in production files
+- WARM file size recommendations
+- Git commit status (uncommitted changes warning)
+
+**Use when**: Running in CI/CD pipelines or before releases
+
+### Custom Validation
+
+```bash
+cortex-tms validate --config .cortex-validation.json
+```
+
+**Custom rules**:
+```json
+{
+  "maxLines": {
+    "NEXT-TASKS.md": 150,
+    "copilot-instructions.md": 80
+  },
+  "requiredFiles": [
+    "docs/core/PATTERNS.md",
+    "docs/core/SCHEMA.md"
+  ],
+  "forbiddenTerms": [
+    "TODO",
+    "FIXME"
+  ]
+}
+```
+
+---
+
+## CI/CD Integration
+
+### GitHub Actions Example
+
+```yaml
+# .github/workflows/validate-docs.yml
+name: Validate Documentation
+
+on:
+  pull_request:
+    paths:
+      - 'NEXT-TASKS.md'
+      - 'docs/**'
+      - '.github/copilot-instructions.md'
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Cortex TMS
+        run: npm install -g cortex-tms@2.6.0
+
+      - name: Validate Documentation
+        run: cortex-tms validate --strict
+
+      - name: Check File Sizes
+        run: |
+          NEXT_TASKS_LINES=$(wc -l < NEXT-TASKS.md)
+          if [ $NEXT_TASKS_LINES -gt 200 ]; then
+            echo "❌ NEXT-TASKS.md exceeds 200 lines"
+            exit 1
+          fi
+          echo "✓ File size checks passed"
+```
+
+**Result**: Pull requests fail if documentation is invalid.
+
+<Aside type="tip" title="Fail Fast">
+  Catching drift in CI/CD is cheaper than discovering it 3 months later when AI agents are confused.
+</Aside>
+
+---
+
+## Pre-Commit Hooks
+
+Validate **before** committing to catch issues earlier:
+
+```bash
+# .husky/pre-commit or .git/hooks/pre-commit
+#!/bin/bash
+
+echo "🔍 Validating documentation..."
+
+# Run Cortex TMS validation
+cortex-tms validate --strict
+
+if [ $? -ne 0 ]; then
+  echo "❌ Documentation validation failed"
+  echo "Fix errors above before committing"
+  exit 1
+fi
+
+echo "✅ Documentation validation passed"
+```
+
+**Blocked scenarios**:
+- Committing `NEXT-TASKS.md` with 250 lines
+- Committing broken links in PATTERNS.md
+- Committing unreplaced placeholders
+
+---
+
+## Validation Workflow
+
+<Steps>
+
+1. **Make Changes**
+
+   Edit `NEXT-TASKS.md`, add new tasks, update patterns
+
+2. **Run Validation Locally**
+
+   ```bash
+   cortex-tms validate
+   ```
+
+   Fix any errors reported
+
+3. **Archive Completed Tasks**
+
+   If `NEXT-TASKS.md` is approaching 200 lines:
+
+   ```bash
+   # Move completed tasks to archive
+   cortex-tms archive sprint-2026-01
+   ```
+
+4. **Commit Changes**
+
+   Pre-commit hook validates again automatically
+
+5. **Push & Open PR**
+
+   CI/CD validates in GitHub Actions
+
+6. **Merge**
+
+   Production docs are guaranteed to be valid
+
+</Steps>
+
+---
+
+## Handling Validation Failures
+
+### Failure: File Size Limit Exceeded
+
+```
+✗ NEXT-TASKS.md exceeds limit (245/200 lines)
+```
+
+**Fix options**:
+
+<Tabs>
+  <TabItem label="Archive Tasks">
+    ```bash
+    # Create archive for completed sprint
+    mkdir -p docs/archive
+    mv completed-tasks.md docs/archive/sprint-2026-01.md
+
+    # Clean up NEXT-TASKS.md
+    # Remove completed tasks, keep only active sprint
+    ```
+  </TabItem>
+
+  <TabItem label="Move to Backlog">
+    ```markdown
+    <!-- In NEXT-TASKS.md -->
+    ## Active Sprint: Auth (Keep)
+
+    <!-- Move to FUTURE-ENHANCEMENTS.md -->
+    ## Future: Analytics Dashboard (Move)
+    ## Future: Email Notifications (Move)
+    ```
+  </TabItem>
+
+  <TabItem label="Break Down Tasks">
+    ```markdown
+    <!-- Bad: One huge task -->
+    - [ ] Build complete auth system (50 lines of subtasks)
+
+    <!-- Good: Multiple focused tasks -->
+    - [ ] JWT token generation
+    - [ ] Token validation middleware
+    - [ ] Refresh token rotation
+    ```
+  </TabItem>
+</Tabs>
+
+### Failure: Broken Link
+
+```
+✗ Broken link in docs/core/PATTERNS.md:42
+  Target: src/components/Button.tsx (not found)
+```
+
+**Fix**:
+1. Find where `Button.tsx` moved: `git log --follow src/components/Button.tsx`
+2. Update link in `PATTERNS.md`
+3. Re-run validation: `cortex-tms validate`
+
+### Failure: Placeholder Not Replaced
+
+```
+⚠ Placeholder found: CLAUDE.md:5 - [Project Name]
+```
+
+**Fix**:
+```markdown
+<!-- Before -->
+# [Project Name]
+
+<!-- After -->
+# Acme SaaS Platform
+```
+
+---
+
+## Benefits of Zero-Drift
+
+<CardGrid stagger>
+  <Card title="AI Agents Trust Docs" icon="approve-check">
+    When docs are always valid, AI agents follow them confidently. No more hallucinations.
+  </Card>
+
+  <Card title="Faster Onboarding" icon="rocket">
+    New team members (human or AI) get accurate information immediately. No "docs are outdated" warnings.
+  </Card>
+
+  <Card title="Enforced Discipline" icon="star">
+    Validation forces good habits: archive regularly, fix broken links, respect size limits.
+  </Card>
+
+  <Card title="No Surprises" icon="seti:config">
+    Issues caught in CI/CD, not discovered 6 months later when AI agents are confused.
+  </Card>
+</CardGrid>
+
+---
+
+## Validation Checklist
+
+Before marking a task ✅ Done:
+
+- [ ] Run `cortex-tms validate --strict`
+- [ ] All errors fixed
+- [ ] File sizes under limits
+- [ ] No broken links
+- [ ] No unreplaced placeholders
+- [ ] Schema compliance verified
+
+**Automation**: Add this checklist to your Definition of Done in `NEXT-TASKS.md`.
+
+---
+
+## Common Questions
+
+### Q: What if I need more than 200 lines in NEXT-TASKS.md?
+
+**A**: You probably don't. 200 lines = ~20-30 focused tasks, which is already 2-4 weeks of work.
+
+**Solutions**:
+- Break large tasks into smaller increments
+- Move "nice to have" tasks to `FUTURE-ENHANCEMENTS.md`
+- Archive completed tasks immediately
+
+### Q: Can I disable validation for certain files?
+
+**A**: Yes, but not recommended. Use `.cortex-ignore`:
+
+```
+# .cortex-ignore
+docs/legacy/
+temp-notes.md
+```
+
+Files in `.cortex-ignore` skip validation.
+
+### Q: What if validation fails in CI but passes locally?
+
+**A**: Different `--strict` level. Run `cortex-tms validate --strict` locally to match CI behavior.
+
+---
+
+## Next Steps
+
+Now that you understand Zero-Drift Governance:
+
+- Learn about [Truth Syncing](/concepts/truth-syncing/) for maintenance workflows
+- Explore [Context Budget](/concepts/context-budget/) for size limit rationale
+- Read about [Tiered Memory](/concepts/tiered-memory/) for the bigger picture
+
+<Aside type="tip" title="Start Validating Today">
+  Run `cortex-tms validate` in your project right now. Fix the low-hanging fruit first (broken links, placeholders), then enforce size limits.
+</Aside>

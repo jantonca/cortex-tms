@@ -1,0 +1,399 @@
+---
+title: Tiered Memory System
+description: Understanding the HOT/WARM/COLD documentation architecture that optimizes AI agent performance
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside, FileTree } from '@astrojs/starlight/components';
+
+The **Tiered Memory System (TMS)** is the core architectural pattern of Cortex TMS. It organizes project documentation by **access frequency** instead of content type, optimizing for AI agent context windows.
+
+## The Problem with Traditional Documentation
+
+Traditional documentation structures organize files by type:
+
+<FileTree>
+- docs/
+  - architecture/
+  - api/
+  - guides/
+  - decisions/
+  - changelog/
+</FileTree>
+
+**The issue**: AI agents don't know which files to prioritize. They either:
+- Read everything (wasting context on irrelevant history)
+- Read nothing (hallucinating conventions)
+- Ask constantly (slowing development)
+
+## The TMS Solution: Organize by Access Frequency
+
+Instead of organizing by content type, TMS organizes by **how often AI agents should read the file**:
+
+<CardGrid>
+  <Card title="HOT Tier" icon="star">
+    **Always Read** - Files loaded at the start of every AI session
+
+    Small, current, actionable information
+  </Card>
+
+  <Card title="WARM Tier" icon="document">
+    **Read on Demand** - Files loaded when implementing specific features
+
+    Timeless reference information
+  </Card>
+
+  <Card title="COLD Tier" icon="archive">
+    **Ignore Unless Asked** - Historical context AI agents should skip
+
+    Completed tasks, old changelogs
+  </Card>
+</CardGrid>
+
+---
+
+## The Three Tiers Explained
+
+### HOT Tier: Always Read
+
+**Purpose**: Provide immediate context for the current work sprint.
+
+**Characteristics**:
+- **Always loaded** into AI context at session start
+- **Strict size limits** to preserve context budget
+- Contains **current** actionable information only
+
+**Files in HOT Tier**:
+
+<FileTree>
+- NEXT-TASKS.md Current sprint (max 200 lines)
+- CLAUDE.md AI workflow config
+- .github/
+  - copilot-instructions.md Critical rules (max 100 lines)
+</FileTree>
+
+<Aside type="tip" title="Computer Memory Analogy">
+  Think of HOT tier like **RAM** in a computer—small, fast, and always accessed. You can't store your entire hard drive in RAM, so you keep only what's immediately needed.
+</Aside>
+
+**What belongs in HOT**:
+- Current sprint tasks (1-2 weeks maximum)
+- Critical coding rules (security, money/math)
+- Tech stack overview
+- CLI commands for development
+
+**What doesn't belong in HOT**:
+- Completed tasks → Move to COLD
+- Future backlog → Move to `FUTURE-ENHANCEMENTS.md`
+- Detailed architecture → Keep in WARM
+- Historical decisions → Archive to COLD
+
+---
+
+### WARM Tier: Read on Demand
+
+**Purpose**: Provide reference documentation AI agents read when working on specific features.
+
+**Characteristics**:
+- **Loaded when relevant** to current task
+- Contains **timeless** reference information
+- No strict size limits (but keep reasonable)
+
+**Files in WARM Tier**:
+
+<FileTree>
+- docs/
+  - core/
+    - ARCHITECTURE.md System design (< 500 lines)
+    - PATTERNS.md Coding standards (< 650 lines)
+    - DOMAIN-LOGIC.md Business rules (< 400 lines)
+    - GLOSSARY.md Project terminology
+    - SCHEMA.md Data models
+    - TROUBLESHOOTING.md Framework gotchas
+  - decisions/
+    - 0001-example-adr.md Architectural Decision Records
+</FileTree>
+
+<Aside type="tip" title="Computer Memory Analogy">
+  Think of WARM tier like an **SSD**—larger capacity, fast when accessed, but not always loaded. You read a WARM file when you need it, not on every boot.
+</Aside>
+
+**What belongs in WARM**:
+- Coding patterns and conventions
+- Architectural documentation
+- Business logic and domain rules
+- API contracts and schemas
+- Troubleshooting guides for common issues
+
+**What doesn't belong in WARM**:
+- Current sprint tasks → Move to HOT
+- Deprecated patterns → Archive to COLD
+- Version history → Archive to COLD
+
+---
+
+### COLD Tier: Ignore Unless Asked
+
+**Purpose**: Store historical context AI agents should skip to preserve context budget.
+
+**Characteristics**:
+- **Historical context** only
+- Completed tasks, old changelogs, deprecated docs
+- **No size limits** (archive grows indefinitely)
+
+**Files in COLD Tier**:
+
+<FileTree>
+- docs/
+  - archive/
+    - sprint-2026-01.md Completed sprint from January
+    - sprint-2025-12.md Completed sprint from December
+    - v1.0-CHANGELOG.md Old version changelog
+    - deprecated-patterns.md Obsolete conventions
+</FileTree>
+
+<Aside type="caution" title="Computer Memory Analogy">
+  Think of COLD tier like a **hard drive archive**—large, slow, rarely accessed. It's there for reference, but AI agents should ignore it unless you explicitly ask about history.
+</Aside>
+
+**What belongs in COLD**:
+- Completed sprint tasks
+- Old version changelogs
+- Deprecated patterns and decisions
+- Migration guides from past versions
+- Post-mortems and retrospectives
+
+**What doesn't belong in COLD**:
+- Active patterns → Keep in WARM
+- Current architecture → Keep in WARM
+- Anything the AI might need regularly
+
+---
+
+## Why This Architecture Works
+
+### 1. **Context Window Optimization**
+
+AI agents have **limited context windows** (typically 32k-200k tokens). Traditional repos waste this budget:
+
+<Tabs>
+  <TabItem label="Traditional Approach">
+    ```
+    AI reads:
+    - 50 pages of docs (all mixed together)
+    - Can't distinguish current from historical
+    - Context window = 90% noise, 10% signal
+
+    Result: AI hallucinates or asks repetitive questions
+    ```
+  </TabItem>
+
+  <TabItem label="TMS Approach">
+    ```
+    AI reads:
+    - HOT: 300 lines of current context
+    - WARM: 500 lines when implementing feature X
+    - COLD: Skipped entirely
+    - Context window = 90% signal, 10% overhead
+
+    Result: AI follows conventions and works autonomously
+    ```
+  </TabItem>
+</Tabs>
+
+### 2. **Signal Over Noise**
+
+Traditional repos bury critical information in thousands of lines of documentation. TMS forces **signal over noise** by separating active context from history.
+
+**Example**:
+- **Before TMS**: AI reads 10,000 lines across 20 files to find the auth pattern
+- **After TMS**: AI reads `NEXT-TASKS.md` (120 lines), sees "follow `docs/core/PATTERNS.md#auth`", jumps directly to the answer
+
+### 3. **Self-Documenting Priority**
+
+The file location itself communicates priority:
+
+- File in root directory? → **HOT**, read it now
+- File in `docs/core/`? → **WARM**, read on demand
+- File in `docs/archive/`? → **COLD**, ignore it
+
+**No ambiguity**. No "which doc should I read?" questions.
+
+---
+
+## Real-World Example
+
+Let's see how the tiers work in practice.
+
+### Scenario: Adding User Authentication
+
+<Tabs>
+  <TabItem label="Session Start">
+    **AI reads HOT tier**:
+
+    `NEXT-TASKS.md` says:
+    ```markdown
+    ## Active Sprint: User Authentication
+
+    **Why this matters**: Mobile app needs secure API access
+
+    - [ ] JWT token generation
+    - [ ] Token validation middleware
+    - [ ] Refresh token rotation
+    ```
+
+    `copilot-instructions.md` says:
+    ```markdown
+    - Never store tokens in localStorage
+    - Use httpOnly cookies for refresh tokens
+    - Follow patterns in docs/core/PATTERNS.md
+    ```
+
+    **AI now knows**: Auth is the priority, security rules apply
+  </TabItem>
+
+  <TabItem label="Implementation">
+    **AI reads WARM tier on demand**:
+
+    User asks: _"Implement JWT token generation"_
+
+    AI reads `docs/core/PATTERNS.md#authentication`:
+    ```markdown
+    ## Authentication Pattern
+
+    **Canonical Example**: `src/middleware/auth.ts`
+
+    - Use jsonwebtoken library
+    - Sign with RS256 (not HS256)
+    - Set expiry to 15 minutes
+    - Include user_id and role in payload
+    ```
+
+    **AI implements correctly** following the established pattern
+  </TabItem>
+
+  <TabItem label="After Completion">
+    **Task moves to COLD tier**:
+
+    Task marked ✅ Done → Archived to `docs/archive/sprint-2026-01.md`
+
+    ```markdown
+    # Sprint: User Authentication (2026-01-15 to 2026-01-28)
+
+    ✅ JWT token generation - Implemented RS256 signing
+    ✅ Token validation middleware - Added to Express pipeline
+    ✅ Refresh token rotation - httpOnly cookies with 7-day expiry
+    ```
+
+    **NEXT-TASKS.md** is now under 100 lines again, ready for next sprint
+  </TabItem>
+</Tabs>
+
+---
+
+## Migration Strategy: From Traditional to TMS
+
+<Aside type="note" title="Already have documentation?">
+  You can migrate existing documentation to TMS incrementally. You don't need to rewrite everything.
+</Aside>
+
+### Step 1: Identify Current Sprint
+
+What are you working on **right now** (next 1-2 weeks)?
+
+→ Put this in `NEXT-TASKS.md` (HOT)
+
+### Step 2: Extract Critical Rules
+
+What rules must **never be violated** (security, money/math)?
+
+→ Put this in `.github/copilot-instructions.md` (HOT)
+
+### Step 3: Categorize Existing Docs
+
+For each existing doc file, ask:
+
+- **Do I need this on every AI session?** → HOT
+- **Do I need this when implementing feature X?** → WARM
+- **Is this historical context?** → COLD
+
+### Step 4: Archive Aggressively
+
+Move completed tasks, old changelogs, and deprecated patterns to `docs/archive/`.
+
+**Rule of thumb**: If you haven't referenced it in 2 months, archive it.
+
+---
+
+## Common Mistakes
+
+<Aside type="caution" title="Avoid These Anti-Patterns">
+  Even teams that understand TMS sometimes fall into these traps.
+</Aside>
+
+### ❌ Putting Everything in HOT
+
+**Mistake**: Adding 6 months of tasks to `NEXT-TASKS.md` "just in case"
+
+**Why it fails**: Wastes context budget on tasks that won't be worked on for months
+
+**Fix**: Keep only 1-2 weeks in HOT. Move backlog to `FUTURE-ENHANCEMENTS.md`
+
+### ❌ Never Archiving
+
+**Mistake**: Keeping completed tasks in `NEXT-TASKS.md` as a "record"
+
+**Why it fails**: Historical tasks are noise. AI doesn't need them.
+
+**Fix**: Archive completed sprints to `docs/archive/sprint-YYYY-MM.md`
+
+### ❌ Duplicating Info Across Tiers
+
+**Mistake**: Copying the auth pattern from WARM into HOT "for convenience"
+
+**Why it fails**: Duplication causes drift when one copy gets updated
+
+**Fix**: Use canonical links. HOT says "follow WARM file X", not "here's a copy"
+
+### ❌ Ignoring Size Limits
+
+**Mistake**: Letting `NEXT-TASKS.md` grow to 500 lines
+
+**Why it fails**: Wastes context budget. AI reads all 500 lines on every session.
+
+**Fix**: Enforce the 200-line limit. Split large tasks into smaller increments.
+
+---
+
+## Benefits of the Tiered System
+
+<CardGrid stagger>
+  <Card title="Faster AI Performance" icon="rocket">
+    AI agents read only what they need, when they need it. No more scanning thousands of lines to find one pattern.
+  </Card>
+
+  <Card title="Consistent Behavior" icon="approve-check">
+    AI follows established patterns because they're easy to find in WARM tier. No more hallucinated conventions.
+  </Card>
+
+  <Card title="Self-Maintaining Docs" icon="setting">
+    Regular archiving prevents documentation from growing unbounded. Docs stay lean automatically.
+  </Card>
+
+  <Card title="Onboarding Simplified" icon="star">
+    New team members (human or AI) know exactly where to look: HOT for current work, WARM for reference, COLD never.
+  </Card>
+</CardGrid>
+
+---
+
+## Next Steps
+
+Now that you understand the Tiered Memory System:
+
+- Learn about [Context Budget](/concepts/context-budget/) to understand size limits
+- Explore [Truth Syncing](/concepts/truth-syncing/) to keep docs synchronized
+- Read about [Zero-Drift Governance](/concepts/zero-drift/) for validation
+
+<Aside type="tip" title="Try It Yourself">
+  Run `cortex-tms init` in a project and see the tiered structure in action. The file organization makes the pattern immediately obvious.
+</Aside>

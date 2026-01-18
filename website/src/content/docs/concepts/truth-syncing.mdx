@@ -1,0 +1,622 @@
+---
+title: Truth Syncing
+description: The maintenance workflow that keeps documentation synchronized with reality
+---
+
+import { Card, CardGrid, Steps, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+**Truth Syncing** is the practice of automatically updating source-of-truth documentation when code changes. It prevents documentation drift by making doc updates a mandatory part of task completion.
+
+## The Documentation Drift Problem
+
+Traditional projects suffer from **temporal drift**: code evolves, but docs stay frozen in time.
+
+### Classic Drift Scenario
+
+<Steps>
+
+1. **Sprint 1: Initial Implementation**
+
+   ```markdown
+   # ARCHITECTURE.md
+   Database: MongoDB with Mongoose ODM
+   ```
+
+   ```typescript
+   // src/db/connection.ts
+   import mongoose from 'mongoose';
+   ```
+
+2. **Sprint 5: Migration to PostgreSQL**
+
+   Developer implements migration, updates code:
+
+   ```typescript
+   // src/db/connection.ts
+   import { Pool } from 'pg';
+   ```
+
+   But forgets to update docs:
+
+   ```markdown
+   # ARCHITECTURE.md
+   Database: MongoDB with Mongoose ODM ⚠️ STALE
+   ```
+
+3. **Sprint 10: AI Agent Confusion**
+
+   AI agent reads `ARCHITECTURE.md`, sees "MongoDB", generates Mongoose queries for a PostgreSQL database.
+
+   **Result**: Code doesn't work. Hours wasted debugging.
+
+</Steps>
+
+<Aside type="caution">
+  **The Root Cause**: Documentation updates are **optional** in most workflows. Truth Syncing makes them **mandatory**.
+</Aside>
+
+---
+
+## The Truth Syncing Solution
+
+**Before archiving a completed task**, update the relevant source-of-truth files to reflect system changes.
+
+**The Flow**: `NEXT → CODE → TRUTH → ARCHIVE`
+
+```
+1. Work on task in NEXT-TASKS.md
+2. Implement code changes
+3. Update docs/core/ (Truth Syncing)
+4. Archive task to docs/archive/
+```
+
+**Result**: Documentation is **always** synchronized with code.
+
+---
+
+## What Is a "Source of Truth"?
+
+**Source of Truth** files are the canonical reference for how the system works:
+
+<CardGrid>
+  <Card title="README.md" icon="document">
+    **What it documents**: Project overview, current status, quick start
+
+    **Update when**: Milestone reached, tech stack changed
+  </Card>
+
+  <Card title="ARCHITECTURE.md" icon="seti:config">
+    **What it documents**: System design, component structure, data flow
+
+    **Update when**: New service added, database changed, architecture evolved
+  </Card>
+
+  <Card title="PATTERNS.md" icon="setting">
+    **What it documents**: Coding conventions, design patterns, best practices
+
+    **Update when**: New pattern established, old pattern deprecated
+  </Card>
+
+  <Card title="DOMAIN-LOGIC.md" icon="puzzle">
+    **What it documents**: Business rules, core principles, system constraints
+
+    **Update when**: Rule changed, new constraint added
+  </Card>
+</CardGrid>
+
+**The Rule**: If a task changes the system, a source-of-truth file must be updated.
+
+---
+
+## The Truth Syncing Workflow
+
+### Step 1: Identify Which Truth to Update
+
+When completing a task, ask:
+
+**"Did this task change how the system works?"**
+
+<Tabs>
+  <TabItem label="Yes → Update Truth">
+    **Examples**:
+    - Added a new authentication method → Update `ARCHITECTURE.md` and `PATTERNS.md`
+    - Changed database from MongoDB to PostgreSQL → Update `ARCHITECTURE.md`
+    - Deprecated a pattern → Update `PATTERNS.md`
+    - Reached a milestone → Update `README.md`
+  </TabItem>
+
+  <TabItem label="No → Skip Truth Syncing">
+    **Examples** (Chores):
+    - Fixed a typo in comments
+    - Updated dependency version (no API changes)
+    - Reformatted code with Prettier
+    - Added a console.log for debugging
+
+    **Rule**: If it doesn't change architecture, patterns, or business logic, skip Truth Syncing.
+  </TabItem>
+</Tabs>
+
+### Step 2: Map Change to Truth File
+
+Use this decision matrix:
+
+| Change Type | Update Target | Example |
+|-------------|---------------|---------|
+| Milestone reached | `README.md` → Current Phase | "Phase 2 Complete: CLI tool shipped" |
+| New file added | `ARCHITECTURE.md` → File structure | Add `bin/cortex-tms.js` to CLI section |
+| Component added | `ARCHITECTURE.md` → Components | Document new `ValidationService` |
+| Rule changed | `DOMAIN-LOGIC.md` → Specific rule | Update Rule 4 line limits |
+| New pattern | `PATTERNS.md` → Add pattern | Document new "API Error Handling" pattern |
+| Pattern deprecated | `PATTERNS.md` → Mark deprecated | Strike through old "Class Component" pattern |
+| New decision | `docs/decisions/` → Add ADR | Create `0023-switch-to-postgresql.md` |
+| Tech stack change | `ARCHITECTURE.md` → Tech decisions | Update from Bun to Node in stack section |
+
+### Step 3: Make the Update
+
+**Example**: Task completed: "Migrate from MongoDB to PostgreSQL"
+
+<Tabs>
+  <TabItem label="Before Truth Syncing">
+    ```markdown
+    <!-- ARCHITECTURE.md (STALE) -->
+    ## Tech Stack
+
+    - **Database**: MongoDB with Mongoose ODM
+    - **ORM**: Mongoose schemas for type safety
+    ```
+
+    Task is ✅ Done, but docs are wrong.
+  </TabItem>
+
+  <TabItem label="After Truth Syncing">
+    ```markdown
+    <!-- ARCHITECTURE.md (CURRENT) -->
+    ## Tech Stack
+
+    - **Database**: PostgreSQL 15
+    - **ORM**: Prisma for type-safe queries
+    ```
+
+    Task is ✅ Done **and** docs are accurate.
+  </TabItem>
+</Tabs>
+
+### Step 4: Reference in Archive
+
+When archiving the task, mention which truth files were updated:
+
+```markdown
+<!-- docs/archive/sprint-2026-01.md -->
+# Sprint: Database Migration (2026-01-10 to 2026-01-24)
+
+## Completed Tasks
+
+✅ **Migrate from MongoDB to PostgreSQL**
+   - Implemented Prisma schema
+   - Migrated all data
+   - Updated connection logic in `src/db/connection.ts`
+
+## Truth Updates
+- `ARCHITECTURE.md` → Updated tech stack section
+- `docs/decisions/0023-switch-to-postgresql.md` → Added ADR
+```
+
+**Why**: Creates an audit trail. Future developers can trace architectural changes.
+
+---
+
+## Truth Syncing Checklist
+
+Before archiving a task, verify:
+
+- [ ] Does this task change system architecture?
+- [ ] If yes, which `docs/core/*.md` file needs updating?
+- [ ] Have I updated that file?
+- [ ] Is the update referenced in the archive entry?
+
+<Aside type="tip" title="AI Assistance">
+  Ask your AI agent: *"I just completed task X. Which truth files should I update?"*
+
+  AI can identify the right files based on the task description.
+</Aside>
+
+---
+
+## Common Truth Syncing Scenarios
+
+### Scenario 1: New Feature Implementation
+
+**Task**: "Add real-time notifications using WebSockets"
+
+**Truth Updates Needed**:
+
+<Steps>
+
+1. **Update ARCHITECTURE.md**
+
+   ```markdown
+   ## System Components
+
+   ### WebSocket Server
+   - **Purpose**: Real-time bidirectional communication
+   - **Technology**: Socket.io
+   - **Location**: `src/services/websocket.ts`
+   ```
+
+2. **Update PATTERNS.md**
+
+   ```markdown
+   ## Real-Time Communication Pattern
+
+   **Canonical Example**: `src/services/websocket.ts`
+
+   **Rules**:
+   - Use Socket.io for WebSocket abstraction
+   - Authenticate via JWT in handshake
+   - Namespace events by feature (auth, chat, notifications)
+   ```
+
+3. **Archive Task**
+
+   ```markdown
+   ✅ Add real-time notifications using WebSockets
+
+   **Truth Updates**:
+   - ARCHITECTURE.md → Added WebSocket Server section
+   - PATTERNS.md → Added Real-Time Communication Pattern
+   ```
+
+</Steps>
+
+### Scenario 2: Tech Stack Migration
+
+**Task**: "Replace Express with Fastify for API server"
+
+**Truth Updates Needed**:
+
+<Steps>
+
+1. **Update ARCHITECTURE.md**
+
+   ```markdown
+   ## Tech Stack
+
+   - **API Framework**: Fastify 4 (previously Express)
+   - **Why**: 2x faster, built-in schema validation, better TypeScript support
+   ```
+
+2. **Update PATTERNS.md**
+
+   ```markdown
+   ## API Route Pattern
+
+   ~~**Old (Express)**:~~
+   ```typescript
+   app.get('/api/users', async (req, res) => { ... });
+   ```
+
+   **New (Fastify)**:
+   ```typescript
+   fastify.get('/api/users', async (request, reply) => { ... });
+   ```
+   ```
+
+3. **Create ADR**
+
+   ```markdown
+   <!-- docs/decisions/0042-migrate-to-fastify.md -->
+   # 42. Migrate from Express to Fastify
+
+   **Status**: Accepted
+   **Date**: 2026-01-20
+
+   ## Context
+   Express middleware performance is bottlenecking API response times.
+
+   ## Decision
+   Migrate to Fastify for 2x performance improvement.
+
+   ## Consequences
+   - Faster API responses
+   - Better TypeScript support
+   - Migration effort: ~2 weeks
+   ```
+
+4. **Archive Task**
+
+   ```markdown
+   ✅ Replace Express with Fastify
+
+   **Truth Updates**:
+   - ARCHITECTURE.md → Updated API Framework
+   - PATTERNS.md → Updated API Route Pattern
+   - docs/decisions/0042-migrate-to-fastify.md → Created ADR
+   ```
+
+</Steps>
+
+### Scenario 3: Pattern Deprecated
+
+**Task**: "Remove class components, fully migrate to hooks"
+
+**Truth Updates Needed**:
+
+<Steps>
+
+1. **Update PATTERNS.md**
+
+   ```markdown
+   ## Component Patterns
+
+   ~~**Class Components** (Deprecated 2026-01)~~
+
+   **Function Components with Hooks** (Current Standard)
+   - Use `useState` for local state
+   - Use `useEffect` for side effects
+   - Use custom hooks for reusable logic
+   ```
+
+2. **Archive Task**
+
+   ```markdown
+   ✅ Remove class components, fully migrate to hooks
+
+   **Truth Updates**:
+   - PATTERNS.md → Deprecated class component pattern
+   - All components now use hooks
+   ```
+
+</Steps>
+
+---
+
+## The Maintenance Protocol
+
+**The complete workflow**: FUTURE → NEXT → CODE → TRUTH → ARCHIVE
+
+<Steps>
+
+1. **Promote Task from Backlog**
+
+   Move task from `FUTURE-ENHANCEMENTS.md` to `NEXT-TASKS.md`
+
+2. **Implement Task**
+
+   Write code, run tests, commit changes
+
+3. **Truth Syncing**
+
+   Update `docs/core/` files to reflect system changes
+
+4. **Validation**
+
+   Run `cortex-tms validate --strict` to ensure docs are valid
+
+5. **Archive Task**
+
+   Move completed task from `NEXT-TASKS.md` to `docs/archive/sprint-YYYY-MM.md`
+
+6. **Repeat**
+
+   When `NEXT-TASKS.md` has < 3 tasks, promote more from backlog
+
+</Steps>
+
+<Aside type="tip" title="Small Task Exception">
+  **Chores** (typos, formatting, dependency bumps) can skip Truth Syncing and Archiving.
+
+  Just commit and move on. See [Zero-Drift Governance](/concepts/zero-drift/) for details.
+</Aside>
+
+---
+
+## Why Truth Syncing Works
+
+### Traditional Workflow (Broken)
+
+```
+1. Implement feature
+2. ✅ Mark task done
+3. (Maybe update docs... probably forget)
+4. Archive task
+5. ⚠️ Docs drift from reality
+```
+
+**Result**: 3 months later, docs are 50% accurate.
+
+### Truth Syncing Workflow (Fixed)
+
+```
+1. Implement feature
+2. Update docs (mandatory)
+3. Validate docs (automated)
+4. ✅ Mark task done
+5. Archive task
+```
+
+**Result**: Docs are **always** accurate.
+
+---
+
+## Automation with Validation
+
+**Truth Syncing** is enforced through validation:
+
+```bash
+cortex-tms validate --strict
+```
+
+**Checks**:
+- All internal links resolve (no dead links to renamed files)
+- Schema compliance (docs follow expected structure)
+- No placeholder text (docs are production-ready)
+
+**Failed validation = Failed build** in CI/CD.
+
+<Aside type="note">
+  **Validation is the stick. Truth Syncing is the carrot.**
+
+  Validation catches drift. Truth Syncing prevents it.
+</Aside>
+
+---
+
+## Truth Syncing in Practice
+
+### Example: Cortex TMS Itself
+
+**This repository uses Truth Syncing to build itself.**
+
+**Recent Example**:
+
+**Task**: "Add `cortex-tms validate` command"
+
+**Truth Updates**:
+1. `ARCHITECTURE.md` → Added CLI validation section
+2. `PATTERNS.md` → Added validation pattern
+3. `README.md` → Updated feature list with validation
+4. `docs/archive/sprint-2025-12.md` → Archived task with truth update references
+
+**Result**: Anyone reading the docs knows validation exists and how it works.
+
+---
+
+## Common Mistakes
+
+<Aside type="caution" title="Avoid These Anti-Patterns">
+  Even teams that understand Truth Syncing sometimes make these mistakes.
+</Aside>
+
+### ❌ Updating Docs "Later"
+
+**Mistake**: "I'll update docs after the sprint ends"
+
+**Why it fails**: You forget. 3 months later, docs are wrong.
+
+**Fix**: Update docs **before archiving the task**. Make it part of "done".
+
+### ❌ Duplicating Info Instead of Updating
+
+**Mistake**: Adding a new ARCHITECTURE-v2.md instead of updating ARCHITECTURE.md
+
+**Why it fails**: Now there are two sources of truth. AI agents don't know which to trust.
+
+**Fix**: Update the canonical file. Archive old versions to `docs/archive/`.
+
+### ❌ Vague Archive References
+
+**Mistake**:
+```markdown
+✅ Task completed
+
+Truth updates: Updated some docs
+```
+
+**Why it fails**: No audit trail. Can't trace which docs changed.
+
+**Fix**:
+```markdown
+✅ Task completed
+
+Truth updates:
+- ARCHITECTURE.md → Updated database section
+- PATTERNS.md → Added caching pattern
+```
+
+---
+
+## Benefits of Truth Syncing
+
+<CardGrid stagger>
+  <Card title="No Documentation Drift" icon="approve-check">
+    Docs are updated with every system change. Truth always matches reality.
+  </Card>
+
+  <Card title="AI Agents Trust Docs" icon="rocket">
+    When docs are accurate, AI agents follow them confidently. No hallucinations.
+  </Card>
+
+  <Card title="Audit Trail" icon="document">
+    Archive entries show which docs changed when. Easy to trace architectural evolution.
+  </Card>
+
+  <Card title="Enforced Discipline" icon="star">
+    "Done" means code **and** docs are updated. No shortcuts.
+  </Card>
+</CardGrid>
+
+---
+
+## Truth Syncing Checklist
+
+Add this to your Definition of Done in `NEXT-TASKS.md`:
+
+```markdown
+## 🎯 Definition of Done
+
+- [ ] Code implemented and tested
+- [ ] Truth Syncing: Updated relevant docs/core/ files
+- [ ] Validation: `cortex-tms validate --strict` passes
+- [ ] Changes committed with conventional format
+- [ ] Task archived with truth update references
+```
+
+---
+
+## Advanced: Automated Truth Syncing
+
+### Git Hooks for Reminders
+
+```bash
+# .husky/pre-commit
+#!/bin/bash
+
+# Check if code changed but docs didn't
+CODE_CHANGED=$(git diff --cached --name-only | grep -E "^src/")
+DOCS_CHANGED=$(git diff --cached --name-only | grep -E "^docs/core/")
+
+if [ -n "$CODE_CHANGED" ] && [ -z "$DOCS_CHANGED" ]; then
+  echo "⚠️  Code changed but docs/core/ unchanged"
+  echo "Did you update truth files (ARCHITECTURE, PATTERNS, etc.)?"
+  read -p "Continue anyway? (y/n) " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    exit 1
+  fi
+fi
+```
+
+**Result**: Git warns if you commit code without updating docs.
+
+### AI Agent Prompts
+
+Add to `CLAUDE.md`:
+
+```markdown
+## Post-Task Protocol
+
+After completing a task, follow these steps:
+
+1. **Truth Syncing**: Ask yourself "Which docs/core/ file needs updating?"
+2. **Update Truth**: Modify ARCHITECTURE.md, PATTERNS.md, etc.
+3. **Validate**: Run `cortex-tms validate --strict`
+4. **Archive**: Reference truth updates in archive entry
+```
+
+**Result**: AI agent automatically performs Truth Syncing.
+
+---
+
+## Next Steps
+
+Now that you understand Truth Syncing:
+
+- Learn about [Zero-Drift Governance](/concepts/zero-drift/) for validation
+- Explore [Tiered Memory](/concepts/tiered-memory/) for the bigger picture
+- Read about [Context Budget](/concepts/context-budget/) for file size rationale
+
+<Aside type="tip" title="Start Truth Syncing Today">
+  Next time you complete a task, ask: *"Which truth file should I update?"*
+
+  Make it a habit. After 10 tasks, it'll be automatic.
+</Aside>

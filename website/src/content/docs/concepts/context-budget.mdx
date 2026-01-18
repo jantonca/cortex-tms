@@ -1,0 +1,501 @@
+---
+title: Context Budget Management
+description: Understanding and enforcing file size limits to optimize AI agent context windows
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+**Context Budget** is the practice of enforcing strict size limits on documentation files to preserve AI agent context windows. Every line in a file "costs" tokens—waste those tokens, and AI performance suffers.
+
+## The Context Window Problem
+
+AI coding agents have **limited context windows**:
+
+<CardGrid>
+  <Card title="Claude 3.5 Sonnet" icon="star">
+    **200,000 tokens** (~150,000 words)
+  </Card>
+
+  <Card title="GPT-4 Turbo" icon="document">
+    **128,000 tokens** (~96,000 words)
+  </Card>
+
+  <Card title="GitHub Copilot" icon="github">
+    **32,000 tokens** (~24,000 words)
+  </Card>
+</CardGrid>
+
+**The problem**: This seems like a lot, but it fills up quickly:
+
+```
+Your codebase:           50,000 tokens
+Documentation:           30,000 tokens
+Conversation history:    20,000 tokens
+AI's working memory:     10,000 tokens
+-------------------------------------------
+Total:                  110,000 tokens
+```
+
+<Aside type="caution">
+  **What happens when context fills up?**
+  - AI "forgets" earlier instructions
+  - Hallucinations increase
+  - Response quality degrades
+  - Processing slows down significantly
+</Aside>
+
+**The solution**: Treat context like a budget. Every line of documentation must justify its existence.
+
+---
+
+## File Size Limits
+
+Cortex TMS enforces **strict size limits** on HOT files and **relaxed limits** on WARM files:
+
+### HOT Tier Limits (Strictly Enforced)
+
+| File | Max Lines | Why This Limit? |
+|------|-----------|-----------------|
+| `NEXT-TASKS.md` | **200 lines** | One sprint maximum (1-2 weeks) |
+| `.github/copilot-instructions.md` | **100 lines** | Critical rules only, no explanations |
+
+<Aside type="note" title="Why So Strict?">
+  HOT files are read **at the start of every AI session**. If `NEXT-TASKS.md` grows to 500 lines, the AI wastes ~2,000 tokens on outdated tasks every time.
+
+  **200 lines = ~800 tokens**. That's the sweet spot for one focused sprint.
+</Aside>
+
+### WARM Tier Limits (Recommended)
+
+| File | Max Lines | Why This Limit? |
+|------|-----------|-----------------|
+| `docs/core/PATTERNS.md` | **650 lines** | Reference manual with quick-reference index |
+| `docs/core/DOMAIN-LOGIC.md` | **400 lines** | Core rules + Maintenance Protocol |
+| `docs/core/ARCHITECTURE.md` | **500 lines** | System design without implementation details |
+| `docs/core/GIT-STANDARDS.md` | **250 lines** | Git conventions + commit standards |
+| `docs/core/GLOSSARY.md` | **200 lines** | Terminology definitions |
+
+<Aside type="tip">
+  WARM files are read **on demand**, so limits can be higher. But bloat still wastes context—a 2,000-line PATTERNS.md file is hard for AI (and humans) to navigate.
+</Aside>
+
+### COLD Tier Limits
+
+**No limits**. Archive files can grow indefinitely—AI agents ignore them unless explicitly asked.
+
+---
+
+## Why Size Limits Matter
+
+### Example: The Bloated NEXT-TASKS.md
+
+Let's compare two projects:
+
+#### ❌ Project A: No Size Limits
+
+```markdown
+# NEXT-TASKS.md (850 lines)
+
+## Q1 2026 Tasks
+- [ ] 50 tasks planned for January-March
+...
+
+## Q2 2026 Tasks
+- [ ] 60 tasks planned for April-June
+...
+
+## Q3 2026 Tasks
+- [ ] 70 tasks planned for July-September
+...
+
+## Completed Tasks (2025)
+- [x] 100 tasks from last year
+...
+```
+
+**Context cost**: ~3,400 tokens read **every session**
+
+**AI behavior**:
+- Gets confused about current priority
+- References completed tasks as if they're active
+- Asks "Which task should I work on?" repeatedly
+
+#### ✅ Project B: With Size Limits
+
+```markdown
+# NEXT-TASKS.md (180 lines)
+
+## Active Sprint: User Authentication
+**Why this matters**: Mobile app needs secure API access
+
+- [ ] JWT token generation
+- [ ] Token validation middleware
+- [ ] Refresh token rotation
+...
+```
+
+**Context cost**: ~720 tokens
+
+**AI behavior**:
+- Immediately understands current focus
+- Stays on task without prompting
+- Follows established patterns from WARM tier
+
+**Savings**: 2,680 tokens per session = 30-40% more room for code and conversation
+
+---
+
+## Enforcement Strategies
+
+### 1. Manual Review
+
+Before archiving a task, check file size:
+
+```bash
+wc -l NEXT-TASKS.md
+# Output: 185 NEXT-TASKS.md
+```
+
+If approaching 200 lines → Archive completed tasks or move backlog items to `FUTURE-ENHANCEMENTS.md`.
+
+### 2. Automated Validation
+
+Use the Cortex TMS CLI:
+
+```bash
+cortex-tms validate --strict
+```
+
+**Output**:
+```
+✓ NEXT-TASKS.md (185 lines) - Under limit
+✗ copilot-instructions.md (120 lines) - EXCEEDS LIMIT (max 100)
+
+Recommendations:
+- Move detailed examples to docs/core/PATTERNS.md
+- Keep only critical rules in copilot-instructions.md
+```
+
+### 3. Pre-Commit Hooks
+
+Add a git hook to prevent oversized commits:
+
+```bash
+#!/bin/bash
+# .git/hooks/pre-commit
+
+NEXT_TASKS_LINES=$(wc -l < NEXT-TASKS.md)
+
+if [ $NEXT_TASKS_LINES -gt 200 ]; then
+  echo "❌ NEXT-TASKS.md exceeds 200 lines ($NEXT_TASKS_LINES lines)"
+  echo "Archive completed tasks before committing"
+  exit 1
+fi
+
+echo "✓ NEXT-TASKS.md size OK ($NEXT_TASKS_LINES lines)"
+```
+
+---
+
+## What to Do When You Hit the Limit
+
+### HOT Files: Archive or Move
+
+When `NEXT-TASKS.md` approaches 200 lines:
+
+<CardGrid stagger>
+  <Card title="Archive Completed Tasks" icon="archive">
+    Move finished tasks to `docs/archive/sprint-YYYY-MM.md`
+
+    ```bash
+    # Before: 195 lines
+    # After:  120 lines
+    ```
+  </Card>
+
+  <Card title="Move Backlog to FUTURE" icon="document">
+    Move low-priority tasks to `FUTURE-ENHANCEMENTS.md`
+
+    ```bash
+    # Move "nice to have" tasks out of current sprint
+    ```
+  </Card>
+
+  <Card title="Break Down Large Tasks" icon="list-format">
+    Split 50-line epics into smaller increments
+
+    ```bash
+    # Instead of 1 huge task, create 5 focused ones
+    ```
+  </Card>
+</CardGrid>
+
+### WARM Files: Split or Summarize
+
+When `docs/core/PATTERNS.md` exceeds 650 lines:
+
+**Option 1: Split into Multiple Files**
+```
+docs/core/
+├── PATTERNS.md           (index + core patterns)
+├── PATTERNS-FRONTEND.md  (React/Vue patterns)
+├── PATTERNS-BACKEND.md   (API patterns)
+└── PATTERNS-DATA.md      (Database patterns)
+```
+
+**Option 2: Create Quick-Reference Index**
+```markdown
+# PATTERNS.md
+
+## Quick Reference
+| Pattern | Line | Use When |
+|---------|------|----------|
+| Auth Pattern | 45 | Implementing login/signup |
+| API Pattern | 120 | Building REST endpoints |
+| ...
+
+## Detailed Patterns
+### Auth Pattern
+...
+```
+
+AI can scan the index, jump to the relevant section.
+
+---
+
+## Context Budget Best Practices
+
+### 1. Use Canonical Links, Not Duplication
+
+**Bad** (wastes context):
+```markdown
+## Button Pattern
+
+[300 lines of duplicated code from Button.tsx]
+```
+
+**Good** (saves context):
+```markdown
+## Button Pattern
+
+**Canonical Example**: `src/components/Button.tsx:15`
+
+**Key Rules**:
+- Use `cva` for variant composition
+- Support `size`, `variant`, `disabled` props
+```
+
+<Aside type="tip">
+  Duplication wastes context **and** causes drift. Canonical links stay accurate and use 90% fewer tokens.
+</Aside>
+
+### 2. Keep Examples Minimal
+
+**Bad**:
+```markdown
+## JWT Authentication
+
+Here's a complete implementation:
+[500 lines of code]
+```
+
+**Good**:
+```markdown
+## JWT Authentication
+
+**Canonical Implementation**: `src/middleware/auth.ts`
+
+**Key Points**:
+- Use RS256 (not HS256)
+- Set 15-minute expiry
+- Include user_id and role in payload
+
+**Example**:
+```typescript
+const token = jwt.sign({ user_id, role }, privateKey, {
+  algorithm: 'RS256',
+  expiresIn: '15m'
+});
+```
+```
+
+### 3. Archive Aggressively
+
+**Rule of thumb**: If you haven't referenced it in 2 months, archive it.
+
+Historical context is valuable, but it's **COLD** context. Keep it in `docs/archive/`, not in files AI reads regularly.
+
+### 4. Prefer Bullet Points Over Prose
+
+**Bad** (verbose):
+```markdown
+When you are implementing authentication, you should make sure
+that you are using the RS256 algorithm instead of HS256 because
+RS256 is more secure and uses asymmetric keys which are better
+for distributed systems where you can't share a secret safely.
+```
+
+**Good** (concise):
+```markdown
+- Use RS256 (not HS256) for JWT signing
+- Why: Asymmetric keys are safer for distributed systems
+```
+
+**Savings**: ~60% fewer tokens for the same information.
+
+---
+
+## Monitoring Context Usage
+
+### Track Context Consumption
+
+Use AI agent analytics (if available) to see context usage:
+
+```
+Session #1234
+- Code files read:        45,000 tokens
+- NEXT-TASKS.md:             800 tokens
+- docs/core/PATTERNS.md:   2,200 tokens
+- Conversation history:   15,000 tokens
+----------------------------------------
+Total:                    63,000 tokens
+Context remaining:        137,000 tokens
+```
+
+**Red flags**:
+- Documentation > 20% of context
+- Same file read multiple times per session
+- Frequent "I don't remember" responses
+
+### Optimize Based on Usage
+
+If AI repeatedly reads `docs/core/ARCHITECTURE.md` (5,000 tokens):
+
+**Option 1**: Summarize it → Reduce to 2,000 tokens
+**Option 2**: Split it → Create focused sub-docs
+**Option 3**: Promote to HOT → Move critical parts to `copilot-instructions.md`
+
+---
+
+## Context Budget Violations
+
+<Aside type="caution" title="Common Violations">
+  Even teams that understand context budgets sometimes violate them accidentally.
+</Aside>
+
+### Violation 1: "Just One More Task"
+
+**Mistake**: Adding tasks to `NEXT-TASKS.md` without removing completed ones
+
+**Impact**: File grows from 180 → 220 → 300 lines over 2 months
+
+**Fix**: Archive completed tasks **immediately** after marking ✅ Done
+
+### Violation 2: Documenting Implementation Details
+
+**Mistake**: Copying entire source files into PATTERNS.md "for reference"
+
+**Impact**: PATTERNS.md grows to 2,000 lines
+
+**Fix**: Use canonical links. Provide **rules**, not **implementations**.
+
+### Violation 3: Historical Changelog in HOT
+
+**Mistake**: Keeping 2 years of changelog in `CHANGELOG.md` at project root (HOT tier)
+
+**Impact**: AI reads 5,000 lines of irrelevant history every session
+
+**Fix**: Keep only current version in HOT. Archive old versions to `docs/archive/v1.0-CHANGELOG.md` (COLD).
+
+---
+
+## Benefits of Context Budget Discipline
+
+<CardGrid stagger>
+  <Card title="Faster AI Response" icon="rocket">
+    Less context to process = faster generation. AI spends time coding, not reading irrelevant docs.
+  </Card>
+
+  <Card title="Better AI Memory" icon="approve-check">
+    AI "remembers" earlier instructions because context isn't crowded with noise.
+  </Card>
+
+  <Card title="More Room for Code" icon="document">
+    Leaner docs = more tokens available for showing AI your actual codebase.
+  </Card>
+
+  <Card title="Enforced Clarity" icon="star">
+    Size limits force concise writing. No room for fluff or redundancy.
+  </Card>
+</CardGrid>
+
+---
+
+## Real-World Context Budget Calculation
+
+Let's calculate the context budget for a typical project:
+
+### Before Cortex TMS
+
+```
+NEXT-TASKS.md (unconstrained):        3,500 tokens
+README.md (kitchen sink):             2,000 tokens
+docs/architecture.md (verbose):       4,500 tokens
+docs/api.md (duplicates code):        3,000 tokens
+CHANGELOG.md (2 years of history):    2,500 tokens
+----------------------------------------------------
+Documentation total:                 15,500 tokens
+
+Context remaining for code:          84,500 tokens (of 100k)
+```
+
+### After Cortex TMS
+
+```
+HOT Tier:
+  NEXT-TASKS.md (200 lines):            800 tokens
+  copilot-instructions.md (100 lines):  400 tokens
+
+WARM Tier (read on demand):
+  docs/core/PATTERNS.md:              2,200 tokens
+  docs/core/ARCHITECTURE.md:          1,800 tokens
+
+COLD Tier (ignored):
+  docs/archive/* (not loaded)             0 tokens
+----------------------------------------------------
+Documentation total:                  5,200 tokens
+
+Context remaining for code:          94,800 tokens (of 100k)
+```
+
+**Savings**: 10,300 tokens = **66% less documentation overhead**
+
+That's enough room for 50+ additional source files or 100+ turns of conversation.
+
+---
+
+## Enforcement Checklist
+
+Before marking a task ✅ Done, verify:
+
+- [ ] `NEXT-TASKS.md` is under 200 lines
+- [ ] `copilot-instructions.md` is under 100 lines
+- [ ] WARM files are under their recommended limits
+- [ ] Completed tasks archived to `docs/archive/`
+- [ ] Backlog items moved to `FUTURE-ENHANCEMENTS.md`
+
+**Tool**: Run `cortex-tms validate --strict` to check automatically.
+
+---
+
+## Next Steps
+
+Now that you understand context budgets:
+
+- Learn about [Tiered Memory](/concepts/tiered-memory/) for the bigger picture
+- Explore [Zero-Drift Governance](/concepts/zero-drift/) for validation
+- Read about [Truth Syncing](/concepts/truth-syncing/) for maintenance workflows
+
+<Aside type="tip" title="Start Small">
+  Don't try to enforce all limits at once. Start with `NEXT-TASKS.md` (most impactful), then gradually apply limits to other files.
+</Aside>
