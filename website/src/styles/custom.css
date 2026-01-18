@@ -1,0 +1,57 @@
+:root {
+  /* Brand Colors */
+  --sl-color-accent: #f97316;      /* Pumpkin Spice - primary brand color */
+  --sl-color-accent-low: #f9731626; /* Pumpkin Spice with low opacity */
+  --sl-color-accent-high: #ff8c42;  /* Lighter pumpkin for highlights */
+  --sl-color-black: #111111;        /* Onyx - deep black */
+  --sl-color-white: #ffffff;        /* Pure white */
+
+  /* Semantic colors */
+  --sl-color-green: #20b2aa;        /* Light Sea Green - success states */
+  --sl-color-orange: #ffa500;       /* Bright Amber - warnings */
+
+  /* Typography - Noto Font Family */
+  --sl-font: 'Noto Sans Variable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --sl-font-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --sl-font-mono: 'Noto Sans Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', ui-monospace, monospace;
+}
+
+/* Typography improvements for readability in technical documentation */
+article {
+  font-weight: 400;
+  line-height: 1.75;
+  letter-spacing: -0.01em;
+}
+
+/* Headings optimization */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--sl-font);
+  letter-spacing: -0.02em;
+}
+
+/* Code block styling */
+code {
+  font-size: 0.9em;
+  font-family: var(--sl-font-mono);
+}
+
+pre code {
+  font-size: 0.875em;
+  line-height: 1.5;
+}
+
+/* Inline code styling */
+:not(pre) > code {
+  background-color: var(--sl-color-accent-low);
+  padding: 0.125em 0.375em;
+  border-radius: 0.25em;
+}
+
+/* Link styling with brand color */
+a {
+  color: var(--sl-color-accent);
+}
+
+a:hover {
+  color: var(--sl-color-accent-high);
+}

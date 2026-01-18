@@ -1,0 +1,209 @@
+---
+title: Quick Start
+description: Get Cortex TMS running in 5 minutes
+---
+
+This guide will have you up and running with Cortex TMS in under 5 minutes.
+
+## Prerequisites
+
+- **Node.js 18+** installed
+- A project directory (new or existing)
+- _(Optional)_ Claude Code or GitHub Copilot for AI assistance
+
+## Installation & Setup
+
+1. **Install Cortex TMS globally**
+
+   ```bash
+   npm install -g cortex-tms@2.6.0
+   ```
+
+   Or use `npx` to skip installation:
+
+   ```bash
+   npx cortex-tms@2.6.0 init
+   ```
+
+### Step 2: Initialize your project
+
+   Navigate to your project directory and run:
+
+   ```bash
+   cd your-project
+   cortex-tms init
+   ```
+
+   You'll be prompted to choose:
+   - **Project type**: Basic, Full, or Custom
+   - **Features**: ADRs, Patterns, Glossary, etc.
+
+   For this tutorial, select **"Full"** to get all features.
+
+### Step 3: Review generated files
+
+   Cortex TMS creates this structure:
+
+   ```
+   your-project/
+   ├── CLAUDE.md              # AI agent instructions
+   ├── NEXT-TASKS.md          # Current objectives
+   ├── CHANGELOG.md           # Version history
+   ├── docs/
+   │   ├── core/
+   │   │   ├── PATTERNS.md    # Code conventions
+   │   │   └── GLOSSARY.md    # Terminology
+   │   └── adr/
+   │       └── 0001-example-adr.md
+   └── .github/
+       └── copilot-instructions.md
+   ```
+
+### Step 4: Customize for your project
+
+   Open `CLAUDE.md` and update:
+   - **Role**: Your AI assistant's persona
+   - **CLI Commands**: Add your test/build commands
+   - **Operational Loop**: Modify the workflow if needed
+
+   Example customization:
+
+   ```markdown
+   ## 💻 CLI Commands
+
+   - **Test**: `npm test` or `pytest`
+   - **Lint**: `npm run lint`
+   - **Build**: `npm run build`
+   ```
+
+### Step 5: Test with Claude Code (if installed)
+
+   Open your project in Claude Code:
+
+   ```bash
+   claude-code your-project
+   ```
+
+   Claude will automatically read `CLAUDE.md` and follow your instructions!
+
+   Try asking: _"What's the current task?"_ — Claude will read `NEXT-TASKS.md`.
+
+## Verify Setup
+
+Run the validation command to ensure everything is configured correctly:
+
+```bash
+cortex-tms validate --strict
+```
+
+You should see:
+
+```
+✓ CLAUDE.md exists and is valid
+✓ NEXT-TASKS.md exists and is well-formed
+✓ All ADRs follow naming convention
+✓ No dead links in documentation
+
+Project health: EXCELLENT
+```
+
+## What's Next?
+
+### Update NEXT-TASKS.md
+
+Edit `NEXT-TASKS.md` to add your first real task:
+
+```markdown
+## Current Objective
+
+Implement user authentication using JWT tokens.
+
+**Why**: We need secure API access for the mobile app.
+
+**Acceptance Criteria**:
+- [ ] JWT token generation on login
+- [ ] Token validation middleware
+- [ ] Refresh token rotation
+- [ ] Tests for auth flow
+```
+
+### Create Your First ADR
+
+When you make an architectural decision, document it:
+
+```bash
+cortex-tms adr new "Use PostgreSQL for user data storage"
+```
+
+This creates `docs/adr/0002-use-postgresql-for-user-data-storage.md` with a template.
+
+### Codify Your Patterns
+
+Edit `docs/core/PATTERNS.md` to add conventions:
+
+```markdown
+## File Naming
+
+- React components: `PascalCase.tsx`
+- Utility functions: `camelCase.ts`
+- Test files: `*.test.ts`
+```
+
+## Using with AI Agents
+
+### With Claude Code
+
+Claude Code reads `CLAUDE.md` automatically. Just open your project:
+
+```bash
+claude-code .
+```
+
+### With GitHub Copilot
+
+Copilot reads `.github/copilot-instructions.md`. Cortex TMS generates this with a reference to your main docs:
+
+```markdown
+See CLAUDE.md for full project conventions.
+```
+
+### With Cursor
+
+Cursor supports `.cursorrules` files. You can copy `CLAUDE.md` content there:
+
+```bash
+cp CLAUDE.md .cursorrules
+```
+
+## Troubleshooting
+
+### "Command not found: cortex-tms"
+
+Ensure npm global bin is in your PATH:
+
+```bash
+npm config get prefix
+```
+
+The output should be in your `$PATH`. If not, add it:
+
+```bash
+export PATH="$(npm config get prefix)/bin:$PATH"
+```
+
+### "Validation failed: NEXT-TASKS.md malformed"
+
+Check that `NEXT-TASKS.md` has:
+- A `## Current Objective` heading
+- At least one task description
+- Proper Markdown formatting
+
+Run `cortex-tms validate --help` for detailed error messages.
+
+## Next Steps
+
+- Read the [Installation](/getting-started/installation/) guide for advanced setup options
+- Learn about [ADR best practices](#) _(coming soon)_
+- Explore [template customization](#) _(coming soon)_
+
+Happy scaffolding! 🚀

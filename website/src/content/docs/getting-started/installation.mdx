@@ -1,0 +1,253 @@
+---
+title: Installation
+description: Detailed installation options for Cortex TMS
+---
+
+## System Requirements
+
+- **Node.js**: 18.0.0 or higher
+- **npm**: 7.0.0 or higher (comes with Node.js)
+- **Git**: 2.0.0 or higher (recommended for versioned docs)
+
+Check your versions:
+
+```bash
+node --version  # Should be v18.0.0 or higher
+npm --version   # Should be 7.0.0 or higher
+git --version   # Should be 2.0.0 or higher
+```
+
+## Installation Methods
+
+### Option 1: Install Globally with npm
+
+Install Cortex TMS globally to use it across all projects:
+
+```bash
+npm install -g cortex-tms@2.6.0
+```
+
+**Verify installation**:
+
+```bash
+cortex-tms --version
+# Output: 2.6.0
+```
+
+**Usage**:
+
+```bash
+cd your-project
+cortex-tms init
+```
+
+**Pros**: Use `cortex-tms` command anywhere, no need to prefix with `npx`, fastest execution (no download on each run)
+
+**Cons**: Requires global install permissions, may conflict with other versions
+
+### Option 2: Run with npx (No Installation)
+
+Use Cortex TMS without installing it globally:
+
+```bash
+npx cortex-tms@2.6.0 init
+```
+
+**Verify** (will download and run):
+
+```bash
+npx cortex-tms@2.6.0 --version
+# Output: 2.6.0
+```
+
+**Pros**: No global installation required, always run specific version, no permission issues
+
+**Cons**: Slower (downloads on first run per session), must specify version each time
+
+**Tip**: Create an alias for convenience:
+
+```bash
+# Add to ~/.bashrc or ~/.zshrc
+alias cortex="npx cortex-tms@2.6.0"
+
+# Usage:
+cortex init
+```
+
+### Option 3: Install with pnpm
+
+If you use pnpm as your package manager:
+
+```bash
+pnpm add -g cortex-tms@2.6.0
+```
+
+**Usage**:
+
+```bash
+cortex-tms init
+```
+
+**Pros**: Faster installs with pnpm's symlink strategy, disk space efficient, monorepo-friendly
+
+### Option 4: Install with Yarn
+
+If you use Yarn as your package manager:
+
+```bash
+yarn global add cortex-tms@2.6.0
+```
+
+**Usage**:
+
+```bash
+cortex-tms init
+```
+
+**Note**: Ensure Yarn's global bin is in your PATH:
+
+```bash
+export PATH="$(yarn global bin):$PATH"
+```
+
+## Verifying Installation
+
+After installation, verify Cortex TMS is working:
+
+```bash
+# Check version
+cortex-tms --version
+
+# View help
+cortex-tms --help
+
+# Test initialization (in a test directory)
+mkdir test-project && cd test-project
+cortex-tms init
+```
+
+You should see:
+
+```
+🤖 Cortex TMS - AI-Powered Project Scaffolding
+? Select project type: (Use arrow keys)
+❯ Basic - Essential docs only
+  Full - Complete scaffolding
+  Custom - Choose features
+```
+
+## Troubleshooting Installation
+
+### "Command not found: cortex-tms"
+
+**Cause**: npm's global bin directory is not in your PATH.
+
+**Solution**:
+
+1. Find npm's global bin path:
+   ```bash
+   npm config get prefix
+   ```
+
+2. Add it to your PATH (Linux/macOS):
+   ```bash
+   echo 'export PATH="$(npm config get prefix)/bin:$PATH"' >> ~/.bashrc
+   source ~/.bashrc
+   ```
+
+3. For Windows PowerShell:
+   ```powershell
+   $env:Path += ";$(npm config get prefix)"
+   ```
+
+### "Permission denied" when installing globally
+
+**Cause**: npm lacks permissions to install global packages.
+
+**Solution (Option 1)**: Use npx instead:
+
+```bash
+npx cortex-tms@2.6.0 init
+```
+
+**Solution (Option 2)**: Configure npm to use a user directory:
+
+```bash
+mkdir ~/.npm-global
+npm config set prefix '~/.npm-global'
+echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+source ~/.bashrc
+
+# Now install globally
+npm install -g cortex-tms@2.6.0
+```
+
+### Version mismatch or outdated version
+
+**Cause**: Cached old version or multiple installations.
+
+**Solution**:
+
+1. Uninstall all versions:
+   ```bash
+   npm uninstall -g cortex-tms
+   ```
+
+2. Clear npm cache:
+   ```bash
+   npm cache clean --force
+   ```
+
+3. Reinstall specific version:
+   ```bash
+   npm install -g cortex-tms@2.6.0
+   ```
+
+### Windows-specific issues
+
+**Issue**: Scripts disabled in PowerShell.
+
+**Solution**: Enable script execution:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+```
+
+## Updating Cortex TMS
+
+To update to the latest version:
+
+```bash
+# Check current version
+cortex-tms --version
+
+# Update to latest
+npm update -g cortex-tms
+
+# Or install specific version
+npm install -g cortex-tms@2.6.0
+```
+
+## Uninstalling
+
+To remove Cortex TMS:
+
+```bash
+npm uninstall -g cortex-tms
+```
+
+Your project files created by Cortex TMS (like `CLAUDE.md`, `NEXT-TASKS.md`) will remain untouched.
+
+## Next Steps
+
+Now that Cortex TMS is installed:
+
+1. **Initialize a project**: Follow the [Quick Start](/getting-started/quick-start/) guide
+2. **Customize templates**: _(Coming soon)_
+3. **Integrate with CI/CD**: _(Coming soon)_
+
+## Getting Help
+
+- **Documentation**: You're reading it!
+- **GitHub Issues**: [Report bugs](https://github.com/cortex-tms/cortex-tms/issues)
+- **Discussions**: [Ask questions](https://github.com/cortex-tms/cortex-tms/discussions)

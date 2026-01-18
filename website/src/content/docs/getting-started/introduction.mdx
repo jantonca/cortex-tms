@@ -1,0 +1,90 @@
+---
+title: Introduction
+description: Understanding Cortex TMS and AI-optimized documentation
+---
+
+## What Problem Does Cortex TMS Solve?
+
+When working with AI coding assistants like **Claude Code** or **GitHub Copilot**, you quickly discover a challenge: these tools are brilliant at understanding code, but they struggle when your project documentation is:
+
+- **Scattered** across README files, wikis, and Notion docs
+- **Outdated** because manual updates fell behind code changes
+- **Unstructured** in ways AI agents can't easily parse
+- **Inconsistent** in format and conventions
+
+**Cortex TMS solves this** by scaffolding a documentation structure that AI agents are designed to read, understand, and maintain.
+
+## Core Philosophy: Truth-Driven Documentation
+
+Traditional documentation fails because it's **manually maintained**. Cortex TMS introduces a different model:
+
+1. **Single Source of Truth**: Every piece of information lives in exactly one place
+2. **Automated Validation**: The CLI verifies documentation matches reality
+3. **AI-Optimized Format**: Files use conventions AI agents naturally understand
+4. **Zero-Drift Architecture**: Changes to code trigger documentation updates
+
+Think of it as **infrastructure-as-code, but for your project's knowledge**.
+
+## Key Components
+
+Cortex TMS scaffolds these core files:
+
+### CLAUDE.md
+Instructions that Claude Code reads automatically when opening your project. Defines:
+- Your development workflow
+- Git commit conventions
+- Testing requirements
+- Architecture guidelines
+
+### NEXT-TASKS.md
+The **current objective** for you and your AI assistant. Unlike sprawling TODO lists, this focuses on:
+- What's being worked on **right now**
+- Why it matters
+- Acceptance criteria
+
+### docs/adr/
+**Architecture Decision Records** (ADRs) documenting:
+- Why you chose technology X over Y
+- What trade-offs were considered
+- When the decision was made
+
+### docs/core/PATTERNS.md
+**Code conventions** AI agents should follow:
+- Naming conventions
+- File structure patterns
+- Component design guidelines
+
+### docs/core/GLOSSARY.md
+**Shared vocabulary** preventing confusion:
+- Domain-specific terms
+- Acronyms and abbreviations
+- Project-specific jargon
+
+## How AI Agents Use These Files
+
+When you ask Claude Code to "add authentication," here's what happens:
+
+1. **Reads CLAUDE.md** to understand your workflow (e.g., "create a Git branch first")
+2. **Checks PATTERNS.md** to follow your naming conventions
+3. **Reviews GLOSSARY.md** to use correct terminology
+4. **Updates NEXT-TASKS.md** to track progress
+5. **Creates an ADR** to document the authentication approach chosen
+
+Without Cortex TMS, Claude would make assumptions. With it, Claude follows **your team's conventions**.
+
+## Who Should Use Cortex TMS?
+
+### Perfect For:
+- **Solo developers** using Claude Code or Copilot daily
+- **Small teams** adopting AI-assisted development
+- **Open source projects** onboarding AI-powered contributors
+- **Educators** teaching LLM-augmented workflows
+
+### Not Ideal For:
+- Projects with no AI tooling (use traditional docs)
+- Teams committed to separate documentation sites (Cortex TMS focuses on in-repo docs)
+- Highly regulated industries requiring specific doc formats
+
+## What's Next?
+
+Ready to try it out? Head to the [Quick Start](/getting-started/quick-start/) for a 5-minute tutorial, or dive into [Installation](/getting-started/installation/) for detailed setup options.

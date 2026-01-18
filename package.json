@@ -35,7 +35,10 @@
     "test:coverage": "vitest run --coverage",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write \"src/**/*.ts\"",
-    "prepare": "husky"
+    "prepare": "husky",
+    "website:dev": "pnpm --filter @cortex-tms/website dev",
+    "website:build": "pnpm --filter @cortex-tms/website build",
+    "website:preview": "pnpm --filter @cortex-tms/website preview"
   },
   "keywords": [
     "documentation",
