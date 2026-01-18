@@ -79,15 +79,10 @@ This multi-domain strategy follows the pattern used by successful open-source pr
 - **cortex-tms.org**: Community hub, tutorials, showcase, blog
 - **cortex-tms.dev**: Technical API docs, CLI reference, integrations
 
-**Long-term (Post-monetization)**: Business Separation
-- Acquire **cortex-tms.com** (if/when needed for Pro/Enterprise)
-- .org = Free tier community & open source
-- .com = Pro/Enterprise business, pricing, sales
-- .dev = Technical documentation (all tiers)
-
-**Example**: Supabase's strategy:
-- supabase.org = community, docs, open source
-- supabase.com = business, pricing, enterprise
+**Long-term**: Domain Evolution
+- .org = Community & open source focus
+- .dev = Technical documentation & developer tools
+- Future domain acquisitions: As project needs evolve
 
 ---
 
@@ -126,9 +121,7 @@ GitHub Organization: cortex-tms
 ```
 GitHub Organization: cortex-tms
 ├── cortex-tms/cortex-tms (public) - Main CLI package (current)
-├── cortex-tms/internal (private) - Business strategy, planning
-├── cortex-tms/docs (public) - Starlight documentation site
-└── cortex-tms/[future] - Pro/Enterprise features (TBD)
+└── cortex-tms/docs (public) - Starlight documentation site (planned)
 ```
 
 **Repository Decision Status**: 🔄 In Progress (TMS-270c)
@@ -175,11 +168,6 @@ npm install -g cortex-tms@latest
 - NPM package: `cortex-tms`
 - GitHub repo: `github.com/cortex-tms/cortex-tms`
 - Documentation site: `cortex-tms.org` (planned)
-
-### Private Assets (Planned - TMS-276)
-- Business strategy repo: `cortex-tms-internal` (TBD)
-- Internal planning documents
-- Client migration retrospectives
 
 ---
 
@@ -229,7 +217,6 @@ Documentation Site:
 - CHANGELOG.md validated for version entries
 
 **Release Process**:
-- Documented in: `temp/technical/planning/PLAN-v2.6-stable-release.md`
 - Tools: Atomic Release Engine (`scripts/release.js`)
 - Distribution: NPM + GitHub Releases
 
@@ -264,9 +251,8 @@ Documentation Site:
 ## 📚 Related Documentation
 
 - Repository structure: See `ARCHITECTURE.md` (planned)
-- Release process: See `temp/technical/planning/PLAN-v2.6-stable-release.md`
 - Git standards: See `docs/core/GIT-STANDARDS.md`
-- Security: Private repo migration details in `NEXT-TASKS.md` (TMS-276)
+- Task management: See `NEXT-TASKS.md`
 
 ---
 
