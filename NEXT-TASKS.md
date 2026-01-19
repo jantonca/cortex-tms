@@ -20,11 +20,11 @@
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Guardian CLI Core** - `cortex-tms review <file>` command | [TMS-283a] | 4h | 🔴 HIGH | ⬜ Todo |
-| **Pattern Violation Detection** - LLM-based audit against PATTERNS.md | [TMS-283b] | 3h | 🔴 HIGH | ⬜ Todo |
-| **Domain Logic Checker** - Audit against DOMAIN-LOGIC.md rules | [TMS-283c] | 2h | 🔴 HIGH | ⬜ Todo |
-| **CLI Output Formatting** - Violation reports with line references | [TMS-283d] | 1h | 🟡 MED | ⬜ Todo |
-| **BYOK (Bring Your Own Key)** - OpenAI/Anthropic API key support | [TMS-283e] | 2h | 🟡 MED | ⬜ Todo |
+| **Guardian CLI Core** - `cortex-tms review <file>` command | [TMS-283a] | 4h | 🔴 HIGH | ✅ Done |
+| **Pattern Violation Detection** - LLM-based audit against PATTERNS.md | [TMS-283b] | 3h | 🔴 HIGH | ✅ Done |
+| **Domain Logic Checker** - Audit against DOMAIN-LOGIC.md rules | [TMS-283c] | 2h | 🔴 HIGH | ✅ Done |
+| **CLI Output Formatting** - Violation reports with line references | [TMS-283d] | 1h | 🟡 MED | ✅ Done |
+| **BYOK (Bring Your Own Key)** - OpenAI/Anthropic API key support | [TMS-283e] | 2h | 🟡 MED | ✅ Done |
 | **Guardian Documentation** - CLI reference and usage guide | [TMS-283f] | 2h | 🟡 MED | ⬜ Todo |
 
 **Implementation Notes**:
