@@ -47,6 +47,9 @@
 | **Blog Post: PR Tsunami** - "How Cortex TMS Prevents Maintainer Burnout" | [TMS-284c] | 4h | 🔴 HIGH | ⬜ Todo |
 | **Blog Post: Tiered Memory** - "Why AI Agents Need More Than a README" | [TMS-284d] | 3h | 🟡 MED | ⬜ Todo |
 | **Demo GIF** - Record cortex-tms status/migrate workflow | [TMS-284e] | 1h | 🔴 HIGH | ⬜ Todo |
+| **AI Collaboration Policy** - Create docs/core/AI-COLLABORATION-POLICY.md | [TMS-289a] | 3h | 🔴 HIGH | ⬜ Todo |
+| **Website About Page** - Add "How We Build" transparency section | [TMS-289b] | 2h | 🟡 MED | ⬜ Todo |
+| **Homepage Hero Update** - Add "Built Using Our Own Standard" | [TMS-289c] | 1h | 🟡 MED | ⬜ Todo |
 
 **Blog Post Requirements**:
 - Reference tldraw issue #7695
@@ -54,7 +57,12 @@
 - Real metrics: 66% time savings, 80% merge rate
 - Link to use cases (open-source.mdx, enterprise.mdx)
 
-**Total Effort**: ~10 hours
+**AI Transparency Notes**:
+- Policy includes HITL workflow, authorship metadata, quality standards
+- Position as "most transparent AI-assisted project"
+- Dogfooding narrative: "Built using our own standard"
+
+**Total Effort**: ~16 hours
 
 ---
 
@@ -94,12 +102,13 @@
 
 ## 📊 v2.7 Sprint Summary
 
-**Total Effort**: ~31.5 hours across 3 weeks
+**Total Effort**: ~37.5 hours across 3 weeks
 **Success Metrics**:
 - 70%+ accuracy on pattern violations (Guardian)
 - 100+ GitHub stars
 - 5+ community beta testers
 - 1,000+ blog post views
+- Position as most transparent AI-assisted project
 
 ---
 
