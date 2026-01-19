@@ -31,6 +31,11 @@ export default defineConfig({
       ],
       sidebar: [
         {
+          label: 'Blog',
+          link: '/blog/',
+          badge: { text: 'New', variant: 'success' },
+        },
+        {
           label: 'Getting Started',
           items: [
             { label: 'Introduction', link: '/getting-started/introduction/' },
@@ -86,6 +91,15 @@ export default defineConfig({
             rel: 'icon',
             type: 'image/png',
             href: '/favicon.png',
+          },
+        },
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'alternate',
+            type: 'application/rss+xml',
+            title: 'Cortex TMS Blog',
+            href: '/rss.xml',
           },
         },
         {

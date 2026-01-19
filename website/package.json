@@ -9,11 +9,12 @@
     "preview": "astro preview"
   },
   "dependencies": {
+    "@astrojs/rss": "^4.0.15",
     "@astrojs/starlight": "0.31.1",
-    "astro": "5.1.5",
-    "sharp": "0.33.5",
     "@fontsource-variable/noto-sans": "5.1.1",
     "@fontsource-variable/noto-serif": "5.1.1",
-    "@fontsource/noto-sans-mono": "5.1.0"
+    "@fontsource/noto-sans-mono": "5.1.0",
+    "astro": "5.1.5",
+    "sharp": "0.33.5"
   }
 }

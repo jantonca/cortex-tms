@@ -1,0 +1,214 @@
+---
+import { getCollection } from 'astro:content';
+import type { GetStaticPaths } from 'astro';
+import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+
+export const getStaticPaths = (async () => {
+  const blogEntries = await getCollection('blog', ({ data }) => {
+    return import.meta.env.PROD ? data.draft !== true : true;
+  });
+
+  return blogEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}) satisfies GetStaticPaths;
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  }).format(date);
+};
+---
+
+<StarlightPage
+  frontmatter={{
+    title: entry.data.title,
+    description: entry.data.description,
+  }}
+  headings={[]}
+>
+  <article class="blog-post">
+    <header class="post-header">
+      <h1>{entry.data.title}</h1>
+      <div class="post-meta">
+        <time datetime={entry.data.pubDate.toISOString()}>
+          {formatDate(entry.data.pubDate)}
+        </time>
+        {entry.data.author && (
+          <span class="author"> by {entry.data.author}</span>
+        )}
+        {entry.data.updatedDate && (
+          <span class="updated">
+            {' '}· Updated {formatDate(entry.data.updatedDate)}
+          </span>
+        )}
+      </div>
+      {entry.data.tags && entry.data.tags.length > 0 && (
+        <div class="post-tags">
+          {entry.data.tags.map((tag) => (
+            <span class="tag">{tag}</span>
+          ))}
+        </div>
+      )}
+    </header>
+
+    <div class="post-content">
+      <Content />
+    </div>
+
+    <footer class="post-footer">
+      <a href="/blog/" class="back-link">← Back to Blog</a>
+    </footer>
+  </article>
+
+  <style>
+    .blog-post {
+      max-width: 65ch;
+      margin: 0 auto;
+    }
+
+    .post-header {
+      margin-bottom: 2rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--sl-color-hairline);
+    }
+
+    .post-header h1 {
+      font-size: 2.5rem;
+      line-height: 1.2;
+      margin: 0 0 1rem 0;
+      color: var(--sl-color-white);
+    }
+
+    .post-meta {
+      font-size: 0.9375rem;
+      color: var(--sl-color-gray-3);
+      margin-bottom: 1rem;
+    }
+
+    .author {
+      font-weight: 500;
+    }
+
+    .updated {
+      font-style: italic;
+    }
+
+    .post-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 1rem;
+    }
+
+    .tag {
+      background: var(--sl-color-accent-low);
+      color: var(--sl-color-accent-high);
+      padding: 0.25rem 0.75rem;
+      border-radius: 0.25rem;
+      font-size: 0.875rem;
+      font-weight: 500;
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      color: var(--sl-color-gray-2);
+    }
+
+    .post-content :global(h2) {
+      margin-top: 2.5rem;
+      margin-bottom: 1rem;
+      font-size: 1.875rem;
+    }
+
+    .post-content :global(h3) {
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+      font-size: 1.5rem;
+    }
+
+    .post-content :global(p) {
+      margin-bottom: 1.5rem;
+    }
+
+    .post-content :global(ul),
+    .post-content :global(ol) {
+      margin-bottom: 1.5rem;
+      padding-left: 1.5rem;
+    }
+
+    .post-content :global(li) {
+      margin-bottom: 0.5rem;
+    }
+
+    .post-content :global(code) {
+      background: var(--sl-color-bg-inline-code);
+      padding: 0.125rem 0.375rem;
+      border-radius: 0.25rem;
+      font-size: 0.9em;
+    }
+
+    .post-content :global(pre) {
+      margin: 1.5rem 0;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+    }
+
+    .post-content :global(pre code) {
+      background: none;
+      padding: 0;
+    }
+
+    .post-content :global(blockquote) {
+      border-left: 4px solid var(--sl-color-accent);
+      padding-left: 1rem;
+      margin: 1.5rem 0;
+      font-style: italic;
+      color: var(--sl-color-gray-3);
+    }
+
+    .post-content :global(img) {
+      max-width: 100%;
+      height: auto;
+      border-radius: 0.5rem;
+      margin: 2rem 0;
+    }
+
+    .post-footer {
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--sl-color-hairline);
+    }
+
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      color: var(--sl-color-accent);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--sl-color-accent-high);
+    }
+
+    @media (max-width: 768px) {
+      .post-header h1 {
+        font-size: 2rem;
+      }
+
+      .post-content {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</StarlightPage>
