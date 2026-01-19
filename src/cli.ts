@@ -42,6 +42,7 @@ import { statusCommand } from './commands/status.js';
 import { migrateCommand } from './commands/migrate.js';
 import { promptCommand } from './commands/prompt.js';
 import { tutorialCommand } from './commands/tutorial.js';
+import { reviewCommand } from './commands/review.js';
 
 program.addCommand(initCommand);
 program.addCommand(validateCommand);
@@ -49,6 +50,7 @@ program.addCommand(statusCommand);
 program.addCommand(migrateCommand);
 program.addCommand(promptCommand);
 program.addCommand(tutorialCommand);
+program.addCommand(reviewCommand);
 
 // Handle unknown commands
 program.on('command:*', () => {
