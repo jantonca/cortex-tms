@@ -1,0 +1,224 @@
+---
+title: CLI Reference
+description: Complete command-line reference for the Cortex TMS CLI tool
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+The **Cortex TMS CLI** is the primary tool for managing your TMS projects. Use it to initialize projects, validate documentation health, check project status, and more.
+
+## Installation
+
+```bash
+# Install globally
+npm install -g cortex-tms@2.6.0
+
+# Or use with npx (no installation)
+npx cortex-tms@2.6.0 <command>
+```
+
+## Global Usage
+
+```bash
+cortex-tms [command] [options]
+cortex-tms --help          # Show help for all commands
+cortex-tms --version       # Show current version
+```
+
+---
+
+## Available Commands
+
+<CardGrid>
+  <Card title="init" icon="rocket">
+    **Initialize Cortex TMS in your project**
+
+    Sets up the complete TMS documentation structure with interactive prompts.
+
+    [View init documentation](/reference/cli/init/)
+  </Card>
+
+  <Card title="validate" icon="approve-check">
+    **Validate project health and compliance**
+
+    Runs comprehensive health checks to ensure documentation follows TMS standards.
+
+    [View validate documentation](/reference/cli/validate/)
+  </Card>
+
+  <Card title="status" icon="information">
+    **Show project health dashboard**
+
+    Displays a high-level overview of scope, sprint progress, health summary, and backlog.
+
+    [View status documentation](/reference/cli/status/)
+  </Card>
+
+  <Card title="migrate" icon="setting">
+    **Upgrade TMS files to current version**
+
+    Safely updates template files while preserving customizations.
+
+    [View migrate documentation](/reference/cli/migrate/)
+  </Card>
+
+  <Card title="prompt" icon="document">
+    **Access AI prompt templates**
+
+    Provides quick access to project-aware AI prompts with clipboard integration.
+
+    [View prompt documentation](/reference/cli/prompt/)
+  </Card>
+
+  <Card title="tutorial" icon="star">
+    **Interactive walkthrough**
+
+    Teaches the "Cortex Way" through an interactive onboarding tutorial.
+
+    [View tutorial documentation](/reference/cli/tutorial/)
+  </Card>
+</CardGrid>
+
+---
+
+## Global Options
+
+All commands support these global options:
+
+| Option | Description |
+|--------|-------------|
+| `-h, --help` | Show help for the command |
+| `-V, --version` | Show CLI version |
+
+---
+
+## Command Summary
+
+| Command | Purpose | Common Usage |
+|---------|---------|--------------|
+| `init` | Initialize TMS in project | `cortex-tms init` |
+| `validate` | Check project health | `cortex-tms validate --strict` |
+| `status` | View project dashboard | `cortex-tms status` |
+| `migrate` | Upgrade templates | `cortex-tms migrate --apply` |
+| `prompt` | Get AI prompts | `cortex-tms prompt init-session` |
+| `tutorial` | Learn Cortex TMS | `cortex-tms tutorial` |
+
+---
+
+## Exit Codes
+
+All commands follow standard Unix exit code conventions:
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success - command completed without errors |
+| `1` | Failure - command encountered errors |
+
+<Aside type="tip" title="CI/CD Integration">
+  Exit codes are especially useful in CI/CD pipelines:
+
+  ```yaml
+  - name: Validate Documentation
+    run: cortex-tms validate --strict
+    # Fails the build if exit code is 1
+  ```
+</Aside>
+
+---
+
+## Common Workflows
+
+### Initial Setup
+
+```bash
+# 1. Initialize project
+cortex-tms init
+
+# 2. Verify setup
+cortex-tms validate
+
+# 3. Check status
+cortex-tms status
+```
+
+### Daily Development
+
+```bash
+# 1. Get AI session prompt
+cortex-tms prompt init-session
+
+# 2. Work on tasks in NEXT-TASKS.md
+
+# 3. Validate before committing
+cortex-tms validate --strict
+```
+
+### Template Upgrades
+
+```bash
+# 1. Check for updates
+cortex-tms migrate
+
+# 2. Apply upgrades
+cortex-tms migrate --apply
+
+# 3. Verify changes
+cortex-tms validate
+```
+
+---
+
+## Environment Variables
+
+Cortex TMS CLI respects these environment variables:
+
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `NO_COLOR` | Disable colored output | Not set |
+| `CI` | Indicates CI/CD environment | Not set |
+
+<Aside type="note">
+  When `CI=true`, the CLI automatically disables interactive prompts and uses non-interactive mode.
+</Aside>
+
+---
+
+## Configuration File
+
+The CLI uses `.cortexrc` in your project root for configuration:
+
+```json
+{
+  "version": "2.6.0",
+  "scope": "standard",
+  "projectName": "my-project",
+  "metadata": {
+    "createdAt": "2026-01-19T10:00:00.000Z",
+    "customFiles": []
+  }
+}
+```
+
+This file is automatically created by `cortex-tms init` and updated by other commands.
+
+---
+
+## Next Steps
+
+Explore individual command documentation:
+
+- [cortex-tms init](/reference/cli/init/) - Detailed initialization options
+- [cortex-tms validate](/reference/cli/validate/) - Validation checks explained
+- [cortex-tms status](/reference/cli/status/) - Dashboard components
+- [cortex-tms migrate](/reference/cli/migrate/) - Safe migration process
+- [cortex-tms prompt](/reference/cli/prompt/) - Prompt library usage
+- [cortex-tms tutorial](/reference/cli/tutorial/) - Interactive learning
+
+<Aside type="tip" title="Quick Help">
+  Run any command with `--help` for detailed usage:
+
+  ```bash
+  cortex-tms init --help
+  cortex-tms validate --help
+  ```
+</Aside>

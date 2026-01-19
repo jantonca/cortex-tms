@@ -1,0 +1,996 @@
+---
+title: cortex-tms migrate
+description: Safely upgrade TMS templates while preserving customizations with automatic backups and rollback support
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+The `cortex-tms migrate` command upgrades TMS template files to the latest version while preserving your custom changes. It includes a Safe-Fail Migration Engine with automatic backups, smart upgrade detection, and one-click rollback.
+
+## Synopsis
+
+```bash
+cortex-tms migrate [options]
+```
+
+## Description
+
+**Template Evolution Without Fear**. Templates improve over time, but your customizations matter. The migrate command solves the upgrade problem with three components:
+
+1. **Backup Engine**: Automatic timestamped snapshots before changes
+2. **Apply Logic**: Smart detection of OUTDATED vs CUSTOMIZED files
+3. **Rollback Command**: One-click recovery to any previous backup
+
+**How it works**:
+- Analyzes each template file against current version
+- Classifies files as LATEST, OUTDATED, CUSTOMIZED, or MISSING
+- Creates backup before applying any changes
+- Upgrades OUTDATED files automatically (CUSTOMIZED files require `--force`)
+- Provides rollback command to restore any backup
+
+**Typical workflow**:
+```bash
+# Check migration status (safe preview)
+cortex-tms migrate
+
+# Apply automatic upgrades
+cortex-tms migrate --apply
+
+# If something breaks, rollback
+cortex-tms migrate --rollback
+```
+
+<Aside type="tip" title="Always Run Without Flags First">
+Run `cortex-tms migrate` (no flags) to see what needs updating before applying changes. This is a **dry-run preview** that's always safe.
+</Aside>
+
+---
+
+## Options
+
+### `-a, --apply`
+
+Apply automatic upgrades with backup creation.
+
+**Behavior**:
+- Creates timestamped backup in `.cortex/backups/`
+- Upgrades OUTDATED files (unchanged from old template)
+- Skips CUSTOMIZED files (unless `--force` also used)
+- Shows summary of upgraded files
+
+**Example**:
+```bash
+cortex-tms migrate --apply
+```
+
+**Output**:
+```
+🔄 Cortex TMS Migration
+
+✓ Configuration loaded
+✓ Analyzed 12 files
+
+📋 Migration Summary:
+  ✓ 3 file(s) can be safely upgraded
+  ⚠ 2 file(s) have custom changes (manual review needed)
+
+💾 Creating backup...
+✓ Backup created: .cortex/backups/2026-01-19T10-30-00-123Z
+   3 file(s) backed up safely
+
+🚀 Applying upgrades...
+✓ Upgraded 3 file(s) to v2.6.0
+
+✨ Migration complete!
+
+💡 Tip: Review changes with:
+   git diff
+
+💡 To rollback, run:
+   cortex-tms migrate --rollback
+```
+
+---
+
+### `-r, --rollback`
+
+Restore files from a previous backup snapshot.
+
+**Interactive selection**:
+- Lists available backups (up to 5 most recent)
+- Shows timestamp, version, file count, and size
+- Prompts for confirmation before restoring
+- Restores all files from selected backup
+
+**Example**:
+```bash
+cortex-tms migrate --rollback
+```
+
+**Output**:
+```
+⏪ Cortex TMS Rollback
+
+✓ Found 3 backup(s)
+
+? Select a backup to restore:
+❯ 2026-01-19T10-30-00-123Z - v2.6.0 - 3 file(s) - 12.5 KB
+  2026-01-15T14-22-15-456Z - v2.5.0 - 5 file(s) - 18.2 KB
+  2026-01-10T09-15-30-789Z - v2.4.0 - 4 file(s) - 15.1 KB
+  Cancel
+
+📋 Files to be restored:
+  ✓ NEXT-TASKS.md
+  ✓ CLAUDE.md
+  ✓ docs/core/PATTERNS.md
+
+? This will overwrite current files. Continue? Yes
+
+⏪ Restoring backup...
+✓ Restored 3 file(s) from backup
+
+✨ Rollback complete!
+
+💡 Tip: Review restored files with:
+   git diff
+```
+
+---
+
+### `-f, --force`
+
+Force upgrade of CUSTOMIZED files (requires `--apply`).
+
+**Use with caution**: This will overwrite files that have custom changes.
+
+**Workflow**:
+1. Backup created automatically (safety net)
+2. All files upgraded, including CUSTOMIZED ones
+3. You lose custom changes in CUSTOMIZED files
+4. Can rollback to restore customizations
+
+**Example**:
+```bash
+cortex-tms migrate --apply --force
+```
+
+**Output shows warning**:
+```
+🔄 Files to be upgraded:
+  ✓ NEXT-TASKS.md
+  ⚠️  CLAUDE.md (CUSTOMIZED)
+  ⚠️  docs/core/PATTERNS.md (CUSTOMIZED)
+
+⚠️  2 CUSTOMIZED file(s) will be overwritten due to --force flag
+```
+
+<Aside type="caution" title="Data Loss Warning">
+Using `--force` overwrites customizations. Always commit your changes to Git before using `--force`, or manually merge changes after upgrade.
+</Aside>
+
+---
+
+### `-v, --verbose`
+
+Show detailed output during migration analysis.
+
+**Extra information**:
+- File-by-file analysis results
+- Version comparison (current vs target)
+- Customization detection details
+- Backup manifest contents
+
+**Example**:
+```bash
+cortex-tms migrate --verbose
+```
+
+**Output includes**:
+```
+Analyzing files...
+  ✓ NEXT-TASKS.md - LATEST (v2.6.0 = v2.6.0)
+  🔄 CLAUDE.md - OUTDATED (v2.5.0 → v2.6.0)
+  ⚠️  docs/core/PATTERNS.md - CUSTOMIZED (v2.5.0 → v2.6.0)
+     Reason: File has custom changes
+  ℹ️  FUTURE-ENHANCEMENTS.md - MISSING
+     Reason: File not installed
+```
+
+---
+
+### `-d, --dry-run`
+
+Preview migration changes without applying them.
+
+**What it shows**:
+- Which files would be upgraded
+- Which files would be skipped (CUSTOMIZED)
+- No backup created
+- No files modified
+
+**Example**:
+```bash
+cortex-tms migrate --dry-run
+```
+
+**Output**:
+```
+🔍 DRY RUN MODE: No files will be modified.
+
+✓ Configuration loaded
+✓ Analyzed 12 files
+
+📊 Migration Report (Target: v2.6.0):
+
+✅ UP TO DATE (8):
+  NEXT-TASKS.md v2.6.0 = v2.6.0
+  CLAUDE.md v2.6.0 = v2.6.0
+  ...
+
+🔄 OUTDATED (2):
+  docs/core/PATTERNS.md v2.5.0 → v2.6.0
+  .github/copilot-instructions.md v2.5.0 → v2.6.0
+
+⚠️  CUSTOMIZED (1):
+  FUTURE-ENHANCEMENTS.md v2.4.0 → v2.6.0 - File has custom changes
+
+ℹ️  NOT INSTALLED (1):
+  docs/core/SECURITY.md - File not installed
+
+📋 Next Steps:
+  1. Review OUTDATED files marked above
+     → These match the old template and can be safely upgraded
+  2. Review CUSTOMIZED files marked above
+     → These have custom changes - preserve your modifications
+
+🚀 Automatic Upgrade Available:
+   cortex-tms migrate --apply
+   → Safely upgrade OUTDATED files (creates backup)
+```
+
+---
+
+## File Status Classification
+
+### LATEST
+
+**Meaning**: File is already on the target version
+
+**Example**:
+```
+✅ UP TO DATE (1):
+  NEXT-TASKS.md v2.6.0 = v2.6.0
+```
+
+**Action**: Nothing needed
+
+---
+
+### OUTDATED
+
+**Meaning**: File matches old template exactly (no customizations)
+
+**Example**:
+```
+🔄 OUTDATED (1):
+  CLAUDE.md v2.5.0 → v2.6.0
+```
+
+**Action**: Safe to auto-upgrade with `--apply`
+
+**How it's detected**:
+- File has version metadata: `<!-- @cortex-tms-version 2.5.0 -->`
+- Content matches v2.5.0 template exactly (excluding version comment)
+- No customizations detected
+
+---
+
+### CUSTOMIZED
+
+**Meaning**: File has custom changes beyond template
+
+**Example**:
+```
+⚠️  CUSTOMIZED (1):
+  docs/core/PATTERNS.md v2.5.0 → v2.6.0 - File has custom changes
+```
+
+**Action**: Manual review required (or `--force` to overwrite)
+
+**How it's detected**:
+- File has version metadata but content differs from template
+- Custom sections added
+- Examples changed
+- Structure modified
+
+**Manual merge workflow**:
+```bash
+# See what's new in latest template
+diff docs/core/PATTERNS.md node_modules/cortex-tms/templates/docs/core/PATTERNS.md
+
+# Manually merge changes
+vim docs/core/PATTERNS.md
+
+# Update version comment
+# <!-- @cortex-tms-version 2.6.0 -->
+```
+
+---
+
+### MISSING
+
+**Meaning**: File not installed (optional file from scope)
+
+**Example**:
+```
+ℹ️  NOT INSTALLED (1):
+  docs/core/SECURITY.md - File not installed
+```
+
+**Action**: Optional, install manually if needed
+
+**Install manually**:
+```bash
+# Copy from templates
+cp node_modules/cortex-tms/templates/docs/core/SECURITY.md docs/core/
+
+# Or reinitialize with broader scope
+cortex-tms init --scope enterprise --force
+```
+
+---
+
+## Backup System
+
+### Backup Structure
+
+**Location**: `.cortex/backups/<timestamp>/`
+
+**Timestamp format**: `YYYY-MM-DDTHH-MM-SS-sssZ`
+
+**Example**:
+```
+.cortex/
+└── backups/
+    ├── 2026-01-19T10-30-00-123Z/
+    │   ├── manifest.json
+    │   ├── NEXT-TASKS.md
+    │   ├── CLAUDE.md
+    │   └── docs/
+    │       └── core/
+    │           └── PATTERNS.md
+    ├── 2026-01-15T14-22-15-456Z/
+    │   └── ...
+    └── 2026-01-10T09-15-30-789Z/
+        └── ...
+```
+
+---
+
+### Manifest File
+
+**File**: `.cortex/backups/<timestamp>/manifest.json`
+
+**Contents**:
+```json
+{
+  "timestamp": "2026-01-19T10:30:00.123Z",
+  "version": "2.6.0",
+  "reason": "migrate to v2.6.0",
+  "files": [
+    {
+      "relativePath": "NEXT-TASKS.md",
+      "originalPath": "/home/user/project/NEXT-TASKS.md",
+      "size": 4521
+    },
+    {
+      "relativePath": "CLAUDE.md",
+      "originalPath": "/home/user/project/CLAUDE.md",
+      "size": 3201
+    }
+  ]
+}
+```
+
+**Purpose**:
+- Tracks what was backed up
+- Why backup was created
+- Version context for rollback
+- File metadata for verification
+
+---
+
+### Backup Retention
+
+**Default**: Backups are kept indefinitely
+
+**Manual cleanup**:
+```bash
+# List backups with sizes
+du -sh .cortex/backups/*
+
+# Remove old backups (older than 30 days)
+find .cortex/backups -type d -mtime +30 -exec rm -rf {} \;
+
+# Keep only 5 most recent
+ls -t .cortex/backups | tail -n +6 | xargs -I {} rm -rf .cortex/backups/{}
+```
+
+---
+
+## Migration Workflow
+
+<Steps>
+
+1. **Preview Migration Status**
+
+   ```bash
+   cortex-tms migrate
+   ```
+
+   Review which files are OUTDATED, CUSTOMIZED, or LATEST
+
+2. **Commit Current State**
+
+   ```bash
+   git add .
+   git commit -m "chore: commit before template migration"
+   ```
+
+   Safety net for rollback
+
+3. **Apply Upgrades**
+
+   ```bash
+   cortex-tms migrate --apply
+   ```
+
+   Upgrades OUTDATED files, skips CUSTOMIZED files
+
+4. **Review Changes**
+
+   ```bash
+   git diff
+   ```
+
+   See what changed in upgraded files
+
+5. **Handle CUSTOMIZED Files**
+
+   **Option A: Manual merge**
+   ```bash
+   # Compare with template
+   diff docs/core/PATTERNS.md node_modules/cortex-tms/templates/docs/core/PATTERNS.md
+
+   # Merge manually
+   vim docs/core/PATTERNS.md
+   ```
+
+   **Option B: Force upgrade, then re-add customizations**
+   ```bash
+   # Backup custom sections first
+   grep "## Custom Section" docs/core/PATTERNS.md > custom.txt
+
+   # Force upgrade
+   cortex-tms migrate --apply --force
+
+   # Re-add customizations
+   vim docs/core/PATTERNS.md
+   # Paste custom.txt content back
+   ```
+
+6. **Validate Installation**
+
+   ```bash
+   cortex-tms validate --strict
+   ```
+
+   Ensure no issues after migration
+
+7. **Test Changes**
+
+   ```bash
+   # Test build
+   npm run build
+
+   # Test development
+   npm run dev
+   ```
+
+8. **Commit Migration**
+
+   ```bash
+   git add .
+   git commit -m "chore: migrate TMS templates to v2.6.0"
+   ```
+
+9. **(Optional) Rollback If Issues**
+
+   ```bash
+   cortex-tms migrate --rollback
+   # Select backup to restore
+   ```
+
+</Steps>
+
+---
+
+## Usage Examples
+
+### Basic Migration
+
+<Tabs>
+  <TabItem label="Preview">
+    ```bash
+    # Check what needs upgrading
+    cortex-tms migrate
+    ```
+
+    **Output**:
+    ```
+    📊 Migration Report (Target: v2.6.0):
+
+    ✅ UP TO DATE (10):
+      NEXT-TASKS.md v2.6.0 = v2.6.0
+      ...
+
+    🔄 OUTDATED (2):
+      docs/core/PATTERNS.md v2.5.0 → v2.6.0
+      CLAUDE.md v2.5.0 → v2.6.0
+
+    📋 Next Steps:
+      cortex-tms migrate --apply
+    ```
+  </TabItem>
+
+  <TabItem label="Apply">
+    ```bash
+    # Apply upgrades
+    cortex-tms migrate --apply
+    ```
+
+    **Output**:
+    ```
+    🔄 Cortex TMS Migration
+
+    💾 Creating backup...
+    ✓ Backup created: .cortex/backups/2026-01-19T10-30-00-123Z
+
+    🚀 Applying upgrades...
+    ✓ Upgraded 2 file(s) to v2.6.0
+
+    ✨ Migration complete!
+    ```
+  </TabItem>
+
+  <TabItem label="Review">
+    ```bash
+    # Review changes
+    git diff
+
+    # Validate health
+    cortex-tms validate --strict
+
+    # Commit
+    git commit -am "chore: migrate TMS templates to v2.6.0"
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Migration with Customized Files
+
+```bash
+# Preview shows CUSTOMIZED files
+cortex-tms migrate
+
+# Output:
+# ⚠️  CUSTOMIZED (1):
+#   docs/core/PATTERNS.md v2.5.0 → v2.6.0 - File has custom changes
+
+# Option 1: Manual merge
+diff docs/core/PATTERNS.md node_modules/cortex-tms/templates/docs/core/PATTERNS.md
+vim docs/core/PATTERNS.md
+# Merge changes manually
+
+# Option 2: Force upgrade (overwrites customizations)
+cortex-tms migrate --apply --force
+# Warning: Custom changes lost, but backup exists
+
+# Restore customizations from Git history
+git diff HEAD~1 docs/core/PATTERNS.md
+# Copy custom sections back
+```
+
+---
+
+### Rollback After Bad Upgrade
+
+```bash
+# Applied upgrade but something broke
+cortex-tms migrate --apply
+
+# Tests fail
+npm test
+# FAIL: pattern validation
+
+# Rollback to previous state
+cortex-tms migrate --rollback
+
+# Select most recent backup
+? Select a backup to restore:
+❯ 2026-01-19T10-30-00-123Z - v2.6.0 - 3 file(s)
+
+# Restored successfully
+✨ Rollback complete!
+
+# Tests now pass
+npm test
+# PASS
+```
+
+---
+
+### Dry Run Before Production
+
+```bash
+# On staging branch, test migration
+git checkout staging
+cortex-tms migrate --dry-run
+
+# Review what would change
+# No files modified
+
+# If looks good, apply
+cortex-tms migrate --apply
+
+# Test thoroughly
+npm run test
+npm run build
+
+# If successful, apply to production
+git checkout main
+cortex-tms migrate --apply
+```
+
+---
+
+## Exit Codes
+
+| Code | Meaning | Scenario |
+|------|---------|----------|
+| `0` | Success | Migration analysis completed or upgrades applied |
+| `1` | Error | No `.cortexrc` found, backup failed, template errors |
+
+**Backup failure behavior**:
+- If backup fails, migration aborts immediately
+- No files modified (safe-fail)
+- Error message shows troubleshooting steps
+
+---
+
+## Common Errors
+
+### Error: No .cortexrc found
+
+**Problem**: Project not initialized with Cortex TMS
+
+**Solution**:
+```bash
+cortex-tms init
+cortex-tms migrate
+```
+
+---
+
+### Error: Backup failed
+
+**Problem**: Cannot create backup directory or write files
+
+**Causes**:
+- Disk full
+- Permission issues
+- `.cortex/` directory read-only
+
+**Solution**:
+```bash
+# Check disk space
+df -h
+
+# Check permissions
+ls -la .cortex/
+chmod 755 .cortex/
+
+# Ensure .cortex/backups/ exists and is writable
+mkdir -p .cortex/backups
+chmod 755 .cortex/backups
+
+# Retry migration
+cortex-tms migrate --apply
+```
+
+---
+
+### Error: Template not found
+
+**Problem**: Cortex TMS installation incomplete or corrupted
+
+**Solution**:
+```bash
+# Reinstall Cortex TMS
+npm uninstall -g cortex-tms
+npm install -g cortex-tms@latest
+
+# Verify templates exist
+ls node_modules/cortex-tms/templates/
+
+# Retry migration
+cortex-tms migrate
+```
+
+---
+
+### Warning: CUSTOMIZED files skipped
+
+**Not an error**, just informational. Files with custom changes require manual review.
+
+**Solutions**:
+
+<Tabs>
+  <TabItem label="Manual Merge">
+    ```bash
+    # Compare with template
+    diff docs/core/PATTERNS.md \
+      node_modules/cortex-tms/templates/docs/core/PATTERNS.md
+
+    # Apply changes manually
+    vim docs/core/PATTERNS.md
+    ```
+  </TabItem>
+
+  <TabItem label="Force Upgrade">
+    ```bash
+    # Backup customizations first
+    cp docs/core/PATTERNS.md docs/core/PATTERNS.md.custom
+
+    # Force upgrade
+    cortex-tms migrate --apply --force
+
+    # Re-add custom sections
+    vim docs/core/PATTERNS.md
+    # Paste from PATTERNS.md.custom
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+## Troubleshooting
+
+### Migration Shows All Files as CUSTOMIZED
+
+**Cause**: Version metadata missing or incorrect format
+
+**Check version comments**:
+```bash
+grep "@cortex-tms-version" NEXT-TASKS.md
+```
+
+**Expected**:
+```html
+<!-- @cortex-tms-version 2.6.0 -->
+```
+
+**Fix missing metadata**:
+```bash
+# Add version comment to top of file
+vim NEXT-TASKS.md
+# Add: <!-- @cortex-tms-version 2.5.0 -->
+```
+
+---
+
+### Rollback Lists No Backups
+
+**Cause**: No backups created yet (first migration) or backups deleted
+
+**Solution**:
+```bash
+# Check .cortex/backups/ directory
+ls -la .cortex/backups/
+
+# If empty, cannot rollback
+# Use Git instead:
+git log --oneline
+git checkout <commit-hash> -- NEXT-TASKS.md
+```
+
+---
+
+### Migration Hangs During Analysis
+
+**Cause**: Very large project with thousands of files
+
+**Solution**:
+```bash
+# Kill hung process
+Ctrl+C
+
+# Check project size
+find . -type f | wc -l
+
+# Migration only checks files listed in .cortexrc scope
+# If custom scope, reduce file list
+vim .cortexrc
+```
+
+---
+
+## Tips and Best Practices
+
+<CardGrid stagger>
+  <Card title="Always Preview First" icon="magnifier">
+    Run `cortex-tms migrate` (no flags) before applying. Understand what will change.
+  </Card>
+
+  <Card title="Commit Before Migrate" icon="seti:git">
+    Commit your changes to Git before running `--apply`. Provides fallback beyond backups.
+  </Card>
+
+  <Card title="Test After Migration" icon="rocket">
+    Run tests and builds after migration. Validate everything works before committing.
+  </Card>
+
+  <Card title="Review Diffs Carefully" icon="document">
+    Use `git diff` to see template changes. Understand what's new before accepting.
+  </Card>
+</CardGrid>
+
+---
+
+## Advanced Usage
+
+### Automated Migration in CI
+
+```yaml
+# .github/workflows/auto-migrate.yml
+name: Auto-Migrate Templates
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Every Sunday at midnight
+  workflow_dispatch:
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Cortex TMS
+        run: npm install -g cortex-tms@latest
+
+      - name: Check Migration Status
+        id: check
+        run: |
+          cortex-tms migrate > migration-report.txt
+          if grep -q "OUTDATED" migration-report.txt; then
+            echo "needs_migration=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Apply Migration
+        if: steps.check.outputs.needs_migration == 'true'
+        run: cortex-tms migrate --apply
+
+      - name: Create Pull Request
+        if: steps.check.outputs.needs_migration == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          title: "chore: migrate TMS templates to latest version"
+          body: |
+            Automated template migration detected updates.
+
+            ## Migration Report
+
+            \`\`\`
+            $(cat migration-report.txt)
+            \`\`\`
+
+            ## Backup Created
+
+            Backup snapshot: `.cortex/backups/<timestamp>`
+
+            ## Rollback Command
+
+            If issues arise:
+            \`\`\`
+            cortex-tms migrate --rollback
+            \`\`\`
+          branch: chore/auto-migrate-templates
+          delete-branch: true
+```
+
+---
+
+### Selective File Migration
+
+```bash
+# Only migrate specific files (not officially supported, manual workaround)
+
+# Step 1: Check migration status
+cortex-tms migrate
+
+# Step 2: Manually copy specific templates
+cp node_modules/cortex-tms/templates/CLAUDE.md ./CLAUDE.md
+
+# Step 3: Update version comment
+vim CLAUDE.md
+# Change: <!-- @cortex-tms-version 2.5.0 -->
+# To: <!-- @cortex-tms-version 2.6.0 -->
+
+# Step 4: Validate
+cortex-tms validate
+```
+
+---
+
+## Integration with Other Commands
+
+### Before Status: Ensure Latest Templates
+
+```bash
+# Upgrade templates
+cortex-tms migrate --apply
+
+# Check health
+cortex-tms validate
+
+# View dashboard
+cortex-tms status
+```
+
+---
+
+### After Init: Future Upgrades
+
+```bash
+# Initialize project
+cortex-tms init --scope standard
+
+# Later, when new version available
+cortex-tms migrate --apply
+```
+
+---
+
+### With Validate: Health Checks
+
+```bash
+# Migrate templates
+cortex-tms migrate --apply
+
+# Ensure no validation errors
+cortex-tms validate --strict
+```
+
+---
+
+## Related Commands
+
+- [`cortex-tms init`](/reference/cli/init/) - Initialize TMS (creates files to migrate)
+- [`cortex-tms validate`](/reference/cli/validate/) - Verify health after migration
+- [`cortex-tms status`](/reference/cli/status/) - View project state post-migration
+
+---
+
+## Learn More
+
+- [Zero-Drift Governance](/concepts/zero-drift/) - Keeping templates synchronized
+- [Truth Syncing](/concepts/truth-syncing/) - Single source of truth principles
+- [Tiered Memory System](/concepts/tiered-memory/) - Understanding template organization

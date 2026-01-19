@@ -1,0 +1,863 @@
+---
+title: cortex-tms init
+description: Initialize Cortex TMS documentation structure in your project with configurable scopes and templates
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+The `cortex-tms init` command scaffolds a complete Tiered Memory System in your project. It creates the file structure, installs templates, and configures the documentation architecture based on your chosen scope.
+
+## Synopsis
+
+```bash
+cortex-tms init [options]
+```
+
+## Description
+
+**Interactive by default**. The init command walks you through a series of prompts to configure your TMS installation. For CI/CD environments, use `--scope` and `--force` flags for non-interactive mode.
+
+**What it does**:
+- Detects project context (Git, package manager, existing files)
+- Creates HOT/WARM/COLD tier documentation structure
+- Installs templates based on scope (Nano/Standard/Enterprise/Custom)
+- Generates `.cortexrc` configuration file
+- Optionally installs VS Code snippets for rapid documentation
+
+<Aside type="tip" title="First-Time Users">
+Run `cortex-tms init` without any flags. The interactive prompts will guide you through the entire setup process with helpful explanations.
+</Aside>
+
+---
+
+## Options
+
+### `-s, --scope <scope>`
+
+Specify project scope for non-interactive mode. Determines which template set to install.
+
+**Valid values**: `nano` | `standard` | `enterprise` | `custom`
+
+**Scope comparison**:
+
+| Scope | Files Installed | Best For | Size |
+|-------|----------------|----------|------|
+| **Nano** | Core files only (4-6 files) | Solo developers, side projects | Minimal |
+| **Standard** | Full TMS (12-15 files) | Professional projects, teams | Recommended |
+| **Enterprise** | Complete suite (20+ files) | Large teams, compliance needs | Comprehensive |
+| **Custom** | User-selected files | Specific requirements | Variable |
+
+**Example**:
+```bash
+# Non-interactive install with Standard scope
+cortex-tms init --scope standard --force
+```
+
+<Aside type="note">
+Without `--scope`, the command runs in interactive mode and prompts you to choose.
+</Aside>
+
+---
+
+### `-f, --force`
+
+Skip confirmation prompts and overwrite existing files.
+
+**Use cases**:
+- CI/CD pipelines that require non-interactive execution
+- Resetting a corrupted TMS installation
+- Automating project scaffolding
+
+**Behavior**:
+- Overwrites existing TMS files without asking
+- Uses default project name (derived from directory name)
+- Auto-installs VS Code snippets for Standard/Enterprise scopes
+
+**Example**:
+```bash
+# Force install without prompts (CI-friendly)
+cortex-tms init --scope standard --force
+
+# Reset installation
+cortex-tms init --force
+```
+
+<Aside type="caution" title="Data Loss Warning">
+The `--force` flag will **overwrite existing files** without backup. If you have custom changes, create a Git commit first or use `cortex-tms migrate` instead.
+</Aside>
+
+---
+
+### `-m, --minimal`
+
+Install minimal template set (equivalent to `--scope nano`).
+
+**What gets installed**:
+- `NEXT-TASKS.md` (HOT tier)
+- `CLAUDE.md` (HOT tier)
+- `.github/copilot-instructions.md` (HOT tier)
+- `docs/core/PATTERNS.md` (WARM tier)
+- `.cortexrc` (Configuration)
+
+**Example**:
+```bash
+# Minimal installation for solo developers
+cortex-tms init --minimal --force
+```
+
+**When to use minimal**:
+- Solo developer experimenting with TMS
+- Side projects that don't need full governance
+- Adding TMS to an existing mature codebase incrementally
+
+---
+
+### `-v, --verbose`
+
+Show detailed output during initialization.
+
+**Extra information displayed**:
+- Project context detection results
+- Package manager detection (npm, pnpm, yarn, bun)
+- Existing TMS files found
+- Placeholder replacements applied
+- File-by-file copy progress
+
+**Example**:
+```bash
+cortex-tms init --verbose
+```
+
+**Output example**:
+```
+Project Context:
+  Git repository: Yes
+  Package.json: Yes
+  Package manager: pnpm
+  Existing TMS files: None
+
+Placeholder Replacements:
+  [Project Name] → acme-api
+  [Project Description] → RESTful API for Acme Corp
+  [Current Year] → 2026
+
+Copying templates:
+  ✓ NEXT-TASKS.md
+  ✓ CLAUDE.md
+  ✓ .github/copilot-instructions.md
+  ...
+```
+
+---
+
+### `-d, --dry-run`
+
+Preview changes without writing to disk.
+
+**What it shows**:
+- Which files would be created
+- Which files would be overwritten
+- Total number of files affected
+- Placeholder replacements that would be applied
+
+**Example**:
+```bash
+cortex-tms init --dry-run
+```
+
+**Output**:
+```
+🔍 DRY RUN MODE: No files will be modified.
+
+✓ Project context detected
+✓ Analysis complete: 12 files would be affected
+
+Next Steps:
+  1. Review files above
+  2. Run without --dry-run to apply changes
+```
+
+**Use cases**:
+- Previewing installation before committing
+- Checking scope differences (compare `--scope nano --dry-run` vs `--scope standard --dry-run`)
+- Validating CI/CD setup
+
+---
+
+## Interactive Prompts
+
+When run without `--scope` or `--force`, the init command presents these prompts:
+
+<Steps>
+
+1. **Project Name**
+
+   ```
+   What is your project name? [acme-api]
+   ```
+
+   Default: Directory name (normalized to lowercase-with-dashes)
+
+2. **Project Scope**
+
+   ```
+   Select your project scope:
+   ❯ Standard (Recommended for most teams)
+     Nano (Minimal for solo developers)
+     Enterprise (Full governance suite)
+     Custom (Choose specific files)
+   ```
+
+   Determines which template files to install
+
+3. **VS Code Snippets** (Standard/Enterprise only)
+
+   ```
+   Install VS Code snippets for rapid documentation? (Y/n)
+   ```
+
+   Installs `tms-adr`, `tms-pattern`, and other shortcuts
+
+4. **Confirmation Summary**
+
+   ```
+   📋 Installation Summary:
+     Project: acme-api
+     Scope: Standard
+     Files: 12 files to be created
+     Snippets: Yes
+
+   Continue? (Y/n)
+   ```
+
+   Final check before writing files
+
+</Steps>
+
+---
+
+## Scopes Explained
+
+### Nano Scope
+
+**For**: Solo developers, side projects, MVP prototypes
+
+**Files installed** (4 core files):
+```
+NEXT-TASKS.md                   # Current sprint tasks
+CLAUDE.md                       # AI workflow config
+.github/copilot-instructions.md # Critical rules
+docs/core/PATTERNS.md           # Coding standards
+```
+
+**Characteristics**:
+- Minimal overhead
+- Focus on current work only
+- No backlog tracking
+- No ADR support
+- Quick to adopt
+
+**Example project**: Personal blog, weekend hackathon project
+
+---
+
+### Standard Scope (Recommended)
+
+**For**: Professional projects, small-to-medium teams, startups
+
+**Files installed** (12 files):
+```
+HOT Tier:
+  NEXT-TASKS.md
+  CLAUDE.md
+  FUTURE-ENHANCEMENTS.md
+  .github/copilot-instructions.md
+
+WARM Tier:
+  docs/core/ARCHITECTURE.md
+  docs/core/PATTERNS.md
+  docs/core/DOMAIN-LOGIC.md
+  docs/core/GLOSSARY.md
+  docs/core/SCHEMA.md
+  docs/core/TROUBLESHOOTING.md
+  docs/decisions/.gitkeep
+
+COLD Tier:
+  docs/archive/.gitkeep
+```
+
+**Characteristics**:
+- Full TMS experience
+- Backlog tracking with FUTURE-ENHANCEMENTS.md
+- ADR support for architecture decisions
+- Archive protocol for completed tasks
+- VS Code snippets included
+
+**Example project**: SaaS product, mobile app, enterprise API
+
+---
+
+### Enterprise Scope
+
+**For**: Large teams, regulated industries, complex systems
+
+**Files installed** (20+ files):
+```
+All Standard files, plus:
+  docs/core/SECURITY.md
+  docs/core/COMPLIANCE.md
+  docs/core/DEPLOYMENT.md
+  docs/core/MONITORING.md
+  docs/runbooks/incident-response.md
+  docs/runbooks/deployment-checklist.md
+  docs/compliance/audit-log.md
+  docs/compliance/data-privacy.md
+  .cortex-validation.json
+```
+
+**Characteristics**:
+- Compliance-ready documentation
+- Runbook support for on-call engineers
+- Security documentation templates
+- Custom validation rules
+- Audit trail support
+
+**Example project**: Healthcare platform, financial services, government systems
+
+---
+
+### Custom Scope
+
+**For**: Specific requirements, partial adoption, legacy systems
+
+**Interactive file selection**:
+```
+Select files to install:
+  [x] NEXT-TASKS.md
+  [x] CLAUDE.md
+  [ ] FUTURE-ENHANCEMENTS.md
+  [x] docs/core/PATTERNS.md
+  [ ] docs/core/ARCHITECTURE.md
+  ...
+```
+
+**Use cases**:
+- Adding TMS to existing mature codebase incrementally
+- Team wants specific files only (e.g., just ADRs)
+- Pilot TMS adoption in one area first
+
+---
+
+## Usage Examples
+
+### Basic Interactive Installation
+
+<Tabs>
+  <TabItem label="Command">
+    ```bash
+    cd my-project
+    cortex-tms init
+    ```
+  </TabItem>
+
+  <TabItem label="Output">
+    ```
+    🧠 Cortex TMS Initialization
+
+    ✓ Project context detected
+
+    What is your project name? my-project
+    Select your project scope: Standard (Recommended)
+    Install VS Code snippets? Yes
+
+    📋 Installation Summary:
+      Project: my-project
+      Scope: Standard
+      Files: 12 files to be created
+      Snippets: Yes
+
+    Continue? Yes
+
+    ✓ Templates copied: 12 files
+    ✓ VS Code snippets installed
+    ✓ Configuration saved
+
+    ✨ Success! Cortex TMS initialized.
+
+    Next Steps:
+      1. Review NEXT-TASKS.md for active sprint tasks
+      2. Update docs/core/ with your project details
+      3. Customize .github/copilot-instructions.md for AI rules
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### CI/CD Non-Interactive Installation
+
+<Tabs>
+  <TabItem label="GitHub Actions">
+    ```yaml
+    # .github/workflows/setup.yml
+    name: Initialize Documentation
+
+    on:
+      workflow_dispatch:
+
+    jobs:
+      init-docs:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '20'
+
+          - name: Install Cortex TMS
+            run: npm install -g cortex-tms@2.6.0
+
+          - name: Initialize TMS
+            run: cortex-tms init --scope standard --force
+
+          - name: Commit Changes
+            run: |
+              git config user.name "GitHub Actions"
+              git config user.email "actions@github.com"
+              git add .
+              git commit -m "docs: initialize Cortex TMS structure"
+              git push
+    ```
+  </TabItem>
+
+  <TabItem label="GitLab CI">
+    ```yaml
+    # .gitlab-ci.yml
+    init-docs:
+      stage: setup
+      image: node:20
+      script:
+        - npm install -g cortex-tms@2.6.0
+        - cortex-tms init --scope standard --force
+        - git config user.name "GitLab CI"
+        - git config user.email "ci@gitlab.com"
+        - git add .
+        - git commit -m "docs: initialize Cortex TMS"
+        - git push
+      only:
+        - manual
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Minimal Installation for Side Projects
+
+```bash
+# Quick setup for solo developer
+cortex-tms init --minimal --force
+
+# Result: 4 files installed
+# - NEXT-TASKS.md
+# - CLAUDE.md
+# - .github/copilot-instructions.md
+# - docs/core/PATTERNS.md
+```
+
+---
+
+### Preview Installation (Dry Run)
+
+```bash
+# See what would be installed without making changes
+cortex-tms init --scope enterprise --dry-run
+
+# Output shows:
+# - 24 files would be created
+# - Placeholder replacements preview
+# - No actual files written
+```
+
+---
+
+### Reinstall After Corruption
+
+```bash
+# Overwrite corrupted files with fresh templates
+cortex-tms init --force
+
+# Better approach: Use migrate instead
+cortex-tms migrate --apply
+```
+
+<Aside type="tip">
+If you have custom changes, use `cortex-tms migrate` instead of `init --force`. Migration preserves customizations and creates backups.
+</Aside>
+
+---
+
+## Exit Codes
+
+| Code | Meaning | Scenario |
+|------|---------|----------|
+| `0` | Success | TMS initialized successfully |
+| `1` | Error | Invalid scope, missing dependencies, file system errors |
+
+**Check exit code in scripts**:
+```bash
+cortex-tms init --scope standard --force
+if [ $? -eq 0 ]; then
+  echo "TMS initialized successfully"
+else
+  echo "Initialization failed"
+  exit 1
+fi
+```
+
+---
+
+## Common Errors
+
+### Error: Interactive prompts require a TTY
+
+**Problem**: Running in CI/CD without `--scope` and `--force` flags
+
+**Solution**:
+```bash
+# Wrong (interactive mode in CI)
+cortex-tms init
+
+# Correct (non-interactive mode)
+cortex-tms init --scope standard --force
+```
+
+---
+
+### Error: Invalid scope
+
+**Problem**: Typo in scope name
+
+**Solution**:
+```bash
+# Wrong
+cortex-tms init --scope standar
+
+# Correct
+cortex-tms init --scope standard
+```
+
+**Valid scopes**: `nano`, `standard`, `enterprise`, `custom`
+
+---
+
+### Warning: TMS files already exist
+
+**Problem**: Running init in directory with existing TMS files
+
+**Output**:
+```
+⚠️  Warning: 5 TMS file(s) already exist:
+  - NEXT-TASKS.md
+  - CLAUDE.md
+  - .cortexrc
+  - docs/core/PATTERNS.md
+  - .github/copilot-instructions.md
+
+Use --force to overwrite, or remove existing files first.
+```
+
+**Solutions**:
+
+<Tabs>
+  <TabItem label="Force Overwrite">
+    ```bash
+    # Overwrite everything (loses custom changes)
+    cortex-tms init --force
+    ```
+  </TabItem>
+
+  <TabItem label="Use Migrate Instead">
+    ```bash
+    # Preserve customizations (recommended)
+    cortex-tms migrate
+    ```
+  </TabItem>
+
+  <TabItem label="Manual Cleanup">
+    ```bash
+    # Remove existing files first
+    rm NEXT-TASKS.md CLAUDE.md .cortexrc
+    rm -rf docs/
+    cortex-tms init
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Error: Template files not found
+
+**Problem**: Corrupted or incomplete Cortex TMS installation
+
+**Solution**:
+```bash
+# Reinstall Cortex TMS globally
+npm uninstall -g cortex-tms
+npm install -g cortex-tms@latest
+
+# Verify installation
+cortex-tms --version
+
+# Retry init
+cortex-tms init
+```
+
+---
+
+## Troubleshooting
+
+### VS Code Snippets Not Working
+
+**Check installation**:
+```bash
+ls -la .vscode/tms.code-snippets
+```
+
+**If missing**:
+```bash
+# Manually copy from templates
+cp node_modules/cortex-tms/templates/vscode/tms.code-snippets .vscode/
+
+# Or reinstall
+cortex-tms init --force
+```
+
+**Activate snippets**:
+1. Open VS Code
+2. Create new Markdown file
+3. Type `tms-` and press Tab
+4. Snippet menu should appear
+
+---
+
+### Placeholder Text Not Replaced
+
+**Example**: File contains `[Project Name]` instead of actual project name
+
+**Cause**: Non-interactive mode uses directory name as default
+
+**Fix**:
+```bash
+# Manually edit files
+vim NEXT-TASKS.md
+# Replace [Project Name] with your actual name
+
+# Or reinitialize with interactive prompts
+rm .cortexrc
+cortex-tms init
+```
+
+---
+
+### Permission Denied Errors
+
+**Problem**: Cannot create `.github/` directory
+
+**Check permissions**:
+```bash
+ls -la .github/
+```
+
+**Fix**:
+```bash
+# Ensure directory exists and is writable
+mkdir -p .github
+chmod 755 .github
+
+# Retry init
+cortex-tms init --force
+```
+
+---
+
+## Tips and Best Practices
+
+<CardGrid stagger>
+  <Card title="Start with Standard" icon="approve-check">
+    Most teams should use `--scope standard`. It provides the full TMS experience without overwhelming complexity.
+  </Card>
+
+  <Card title="Commit Before Init" icon="seti:git">
+    Always commit your existing work before running `init --force`. This makes rollback easy if something goes wrong.
+  </Card>
+
+  <Card title="Use Dry Run First" icon="magnifier">
+    Run `--dry-run` to preview changes before installing. Compare different scopes to find the right fit.
+  </Card>
+
+  <Card title="Customize After Install" icon="pencil">
+    Init creates templates with placeholder text. Replace `[Project Name]`, `[Tech Stack]`, etc. with actual values immediately after installation.
+  </Card>
+</CardGrid>
+
+---
+
+## Integration with Other Commands
+
+### After Init: Validate
+
+```bash
+# Initialize project
+cortex-tms init --scope standard
+
+# Validate installation
+cortex-tms validate --strict
+
+# Should show all checks passed
+```
+
+---
+
+### After Init: Check Status
+
+```bash
+# Initialize project
+cortex-tms init
+
+# View dashboard
+cortex-tms status
+
+# Output shows:
+# - Project name
+# - Scope (Standard)
+# - Health status
+# - Active sprint (placeholder)
+```
+
+---
+
+### After Init: Start Tutorial
+
+```bash
+# Initialize project
+cortex-tms init
+
+# Learn the system
+cortex-tms tutorial
+
+# Interactive walkthrough of all features
+```
+
+---
+
+## Configuration File (.cortexrc)
+
+The init command creates a `.cortexrc` file with project metadata:
+
+```json
+{
+  "version": "2.6.0",
+  "scope": "standard",
+  "projectName": "acme-api",
+  "createdAt": "2026-01-19T10:30:00.000Z",
+  "metadata": {
+    "packageManager": "pnpm",
+    "isGitRepo": true
+  }
+}
+```
+
+**Fields**:
+- `version`: Cortex TMS version used during init
+- `scope`: Template scope installed
+- `projectName`: Normalized project name
+- `createdAt`: ISO timestamp of initialization
+- `metadata`: Additional context for tooling
+
+**Used by**:
+- `cortex-tms validate` (checks configuration validity)
+- `cortex-tms status` (displays project identity)
+- `cortex-tms migrate` (determines upgrade path)
+
+---
+
+## Next Steps
+
+After initializing Cortex TMS:
+
+<Steps>
+
+1. **Replace Placeholder Text**
+
+   Open `NEXT-TASKS.md`, `CLAUDE.md`, and other files to replace:
+   - `[Project Name]` → Your actual project name
+   - `[Tech Stack]` → Your framework/language
+   - `[e.g., examples]` → Real examples from your codebase
+
+2. **Add Your First Sprint**
+
+   Edit `NEXT-TASKS.md`:
+   ```markdown
+   ## Active Sprint: Initial Setup
+
+   **Why this matters**: Establish development workflow
+
+   - [ ] Configure linting and formatting
+   - [ ] Set up CI/CD pipeline
+   - [ ] Document architecture in ARCHITECTURE.md
+   ```
+
+3. **Configure AI Instructions**
+
+   Edit `.github/copilot-instructions.md`:
+   ```markdown
+   ## Tech Stack
+
+   - Framework: Next.js 15
+   - Database: PostgreSQL
+   - ORM: Drizzle
+
+   ## Critical Rules
+
+   - Never commit secrets to Git
+   - All API routes require authentication
+   - Follow patterns in docs/core/PATTERNS.md
+   ```
+
+4. **Run Validation**
+
+   ```bash
+   cortex-tms validate --strict
+   ```
+
+   Fix any warnings or errors
+
+5. **Commit Changes**
+
+   ```bash
+   git add .
+   git commit -m "docs: initialize Cortex TMS documentation structure"
+   git push
+   ```
+
+</Steps>
+
+---
+
+## Related Commands
+
+- [`cortex-tms validate`](/reference/cli/validate/) - Verify TMS installation health
+- [`cortex-tms status`](/reference/cli/status/) - View project dashboard
+- [`cortex-tms migrate`](/reference/cli/migrate/) - Upgrade templates to latest version
+- [`cortex-tms tutorial`](/reference/cli/tutorial/) - Learn TMS interactively
+
+---
+
+## Learn More
+
+- [Tiered Memory System Concept](/concepts/tiered-memory/) - Understand the HOT/WARM/COLD architecture
+- [Context Budget](/concepts/context-budget/) - Why file size limits matter
+- [Truth Syncing](/concepts/truth-syncing/) - Keep documentation synchronized

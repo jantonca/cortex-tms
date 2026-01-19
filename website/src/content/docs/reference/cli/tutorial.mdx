@@ -1,0 +1,865 @@
+---
+title: cortex-tms tutorial
+description: Interactive walkthrough teaching the Cortex Way with 5 hands-on lessons covering status, prompts, validation, migration, and best practices
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+The `cortex-tms tutorial` command provides an interactive onboarding experience. It teaches the "Cortex Way" through 5 progressive lessons covering the core workflows and tools.
+
+## Synopsis
+
+```bash
+cortex-tms tutorial
+```
+
+## Description
+
+**Learn by Doing**. The tutorial is a 10-15 minute interactive walkthrough that teaches Cortex TMS concepts through hands-on examples. Think of it as `vimtutor` for documentation architecture.
+
+**What you'll learn**:
+- How to read the status dashboard
+- How to activate AI agents with prompts
+- How zero-drift governance prevents documentation errors
+- How validation catches issues early
+- How migration safely evolves templates
+
+**Format**:
+- 5 progressive lessons
+- Interactive navigation (Next/Previous/Exit)
+- Try-this-command suggestions
+- Pro tips for each concept
+
+**Typical usage**:
+```bash
+# First time with Cortex TMS?
+cortex-tms tutorial
+
+# Interactive lessons appear
+# Navigate with arrow keys
+# Exit anytime (progress saved)
+```
+
+<Aside type="tip" title="New Team Members">
+Have new developers run the tutorial before their first commit. It teaches the workflow in 15 minutes and prevents common mistakes.
+</Aside>
+
+---
+
+## Options
+
+**None**. The tutorial takes no flags or arguments. It's always interactive.
+
+**Why no options?**
+- Tutorial is meant to be experiential
+- Interactive format is core to learning
+- Non-interactive tutorial defeats the purpose
+
+**If you need non-interactive docs**: Read the [concepts](/concepts/) section of the documentation instead.
+
+---
+
+## Lesson Structure
+
+### Lesson 1: The Project Dashboard
+
+**Topic**: Using `cortex-tms status` for project orientation
+
+**Concepts taught**:
+- Status dashboard sections (Identity, Health, Sprint, Backlog)
+- Interpreting progress bars
+- Understanding scope emojis (Nano 🔬, Standard 📦, Enterprise 🏢)
+- Quick actions from dashboard
+
+**Try-this-command**:
+```bash
+cortex-tms status
+```
+
+**Pro tip**:
+> Run this command whenever you return to a project to get oriented.
+
+**Content preview**:
+```
+📊 Lesson 1: The Project Dashboard
+
+Lesson 1 of 5
+
+Every Cortex TMS project has a visual dashboard showing:
+  • Current scope (Nano/Standard/Enterprise)
+  • Active tasks from NEXT-TASKS.md
+  • Validation health status
+  • Quick statistics at a glance
+
+Think of this as your "Project Cockpit" - everything you
+need to know in one command.
+
+💻 Try this command:
+
+   cortex-tms status
+
+💡 Pro Tip: Run this command whenever you return to a
+project to get oriented.
+
+? What would you like to do?
+❯ → Next Lesson
+  Exit Tutorial
+```
+
+---
+
+### Lesson 2: AI Agent Activation
+
+**Topic**: Using `cortex-tms prompt` for AI workflows
+
+**Concepts taught**:
+- The "Essential 7" prompt library
+- Project-aware prompts vs generic prompts
+- Clipboard auto-copy workflow
+- Customizing prompts in `PROMPTS.md`
+
+**Prompts covered**:
+- `init-session` - Start with context
+- `feature` - Implement with architectural anchors
+- `debug` - Troubleshoot systematically
+- `review` - Code review against patterns
+- `refactor` - Structural improvements
+- `decision` - Architecture decision records
+- `finish` - Execute maintenance protocol
+
+**Try-this-command**:
+```bash
+cortex-tms prompt init-session
+```
+
+**Pro tip**:
+> Customize prompts by editing `PROMPTS.md` in your project root.
+
+---
+
+### Lesson 3: Zero-Drift Governance
+
+**Topic**: Version syncing and drift prevention
+
+**Concepts taught**:
+- What is documentation drift
+- Single Source of Truth (package.json version)
+- Automated version sync workflow
+- CI validation enforcement
+
+**How it works**:
+1. Update `package.json` version (Single Source of Truth)
+2. Run sync script (`pnpm run docs:sync`)
+3. All docs automatically updated with new version
+4. CI validates sync on every PR
+
+**Try-this-command**:
+```bash
+pnpm run docs:sync
+```
+
+**Pro tip**:
+> If CI blocks your PR, run `docs:sync` locally and commit the changes.
+
+---
+
+### Lesson 4: Project Health & Archive Protocol
+
+**Topic**: Using `cortex-tms validate` for quality enforcement
+
+**Concepts taught**:
+- Validation checks (files, schemas, size limits, placeholders)
+- Archive Protocol (why more than 10 completed tasks triggers CI failure)
+- Keeping `NEXT-TASKS.md` focused on current work
+- Governance that enforces itself
+
+**Validation checks**:
+- Mandatory files exist
+- No placeholder text (e.g., `[YOUR_PROJECT]`)
+- Configuration is valid (`.cortexrc`)
+- Archive status healthy (fewer than 10 completed tasks in NEXT-TASKS.md)
+
+**Archive Protocol explained**:
+- CI blocks PRs if more than 10 completed tasks in `NEXT-TASKS.md`
+- Forces regular archival to `docs/archive/`
+- Keeps `NEXT-TASKS.md` focused on current work (1-2 weeks max)
+- Prevents technical debt accumulation
+- Governance enforces itself automatically
+
+**Try-this-command**:
+```bash
+cortex-tms validate --strict
+```
+
+**Pro tip**:
+> Run validate before commits to catch issues early.
+
+---
+
+### Lesson 5: Safe Template Evolution
+
+**Topic**: Using `cortex-tms migrate` for upgrades
+
+**Concepts taught**:
+- Template evolution without fear
+- Safe-Fail Migration Engine components
+- Backup, Apply, Rollback workflow
+- OUTDATED vs CUSTOMIZED file detection
+
+**Three components**:
+
+**1. Backup Engine (automatic snapshots)**:
+- Timestamped backups in `.cortex/backups/`
+- Created BEFORE any changes
+- Manifest tracks what/why
+
+**2. Apply Logic (smart upgrades)**:
+- Auto-upgrades OUTDATED files (unchanged from old template)
+- Skips CUSTOMIZED files (unless `--force`)
+- Clear status reporting
+
+**3. Rollback Command (one-click recovery)**:
+- Interactive backup selection
+- Preview before restore
+- Confirmation required
+
+**Try-this-command**:
+```bash
+cortex-tms migrate
+```
+
+**Pro tip**:
+> Always run migrate (no flags) first to see what needs updating.
+
+---
+
+## Navigation
+
+### Navigation Options
+
+**During lesson**:
+```
+? What would you like to do?
+❯ → Next Lesson
+  ← Previous Lesson
+  Exit Tutorial
+```
+
+**Last lesson**:
+```
+? What would you like to do?
+❯ ✓ Finish Tutorial
+  ← Previous Lesson
+  Exit Tutorial
+```
+
+**Movement**:
+- Arrow keys: Navigate choices
+- Enter: Select choice
+- Ctrl+C: Exit tutorial
+
+---
+
+### Progress Tracking
+
+**Current implementation**: No state saved between runs
+
+**Restart behavior**: Always starts at Lesson 1
+
+**Future enhancement**: Save progress in `.cortex/tutorial-progress.json`
+
+**Workaround**: Tutorial is short (10-15 min), just complete in one session
+
+---
+
+## Exit Codes
+
+| Code | Meaning | Scenario |
+|------|---------|----------|
+| `0` | Success | Tutorial completed or exited normally |
+| `1` | Error | Terminal not interactive, display errors |
+
+---
+
+## Usage Examples
+
+### Complete Tutorial
+
+```bash
+# Start tutorial
+cortex-tms tutorial
+
+# Lesson 1 appears
+# Read content
+# Press Enter to continue
+# Lesson 2 appears
+# ...continue through all 5 lessons...
+
+# Final screen:
+🎉 Tutorial Complete!
+
+You now know the Cortex Way:
+  • Dashboard: cortex-tms status
+  • AI Activation: cortex-tms prompt
+  • Version Sync: pnpm run docs:sync
+  • Health Check: cortex-tms validate
+  • Migration: cortex-tms migrate
+
+💡 Next Steps:
+   1. Run "cortex-tms status" to see your project dashboard
+   2. Run "cortex-tms prompt init-session" to start coding
+   3. Read NEXT-TASKS.md to see what to work on next
+
+📚 For more details, see:
+   • CLAUDE.md (agent workflow)
+   • docs/core/ARCHITECTURE.md (technical design)
+   • docs/core/PATTERNS.md (coding standards)
+
+Happy coding! 🚀
+```
+
+---
+
+### Exit Early
+
+```bash
+cortex-tms tutorial
+
+# Lesson 2 appears
+# Select "Exit Tutorial"
+
+✓ Tutorial exited. Run "cortex-tms tutorial" anytime to continue.
+
+# Can restart later
+cortex-tms tutorial
+# Starts at Lesson 1 again
+```
+
+---
+
+### Navigate Backwards
+
+```bash
+cortex-tms tutorial
+
+# Lesson 3 appears
+# Select "← Previous Lesson"
+# Lesson 2 appears
+# Select "← Previous Lesson"
+# Lesson 1 appears
+# Select "→ Next Lesson"
+# Back to Lesson 2
+```
+
+---
+
+## Tutorial Workflow
+
+<Steps>
+
+1. **Install Cortex TMS**
+
+   ```bash
+   npm install -g cortex-tms@2.6.0
+   ```
+
+2. **Initialize Project** (Optional)
+
+   ```bash
+   cortex-tms init --scope standard
+   ```
+
+   Tutorial works without initialization, but examples are better with real project
+
+3. **Start Tutorial**
+
+   ```bash
+   cortex-tms tutorial
+   ```
+
+4. **Complete 5 Lessons**
+
+   - Lesson 1: Status Dashboard (5 min)
+   - Lesson 2: AI Prompts (5 min)
+   - Lesson 3: Zero-Drift (2 min)
+   - Lesson 4: Validation (5 min)
+   - Lesson 5: Migration (5 min)
+
+   **Total**: ~15 minutes
+
+5. **Apply Learning**
+
+   After tutorial:
+   ```bash
+   # View dashboard
+   cortex-tms status
+
+   # Initialize AI session
+   cortex-tms prompt init-session
+
+   # Validate health
+   cortex-tms validate
+   ```
+
+</Steps>
+
+---
+
+## Onboarding Checklist
+
+Use this checklist for new team members:
+
+**Day 1 Onboarding**:
+- [ ] Install Cortex TMS: `npm install -g cortex-tms`
+- [ ] Clone project repository
+- [ ] Run tutorial: `cortex-tms tutorial` (15 min)
+- [ ] Read `NEXT-TASKS.md` to understand current sprint
+- [ ] Read `docs/core/PATTERNS.md` for coding standards
+- [ ] Run status: `cortex-tms status`
+- [ ] Initialize AI session: `cortex-tms prompt init-session`
+
+**Day 1 Assignment**:
+- [ ] Pick small task from `NEXT-TASKS.md`
+- [ ] Use `cortex-tms prompt feature` to get started
+- [ ] Follow patterns in `docs/core/PATTERNS.md`
+- [ ] Use `cortex-tms prompt finish` when done
+- [ ] Run validation: `cortex-tms validate --strict`
+- [ ] Create PR
+
+**After First PR**:
+- [ ] Experienced full workflow
+- [ ] Understands status → prompt → validate cycle
+- [ ] Ready for independent work
+
+---
+
+## Common Scenarios
+
+### Scenario: New Developer Onboarding
+
+**Context**: Developer just joined team, knows Git but not Cortex TMS
+
+**Workflow**:
+```bash
+# Step 1: Watch tutorial
+cortex-tms tutorial
+# 15 minutes, learn all core concepts
+
+# Step 2: Explore project
+cortex-tms status
+# See current sprint: "User Authentication"
+
+# Step 3: Read documentation
+cat NEXT-TASKS.md
+cat docs/core/PATTERNS.md
+
+# Step 4: Pick first task
+cortex-tms prompt feature
+# Paste into AI, ask: "Implement JWT token generation"
+
+# Step 5: Validate before commit
+cortex-tms validate --strict
+
+# Developer now productive on Day 1
+```
+
+---
+
+### Scenario: Quarterly Template Upgrade
+
+**Context**: Team upgrades Cortex TMS quarterly, needs migration training
+
+**Workflow**:
+```bash
+# Step 1: Review migration lesson
+cortex-tms tutorial
+# Navigate to Lesson 5
+# Read about backup/apply/rollback
+
+# Step 2: Check migration status
+cortex-tms migrate
+# See OUTDATED files
+
+# Step 3: Apply upgrade
+cortex-tms migrate --apply
+# Backup created automatically
+
+# Step 4: Review changes
+git diff
+
+# Step 5: If issues, rollback
+cortex-tms migrate --rollback
+# Select backup to restore
+
+# Team understands migration safety
+```
+
+---
+
+### Scenario: Documentation Quality Review
+
+**Context**: Manager wants to ensure team follows TMS practices
+
+**Workflow**:
+```bash
+# Step 1: Review validation lesson
+cortex-tms tutorial
+# Navigate to Lesson 4
+# Learn Archive Protocol
+
+# Step 2: Validate project
+cortex-tms validate --strict
+
+# Step 3: Check status
+cortex-tms status
+# See health metrics
+
+# Step 4: Enforce practices
+# Add to CI pipeline:
+# - cortex-tms validate --strict
+# - Block PRs if validation fails
+
+# Team self-enforces quality
+```
+
+---
+
+## Troubleshooting
+
+### Tutorial Won't Start (Non-Interactive Terminal)
+
+**Problem**: Running in CI/CD or non-TTY environment
+
+**Error**:
+```
+Error: Tutorial requires interactive terminal
+Use --help for documentation
+```
+
+**Solution**:
+```bash
+# Tutorial requires TTY
+# Run locally, not in CI
+
+# For CI, use commands directly:
+cortex-tms status
+cortex-tms validate
+```
+
+---
+
+### Terminal Display Issues
+
+**Problem**: Formatting looks wrong, emojis not rendering
+
+**Causes**:
+- Old terminal emulator
+- Missing emoji font
+- Terminal width too narrow
+
+**Solutions**:
+
+**1. Use modern terminal**:
+- iTerm2 (macOS)
+- Windows Terminal (Windows)
+- Gnome Terminal (Linux)
+
+**2. Install emoji font**:
+```bash
+# Ubuntu
+sudo apt install fonts-noto-color-emoji
+
+# macOS (built-in)
+```
+
+**3. Widen terminal**:
+```bash
+# Ensure at least 80 columns
+resize -s 24 80
+```
+
+---
+
+### Accidentally Exited Tutorial
+
+**Problem**: Closed terminal mid-tutorial
+
+**Current behavior**: Progress lost, restart from Lesson 1
+
+**Workaround**: Tutorial is short, just re-run
+```bash
+cortex-tms tutorial
+# Start over (15 min)
+```
+
+---
+
+### Can't Navigate Back to Previous Lesson
+
+**Problem**: "← Previous Lesson" option not showing
+
+**Cause**: On Lesson 1 (no previous lesson exists)
+
+**Solution**: Use "→ Next Lesson" to proceed forward
+
+---
+
+## Tips and Best Practices
+
+<CardGrid stagger>
+  <Card title="Complete in One Session" icon="rocket">
+    Tutorial is 15 minutes. Don't pause mid-way - complete it in one sitting for best learning.
+  </Card>
+
+  <Card title="Try Commands Immediately" icon="approve-check">
+    When tutorial says "Try this command", actually run it. Learning by doing is more effective.
+  </Card>
+
+  <Card title="Take Notes" icon="pencil">
+    Keep notepad open. Jot down key commands as you progress through lessons.
+  </Card>
+
+  <Card title="Share with Team" icon="star">
+    Add "Run cortex-tms tutorial" to your onboarding checklist. New developers learn the system fast.
+  </Card>
+</CardGrid>
+
+---
+
+## Tutorial Content Reference
+
+### Lesson 1: Dashboard
+
+**Key takeaways**:
+- `cortex-tms status` shows project at a glance
+- Dashboard sections: Identity, Health, Sprint, Backlog
+- Run status when returning to project after time away
+
+**Command to remember**:
+```bash
+cortex-tms status
+```
+
+---
+
+### Lesson 2: Prompts
+
+**Key takeaways**:
+- Essential 7 prompts for AI workflows
+- Always start with `init-session`
+- Prompts auto-copy to clipboard
+- Customize in `PROMPTS.md`
+
+**Commands to remember**:
+```bash
+cortex-tms prompt init-session
+cortex-tms prompt feature
+cortex-tms prompt finish
+```
+
+---
+
+### Lesson 3: Version Sync
+
+**Key takeaways**:
+- `package.json` version is Single Source of Truth
+- Sync script updates all docs automatically
+- CI validates sync on every PR
+
+**Command to remember**:
+```bash
+pnpm run docs:sync
+```
+
+---
+
+### Lesson 4: Validation
+
+**Key takeaways**:
+- `cortex-tms validate` catches documentation drift
+- Archive Protocol enforces cleanup (fewer than 10 completed tasks)
+- Run validation before every commit
+
+**Command to remember**:
+```bash
+cortex-tms validate --strict
+```
+
+---
+
+### Lesson 5: Migration
+
+**Key takeaways**:
+- Templates evolve, customizations preserved
+- Backup → Apply → Rollback workflow
+- Always preview with `migrate` (no flags) first
+
+**Commands to remember**:
+```bash
+cortex-tms migrate           # Preview
+cortex-tms migrate --apply   # Upgrade
+cortex-tms migrate --rollback  # Undo
+```
+
+---
+
+## Post-Tutorial Actions
+
+### Immediate Next Steps
+
+After completing tutorial:
+
+<Steps>
+
+1. **View Status**
+
+   ```bash
+   cortex-tms status
+   ```
+
+   Understand current project state
+
+2. **Initialize AI Session**
+
+   ```bash
+   cortex-tms prompt init-session
+   ```
+
+   Copy and paste into Claude/ChatGPT
+
+3. **Read Active Sprint**
+
+   ```bash
+   cat NEXT-TASKS.md
+   ```
+
+   See what to work on next
+
+4. **Pick First Task**
+
+   Choose small task from `NEXT-TASKS.md`
+
+5. **Use Feature Prompt**
+
+   ```bash
+   cortex-tms prompt feature
+   ```
+
+   Get implementation guidance
+
+6. **Validate Before Commit**
+
+   ```bash
+   cortex-tms validate --strict
+   ```
+
+   Ensure quality standards
+
+</Steps>
+
+---
+
+### Deep Dive Documentation
+
+**After tutorial**, read these docs for deeper understanding:
+
+**Concepts**:
+- [Tiered Memory System](/concepts/tiered-memory/) - HOT/WARM/COLD architecture
+- [Context Budget](/concepts/context-budget/) - Why file size limits matter
+- [Zero-Drift Governance](/concepts/zero-drift/) - Automated validation
+- [Truth Syncing](/concepts/truth-syncing/) - Single source of truth
+
+**CLI Reference**:
+- [cortex-tms init](/reference/cli/init/) - Initialization details
+- [cortex-tms status](/reference/cli/status/) - Dashboard sections
+- [cortex-tms validate](/reference/cli/validate/) - All validation checks
+- [cortex-tms migrate](/reference/cli/migrate/) - Migration workflow
+- [cortex-tms prompt](/reference/cli/prompt/) - Prompt library
+
+---
+
+## Integration with Other Commands
+
+### Before Init: Learn First
+
+```bash
+# Learn system before using
+cortex-tms tutorial
+
+# Then initialize
+cortex-tms init --scope standard
+```
+
+---
+
+### After Init: Reinforce Learning
+
+```bash
+# Initialize project
+cortex-tms init
+
+# Run tutorial to learn workflows
+cortex-tms tutorial
+
+# Apply immediately
+cortex-tms status
+cortex-tms prompt init-session
+```
+
+---
+
+### With Team Onboarding: Standardize Training
+
+```bash
+# Add to onboarding script
+cat > onboard.sh << 'EOF'
+#!/bin/bash
+
+echo "Welcome to the team!"
+echo ""
+
+# Install Cortex TMS
+npm install -g cortex-tms@2.6.0
+
+# Run tutorial
+echo "Step 1: Complete the Cortex TMS tutorial (15 min)"
+cortex-tms tutorial
+
+# Project status
+echo ""
+echo "Step 2: Check project status"
+cortex-tms status
+
+# Read docs
+echo ""
+echo "Step 3: Read these files:"
+echo "  - NEXT-TASKS.md (current sprint)"
+echo "  - docs/core/PATTERNS.md (coding standards)"
+echo "  - CLAUDE.md (AI workflow)"
+
+echo ""
+echo "You're ready to contribute! 🚀"
+EOF
+
+chmod +x onboard.sh
+./onboard.sh
+```
+
+---
+
+## Related Commands
+
+- [`cortex-tms init`](/reference/cli/init/) - Initialize TMS (creates files tutorial references)
+- [`cortex-tms status`](/reference/cli/status/) - Dashboard (Lesson 1)
+- [`cortex-tms prompt`](/reference/cli/prompt/) - Prompt library (Lesson 2)
+- [`cortex-tms validate`](/reference/cli/validate/) - Health checks (Lesson 4)
+- [`cortex-tms migrate`](/reference/cli/migrate/) - Template upgrades (Lesson 5)
+
+---
+
+## Learn More
+
+- [Getting Started Guide](/getting-started/) - Tutorial's companion guide
+- [Tiered Memory System](/concepts/tiered-memory/) - Core architecture explained
+- [Context Budget](/concepts/context-budget/) - Why TMS works
+- [Zero-Drift Governance](/concepts/zero-drift/) - Automated quality enforcement

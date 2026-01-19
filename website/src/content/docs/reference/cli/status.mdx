@@ -1,0 +1,807 @@
+---
+title: cortex-tms status
+description: View a real-time dashboard showing project health, sprint progress, and backlog statistics
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+The `cortex-tms status` command provides a high-level project dashboard. It displays project identity, health metrics, active sprint progress, and backlog size in a single consolidated view.
+
+## Synopsis
+
+```bash
+cortex-tms status
+```
+
+## Description
+
+**Your Project Cockpit**. The status command answers the question: "What's the state of this project right now?"
+
+Think of it as `git status` for your documentation layer. It aggregates information from multiple sources:
+- `.cortexrc` (project identity and scope)
+- `NEXT-TASKS.md` (current sprint and task progress)
+- `FUTURE-ENHANCEMENTS.md` (backlog size)
+- `cortex-tms validate` (health checks)
+
+**Typical usage**:
+```bash
+# Just opened a project after weeks away?
+cortex-tms status
+
+# Output shows:
+# - What scope this project uses
+# - Current sprint name and progress
+# - How many tasks are done/in-progress/todo
+# - Health status (any validation errors?)
+# - Backlog size
+```
+
+<Aside type="tip" title="Onboarding Tool">
+Run `cortex-tms status` when returning to a project after time away. It instantly orients you to the current work context.
+</Aside>
+
+---
+
+## Options
+
+**None**. The status command takes no flags or arguments. It always shows the full dashboard.
+
+**Why no options?**
+- Status is meant to be a quick, consistent snapshot
+- Always shows the same information for predictability
+- For detailed checks, use `cortex-tms validate --verbose`
+
+---
+
+## Dashboard Sections
+
+### 1. Project Identity
+
+Shows basic project metadata from `.cortexrc`:
+
+**Displayed**:
+- **Name**: Project name (normalized during init)
+- **Scope**: Template scope installed (Nano/Standard/Enterprise)
+- **TMS Version**: Cortex TMS version used during initialization
+
+**Example output**:
+```
+🏷️  Project Identity
+  Name: acme-api
+  Scope: Standard 📦
+  TMS Version: 2.6.0
+```
+
+**Scope emojis**:
+- Nano: 🔬 (microscope)
+- Standard: 📦 (package)
+- Enterprise: 🏢 (building)
+
+---
+
+### 2. Project Health
+
+Shows validation status from `cortex-tms validate`:
+
+**Displayed**:
+- **Health emoji**: ✅ Healthy or ⚠️ Issues Found
+- **Checks**: X/Y passed
+- **Warnings count** (if any)
+- **Errors count** (if any)
+
+**Example outputs**:
+
+<Tabs>
+  <TabItem label="Healthy Project">
+    ```
+    💚 Project Health
+      ✅ Healthy
+      Checks: 12/12 passed
+    ```
+  </TabItem>
+
+  <TabItem label="Project with Warnings">
+    ```
+    💚 Project Health
+      ⚠️  Issues Found
+      Checks: 11/12 passed
+      ⚠ 1 warnings
+    ```
+  </TabItem>
+
+  <TabItem label="Project with Errors">
+    ```
+    💚 Project Health
+      ⚠️  Issues Found
+      Checks: 9/12 passed
+      ⚠ 1 warnings
+      ✗ 2 errors
+    ```
+  </TabItem>
+</Tabs>
+
+**Interpretation**:
+- ✅ All checks passed → You're good to work
+- ⚠️ Warnings → Non-critical issues, address when convenient
+- ✗ Errors → Fix before committing
+
+---
+
+### 3. Current Sprint
+
+Shows active sprint from `NEXT-TASKS.md`:
+
+**Displayed**:
+- **Sprint name**: Extracted from `## Active Sprint: [Name]`
+- **Focus**: The "Why this matters" context
+- **Progress bar**: Visual completion percentage
+- **Task breakdown**: X done, Y in progress, Z todo
+
+**Example outputs**:
+
+<Tabs>
+  <TabItem label="Active Sprint">
+    ```
+    🎯 Current Sprint
+      Name: User Authentication
+      Focus: Mobile app needs secure login
+      Progress: [████████████░░░░░░░░] 60%
+      Tasks: 3 done, 1 in progress, 1 todo
+    ```
+  </TabItem>
+
+  <TabItem label="No Active Sprint">
+    ```
+    🎯 Current Sprint
+      No active sprint found in NEXT-TASKS.md
+    ```
+  </TabItem>
+
+  <TabItem label="Completed Sprint">
+    ```
+    🎯 Current Sprint
+      Name: Payment Integration
+      Focus: Support Stripe and PayPal
+      Progress: [████████████████████] 100%
+      Tasks: 5 done, 0 in progress, 0 todo
+    ```
+  </TabItem>
+</Tabs>
+
+**Task states**:
+- `[x]` → Done (counts toward completion)
+- `[>]` or `[~]` → In progress
+- `[ ]` → Todo
+
+**Progress calculation**:
+```
+Progress = (done_tasks / total_tasks) * 100
+```
+
+**Progress bar colors**:
+- 0-49%: Gray (early stage)
+- 50-99%: Yellow (making progress)
+- 100%: Green (completed)
+
+---
+
+### 4. Backlog
+
+Shows future work from `FUTURE-ENHANCEMENTS.md`:
+
+**Displayed**:
+- **Future Enhancements count**: Number of backlog items
+
+**Example outputs**:
+
+<Tabs>
+  <TabItem label="With Backlog">
+    ```
+    📋 Backlog
+      Future Enhancements: 12 items pending
+    ```
+  </TabItem>
+
+  <TabItem label="No Backlog">
+    ```
+    📋 Backlog
+      No backlog items found in FUTURE-ENHANCEMENTS.md
+    ```
+  </TabItem>
+</Tabs>
+
+**Backlog parsing**:
+- Counts checkbox tasks (`- [ ]`, `- [x]`) in `FUTURE-ENHANCEMENTS.md`
+- Both completed and pending backlog items are counted
+- Provides a sense of feature pipeline size
+
+---
+
+### 5. Quick Actions
+
+Shows next steps based on project state:
+
+**Always shown**:
+```
+⚡ Quick Actions
+  Run cortex-tms validate for detailed health checks
+  Edit NEXT-TASKS.md to update sprint tasks
+```
+
+**If issues found**:
+```
+  Run cortex-tms validate --fix to auto-fix issues
+```
+
+---
+
+## Full Dashboard Example
+
+**Healthy project mid-sprint**:
+```
+📊 Cortex TMS Status Dashboard
+
+🏷️  Project Identity
+  Name: acme-api
+  Scope: Standard 📦
+  TMS Version: 2.6.0
+
+💚 Project Health
+  ✅ Healthy
+  Checks: 12/12 passed
+
+🎯 Current Sprint
+  Name: User Authentication
+  Focus: Mobile app needs secure API access
+  Progress: [████████░░░░░░░░░░░░] 40%
+  Tasks: 2 done, 1 in progress, 2 todo
+
+📋 Backlog
+  Future Enhancements: 8 items pending
+
+⚡ Quick Actions
+  Run cortex-tms validate for detailed health checks
+  Edit NEXT-TASKS.md to update sprint tasks
+```
+
+---
+
+## Exit Codes
+
+| Code | Meaning | Scenario |
+|------|---------|----------|
+| `0` | Success | Dashboard displayed successfully |
+| `1` | Error | Cannot gather project information (missing `.cortexrc`, file read errors) |
+
+**Note**: Status command does **not** fail if validation has errors. It reports the health status but always exits 0 if it can display the dashboard.
+
+---
+
+## Usage Examples
+
+### Quick Project Check
+
+```bash
+# Just opened project, what's the state?
+cortex-tms status
+```
+
+**Use case**: Daily standup prep, returning after vacation, context switching between projects
+
+---
+
+### Health Triage
+
+```bash
+# Check health, then fix if needed
+cortex-tms status
+
+# If issues shown:
+cortex-tms validate --fix
+cortex-tms status  # Verify fixed
+```
+
+---
+
+### Sprint Progress Tracking
+
+```bash
+# Monday morning: Check sprint progress
+cortex-tms status
+
+# See: Progress: [████░░░░░░░░░░░░░░░░] 20%
+# Know: 1 done, 0 in progress, 4 todo
+
+# Friday afternoon: Check again
+cortex-tms status
+
+# See: Progress: [████████████████░░░░] 80%
+# Know: 4 done, 1 in progress, 0 todo
+```
+
+---
+
+### CI/CD Integration
+
+<Tabs>
+  <TabItem label="GitHub Actions">
+    ```yaml
+    # .github/workflows/status-report.yml
+    name: Weekly Status Report
+
+    on:
+      schedule:
+        - cron: '0 9 * * MON'  # Every Monday at 9 AM
+      workflow_dispatch:
+
+    jobs:
+      status:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '20'
+
+          - name: Install Cortex TMS
+            run: npm install -g cortex-tms@2.6.0
+
+          - name: Generate Status Report
+            run: |
+              echo "## 📊 Weekly Status Report" >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+              cortex-tms status >> $GITHUB_STEP_SUMMARY
+              echo '```' >> $GITHUB_STEP_SUMMARY
+
+          - name: Post to Slack
+            env:
+              SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+            run: |
+              STATUS=$(cortex-tms status)
+              curl -X POST $SLACK_WEBHOOK \
+                -H 'Content-Type: application/json' \
+                -d "{\"text\": \"📊 Weekly Status\\n\`\`\`\\n$STATUS\\n\`\`\`\"}"
+    ```
+  </TabItem>
+
+  <TabItem label="Shell Script">
+    ```bash
+    #!/bin/bash
+    # daily-standup.sh
+
+    echo "=== Daily Standup Context ==="
+    echo ""
+
+    # Show status
+    cortex-tms status
+
+    # Show recent commits
+    echo ""
+    echo "📝 Recent Commits (last 24h):"
+    git log --since="24 hours ago" --pretty=format:"  %h - %s (%an)" --abbrev-commit
+
+    # Show current branch
+    echo ""
+    echo "🌿 Current Branch: $(git branch --show-current)"
+    ```
+
+    **Usage**:
+    ```bash
+    chmod +x daily-standup.sh
+    ./daily-standup.sh
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Team Dashboard
+
+```bash
+# Create team status page
+cat > team-status.sh << 'EOF'
+#!/bin/bash
+
+PROJECTS=(
+  "/home/user/acme-api"
+  "/home/user/acme-web"
+  "/home/user/acme-mobile"
+)
+
+for project in "${PROJECTS[@]}"; do
+  echo "========================================"
+  echo "Project: $(basename $project)"
+  echo "========================================"
+  cd $project
+  cortex-tms status
+  echo ""
+done
+EOF
+
+chmod +x team-status.sh
+./team-status.sh
+```
+
+---
+
+## Understanding Sprint Progress
+
+### Task State Detection
+
+**Done tasks** (`[x]`):
+```markdown
+- [x] JWT token generation
+- [x] Database schema for users
+```
+
+**In-progress tasks** (`[>]` or `[~]`):
+```markdown
+- [>] Token validation middleware
+- [~] Password reset flow
+```
+
+**Todo tasks** (`[ ]`):
+```markdown
+- [ ] OAuth integration
+- [ ] Email verification
+```
+
+---
+
+### Progress Bar Interpretation
+
+**Progress levels**:
+
+| Percentage | Bar | Color | Meaning |
+|------------|-----|-------|---------|
+| 0% | `[░░░░░░░░░░░░░░░░░░░░]` | Gray | Sprint just started |
+| 25% | `[█████░░░░░░░░░░░░░░░]` | Gray | Early progress |
+| 50% | `[██████████░░░░░░░░░░]` | Yellow | Mid-sprint |
+| 75% | `[███████████████░░░░░]` | Yellow | Almost done |
+| 100% | `[████████████████████]` | Green | Completed |
+
+**Velocity insights**:
+```bash
+# Sprint started Monday, today is Wednesday
+cortex-tms status
+# Progress: [████░░░░░░░░░░░░░░░░] 20%
+
+# If 2 days = 20%, expect 10 days to 100%
+# Sprint is 2 weeks (10 working days)
+# → On track!
+```
+
+---
+
+## Common Scenarios
+
+### Scenario: New Team Member Onboarding
+
+**Problem**: Developer joins team, needs to understand project state
+
+**Solution**:
+```bash
+cd acme-api
+cortex-tms status
+
+# Output shows:
+# - Scope: Standard (so expect full docs)
+# - Current sprint: User Authentication
+# - Focus: Why this sprint matters
+# - Progress: 40% (mid-sprint, can contribute)
+# - Health: ✅ (docs are trustworthy)
+
+# Next: Read NEXT-TASKS.md for details
+vim NEXT-TASKS.md
+```
+
+---
+
+### Scenario: Sprint Planning
+
+**Problem**: Team needs to decide what to work on next sprint
+
+**Solution**:
+```bash
+# Check current sprint completion
+cortex-tms status
+# Progress: [████████████████████] 100%
+
+# Review backlog for next priorities
+vim FUTURE-ENHANCEMENTS.md
+
+# Plan next sprint in NEXT-TASKS.md
+vim NEXT-TASKS.md
+# Replace completed sprint with new one
+
+# Verify status updated
+cortex-tms status
+# New sprint now shows 0% progress
+```
+
+---
+
+### Scenario: Stakeholder Update
+
+**Problem**: Manager asks: "How's the auth sprint going?"
+
+**Solution**:
+```bash
+cortex-tms status
+
+# Copy output:
+# 🎯 Current Sprint
+#   Name: User Authentication
+#   Focus: Mobile app needs secure login
+#   Progress: [████████████░░░░░░░░] 60%
+#   Tasks: 3 done, 1 in progress, 1 todo
+
+# Translate to update:
+# "Auth sprint is 60% done. We've completed JWT tokens,
+#  password hashing, and database schema. Currently working
+#  on token validation middleware. One task left: refresh
+#  token rotation."
+```
+
+---
+
+### Scenario: Pre-Commit Check
+
+**Problem**: About to commit changes, want to ensure project health
+
+**Solution**:
+```bash
+# Check health status
+cortex-tms status
+
+# If shows errors:
+cortex-tms validate --fix
+
+# Verify fixed
+cortex-tms status
+# Health: ✅
+
+# Now commit safely
+git commit -am "feat: add JWT token generation"
+```
+
+---
+
+## Troubleshooting
+
+### Status Shows "No active sprint found"
+
+**Cause**: `NEXT-TASKS.md` missing required sprint structure
+
+**Fix**:
+```bash
+vim NEXT-TASKS.md
+```
+
+**Add required structure**:
+```markdown
+## Active Sprint: [Descriptive Name]
+
+**Why this matters**: [Business/technical context]
+
+- [ ] First task
+- [ ] Second task
+```
+
+**Re-check**:
+```bash
+cortex-tms status
+# Now shows sprint name and progress
+```
+
+---
+
+### Status Shows "No .cortexrc found"
+
+**Cause**: Project not initialized with Cortex TMS
+
+**Fix**:
+```bash
+cortex-tms init
+cortex-tms status
+```
+
+---
+
+### Progress Bar Shows 0% But Tasks Are Done
+
+**Cause**: Tasks marked with `[X]` (uppercase) instead of `[x]` (lowercase)
+
+**Fix**:
+```bash
+vim NEXT-TASKS.md
+# Change: - [X] Task name
+# To: - [x] Task name
+
+cortex-tms status
+# Progress now reflects completion
+```
+
+---
+
+### Backlog Shows 0 Items But File Has Tasks
+
+**Cause**: `FUTURE-ENHANCEMENTS.md` tasks not in checkbox format
+
+**Fix**:
+```bash
+vim FUTURE-ENHANCEMENTS.md
+```
+
+**Wrong format**:
+```markdown
+## Future Features
+
+Analytics dashboard
+Email notifications
+```
+
+**Correct format**:
+```markdown
+## Future Features
+
+- [ ] Analytics dashboard
+- [ ] Email notifications
+```
+
+**Re-check**:
+```bash
+cortex-tms status
+# Backlog: Future Enhancements: 2 items pending
+```
+
+---
+
+## Tips and Best Practices
+
+<CardGrid stagger>
+  <Card title="Start Your Day with Status" icon="star">
+    Run `cortex-tms status` first thing when opening a project. It orients you to current work context.
+  </Card>
+
+  <Card title="Update Progress Regularly" icon="approve-check">
+    Mark tasks `[x]` done as you complete them. Status dashboard stays current automatically.
+  </Card>
+
+  <Card title="Use In-Progress Markers" icon="rocket">
+    Mark tasks `[>]` when you start them. Teammates can see what's actively being worked on.
+  </Card>
+
+  <Card title="Archive at 100% Progress" icon="document">
+    When sprint reaches 100%, archive completed tasks and start next sprint. Keep status focused on current work.
+  </Card>
+</CardGrid>
+
+---
+
+## Status as a Monitoring Tool
+
+### Daily Standup Script
+
+```bash
+#!/bin/bash
+# standup.sh - Generate daily standup context
+
+echo "📊 Daily Standup - $(date +%Y-%m-%d)"
+echo ""
+
+cortex-tms status
+
+echo ""
+echo "🔥 What I worked on yesterday:"
+git log --since="yesterday" --author="$(git config user.name)" --pretty=format:"  %s"
+
+echo ""
+echo ""
+echo "🎯 What I'm working on today:"
+grep -A 5 "\[>\]" NEXT-TASKS.md || echo "  (No in-progress tasks marked)"
+
+echo ""
+echo "🚧 Blockers:"
+grep -i "blocked\|blocker" NEXT-TASKS.md || echo "  (None)"
+```
+
+---
+
+### Weekly Report Generator
+
+```bash
+#!/bin/bash
+# weekly-report.sh
+
+cat > weekly-report.md << EOF
+# Weekly Status Report - Week of $(date +%Y-%m-%d)
+
+## Project Status
+
+\`\`\`
+$(cortex-tms status)
+\`\`\`
+
+## Completed This Week
+
+$(git log --since="1 week ago" --pretty=format:"- %s (%an)")
+
+## Metrics
+
+- Commits: $(git rev-list --count --since="1 week ago" HEAD)
+- Contributors: $(git shortlog --since="1 week ago" -sn | wc -l)
+- Files changed: $(git diff --stat HEAD~$(git rev-list --count --since="1 week ago" HEAD) | tail -1)
+
+## Validation Health
+
+\`\`\`
+$(cortex-tms validate)
+\`\`\`
+
+---
+*Generated automatically by Cortex TMS*
+EOF
+
+echo "✅ Weekly report saved to weekly-report.md"
+```
+
+---
+
+## Integration with Other Commands
+
+### Before Validate: Quick Check
+
+```bash
+# Quick health check
+cortex-tms status
+
+# If shows errors/warnings, get details:
+cortex-tms validate --verbose
+```
+
+---
+
+### After Init: Verify Setup
+
+```bash
+cortex-tms init --scope standard
+cortex-tms status
+
+# Should show:
+# - Project name
+# - Scope: Standard
+# - Health: ✅ (assuming no errors)
+# - Sprint: (Placeholder until you add tasks)
+```
+
+---
+
+### With Tutorial: Orientation
+
+```bash
+# New to TMS? Start with tutorial
+cortex-tms tutorial
+
+# Lesson 1 teaches the status dashboard
+# After tutorial, use status regularly:
+cortex-tms status
+```
+
+---
+
+## Related Commands
+
+- [`cortex-tms validate`](/reference/cli/validate/) - Detailed health checks (status uses validation for health)
+- [`cortex-tms init`](/reference/cli/init/) - Initialize TMS (creates files status reads)
+- [`cortex-tms tutorial`](/reference/cli/tutorial/) - Learn TMS (teaches status dashboard)
+
+---
+
+## Learn More
+
+- [Tiered Memory System](/concepts/tiered-memory/) - Understanding the HOT tier status reads
+- [Zero-Drift Governance](/concepts/zero-drift/) - How validation powers health metrics
+- [Context Budget](/concepts/context-budget/) - Why sprint focus matters

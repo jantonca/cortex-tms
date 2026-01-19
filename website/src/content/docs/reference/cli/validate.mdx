@@ -1,0 +1,1072 @@
+---
+title: cortex-tms validate
+description: Health checks and compliance validation for TMS projects to ensure zero-drift documentation
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+The `cortex-tms validate` command performs automated health checks on your TMS project. It verifies file existence, schema compliance, size limits, placeholder completion, and archive status to ensure documentation matches reality.
+
+## Synopsis
+
+```bash
+cortex-tms validate [options]
+```
+
+## Description
+
+**Zero-drift governance** through automated validation. This command is the enforcement mechanism for TMS best practices, catching documentation drift before it becomes technical debt.
+
+**What it checks**:
+- Mandatory files exist in expected locations
+- File sizes respect context budget limits
+- Internal links resolve to real files
+- Schema compliance (NEXT-TASKS.md, copilot-instructions.md)
+- No unreplaced placeholder text in production
+- Archive protocol compliance (completed tasks moved to COLD tier)
+
+**Typical workflow**:
+```bash
+# Make changes to documentation
+vim NEXT-TASKS.md
+
+# Validate before committing
+cortex-tms validate
+
+# Fix any errors
+# ...
+
+# Commit with confidence
+git commit -am "docs: update sprint tasks"
+```
+
+<Aside type="tip" title="CI/CD Integration">
+Run `cortex-tms validate --strict` in your CI pipeline to prevent documentation drift from reaching production. Failed validation = failed build.
+</Aside>
+
+---
+
+## Options
+
+### `-s, --strict`
+
+Treat warnings as errors and enable additional validation checks.
+
+**Standard mode** (default):
+- Checks mandatory files
+- Checks file size limits
+- Checks basic schema compliance
+- Warnings are informational only
+
+**Strict mode**:
+- All standard checks
+- Validates internal links resolve
+- Detects placeholder text (e.g., `[Project Name]`)
+- Checks archive status
+- Warnings cause non-zero exit code
+
+**Example**:
+```bash
+# Standard validation (warnings allowed)
+cortex-tms validate
+
+# Strict validation (warnings = errors)
+cortex-tms validate --strict
+```
+
+**Use strict mode**:
+- In CI/CD pipelines
+- Before releases
+- When enforcing documentation quality standards
+
+---
+
+### `-v, --verbose`
+
+Show detailed check information including passing checks.
+
+**Standard output** (default):
+- Only shows failures and warnings
+- Summary statistics
+- Helpful tips for fixing issues
+
+**Verbose output**:
+- All checks (passing and failing)
+- Detailed file paths
+- Size limit details for all HOT files
+- Full placeholder scan results
+
+**Example**:
+```bash
+cortex-tms validate --verbose
+```
+
+**Output comparison**:
+
+<Tabs>
+  <TabItem label="Standard Output">
+    ```
+    🔍 Cortex TMS Validation
+
+    ✓ Running health checks...
+
+    📋 Mandatory Files
+      ✓ NEXT-TASKS.md exists
+      ✓ CLAUDE.md exists
+      ✓ .github/copilot-instructions.md exists
+
+    📊 Summary
+      Total Checks: 12
+      ✓ Passed: 12
+
+    ✨ Validation passed! Your TMS project is healthy.
+    ```
+  </TabItem>
+
+  <TabItem label="Verbose Output">
+    ```
+    🔍 Cortex TMS Validation
+
+    ✓ Running health checks...
+
+    📋 Mandatory Files
+      ✓ NEXT-TASKS.md exists
+        /home/user/project/NEXT-TASKS.md
+      ✓ CLAUDE.md exists
+        /home/user/project/CLAUDE.md
+      ✓ .github/copilot-instructions.md exists
+        /home/user/project/.github/copilot-instructions.md
+
+    📏 File Size Limits (Rule 4)
+      ✓ NEXT-TASKS.md under limit (185/200 lines)
+        Current: 185 lines, Limit: 200 lines, Buffer: 15 lines
+      ✓ copilot-instructions.md under limit (95/100 lines)
+        Current: 95 lines, Limit: 100 lines, Buffer: 5 lines
+
+    🔧 Placeholder Completion
+      ✓ No placeholders found in NEXT-TASKS.md
+      ✓ No placeholders found in CLAUDE.md
+      ✓ No placeholders found in copilot-instructions.md
+
+    📦 Archive Status
+      ✓ NEXT-TASKS.md has no completed tasks requiring archive
+      ✓ docs/archive/ directory exists
+
+    📊 Summary
+      Total Checks: 12
+      ✓ Passed: 12
+
+    ✨ Validation passed! Your TMS project is healthy.
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### `-f, --fix`
+
+Auto-fix issues where possible (future feature for common problems).
+
+**What can be auto-fixed**:
+- Placeholder text replacement (using .cortexrc metadata)
+- Missing `.gitkeep` files in archive directories
+- Trailing whitespace in documentation files
+- Inconsistent line endings
+
+**Example**:
+```bash
+# Run validation and auto-fix
+cortex-tms validate --fix
+```
+
+**Output**:
+```
+🔍 Cortex TMS Validation
+
+✓ Running health checks...
+✗ Placeholders found in NEXT-TASKS.md
+
+🔧 Auto-fixing 1 issue(s)...
+
+✓ Fixed: NEXT-TASKS.md
+  Replaced [Project Name] with acme-api
+  Replaced [Tech Stack] with Next.js 15
+
+✨ Auto-fix complete! Re-running validation...
+
+✓ All checks passed
+```
+
+<Aside type="note" title="Manual Review Required">
+Auto-fix handles simple issues only. Complex problems (schema violations, broken links to moved files) require manual intervention.
+</Aside>
+
+---
+
+## Validation Checks
+
+### 1. Mandatory Files
+
+**Check**: Required files exist in expected locations
+
+**Files checked**:
+- `NEXT-TASKS.md` (HOT tier)
+- `CLAUDE.md` (HOT tier)
+- `.github/copilot-instructions.md` (HOT tier)
+- `.cortexrc` (Configuration)
+
+**Failure example**:
+```
+✗ NEXT-TASKS.md not found
+
+Recommendations:
+  - Run `cortex-tms init` to create missing files
+  - Check that you're in the project root directory
+```
+
+**Fix**:
+```bash
+# Create missing files with init
+cortex-tms init
+
+# Or manually create
+touch NEXT-TASKS.md
+```
+
+---
+
+### 2. Configuration File
+
+**Check**: `.cortexrc` exists and is valid JSON with required fields
+
+**Required fields**:
+```json
+{
+  "version": "2.6.0",
+  "scope": "standard",
+  "projectName": "acme-api",
+  "createdAt": "2026-01-19T10:30:00.000Z"
+}
+```
+
+**Failure example**:
+```
+✗ .cortexrc invalid
+  Missing required field: scope
+
+Recommendations:
+  - Add "scope" field to .cortexrc
+  - Valid scopes: nano, standard, enterprise, custom
+  - Or run `cortex-tms init --force` to regenerate
+```
+
+**Fix**:
+```bash
+# Regenerate configuration
+cortex-tms init --force
+
+# Or manually edit
+vim .cortexrc
+```
+
+---
+
+### 3. File Size Limits (Context Budget)
+
+**Check**: HOT files respect size limits to preserve AI context budget
+
+**Limits**:
+
+| File | Max Lines | Rationale |
+|------|-----------|-----------|
+| `NEXT-TASKS.md` | 200 | Current sprint only (1-2 weeks) |
+| `.github/copilot-instructions.md` | 100 | Critical rules only |
+
+**Failure example**:
+```
+✗ NEXT-TASKS.md exceeds limit (245/200 lines)
+
+Recommendations:
+  - Archive completed tasks to docs/archive/sprint-YYYY-MM.md
+  - Move backlog items to FUTURE-ENHANCEMENTS.md
+  - Break large tasks into smaller increments
+```
+
+**Fix strategies**:
+
+<Tabs>
+  <TabItem label="Archive Completed Tasks">
+    ```bash
+    # Create archive directory
+    mkdir -p docs/archive
+
+    # Move completed tasks to archive
+    # Edit NEXT-TASKS.md and move ✅ tasks to:
+    echo "# Sprint: User Auth (2026-01-15 to 2026-01-28)" > docs/archive/sprint-2026-01.md
+    echo "" >> docs/archive/sprint-2026-01.md
+    echo "✅ JWT token generation - Completed 2026-01-18" >> docs/archive/sprint-2026-01.md
+
+    # Remove completed tasks from NEXT-TASKS.md
+    vim NEXT-TASKS.md
+    ```
+  </TabItem>
+
+  <TabItem label="Move Backlog to FUTURE-ENHANCEMENTS.md">
+    ```markdown
+    <!-- In NEXT-TASKS.md: KEEP ONLY CURRENT SPRINT -->
+    ## Active Sprint: User Authentication
+
+    **Why this matters**: Mobile app needs secure login
+
+    - [ ] JWT token generation
+    - [ ] Token validation middleware
+
+    <!-- MOVE FUTURE WORK TO FUTURE-ENHANCEMENTS.md -->
+    ```
+
+    ```markdown
+    <!-- In FUTURE-ENHANCEMENTS.md -->
+    ## Future: Analytics Dashboard
+
+    - [ ] User activity heatmap
+    - [ ] Revenue charts
+    - [ ] Engagement metrics
+
+    ## Future: Email Notifications
+
+    - [ ] Welcome email flow
+    - [ ] Password reset emails
+    ```
+  </TabItem>
+
+  <TabItem label="Break Down Large Tasks">
+    ```markdown
+    <!-- Bad: One huge task (50 lines of subtasks) -->
+    - [ ] Build complete authentication system
+          - Research JWT libraries
+          - Design database schema
+          - Implement signup endpoint
+          - Implement login endpoint
+          - Add password hashing
+          - Create middleware
+          - Write tests
+          - ... (40+ more lines)
+
+    <!-- Good: Multiple focused tasks -->
+    ## Active Sprint: User Authentication
+
+    - [ ] JWT token generation (see PATTERNS.md#auth)
+    - [ ] Token validation middleware
+    - [ ] Refresh token rotation
+
+    ## Next Sprint: Auth Enhancements
+
+    - [ ] Password reset flow
+    - [ ] Email verification
+    - [ ] OAuth integration
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### 4. Placeholder Detection
+
+**Check**: Production docs should not contain unreplaced placeholders
+
+**Placeholders detected** (using `[Bracket Syntax]`):
+- `[Project Name]`
+- `[Tech Stack]`
+- `[e.g., examples]`
+- `[Your description here]`
+- `[Briefly describe...]`
+
+**Failure example**:
+```
+⚠ Placeholders found in production files:
+  - CLAUDE.md:5 - [Project Name]
+  - docs/core/ARCHITECTURE.md:12 - [Frontend Framework]
+
+Recommendations:
+  - Replace placeholders before committing
+  - Use plain text for production docs
+```
+
+**Fix**:
+```bash
+# Manually replace placeholders
+vim CLAUDE.md
+# Replace [Project Name] with "Acme API"
+
+# Or use auto-fix
+cortex-tms validate --fix
+```
+
+**Note**: Placeholders are **expected** in `templates/` directory but **forbidden** in root documentation.
+
+---
+
+### 5. Internal Link Validation (Strict Mode Only)
+
+**Check**: Documentation links resolve to real files
+
+**Example links checked**:
+```markdown
+<!-- In docs/core/PATTERNS.md -->
+**Canonical Example**: `src/components/Button.tsx:15`
+
+<!-- In NEXT-TASKS.md -->
+Follow patterns in `docs/core/PATTERNS.md#authentication`
+```
+
+**Validation**:
+- File `src/components/Button.tsx` exists
+- File `docs/core/PATTERNS.md` exists
+- File has at least 15 lines (if line number specified)
+
+**Failure example**:
+```
+✗ Broken link in docs/core/PATTERNS.md:42
+  Target: src/components/Button.tsx (not found)
+
+Recommendations:
+  - File moved? Update link to new location
+  - File deleted? Remove link or document deprecation
+```
+
+**Fix**:
+```bash
+# Find where file moved
+git log --follow src/components/Button.tsx
+
+# Update link in PATTERNS.md
+vim docs/core/PATTERNS.md
+# Change: src/components/Button.tsx
+# To: src/ui/components/Button.tsx
+```
+
+---
+
+### 6. Schema Validation
+
+**Check**: Structured files follow expected formats
+
+#### NEXT-TASKS.md Schema
+
+**Required sections**:
+- `## Active Sprint: [Name]`
+- `**Why this matters**: [Context]`
+- At least one task (checkbox format)
+
+**Valid format**:
+```markdown
+## Active Sprint: User Authentication
+
+**Why this matters**: Mobile app needs secure API access
+
+- [ ] JWT token generation
+- [ ] Token validation middleware
+- [x] Database schema for users
+```
+
+**Invalid format** (missing required sections):
+```markdown
+## Tasks
+
+- Implement auth
+- Add tests
+```
+
+**Failure example**:
+```
+✗ NEXT-TASKS.md malformed
+  Missing required section: ## Active Sprint
+  Missing context: **Why this matters**
+
+Recommendations:
+  - Add sprint name with descriptive title
+  - Add "Why this matters" to provide AI context
+```
+
+**Fix**:
+```markdown
+## Active Sprint: API Security Hardening
+
+**Why this matters**: Penetration test revealed auth vulnerabilities
+
+- [ ] Implement rate limiting
+- [ ] Add CSRF protection
+- [ ] Enable security headers
+```
+
+---
+
+#### copilot-instructions.md Schema
+
+**Required sections**:
+- Tech stack declaration
+- File read order for AI agents
+- Optional: Critical rules
+
+**Valid format**:
+```markdown
+## Tech Stack
+
+- Framework: Next.js 15
+- Database: PostgreSQL
+- ORM: Drizzle
+
+## Critical Rules
+
+- Never store secrets in localStorage
+- All API routes require authentication
+
+## Read Order
+
+1. NEXT-TASKS.md - Current sprint
+2. docs/core/PATTERNS.md - Code conventions
+3. docs/core/ARCHITECTURE.md - System design
+```
+
+**Failure example**:
+```
+✗ copilot-instructions.md malformed
+  Missing required section: ## Tech Stack
+
+Recommendations:
+  - Add tech stack section at top of file
+  - List framework, database, key libraries
+```
+
+---
+
+### 7. Archive Status (Strict Mode Only)
+
+**Check**: Completed tasks are archived to COLD tier
+
+**Rules**:
+- More than 10 completed tasks in `NEXT-TASKS.md` triggers warning
+- Suggests archiving to `docs/archive/sprint-YYYY-MM.md`
+- Checks `docs/archive/` directory exists
+
+**Failure example**:
+```
+⚠ NEXT-TASKS.md has 15 completed tasks
+  This exceeds the recommended limit of 10
+
+Recommendations:
+  - Archive completed tasks from NEXT-TASKS.md
+  - Create docs/archive/sprint-2026-01.md if needed
+  - Keep NEXT-TASKS.md focused on current sprint
+```
+
+**Fix**:
+
+<Steps>
+
+1. **Create archive directory**
+
+   ```bash
+   mkdir -p docs/archive
+   ```
+
+2. **Create sprint archive file**
+
+   ```bash
+   vim docs/archive/sprint-2026-01.md
+   ```
+
+   ```markdown
+   # Sprint: User Authentication (2026-01-15 to 2026-01-28)
+
+   ## Completed Tasks
+
+   ✅ JWT token generation
+      - Implemented RS256 signing
+      - Added token refresh logic
+      - Created middleware
+
+   ✅ Database schema for users
+      - Migration: 20260115_create_users_table.sql
+      - Added indexes for email lookups
+
+   ✅ Password hashing with bcrypt
+      - Cost factor: 12
+      - Salting handled automatically
+   ```
+
+3. **Remove completed tasks from NEXT-TASKS.md**
+
+   ```bash
+   vim NEXT-TASKS.md
+   # Delete all ✅ tasks
+   ```
+
+4. **Re-validate**
+
+   ```bash
+   cortex-tms validate
+   ```
+
+</Steps>
+
+---
+
+## Exit Codes
+
+| Code | Meaning | Scenario |
+|------|---------|----------|
+| `0` | Success | All checks passed |
+| `1` | Failure | One or more checks failed |
+
+**Standard mode**:
+- Errors → Exit code 1
+- Warnings → Exit code 0
+
+**Strict mode (`--strict`)**:
+- Errors → Exit code 1
+- Warnings → Exit code 1
+
+**Use in scripts**:
+```bash
+cortex-tms validate --strict
+if [ $? -eq 0 ]; then
+  echo "✅ Documentation valid, proceeding with deployment"
+  npm run deploy
+else
+  echo "❌ Documentation validation failed, aborting"
+  exit 1
+fi
+```
+
+---
+
+## Usage Examples
+
+### Local Development Validation
+
+```bash
+# Quick check during development
+cortex-tms validate
+
+# Detailed output for debugging
+cortex-tms validate --verbose
+
+# Strict enforcement (pre-commit)
+cortex-tms validate --strict
+```
+
+---
+
+### CI/CD Pipeline Integration
+
+<Tabs>
+  <TabItem label="GitHub Actions">
+    ```yaml
+    # .github/workflows/validate-docs.yml
+    name: Validate Documentation
+
+    on:
+      pull_request:
+        paths:
+          - 'NEXT-TASKS.md'
+          - 'docs/**'
+          - '.github/copilot-instructions.md'
+          - '.cortexrc'
+
+    jobs:
+      validate:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v4
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v4
+            with:
+              node-version: '20'
+
+          - name: Install Cortex TMS
+            run: npm install -g cortex-tms@2.6.0
+
+          - name: Validate Documentation
+            run: cortex-tms validate --strict
+
+          - name: Check File Sizes
+            run: |
+              NEXT_TASKS_LINES=$(wc -l < NEXT-TASKS.md)
+              if [ $NEXT_TASKS_LINES -gt 200 ]; then
+                echo "❌ NEXT-TASKS.md exceeds 200 lines"
+                exit 1
+              fi
+              echo "✅ File size checks passed"
+    ```
+  </TabItem>
+
+  <TabItem label="GitLab CI">
+    ```yaml
+    # .gitlab-ci.yml
+    validate-docs:
+      stage: test
+      image: node:20
+      script:
+        - npm install -g cortex-tms@2.6.0
+        - cortex-tms validate --strict
+      only:
+        changes:
+          - NEXT-TASKS.md
+          - docs/**
+          - .github/copilot-instructions.md
+    ```
+  </TabItem>
+
+  <TabItem label="CircleCI">
+    ```yaml
+    # .circleci/config.yml
+    version: 2.1
+
+    jobs:
+      validate-docs:
+        docker:
+          - image: cimg/node:20.0
+        steps:
+          - checkout
+          - run:
+              name: Install Cortex TMS
+              command: npm install -g cortex-tms@2.6.0
+          - run:
+              name: Validate Documentation
+              command: cortex-tms validate --strict
+
+    workflows:
+      version: 2
+      validate:
+        jobs:
+          - validate-docs:
+              filters:
+                branches:
+                  only:
+                    - main
+                    - develop
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Pre-Commit Hook
+
+```bash
+# .husky/pre-commit or .git/hooks/pre-commit
+#!/bin/bash
+
+echo "🔍 Validating documentation..."
+
+# Run Cortex TMS validation
+cortex-tms validate --strict
+
+if [ $? -ne 0 ]; then
+  echo "❌ Documentation validation failed"
+  echo "Fix errors above before committing"
+  exit 1
+fi
+
+echo "✅ Documentation validation passed"
+```
+
+**Install**:
+```bash
+# Using Husky
+npm install --save-dev husky
+npx husky install
+npx husky add .husky/pre-commit "cortex-tms validate --strict"
+
+# Or manually
+chmod +x .git/hooks/pre-commit
+```
+
+---
+
+### Validation + Auto-Fix Workflow
+
+```bash
+# Run validation and auto-fix
+cortex-tms validate --fix
+
+# Output shows what was fixed
+# 🔧 Auto-fixing 3 issue(s)...
+# ✓ Fixed: NEXT-TASKS.md (replaced placeholders)
+# ✓ Fixed: docs/archive/.gitkeep (created)
+# ✓ Fixed: CLAUDE.md (removed trailing whitespace)
+
+# Re-validate to confirm
+cortex-tms validate --strict
+```
+
+---
+
+## Common Errors and Solutions
+
+### Error: NEXT-TASKS.md exceeds limit
+
+**Problem**: File has grown beyond 200 lines
+
+**Solution 1: Archive completed tasks**
+```bash
+mkdir -p docs/archive
+vim docs/archive/sprint-2026-01.md
+# Copy completed tasks here, then delete from NEXT-TASKS.md
+```
+
+**Solution 2: Move backlog to FUTURE-ENHANCEMENTS.md**
+```bash
+vim FUTURE-ENHANCEMENTS.md
+# Move non-urgent tasks here
+```
+
+**Solution 3: Break down large tasks**
+```markdown
+<!-- Instead of one 50-line task, create 5 smaller tasks -->
+```
+
+---
+
+### Error: Placeholders found in production files
+
+**Problem**: Template placeholders not replaced during init
+
+**Solution**:
+```bash
+# Auto-fix (if .cortexrc has project metadata)
+cortex-tms validate --fix
+
+# Or manually replace
+vim NEXT-TASKS.md
+# Find: [Project Name]
+# Replace: Acme API
+```
+
+---
+
+### Error: Broken link to moved file
+
+**Problem**: File was moved but documentation not updated
+
+**Solution**:
+```bash
+# Find where file moved
+git log --follow src/old/path.ts
+
+# Update all references
+grep -r "src/old/path.ts" docs/
+vim docs/core/PATTERNS.md
+# Update link to new path
+```
+
+---
+
+### Error: NEXT-TASKS.md malformed
+
+**Problem**: Missing required sections
+
+**Solution**:
+```markdown
+<!-- Add required structure -->
+## Active Sprint: [Descriptive Name]
+
+**Why this matters**: [Business/technical context]
+
+- [ ] First task
+- [ ] Second task
+```
+
+---
+
+### Warning: Archive recommended
+
+**Problem**: More than 10 completed tasks in NEXT-TASKS.md
+
+**Solution**:
+```bash
+# Create sprint archive
+mkdir -p docs/archive
+cat > docs/archive/sprint-2026-01.md << EOF
+# Sprint: User Authentication (2026-01-15 to 2026-01-28)
+
+## Completed Tasks
+
+✅ JWT token generation - Implemented RS256 signing
+✅ Token validation middleware - Added to Express pipeline
+✅ Refresh token rotation - httpOnly cookies with 7-day expiry
+
+## Metrics
+
+- Duration: 2 weeks
+- Velocity: 3 tasks completed
+- Team size: 2 developers
+
+## Retrospective
+
+**What went well**: Clear requirements, good test coverage
+**What to improve**: Better estimation for middleware complexity
+EOF
+
+# Remove completed tasks from NEXT-TASKS.md
+vim NEXT-TASKS.md
+# Delete all ✅ tasks
+```
+
+---
+
+## Troubleshooting
+
+### Validation Passes Locally But Fails in CI
+
+**Possible causes**:
+- Different `--strict` level
+- Missing files in Git (not committed)
+- Different line endings (CRLF vs LF)
+
+**Solution**:
+```bash
+# Match CI behavior locally
+cortex-tms validate --strict
+
+# Check for uncommitted files
+git status
+
+# Standardize line endings
+git config core.autocrlf input
+```
+
+---
+
+### Validation Hangs or Times Out
+
+**Possible causes**:
+- Very large files causing slow placeholder scan
+- Broken symlinks causing infinite loop
+- Network issues if checking external links
+
+**Solution**:
+```bash
+# Skip strict checks temporarily
+cortex-tms validate
+
+# Check for large files
+find . -type f -size +1M
+
+# Check for broken symlinks
+find . -type l ! -exec test -e {} \; -print
+```
+
+---
+
+### False Positive: Placeholder Detected
+
+**Problem**: Legitimate bracket text flagged as placeholder
+
+**Example**:
+```markdown
+<!-- This is NOT a placeholder but gets flagged -->
+Use syntax: `git commit -m "[type]: message"`
+```
+
+**Solution**:
+```markdown
+<!-- Escape brackets or use different syntax -->
+Use syntax: `git commit -m "<type>: message"`
+```
+
+---
+
+## Tips and Best Practices
+
+<CardGrid stagger>
+  <Card title="Validate Before Every Commit" icon="approve-check">
+    Add validation to your pre-commit hook. Catch issues before they reach CI/CD.
+  </Card>
+
+  <Card title="Use Strict Mode in CI" icon="seti:config">
+    Always use `--strict` in production pipelines. Warnings in dev become errors in CI.
+  </Card>
+
+  <Card title="Archive Regularly" icon="document">
+    Don't wait for validation to warn about file size. Archive completed tasks weekly.
+  </Card>
+
+  <Card title="Fix Auto-Fixable Issues" icon="rocket">
+    Run `--fix` flag for simple issues (placeholders, whitespace). Saves manual editing time.
+  </Card>
+</CardGrid>
+
+---
+
+## Validation Checklist
+
+Before marking a task as complete:
+
+- [ ] Run `cortex-tms validate --strict`
+- [ ] All errors fixed
+- [ ] File sizes under limits (NEXT-TASKS.md < 200 lines)
+- [ ] No broken links
+- [ ] No unreplaced placeholders
+- [ ] Schema compliance verified (sprint name, "Why this matters")
+- [ ] Completed tasks archived if > 10
+
+**Automation**: Add this checklist to your Definition of Done in `NEXT-TASKS.md`.
+
+---
+
+## Integration with Other Commands
+
+### After Init: Validate Installation
+
+```bash
+cortex-tms init --scope standard
+cortex-tms validate --strict
+
+# Should show all checks passed
+```
+
+---
+
+### Before Status: Ensure Health
+
+```bash
+# Fix any issues first
+cortex-tms validate --fix
+
+# Then view dashboard
+cortex-tms status
+```
+
+---
+
+### Before Migrate: Baseline Health
+
+```bash
+# Validate current state
+cortex-tms validate
+
+# Upgrade templates
+cortex-tms migrate --apply
+
+# Re-validate after migration
+cortex-tms validate --strict
+```
+
+---
+
+## Related Commands
+
+- [`cortex-tms init`](/reference/cli/init/) - Initialize TMS (creates files to validate)
+- [`cortex-tms status`](/reference/cli/status/) - View dashboard (uses validation for health)
+- [`cortex-tms migrate`](/reference/cli/migrate/) - Upgrade templates (validate before/after)
+
+---
+
+## Learn More
+
+- [Zero-Drift Governance](/concepts/zero-drift/) - Why validation prevents documentation drift
+- [Context Budget](/concepts/context-budget/) - Understanding file size limits
+- [Truth Syncing](/concepts/truth-syncing/) - Keeping documentation synchronized

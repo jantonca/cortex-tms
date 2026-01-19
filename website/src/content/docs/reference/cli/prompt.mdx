@@ -1,0 +1,1020 @@
+---
+title: cortex-tms prompt
+description: Access project-aware AI prompt templates with automatic clipboard integration for rapid AI activation
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+The `cortex-tms prompt` command provides quick access to the "Essential 7" AI prompt library. These project-aware templates activate AI agents with proper context from your TMS documentation.
+
+## Synopsis
+
+```bash
+cortex-tms prompt [name] [options]
+```
+
+## Description
+
+**AI Agent Activation in One Command**. The prompt library contains curated prompts that reference your project's documentation structure. Each prompt:
+
+- Tells AI agents where to find information (HOT/WARM/COLD tiers)
+- Establishes architectural anchors (canonical examples in docs)
+- Provides workflow context (why this task matters)
+- Auto-copies to clipboard for instant paste
+
+**The Essential 7 Prompts**:
+1. `init-session` - Start AI conversation with full project context
+2. `feature` - Implement feature following architectural anchors
+3. `debug` - Troubleshoot systematically using patterns
+4. `review` - Code review against documented standards
+5. `refactor` - Structural improvements with pattern compliance
+6. `decision` - Create Architecture Decision Record (ADR)
+7. `finish` - Execute maintenance protocol after task completion
+
+**Typical usage**:
+```bash
+# Start AI conversation
+cortex-tms prompt init-session
+
+# Output:
+# 📋 init-session
+#
+# [Prompt content displayed and copied to clipboard]
+#
+# ✅ Copied to clipboard!
+# 💡 Tip: Paste this prompt into your AI conversation.
+
+# → Paste into Claude/ChatGPT/Copilot
+```
+
+<Aside type="tip" title="Session Initialization">
+Always start AI conversations with `cortex-tms prompt init-session`. It loads HOT tier context so the AI knows your current sprint, tech stack, and critical rules.
+</Aside>
+
+---
+
+## Arguments
+
+### `[name]`
+
+Prompt name to display and copy.
+
+**Valid names**:
+- `init-session` - AI session activation
+- `feature` - Feature implementation
+- `debug` - Debugging workflow
+- `review` - Code review
+- `refactor` - Refactoring guidance
+- `decision` - ADR creation
+- `finish` - Maintenance protocol
+
+**Example**:
+```bash
+cortex-tms prompt init-session
+cortex-tms prompt feature
+cortex-tms prompt debug
+```
+
+**If omitted**: Interactive prompt selector appears
+
+---
+
+## Options
+
+### `-l, --list`
+
+List all available prompts with descriptions.
+
+**Example**:
+```bash
+cortex-tms prompt --list
+```
+
+**Output**:
+```
+📋 Available Prompts:
+
+  init-session
+    Start AI conversation with full project context
+
+  feature
+    Implement new feature following architectural anchors
+
+  debug
+    Systematic debugging using documented patterns
+
+  review
+    Code review against project standards
+
+  refactor
+    Refactor code while maintaining pattern compliance
+
+  decision
+    Create Architecture Decision Record (ADR)
+
+  finish
+    Execute maintenance protocol after task completion
+
+Use: cortex-tms prompt <name> to access a prompt
+Example: cortex-tms prompt init-session
+```
+
+---
+
+### `--no-copy`
+
+Display prompt without copying to clipboard (stdout only).
+
+**Use cases**:
+- CI/CD environments without clipboard access
+- Piping output to files
+- Shell scripting
+
+**Example**:
+```bash
+# Display only
+cortex-tms prompt init-session --no-copy
+
+# Pipe to file
+cortex-tms prompt feature --no-copy > feature-prompt.txt
+
+# Use in script
+PROMPT=$(cortex-tms prompt debug --no-copy)
+echo "$PROMPT"
+```
+
+---
+
+## Prompt Library
+
+### 1. init-session
+
+**Purpose**: Start AI conversation with project context
+
+**When to use**:
+- Beginning of every AI session
+- After switching projects
+- When AI seems confused about project structure
+
+**What it includes**:
+- Read `NEXT-TASKS.md` for current sprint
+- Read `.github/copilot-instructions.md` for tech stack and rules
+- Read `CLAUDE.md` for workflow guidance
+- Establishes context budget awareness
+
+**Example prompt content**:
+```markdown
+# AI Session Initialization
+
+You are assisting with the [Project Name] project.
+
+## Step 1: Load Current Context
+
+Read these files in order:
+1. `NEXT-TASKS.md` - Active sprint tasks
+2. `.github/copilot-instructions.md` - Tech stack and critical rules
+3. `CLAUDE.md` - AI workflow configuration
+
+## Step 2: Understand Documentation Structure
+
+HOT Tier (Always read):
+- `NEXT-TASKS.md` - Current 1-2 week sprint
+- `.github/copilot-instructions.md` - Security/critical rules
+
+WARM Tier (Read on demand):
+- `docs/core/PATTERNS.md` - Coding standards
+- `docs/core/ARCHITECTURE.md` - System design
+- `docs/core/DOMAIN-LOGIC.md` - Business rules
+
+COLD Tier (Skip unless asked):
+- `docs/archive/` - Historical context
+
+## Step 3: Confirm Understanding
+
+After reading, summarize:
+- Current sprint focus
+- Tech stack
+- Critical rules
+- Next task to work on
+```
+
+**Usage**:
+```bash
+cortex-tms prompt init-session
+# Paste into AI chat
+# AI loads context and summarizes project state
+```
+
+---
+
+### 2. feature
+
+**Purpose**: Implement feature following architectural anchors
+
+**When to use**:
+- Starting work on a new feature
+- Need guidance on implementation approach
+- Ensuring consistency with existing patterns
+
+**What it includes**:
+- Check `NEXT-TASKS.md` for feature context
+- Review `docs/core/PATTERNS.md` for canonical examples
+- Follow established architectural patterns
+- Update documentation after implementation
+
+**Example prompt content**:
+```markdown
+# Feature Implementation
+
+I need to implement: [Feature Name]
+
+## Step 1: Understand Requirements
+
+Read `NEXT-TASKS.md` to find this task and its context.
+
+## Step 2: Find Architectural Anchors
+
+Check `docs/core/PATTERNS.md` for:
+- Canonical examples of similar features
+- Naming conventions
+- File organization patterns
+- Testing requirements
+
+## Step 3: Implement
+
+Follow the established patterns. If this is a new pattern:
+- Document it in `docs/core/PATTERNS.md`
+- Create canonical example
+- Add to glossary if introduces new terms
+
+## Step 4: Update Documentation
+
+After implementation:
+- Mark task `[x]` done in `NEXT-TASKS.md`
+- Update `docs/core/ARCHITECTURE.md` if system design changed
+- Add to `CHANGELOG.md`
+```
+
+---
+
+### 3. debug
+
+**Purpose**: Systematic debugging using documented patterns
+
+**When to use**:
+- Bug reported in existing feature
+- Tests failing
+- Unexpected behavior in production
+
+**What it includes**:
+- Check `docs/core/TROUBLESHOOTING.md` for known issues
+- Review `docs/core/PATTERNS.md` for correct implementation
+- Systematic debugging workflow
+- Document solution for future reference
+
+**Example prompt content**:
+```markdown
+# Debugging Workflow
+
+Issue: [Describe the problem]
+
+## Step 1: Check Known Issues
+
+Read `docs/core/TROUBLESHOOTING.md` for similar problems.
+
+## Step 2: Verify Pattern Compliance
+
+Compare implementation with `docs/core/PATTERNS.md`:
+- Does it follow naming conventions?
+- Are dependencies injected correctly?
+- Is error handling consistent?
+
+## Step 3: Reproduce
+
+Create minimal reproduction case.
+
+## Step 4: Fix
+
+Implement fix following documented patterns.
+
+## Step 5: Document
+
+If this was a novel issue:
+- Add to `docs/core/TROUBLESHOOTING.md`
+- Update patterns if needed
+- Create test to prevent regression
+```
+
+---
+
+### 4. review
+
+**Purpose**: Code review against project standards
+
+**When to use**:
+- Reviewing pull request
+- Self-review before committing
+- Ensuring quality standards
+
+**What it includes**:
+- Check against `docs/core/PATTERNS.md` standards
+- Verify `CLAUDE.md` workflow followed
+- Validate critical rules from `copilot-instructions.md`
+- Ensure documentation updated
+
+**Example prompt content**:
+```markdown
+# Code Review Checklist
+
+Review PR/commit: [Link or description]
+
+## 1. Pattern Compliance
+
+Check against `docs/core/PATTERNS.md`:
+- [ ] Follows naming conventions
+- [ ] Matches canonical examples
+- [ ] Error handling consistent
+- [ ] Logging follows standards
+
+## 2. Critical Rules
+
+Verify `.github/copilot-instructions.md` rules:
+- [ ] No secrets in code
+- [ ] Authentication required (if applicable)
+- [ ] Data validation present
+
+## 3. Documentation
+
+Verify updates:
+- [ ] Task marked done in `NEXT-TASKS.md`
+- [ ] PATTERNS.md updated if new pattern
+- [ ] ARCHITECTURE.md updated if design changed
+- [ ] Tests included
+
+## 4. Maintenance Protocol
+
+Check `CLAUDE.md` workflow:
+- [ ] Tests pass
+- [ ] Build succeeds
+- [ ] Validation passes: `cortex-tms validate`
+```
+
+---
+
+### 5. refactor
+
+**Purpose**: Structural improvements with pattern compliance
+
+**When to use**:
+- Code smells detected
+- Performance optimization needed
+- Extracting reusable components
+
+**What it includes**:
+- Identify patterns to extract
+- Update `docs/core/PATTERNS.md` with new patterns
+- Refactor systematically
+- Ensure no behavior changes
+
+**Example prompt content**:
+```markdown
+# Refactoring Workflow
+
+Goal: [What needs refactoring]
+
+## Step 1: Identify Pattern
+
+What pattern should be extracted?
+- Reusable component?
+- Utility function?
+- Business logic abstraction?
+
+## Step 2: Document Pattern
+
+Before refactoring, add to `docs/core/PATTERNS.md`:
+- Pattern name
+- When to use it
+- Canonical example
+- Anti-patterns to avoid
+
+## Step 3: Refactor
+
+Apply refactoring:
+- Extract pattern
+- Update all call sites
+- Maintain existing behavior
+
+## Step 4: Validate
+
+- [ ] All tests still pass
+- [ ] No behavior changes
+- [ ] Pattern documented
+- [ ] Canonical example created
+```
+
+---
+
+### 6. decision
+
+**Purpose**: Create Architecture Decision Record (ADR)
+
+**When to use**:
+- Making significant architecture choice
+- Choosing between competing approaches
+- Documenting technology decisions
+
+**What it includes**:
+- ADR template structure
+- Context, decision, consequences format
+- Numbering convention
+- Storage in `docs/decisions/`
+
+**Example prompt content**:
+```markdown
+# Create Architecture Decision Record
+
+Decision: [What are we deciding?]
+
+## Step 1: Find Next ADR Number
+
+Check `docs/decisions/` directory:
+```bash
+ls docs/decisions/ | grep -E "^[0-9]+" | sort -n | tail -1
+```
+
+Next number = highest + 1
+
+## Step 2: Create ADR File
+
+File: `docs/decisions/NNNN-title-in-kebab-case.md`
+
+Template:
+```markdown
+# ADR-NNNN: [Title]
+
+**Status**: Proposed | Accepted | Deprecated | Superseded
+
+**Date**: YYYY-MM-DD
+
+**Context**:
+What is the issue we're trying to solve? What constraints exist?
+
+**Decision**:
+What did we decide to do?
+
+**Consequences**:
+What becomes easier or harder as a result?
+
+**Alternatives Considered**:
+- Option A: [Why rejected]
+- Option B: [Why rejected]
+```
+
+## Step 3: Link in Documentation
+
+Update `docs/core/ARCHITECTURE.md` to reference the ADR.
+```
+
+---
+
+### 7. finish
+
+**Purpose**: Execute maintenance protocol after task completion
+
+**When to use**:
+- Task marked done
+- Before committing
+- End of work session
+
+**What it includes**:
+- Run tests
+- Run build
+- Validate documentation
+- Archive if needed
+- Commit with proper message
+
+**Example prompt content**:
+```markdown
+# Maintenance Protocol
+
+Task completed: [Task name]
+
+## Step 1: Mark Task Done
+
+Edit `NEXT-TASKS.md`:
+- Change `[ ]` to `[x]`
+- Add completion notes if helpful
+
+## Step 2: Validate
+
+Run health checks:
+```bash
+# Run tests
+npm test
+
+# Run build
+npm run build
+
+# Validate TMS
+cortex-tms validate --strict
+```
+
+## Step 3: Archive (If Needed)
+
+If `NEXT-TASKS.md` exceeds 200 lines:
+- Create `docs/archive/sprint-YYYY-MM.md`
+- Move completed tasks to archive
+- Keep only active sprint in NEXT-TASKS.md
+
+## Step 4: Commit
+
+Follow conventional commit format:
+```bash
+git add .
+git commit -m "feat: implement [feature name]
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+## Step 5: Suggest Next Priority
+
+Check `NEXT-TASKS.md` or `FUTURE-ENHANCEMENTS.md` for next task.
+```
+
+---
+
+## Interactive Mode
+
+**When no prompt name provided**:
+```bash
+cortex-tms prompt
+```
+
+**Interactive selector appears**:
+```
+? Select a prompt:
+❯ init-session - Start AI conversation with full project context
+  feature - Implement new feature following architectural anchors
+  debug - Systematic debugging using documented patterns
+  review - Code review against project standards
+  refactor - Refactor code while maintaining pattern compliance
+  decision - Create Architecture Decision Record (ADR)
+  finish - Execute maintenance protocol after task completion
+```
+
+**Navigate with arrow keys**, press Enter to select.
+
+---
+
+## Clipboard Integration
+
+### Supported Platforms
+
+**Auto-detection**:
+- **macOS**: Uses `pbcopy`/`pbpaste`
+- **Linux**: Uses `xclip` or `xsel`
+- **Windows**: Uses `clip.exe`
+- **WSL**: Detects and uses Windows clipboard
+
+**If clipboard unavailable**:
+```
+⚠️  Could not copy to clipboard (no clipboard access)
+```
+
+Prompt is still displayed, just not copied.
+
+---
+
+### Clipboard Permissions
+
+**Linux/WSL**: Install clipboard utility
+```bash
+# Ubuntu/Debian
+sudo apt install xclip
+
+# Or xsel
+sudo apt install xsel
+
+# Verify
+echo "test" | xclip -selection clipboard
+xclip -selection clipboard -o  # Should output "test"
+```
+
+**macOS**: Built-in (pbcopy/pbpaste)
+
+**Windows**: Built-in (clip.exe)
+
+---
+
+## Exit Codes
+
+| Code | Meaning | Scenario |
+|------|---------|----------|
+| `0` | Success | Prompt displayed/copied successfully |
+| `1` | Error | Prompt not found, `PROMPTS.md` missing, file read error |
+
+---
+
+## Usage Examples
+
+### Start AI Session
+
+```bash
+# Copy init-session prompt
+cortex-tms prompt init-session
+
+# Output:
+# 📋 init-session
+#
+# [Prompt content]
+#
+# ✅ Copied to clipboard!
+
+# → Paste into Claude/ChatGPT
+# AI loads project context
+```
+
+---
+
+### Implement Feature
+
+```bash
+# Copy feature prompt
+cortex-tms prompt feature
+
+# Paste into AI chat
+# AI says: "Read NEXT-TASKS.md - what feature should I implement?"
+# You say: "Implement JWT token generation"
+# AI reads PATTERNS.md for auth patterns and implements
+```
+
+---
+
+### Code Review Workflow
+
+```bash
+# Copy review prompt
+cortex-tms prompt review
+
+# Paste into AI chat
+# AI performs checklist review of your PR
+# Points out pattern violations
+# Suggests documentation updates
+```
+
+---
+
+### Shell Script Integration
+
+```bash
+#!/bin/bash
+# ai-assist.sh - Helper script for AI workflows
+
+case "$1" in
+  start)
+    cortex-tms prompt init-session
+    echo "Prompt copied. Paste into AI chat to begin."
+    ;;
+  feature)
+    cortex-tms prompt feature
+    echo "Feature prompt copied."
+    ;;
+  done)
+    cortex-tms prompt finish
+    echo "Maintenance prompt copied."
+    ;;
+  *)
+    echo "Usage: ai-assist.sh {start|feature|done}"
+    ;;
+esac
+```
+
+**Usage**:
+```bash
+chmod +x ai-assist.sh
+./ai-assist.sh start
+./ai-assist.sh feature
+./ai-assist.sh done
+```
+
+---
+
+### Custom Prompts
+
+**Add to `PROMPTS.md`**:
+```markdown
+## deploy
+
+**Description**: Deploy application to production
+
+**Prompt**:
+```
+# Production Deployment
+
+Deploy [Project Name] to production.
+
+## Pre-Deploy Checklist
+
+- [ ] All tests pass: `npm test`
+- [ ] Build succeeds: `npm run build`
+- [ ] Validation passes: `cortex-tms validate --strict`
+- [ ] CHANGELOG.md updated
+- [ ] Version bumped in package.json
+
+## Deployment Steps
+
+1. Create production build
+2. Run database migrations
+3. Deploy to staging first
+4. Smoke test staging
+5. Deploy to production
+6. Monitor logs for 15 minutes
+
+## Rollback Plan
+
+If issues arise:
+```bash
+git revert HEAD
+npm run deploy:rollback
+```
+\`\`\`
+```
+
+**Access custom prompt**:
+```bash
+cortex-tms prompt deploy
+```
+
+---
+
+## Common Errors
+
+### Error: Prompt not found
+
+**Problem**: Typo in prompt name
+
+**Solution**:
+```bash
+# List available prompts
+cortex-tms prompt --list
+
+# Use exact name
+cortex-tms prompt init-session  # Correct
+cortex-tms prompt init           # Wrong
+```
+
+---
+
+### Error: PROMPTS.md not found
+
+**Problem**: Project not initialized or file deleted
+
+**Solution**:
+```bash
+# Reinitialize TMS
+cortex-tms init --scope standard --force
+
+# Or manually copy from templates
+cp node_modules/cortex-tms/templates/PROMPTS.md ./
+```
+
+---
+
+### Warning: Could not copy to clipboard
+
+**Problem**: No clipboard utility installed (Linux)
+
+**Solution**:
+```bash
+# Install xclip
+sudo apt install xclip
+
+# Or use --no-copy
+cortex-tms prompt init-session --no-copy
+# Manually copy output
+```
+
+---
+
+## Troubleshooting
+
+### Clipboard Not Working on WSL
+
+**Problem**: WSL doesn't detect Windows clipboard
+
+**Solution**:
+```bash
+# Install wslu package
+sudo apt install wslu
+
+# Verify
+echo "test" | clip.exe
+powershell.exe Get-Clipboard  # Should show "test"
+
+# Retry prompt
+cortex-tms prompt init-session
+```
+
+---
+
+### Prompt Content Shows Placeholders
+
+**Problem**: `PROMPTS.md` not customized during init
+
+**Example**:
+```
+You are assisting with [Project Name] project.
+```
+
+**Solution**:
+```bash
+# Replace placeholders manually
+vim PROMPTS.md
+# Find: [Project Name]
+# Replace: Acme API
+
+# Or use validate --fix
+cortex-tms validate --fix
+```
+
+---
+
+### Interactive Mode Hangs
+
+**Problem**: Terminal not supporting interactive input
+
+**Solution**:
+```bash
+# Use direct prompt name
+cortex-tms prompt init-session
+
+# Avoid interactive mode in non-TTY environments
+```
+
+---
+
+## Tips and Best Practices
+
+<CardGrid stagger>
+  <Card title="Always Start with init-session" icon="star">
+    Every AI conversation should begin with the init-session prompt. It establishes project context so AI knows your docs structure.
+  </Card>
+
+  <Card title="Customize Prompts" icon="pencil">
+    Edit `PROMPTS.md` to add project-specific prompts. The library is extensible.
+  </Card>
+
+  <Card title="Use finish Religiously" icon="approve-check">
+    End every task with the finish prompt. It enforces the maintenance protocol (tests, validation, archive).
+  </Card>
+
+  <Card title="Chain Prompts" icon="rocket">
+    Use init-session → feature → finish for complete workflow. Each prompt builds on the previous context.
+  </Card>
+</CardGrid>
+
+---
+
+## Prompt Workflow Patterns
+
+### Pattern 1: Feature Development
+
+<Steps>
+
+1. **Initialize Session**
+   ```bash
+   cortex-tms prompt init-session
+   ```
+
+2. **Get Feature Context**
+   ```bash
+   cortex-tms prompt feature
+   ```
+
+3. **Implement** (AI-assisted coding)
+
+4. **Review**
+   ```bash
+   cortex-tms prompt review
+   ```
+
+5. **Finish**
+   ```bash
+   cortex-tms prompt finish
+   ```
+
+</Steps>
+
+---
+
+### Pattern 2: Debugging
+
+<Steps>
+
+1. **Initialize Session**
+   ```bash
+   cortex-tms prompt init-session
+   ```
+
+2. **Debug Workflow**
+   ```bash
+   cortex-tms prompt debug
+   ```
+
+3. **Fix Issue** (AI-assisted)
+
+4. **Review Fix**
+   ```bash
+   cortex-tms prompt review
+   ```
+
+5. **Finish**
+   ```bash
+   cortex-tms prompt finish
+   ```
+
+</Steps>
+
+---
+
+### Pattern 3: Architecture Decision
+
+<Steps>
+
+1. **Initialize Session**
+   ```bash
+   cortex-tms prompt init-session
+   ```
+
+2. **Create ADR**
+   ```bash
+   cortex-tms prompt decision
+   ```
+
+3. **Document Decision** (AI-assisted ADR writing)
+
+4. **Finish**
+   ```bash
+   cortex-tms prompt finish
+   ```
+
+</Steps>
+
+---
+
+## Integration with Other Commands
+
+### With Init: Access Prompts
+
+```bash
+# Initialize project
+cortex-tms init --scope standard
+
+# Access prompts immediately
+cortex-tms prompt init-session
+```
+
+---
+
+### With Status: Contextual Prompts
+
+```bash
+# Check project state
+cortex-tms status
+
+# If sprint in progress, use feature prompt
+cortex-tms prompt feature
+
+# If sprint complete, use finish prompt
+cortex-tms prompt finish
+```
+
+---
+
+### With Validate: Maintenance Protocol
+
+```bash
+# Execute finish prompt
+cortex-tms prompt finish
+
+# AI says: "Run cortex-tms validate --strict"
+cortex-tms validate --strict
+
+# Fix issues, then commit
+```
+
+---
+
+## Related Commands
+
+- [`cortex-tms init`](/reference/cli/init/) - Initialize TMS (creates `PROMPTS.md`)
+- [`cortex-tms status`](/reference/cli/status/) - View project state before prompting
+- [`cortex-tms tutorial`](/reference/cli/tutorial/) - Learn prompt workflow
+
+---
+
+## Learn More
+
+- [Tiered Memory System](/concepts/tiered-memory/) - Understanding HOT/WARM/COLD references in prompts
+- [Context Budget](/concepts/context-budget/) - Why prompts reference specific files
+- [Zero-Drift Governance](/concepts/zero-drift/) - Maintenance protocol in finish prompt
