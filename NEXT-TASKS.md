@@ -43,7 +43,7 @@
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Blog Infrastructure** - Add /blog route and RSS feed | [TMS-284a] | 2h | 🔴 HIGH | ⬜ Todo |
+| **Blog Infrastructure** - Add /blog route and RSS feed | [TMS-284a] | 2h | 🔴 HIGH | ✅ Done |
 | **Blog Post: PR Tsunami** - "How Cortex TMS Prevents Maintainer Burnout" | [TMS-284c] | 4h | 🔴 HIGH | ⬜ Todo |
 | **Blog Post: Tiered Memory** - "Why AI Agents Need More Than a README" | [TMS-284d] | 3h | 🟡 MED | ⬜ Todo |
 | **Demo GIF** - Record cortex-tms status/migrate workflow | [TMS-284e] | 1h | 🔴 HIGH | ⬜ Todo |
