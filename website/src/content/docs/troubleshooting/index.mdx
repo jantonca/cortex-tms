@@ -1,0 +1,689 @@
+---
+title: Troubleshooting Guide
+description: Common issues and solutions for Cortex TMS - Quick diagnostic guide and issue categories
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+Welcome to the Cortex TMS troubleshooting guide. This page provides a systematic approach to diagnosing and resolving common issues you might encounter when using Cortex TMS. Whether you are experiencing installation problems, validation errors, or AI agent integration issues, this guide will help you identify and fix the problem quickly.
+
+## Quick Diagnostic Checklist
+
+Use this quick checklist to identify the category of your issue. Click on the relevant category to jump to detailed troubleshooting steps.
+
+<CardGrid>
+  <Card title="Installation Problems" icon="warning">
+    **Symptoms:**
+    - `cortex-tms: command not found`
+    - npm/pnpm installation failures
+    - Permission errors (EACCES)
+    - `cortex-tms init` failures
+
+    [Go to Installation Issues →](/troubleshooting/installation-issues/)
+  </Card>
+
+  <Card title="Validation Errors" icon="error">
+    **Symptoms:**
+    - `cortex-tms validate` fails
+    - File size limit warnings
+    - Missing mandatory files
+    - Placeholder detection errors
+    - `.cortexrc` configuration issues
+
+    [Go to Validation Errors →](/troubleshooting/validation-errors/)
+  </Card>
+
+  <Card title="AI Agent Issues" icon="seti:robot">
+    **Symptoms:**
+    - Claude Code not reading CLAUDE.md
+    - GitHub Copilot ignoring project patterns
+    - Cursor .cursorrules not detected
+    - AI generates code violating conventions
+    - Context window exceeded errors
+
+    [Go to AI Agent Issues →](/troubleshooting/ai-agent-issues/)
+  </Card>
+
+  <Card title="Git Integration" icon="github">
+    **Symptoms:**
+    - Git not detected during init
+    - Branch creation failures
+    - Commit hook errors
+    - .gitignore conflicts
+
+    **Quick Fix:** Check git is installed: `git --version`
+  </Card>
+</CardGrid>
+
+---
+
+## Issue Categories
+
+### Installation Issues
+
+Problems that occur when installing or initializing Cortex TMS.
+
+**Common issues:**
+- Command not found after npm install
+- Permission denied errors
+- Node.js version incompatibilities
+- Package manager conflicts (npm vs pnpm vs yarn)
+- Windows path and line ending issues
+- Corporate proxy/firewall blocking npm
+
+**Full troubleshooting guide:** [Installation Issues →](/troubleshooting/installation-issues/)
+
+---
+
+### Validation Errors
+
+Problems that occur when running `cortex-tms validate`.
+
+**Common issues:**
+- Missing mandatory files (CLAUDE.md, NEXT-TASKS.md, .cortexrc)
+- File size exceeds recommended limits
+- Unreplaced placeholders detected
+- Malformed JSON in .cortexrc
+- Archive directory structure violations
+- Zero-drift detection failures
+
+**Full troubleshooting guide:** [Validation Errors →](/troubleshooting/validation-errors/)
+
+---
+
+### AI Agent Issues
+
+Problems with Claude Code, GitHub Copilot, or Cursor integration.
+
+**Common issues:**
+- AI agents not reading documentation files
+- Generated code violates documented patterns
+- Security rules being ignored
+- Context window limits exceeded
+- Stale context (AI reading old files)
+- Inconsistent suggestions across team members
+
+**Full troubleshooting guide:** [AI Agent Issues →](/troubleshooting/ai-agent-issues/)
+
+---
+
+## General Troubleshooting Workflow
+
+Follow this systematic workflow to diagnose any Cortex TMS issue:
+
+### Step 1: Identify the Symptom
+
+What exactly is failing? Be specific:
+
+<Tabs>
+  <TabItem label="Good">
+    - "Running `cortex-tms init` shows error: `EACCES: permission denied`"
+    - "`cortex-tms validate` reports: `NEXT-TASKS.md exceeds 200 lines`"
+    - "GitHub Copilot suggests localStorage for tokens despite .github/copilot-instructions.md forbidding it"
+  </TabItem>
+
+  <TabItem label="Vague">
+    - "Install doesn't work"
+    - "Validation fails"
+    - "Copilot is broken"
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Copy the exact error message if possible. Error text helps identify the root cause faster.
+</Aside>
+
+---
+
+### Step 2: Check the Basics
+
+Before diving into complex troubleshooting, verify these fundamentals:
+
+**Environment Check:**
+
+```bash
+# Check Node.js version (requires 18.x or higher)
+node --version
+
+# Check npm version
+npm --version
+
+# Check cortex-tms installation
+cortex-tms --version
+
+# Check git installation (required for init)
+git --version
+
+# Verify you're in a project directory
+pwd
+```
+
+**Expected output:**
+
+```text
+v20.10.0
+10.2.3
+2.6.0
+git version 2.43.0
+/home/user/my-project
+```
+
+<Aside type="caution">
+  If Node.js version is below 18.x, upgrade Node.js before proceeding. Cortex TMS requires Node.js 18 or higher.
+</Aside>
+
+---
+
+**File System Check:**
+
+```bash
+# Check if mandatory files exist
+ls -la CLAUDE.md NEXT-TASKS.md .cortexrc
+
+# Check file permissions
+ls -l CLAUDE.md
+
+# Check directory structure
+tree -L 2 docs/
+```
+
+**Expected output:**
+
+```text
+-rw-r--r--  1 user  staff  2048 Jan 15 10:30 CLAUDE.md
+-rw-r--r--  1 user  staff  1024 Jan 15 10:30 NEXT-TASKS.md
+-rw-r--r--  1 user  staff   512 Jan 15 10:30 .cortexrc
+
+docs/
+├── archive/
+│   └── sprint-2025-01.md
+└── core/
+    ├── ARCHITECTURE.md
+    ├── PATTERNS.md
+    └── DECISIONS.md
+```
+
+---
+
+### Step 3: Enable Verbose Logging
+
+Most Cortex TMS commands support a `--verbose` flag for detailed output:
+
+```bash
+# Verbose initialization
+cortex-tms init --verbose
+
+# Verbose validation
+cortex-tms validate --verbose
+
+# Verbose migration
+cortex-tms migrate --verbose
+```
+
+**Example verbose output:**
+
+```text
+$ cortex-tms validate --verbose
+
+🔍 Cortex TMS Validation
+
+Project Context:
+  Git repository: Yes
+  Package.json: Yes
+  Package manager: pnpm
+  Existing TMS files: NEXT-TASKS.md, CLAUDE.md, .cortexrc
+
+Placeholder Replacements:
+  [Project Name] → my-awesome-project
+  [project-name] → my-awesome-project
+  [Description] → A modern web application
+
+📋 Mandatory Files
+  ✓ NEXT-TASKS.md exists
+  ✓ CLAUDE.md exists
+  ✓ .github/copilot-instructions.md exists
+
+⚙️  Configuration
+  ✓ .cortexrc configuration exists
+
+📏 File Size Limits (Rule 4)
+  ✓ NEXT-TASKS.md is within size limits
+    150/200 lines
+  ⚠ ARCHITECTURE.md exceeds recommended line limit
+    Current: 650 lines | Limit: 500 lines | Overage: 150 lines
+
+📊 Summary
+
+  Total Checks: 12
+  ✓ Passed: 10
+  ⚠ Warnings: 2
+  ✗ Errors: 0
+
+✨ Validation passed! Your TMS project is healthy.
+```
+
+<Aside type="tip">
+  Always use `--verbose` when filing bug reports. The detailed output helps maintainers diagnose issues faster.
+</Aside>
+
+---
+
+### Step 4: Consult the Specific Troubleshooting Guide
+
+Once you've identified the issue category, consult the relevant guide:
+
+<CardGrid stagger>
+  <Card title="Installation Issues" icon="rocket">
+    npm/pnpm/yarn installation, command not found, permission errors, Windows issues
+
+    [Read Guide →](/troubleshooting/installation-issues/)
+  </Card>
+
+  <Card title="Validation Errors" icon="magnifier">
+    File size limits, missing files, placeholder errors, .cortexrc issues
+
+    [Read Guide →](/troubleshooting/validation-errors/)
+  </Card>
+
+  <Card title="AI Agent Issues" icon="seti:robot">
+    Claude Code, GitHub Copilot, Cursor integration problems
+
+    [Read Guide →](/troubleshooting/ai-agent-issues/)
+  </Card>
+</CardGrid>
+
+---
+
+## Common Debugging Techniques
+
+### Technique 1: Check File Encoding
+
+Cortex TMS requires UTF-8 encoding for all files. Some editors save files with different encodings, causing parsing errors.
+
+```bash
+# Check file encoding (Linux/macOS)
+file CLAUDE.md
+
+# Expected output:
+# CLAUDE.md: UTF-8 Unicode text
+
+# Convert to UTF-8 if needed
+iconv -f ISO-8859-1 -t UTF-8 CLAUDE.md -o CLAUDE.md
+```
+
+<Tabs>
+  <TabItem label="macOS/Linux">
+    ```bash
+    # Check encoding
+    file *.md
+
+    # Convert all .md files to UTF-8
+    for f in *.md; do
+      iconv -f ISO-8859-1 -t UTF-8 "$f" -o "$f.utf8"
+      mv "$f.utf8" "$f"
+    done
+    ```
+  </TabItem>
+
+  <TabItem label="Windows">
+    ```powershell
+    # Check encoding in PowerShell
+    [System.Text.Encoding]::GetEncoding((Get-Content CLAUDE.md -Encoding Byte)[0..2])
+
+    # Convert to UTF-8 using VS Code
+    # File → Save with Encoding → UTF-8
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Technique 2: Validate JSON Configuration
+
+If `.cortexrc` is causing errors, validate its JSON syntax:
+
+```bash
+# Validate .cortexrc JSON syntax (Node.js)
+node -e "console.log(JSON.parse(require('fs').readFileSync('.cortexrc', 'utf-8')))"
+
+# Validate .cortexrc JSON syntax (Python)
+python3 -m json.tool .cortexrc
+
+# Validate .cortexrc JSON syntax (jq)
+jq empty .cortexrc
+```
+
+**Common JSON errors:**
+
+<Tabs>
+  <TabItem label="Trailing Comma">
+    ```json
+    {
+      "version": "1.0.0",
+      "scope": "standard",
+      "paths": {
+        "docs": "docs/core"
+      },  // ❌ Trailing comma not allowed in JSON
+    }
+    ```
+
+    **Fix:** Remove the trailing comma:
+
+    ```json
+    {
+      "version": "1.0.0",
+      "scope": "standard",
+      "paths": {
+        "docs": "docs/core"
+      }
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Missing Quotes">
+    ```json
+    {
+      version: "1.0.0",  // ❌ Keys must be quoted
+      scope: "standard"
+    }
+    ```
+
+    **Fix:** Add quotes to all keys:
+
+    ```json
+    {
+      "version": "1.0.0",
+      "scope": "standard"
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Unclosed Braces">
+    ```json
+    {
+      "version": "1.0.0",
+      "paths": {
+        "docs": "docs/core"
+      // ❌ Missing closing brace
+    }
+    ```
+
+    **Fix:** Close all braces:
+
+    ```json
+    {
+      "version": "1.0.0",
+      "paths": {
+        "docs": "docs/core"
+      }
+    }
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Use a JSON linter like `jq` or an online validator to catch syntax errors quickly.
+</Aside>
+
+---
+
+### Technique 3: Check Line Endings (Windows)
+
+Windows uses CRLF (`\r\n`) line endings while Linux/macOS use LF (`\n`). Git can auto-convert these, causing file size discrepancies.
+
+```bash
+# Check line endings
+file NEXT-TASKS.md
+
+# Output (Windows CRLF):
+# NEXT-TASKS.md: ASCII text, with CRLF line terminators
+
+# Output (Linux/macOS LF):
+# NEXT-TASKS.md: ASCII text
+```
+
+**Fix:**
+
+<Tabs>
+  <TabItem label="Configure Git">
+    ```bash
+    # Set Git to auto-convert CRLF to LF on commit
+    git config --global core.autocrlf true
+
+    # Re-checkout files to apply conversion
+    git rm --cached -r .
+    git reset --hard
+    ```
+  </TabItem>
+
+  <TabItem label="EditorConfig">
+    Create `.editorconfig` in your project root:
+
+    ```ini
+    root = true
+
+    [*]
+    end_of_line = lf
+    insert_final_newline = true
+    charset = utf-8
+
+    [*.{js,ts,json,md}]
+    indent_style = space
+    indent_size = 2
+    ```
+
+    Most editors respect EditorConfig automatically.
+  </TabItem>
+
+  <TabItem label="Manual Conversion">
+    ```bash
+    # Convert CRLF to LF (Linux/macOS)
+    dos2unix *.md
+
+    # Convert CRLF to LF (Windows Git Bash)
+    sed -i 's/\r$//' *.md
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Technique 4: Clean Install
+
+If Cortex TMS behaves erratically, perform a clean reinstall:
+
+```bash
+# Uninstall cortex-tms
+npm uninstall -g cortex-tms
+
+# Clear npm cache
+npm cache clean --force
+
+# Reinstall cortex-tms
+npm install -g cortex-tms
+
+# Verify installation
+cortex-tms --version
+```
+
+<Aside type="caution">
+  This does NOT delete your project files (CLAUDE.md, NEXT-TASKS.md, etc.). It only reinstalls the CLI tool.
+</Aside>
+
+---
+
+## Getting Help
+
+If you have exhausted all troubleshooting steps and still encounter issues, here is how to get help:
+
+### Before Filing a Bug Report
+
+1. **Search existing issues**: Check [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues) for similar problems
+2. **Verify you're on the latest version**: Run `cortex-tms --version` and compare to [latest release](https://github.com/cortex-tms/cortex-tms/releases)
+3. **Test in a clean environment**: Try reproducing the issue in a new, empty directory
+4. **Collect diagnostic information**: Run `cortex-tms validate --verbose` and save the output
+
+---
+
+### Filing a Bug Report
+
+When filing a bug report, include:
+
+**Required information:**
+
+```text
+**Environment:**
+- OS: macOS 14.2 (or Windows 11, Ubuntu 22.04, etc.)
+- Node.js version: 20.10.0
+- npm version: 10.2.3
+- cortex-tms version: 2.6.0
+- Package manager: npm (or pnpm, yarn)
+
+**Steps to reproduce:**
+1. Run `cortex-tms init --scope standard`
+2. Edit CLAUDE.md to add custom content
+3. Run `cortex-tms validate`
+4. Error occurs
+
+**Expected behavior:**
+Validation should pass
+
+**Actual behavior:**
+Error: ENOENT: no such file or directory, open '.cortexrc'
+
+**Full error output:**
+(paste complete error message with stack trace)
+
+**Additional context:**
+- Using Git version 2.43.0
+- Project is a TypeScript monorepo
+- Using pnpm workspaces
+```
+
+**Optional but helpful:**
+
+- Screenshots of error messages
+- Minimal reproduction repository (GitHub repo demonstrating the issue)
+- Output of `cortex-tms validate --verbose`
+- Contents of `.cortexrc` (sanitize sensitive data)
+
+<Aside type="tip">
+  The more information you provide, the faster maintainers can diagnose and fix the issue.
+</Aside>
+
+---
+
+### Community Support Channels
+
+**GitHub Discussions:**
+- Ask questions: [github.com/cortex-tms/cortex-tms/discussions](https://github.com/cortex-tms/cortex-tms/discussions)
+- Share use cases and patterns
+- Request new features
+
+**GitHub Issues:**
+- Report bugs: [github.com/cortex-tms/cortex-tms/issues](https://github.com/cortex-tms/cortex-tms/issues)
+- Security vulnerabilities: Email security reports directly (see SECURITY.md)
+
+**Documentation:**
+- [Getting Started](/getting-started/quick-start/)
+- [CLI Reference](/reference/cli/)
+- [Guides](/guides/)
+
+---
+
+## Preventive Maintenance
+
+Avoid common issues by following these best practices:
+
+<CardGrid>
+  <Card title="Run Validation Regularly" icon="approve-check">
+    Run `cortex-tms validate` before committing changes. Catch issues early before they compound.
+
+    ```bash
+    # Add to pre-commit hook
+    cortex-tms validate --strict
+    ```
+  </Card>
+
+  <Card title="Keep Files Under Limits" icon="document">
+    Archive completed tasks regularly. File size limits exist to keep AI context windows manageable.
+
+    **Trigger:** When NEXT-TASKS.md exceeds 150 lines, archive completed tasks.
+  </Card>
+
+  <Card title="Update Dependencies" icon="rocket">
+    Keep cortex-tms updated to get bug fixes and new features.
+
+    ```bash
+    npm update -g cortex-tms
+    ```
+  </Card>
+
+  <Card title="Use Version Control" icon="github">
+    Commit TMS files to Git. If something breaks, you can always revert to a working state.
+
+    ```bash
+    git add CLAUDE.md NEXT-TASKS.md .cortexrc
+    git commit -m "docs: update TMS files"
+    ```
+  </Card>
+
+  <Card title="Document Custom Patterns" icon="pencil">
+    Update docs/core/PATTERNS.md when you establish new conventions. AI agents will follow them automatically.
+  </Card>
+
+  <Card title="Test AI Integration" icon="seti:robot">
+    After updating documentation, test AI agents to ensure they read the new content correctly.
+  </Card>
+</CardGrid>
+
+---
+
+## Diagnostic Commands Reference
+
+Quick reference for diagnostic commands:
+
+```bash
+# Environment diagnostics
+node --version                    # Node.js version
+npm --version                     # npm version
+git --version                     # Git version
+cortex-tms --version              # Cortex TMS version
+
+# File diagnostics
+ls -la CLAUDE.md NEXT-TASKS.md    # Check files exist
+file CLAUDE.md                    # Check file encoding
+wc -l NEXT-TASKS.md               # Count lines
+
+# Validation diagnostics
+cortex-tms validate --verbose     # Detailed validation output
+cortex-tms validate --strict      # Treat warnings as errors
+
+# Configuration diagnostics
+cat .cortexrc                     # View configuration
+jq empty .cortexrc                # Validate JSON syntax
+node -e "console.log(require('./.cortexrc'))"  # Parse config in Node
+
+# Git diagnostics
+git status                        # Check working tree
+git log --oneline -5              # Recent commits
+git config --list                 # Git configuration
+
+# Package manager diagnostics
+npm list -g cortex-tms            # Check global installation
+npm cache clean --force           # Clear npm cache
+```
+
+---
+
+## Next Steps
+
+Now that you understand the troubleshooting workflow:
+
+- **[Installation Issues](/troubleshooting/installation-issues/)**: Detailed npm, Node.js, and permission troubleshooting
+- **[Validation Errors](/troubleshooting/validation-errors/)**: Fix `cortex-tms validate` failures
+- **[AI Agent Issues](/troubleshooting/ai-agent-issues/)**: Resolve Claude Code, Copilot, and Cursor problems
+
+<Aside type="tip">
+  Bookmark this page for quick reference. Most issues can be resolved by following the systematic workflow above.
+</Aside>

@@ -1,0 +1,1566 @@
+---
+title: AI Agent Issues
+description: Troubleshooting Claude Code, GitHub Copilot, and Cursor integration problems
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+This guide helps you diagnose and fix problems with AI coding agents (Claude Code, GitHub Copilot, and Cursor) when used with Cortex TMS. Whether your AI agent is not reading documentation files, generating code that violates patterns, or experiencing context window issues, this page provides systematic solutions.
+
+## Quick Diagnostic by AI Agent
+
+<CardGrid>
+  <Card title="Claude Code Issues" icon="star">
+    **Common symptoms:**
+    - Not reading CLAUDE.md
+    - Ignoring operational workflows
+    - File access permission errors
+    - Context window exceeded
+
+    [Jump to Claude Code →](#claude-code-troubleshooting)
+  </Card>
+
+  <Card title="GitHub Copilot Issues" icon="github">
+    **Common symptoms:**
+    - Not reading .github/copilot-instructions.md
+    - Suggestions violate documented patterns
+    - 100-line limit exceeded
+    - Chat not referencing instructions
+
+    [Jump to Copilot →](#github-copilot-troubleshooting)
+  </Card>
+
+  <Card title="Cursor Issues" icon="seti:config">
+    **Common symptoms:**
+    - .cursorrules not detected
+    - Symlink not working (Windows)
+    - Chat not using custom rules
+    - Composer ignores patterns
+
+    [Jump to Cursor →](#cursor-troubleshooting)
+  </Card>
+
+  <Card title="General AI Problems" icon="seti:robot">
+    **Common symptoms:**
+    - AI violates PATTERNS.md conventions
+    - Stale context (reads old files)
+    - Token limits hit
+    - Inconsistent suggestions
+
+    [Jump to General →](#general-ai-agent-issues)
+  </Card>
+</CardGrid>
+
+---
+
+## Claude Code Troubleshooting
+
+### Issue: Claude Code Not Reading CLAUDE.md
+
+#### Symptoms
+
+Claude Code generates code that doesn't follow documented workflows:
+
+- Doesn't create feature branches before code changes
+- Doesn't read NEXT-TASKS.md to understand current objectives
+- Doesn't follow patterns from docs/core/PATTERNS.md
+- Doesn't run post-task validation
+
+#### Cause
+
+**Cause 1:** CLAUDE.md doesn't exist or is in wrong location
+
+**Cause 2:** CLAUDE.md has file permission issues
+
+**Cause 3:** Claude Code is reading a cached/stale version
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Verify File Exists">
+    **Step 1: Check CLAUDE.md exists in project root**
+
+    ```bash
+    ls -la CLAUDE.md
+    ```
+
+    **Expected output:**
+
+    ```text
+    -rw-r--r--  1 user  staff  2048 Jan 15 10:30 CLAUDE.md
+    ```
+
+    **If missing:**
+
+    ```bash
+    # Regenerate with cortex-tms
+    cortex-tms init --force
+
+    # Or restore from templates
+    cortex-tms validate --fix
+    ```
+
+    **Step 2: Verify file encoding**
+
+    ```bash
+    file CLAUDE.md
+    ```
+
+    **Expected output:**
+
+    ```text
+    CLAUDE.md: UTF-8 Unicode text
+    ```
+
+    **If wrong encoding:**
+
+    ```bash
+    # Convert to UTF-8
+    iconv -f ISO-8859-1 -t UTF-8 CLAUDE.md -o CLAUDE.md.utf8
+    mv CLAUDE.md.utf8 CLAUDE.md
+    ```
+
+    **Step 3: Test with explicit reference**
+
+    Ask Claude Code:
+
+    > "Read CLAUDE.md and summarize the operational loop"
+
+    **Expected:** Claude should read and summarize the file.
+
+    **If Claude can't read it:** File permissions or Claude Code bug.
+  </TabItem>
+
+  <TabItem label="Fix: File Permissions">
+    **Check file permissions:**
+
+    ```bash
+    ls -l CLAUDE.md
+    ```
+
+    **Output:**
+
+    ```text
+    -rw-r--r--  1 user  staff  2048 Jan 15 10:30 CLAUDE.md
+    ```
+
+    **Permission breakdown:**
+
+    - `rw-`: Owner can read/write
+    - `r--`: Group can read
+    - `r--`: Others can read
+
+    **If permissions are wrong (e.g., `-rw-------`):**
+
+    ```bash
+    # Make readable by all users
+    chmod 644 CLAUDE.md
+
+    # Verify
+    ls -l CLAUDE.md
+    # Output: -rw-r--r--  1 user  staff  2048 Jan 15 10:30 CLAUDE.md
+    ```
+
+    **On shared systems:**
+
+    ```bash
+    # Ensure your user owns the file
+    chown $(whoami) CLAUDE.md
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Clear Claude Cache">
+    Claude Code may cache file contents. Restart to clear:
+
+    **Option 1: Exit and restart Claude Code**
+
+    ```bash
+    # Exit Claude Code
+    exit
+
+    # Restart
+    claude-code .
+    ```
+
+    **Option 2: Force reload project**
+
+    In Claude Code, type:
+
+    > "Reload the project files and re-read CLAUDE.md"
+
+    **Option 3: Edit CLAUDE.md to trigger refresh**
+
+    ```bash
+    # Add a blank line to CLAUDE.md
+    echo "" >> CLAUDE.md
+
+    # Ask Claude to read it again
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Explicit Instructions">
+    If Claude still doesn't follow CLAUDE.md, be explicit:
+
+    **Instead of:**
+
+    > "Implement the authentication feature"
+
+    **Say:**
+
+    > "Read CLAUDE.md to understand the operational loop, then implement authentication following the workflow defined there. Specifically: 1) Create a feature branch, 2) Read NEXT-TASKS.md for requirements, 3) Check docs/core/PATTERNS.md for auth pattern, 4) Implement with TDD, 5) Run validation."
+
+    **Or reference specific sections:**
+
+    > "Follow the Git Protocol in CLAUDE.md (Step 0) before making any code changes"
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  CLAUDE.md must be in the project root directory. Claude Code reads it automatically when opening the project.
+</Aside>
+
+---
+
+### Issue: Claude Code Ignoring Patterns
+
+#### Symptoms
+
+Claude generates code that violates documented conventions:
+
+- Uses localStorage for tokens (despite PATTERNS.md forbidding it)
+- Uses HS256 instead of RS256 for JWT
+- Doesn't follow naming conventions from PATTERNS.md
+- Ignores error handling patterns
+
+#### Cause
+
+**Cause 1:** PATTERNS.md is too large (exceeds Claude's context)
+
+**Cause 2:** Patterns are vague (descriptions without examples)
+
+**Cause 3:** CLAUDE.md doesn't reference PATTERNS.md
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Add Canonical Examples">
+    Claude learns better from examples than descriptions.
+
+    **Before (vague):**
+
+    ```markdown
+    ## Authentication Pattern
+
+    Use RS256 JWT tokens with httpOnly cookies. Tokens expire in 15 minutes.
+    ```
+
+    **After (concrete example):**
+
+    ```markdown
+    ## Authentication Pattern
+
+    **Canonical Example**: `src/middleware/auth.middleware.ts`
+
+    **Always use this exact pattern:**
+
+    ` ` `typescript
+    import { sign, verify } from 'jsonwebtoken';
+    import { readFileSync } from 'fs';
+
+    // Load RS256 keys
+    const privateKey = readFileSync('./keys/private.pem');
+    const publicKey = readFileSync('./keys/public.pem');
+
+    // Generate access token (15 min expiry)
+    export function generateAccessToken(userId: string) {
+      return sign(
+        { userId, type: 'access' },
+        privateKey,
+        { algorithm: 'RS256', expiresIn: '15m' }
+      );
+    }
+
+    // Store in httpOnly cookie (NEVER localStorage)
+    export function setAuthCookie(res: Response, token: string) {
+      res.cookie('accessToken', token, {
+        httpOnly: true,      // ✅ Prevents XSS
+        secure: true,        // ✅ HTTPS only
+        sameSite: 'strict',  // ✅ CSRF protection
+        maxAge: 15 * 60 * 1000, // 15 minutes
+      });
+    }
+
+    // ❌ NEVER DO THIS
+    // localStorage.setItem('token', token);
+    ` ` `
+
+    **Key rules:**
+
+    - ✅ Use RS256 (asymmetric) for tokens
+    - ✅ Store in httpOnly cookies
+    - ✅ 15-minute expiry for access tokens
+    - ❌ Never use HS256 (symmetric)
+    - ❌ Never use localStorage (XSS vulnerable)
+    ```
+
+    Now Claude can copy the exact implementation.
+  </TabItem>
+
+  <TabItem label="Fix: Split Large PATTERNS.md">
+    If PATTERNS.md exceeds 500 lines, split by domain:
+
+    **Before:**
+
+    ```text
+    docs/core/PATTERNS.md (850 lines - too large)
+    ```
+
+    **After:**
+
+    ```text
+    docs/core/PATTERNS.md (200 lines - overview)
+    docs/core/patterns/
+      ├── authentication.md
+      ├── error-handling.md
+      ├── testing.md
+      ├── database.md
+      └── api-design.md
+    ```
+
+    **Update CLAUDE.md to reference subdirectories:**
+
+    ```markdown
+    ## 🛠 Operational Loop
+
+    **Step 2: Check Existing Patterns**
+
+    - Read `docs/core/PATTERNS.md` for overview
+    - For specific patterns, check:
+      - Authentication: `docs/core/patterns/authentication.md`
+      - Error handling: `docs/core/patterns/error-handling.md`
+      - Testing: `docs/core/patterns/testing.md`
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Reference Patterns in Tasks">
+    In NEXT-TASKS.md, explicitly reference patterns:
+
+    **Before (vague):**
+
+    ```markdown
+    | Status | Task |
+    |--------|------|
+    | 🔵 Todo | Implement authentication |
+    ```
+
+    **After (explicit):**
+
+    ```markdown
+    | Status | Task | Pattern Reference |
+    |--------|------|-------------------|
+    | 🔵 Todo | Implement authentication | Follow `docs/core/PATTERNS.md#authentication` (RS256, httpOnly cookies, 15-min expiry) |
+    ```
+
+    Now when Claude reads the task, it knows to check the pattern.
+  </TabItem>
+
+  <TabItem label="Fix: Validate After Generation">
+    After Claude generates code, ask:
+
+    > "Does this code follow the authentication pattern from docs/core/PATTERNS.md? Compare your implementation to the canonical example and fix any discrepancies."
+
+    Claude will self-correct if it finds violations.
+  </TabItem>
+</Tabs>
+
+<Aside type="caution">
+  If PATTERNS.md exceeds 1000 lines, Claude may truncate it and miss critical patterns. Always keep patterns under 500 lines per file.
+</Aside>
+
+---
+
+### Issue: Context Window Exceeded
+
+#### Symptoms
+
+Claude Code returns errors:
+
+```text
+Error: Context window exceeded. Please reduce the amount of context.
+```
+
+Or Claude stops mid-response:
+
+```text
+I apologize, but I've reached the context limit. Could you please...
+```
+
+#### Cause
+
+Claude Code has a context window limit (200k tokens ≈ 150k words). Large codebases or very long files can exceed this limit.
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Use @file References">
+    Instead of asking Claude to read all files, use `@file` to specify exact files:
+
+    **Instead of:**
+
+    > "Review the entire codebase and implement authentication"
+
+    **Say:**
+
+    > "@file src/middleware/auth.middleware.ts Implement authentication following the pattern in this file"
+
+    This limits context to only the specified file.
+  </TabItem>
+
+  <TabItem label="Fix: Split Large Requests">
+    Break large tasks into smaller steps:
+
+    **Instead of:**
+
+    > "Refactor the entire authentication system, add tests, update docs, and deploy"
+
+    **Say:**
+
+    **Step 1:**
+    > "Refactor src/middleware/auth.middleware.ts to use RS256 tokens"
+
+    **Step 2:**
+    > "Add unit tests for the auth middleware"
+
+    **Step 3:**
+    > "Update docs/core/PATTERNS.md with the new auth pattern"
+
+    **Step 4:**
+    > "Run validation and deploy"
+  </TabItem>
+
+  <TabItem label="Fix: Reduce File Sizes">
+    If docs exceed context limits, archive or split:
+
+    ```bash
+    # Check file sizes
+    wc -l NEXT-TASKS.md docs/core/*.md
+
+    # Output:
+    #  250 NEXT-TASKS.md (❌ too large)
+    #  850 docs/core/PATTERNS.md (❌ too large)
+    #  420 docs/core/ARCHITECTURE.md (✅ ok)
+    ```
+
+    **Fix:**
+
+    ```bash
+    # Archive completed tasks
+    cortex-tms validate --fix
+
+    # Split PATTERNS.md
+    mkdir docs/core/patterns
+    # Move sections to subdirectories
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Use Summaries">
+    Create executive summaries for large files:
+
+    **docs/core/PATTERNS-SUMMARY.md:**
+
+    ```markdown
+    # Pattern Quick Reference
+
+    Full patterns: `docs/core/patterns/*.md`
+
+    ## Critical Rules
+
+    **Authentication**:
+    - RS256 JWT tokens (not HS256)
+    - httpOnly cookies (not localStorage)
+    - 15-min access token expiry
+    - See: `docs/core/patterns/authentication.md`
+
+    **Error Handling**:
+    - Use AppError class
+    - Log errors with context
+    - Return user-friendly messages
+    - See: `docs/core/patterns/error-handling.md`
+
+    **Testing**:
+    - TDD approach (test first)
+    - 90%+ service coverage
+    - Mock external dependencies
+    - See: `docs/core/patterns/testing.md`
+    ```
+
+    Reference the summary in CLAUDE.md:
+
+    ```markdown
+    ## 🛠 Operational Loop
+
+    **Step 2: Check Existing Patterns**
+
+    1. Read `docs/core/PATTERNS-SUMMARY.md` for quick reference
+    2. For detailed implementation, check subdirectories
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Keep individual files under 500 lines to avoid context window issues. Use cross-references instead of duplicating content.
+</Aside>
+
+---
+
+## GitHub Copilot Troubleshooting
+
+### Issue: Copilot Not Reading Instructions
+
+#### Symptoms
+
+Copilot suggestions ignore project conventions:
+
+- Suggests localStorage for tokens (despite copilot-instructions.md forbidding it)
+- Ignores naming conventions
+- Doesn't follow documented patterns
+- Chat responses don't reference instructions
+
+#### Cause
+
+**Cause 1:** .github/copilot-instructions.md doesn't exist
+
+**Cause 2:** File exceeds 100-line limit (Copilot's hard limit)
+
+**Cause 3:** VS Code hasn't reloaded the file
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Verify File Exists">
+    **Step 1: Check file exists**
+
+    ```bash
+    ls -la .github/copilot-instructions.md
+    ```
+
+    **If missing:**
+
+    ```bash
+    # Create directory
+    mkdir -p .github
+
+    # Generate with cortex-tms
+    cortex-tms init --force
+
+    # Or create manually
+    cat > .github/copilot-instructions.md <<'EOF'
+    # GitHub Copilot Instructions
+
+    See `CLAUDE.md` for full project conventions.
+
+    ## Critical Rules
+
+    - Never commit secrets (API keys, passwords)
+    - Use RS256 JWT tokens (not HS256)
+    - Store tokens in httpOnly cookies (not localStorage)
+
+    ## Tech Stack
+
+    - TypeScript (strict mode)
+    - Express.js
+    - Jest for testing
+
+    ## Quick Reference
+
+    - Patterns: `docs/core/PATTERNS.md`
+    - Tasks: `NEXT-TASKS.md`
+    EOF
+    ```
+
+    **Step 2: Verify file is under 100 lines**
+
+    ```bash
+    wc -l .github/copilot-instructions.md
+    ```
+
+    **Expected:**
+
+    ```text
+    68 .github/copilot-instructions.md
+    ```
+
+    **If over 100 lines:** Copilot will ignore the file.
+  </TabItem>
+
+  <TabItem label="Fix: Reduce File Size">
+    Copilot has a strict 100-line limit. Trim aggressively:
+
+    **Before (120 lines - too large):**
+
+    ```markdown
+    # GitHub Copilot Instructions
+
+    ## Authentication Pattern
+
+    Always use RS256 JWT tokens with httpOnly cookies.
+
+    Example:
+    ` ` `typescript
+    // 50 lines of example code
+    ` ` `
+
+    ## Error Handling Pattern
+
+    Always use AppError class.
+
+    Example:
+    ` ` `typescript
+    // 40 lines of example code
+    ` ` `
+    ```
+
+    **After (68 lines - fits limit):**
+
+    ```markdown
+    # GitHub Copilot Instructions
+
+    See `CLAUDE.md` for full conventions.
+
+    ## Critical Rules (Security)
+
+    **NEVER**:
+    - Store tokens in localStorage → Use httpOnly cookies
+    - Use HS256 for JWT → Use RS256
+    - Commit secrets to Git → Use environment variables
+
+    ## Tech Stack
+
+    - TypeScript (strict), Express.js, Jest
+
+    ## Patterns
+
+    - Auth: `docs/core/patterns/authentication.md` (RS256, 15-min expiry)
+    - Errors: `docs/core/patterns/error-handling.md` (AppError class)
+    - Tests: `docs/core/patterns/testing.md` (TDD, 90%+ coverage)
+
+    ## Canonical Examples
+
+    - Service: `src/services/tasks.service.ts`
+    - Controller: `src/controllers/tasks.controller.ts`
+    - Test: `src/services/tasks.service.test.ts`
+    ```
+
+    **Key changes:**
+
+    - Remove code examples (reference files instead)
+    - Use bullet lists (more concise than paragraphs)
+    - Add cross-references to detailed docs
+  </TabItem>
+
+  <TabItem label="Fix: Reload VS Code">
+    Copilot caches copilot-instructions.md. Reload window:
+
+    **Option 1: Command Palette**
+
+    1. Press `Cmd+Shift+P` (macOS) or `Ctrl+Shift+P` (Windows/Linux)
+    2. Type "Reload Window"
+    3. Press Enter
+
+    **Option 2: Restart VS Code**
+
+    ```bash
+    # Close VS Code
+    # Reopen project
+    code .
+    ```
+
+    **Option 3: Toggle Copilot**
+
+    ```
+    Cmd+Shift+P → "GitHub Copilot: Disable"
+    Cmd+Shift+P → "GitHub Copilot: Enable"
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Test with Copilot Chat">
+    Verify Copilot reads the instructions:
+
+    **Step 1: Open Copilot Chat**
+
+    Press `Cmd+Shift+I` (macOS) or `Ctrl+Shift+I` (Windows/Linux)
+
+    **Step 2: Ask about instructions**
+
+    > "What are the critical security rules for this project?"
+
+    **Expected response:**
+
+    > Based on .github/copilot-instructions.md:
+    > - Never store tokens in localStorage (use httpOnly cookies)
+    > - Never use HS256 for JWT (use RS256)
+    > - Never commit secrets to Git (use environment variables)
+
+    **If Copilot doesn't mention the file:** Instructions aren't being read.
+  </TabItem>
+</Tabs>
+
+<Aside type="caution">
+  GitHub Copilot has a strict 100-line limit for .github/copilot-instructions.md. Files over this limit are completely ignored. Use cross-references to keep it concise.
+</Aside>
+
+---
+
+### Issue: Copilot Violates Security Rules
+
+#### Symptoms
+
+Copilot suggests code that violates documented security rules:
+
+- Suggests `localStorage.setItem('token', ...)` despite instructions forbidding it
+- Suggests HS256 tokens instead of RS256
+- Suggests committing secrets (API keys in code)
+
+#### Cause
+
+**Cause 1:** Security rules are buried in the middle of copilot-instructions.md
+
+**Cause 2:** Rules are stated positively (what TO do) instead of negatively (what NOT to do)
+
+**Cause 3:** Copilot prioritizes code patterns over documentation
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Move Security Rules to Top">
+    Copilot prioritizes early content. Put critical rules first:
+
+    **Before:**
+
+    ```markdown
+    # GitHub Copilot Instructions
+
+    ## Tech Stack
+
+    TypeScript, Express.js, Jest
+
+    ## Coding Style
+
+    Use camelCase for variables...
+
+    ## Security Rules
+
+    Never commit secrets...
+    ```
+
+    **After:**
+
+    ```markdown
+    # GitHub Copilot Instructions
+
+    ## Critical Rules (Security)
+
+    **NEVER**:
+    - Store tokens in localStorage → Use httpOnly cookies
+    - Use HS256 for JWT → Use RS256
+    - Commit secrets (API keys, passwords) → Use .env
+
+    ## Tech Stack
+
+    TypeScript, Express.js, Jest
+
+    ## Coding Style
+
+    Use camelCase for variables...
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Use Negative Examples">
+    Show what NOT to do explicitly:
+
+    ```markdown
+    ## Authentication (Critical)
+
+    ✅ **Good**: RS256 JWT in httpOnly cookies
+    ` ` `typescript
+    res.cookie('token', jwt.sign({...}, privateKey, { algorithm: 'RS256' }), {
+      httpOnly: true,
+      secure: true,
+      sameSite: 'strict'
+    });
+    ` ` `
+
+    ❌ **Bad**: HS256 in localStorage
+    ` ` `typescript
+    // NEVER DO THIS
+    localStorage.setItem('token', jwt.sign({...}, secret, { algorithm: 'HS256' }));
+    ` ` `
+    ```
+
+    Copilot learns from negative examples.
+  </TabItem>
+
+  <TabItem label="Fix: Add ESLint Rules">
+    Enforce rules at the linter level:
+
+    **Install eslint-plugin-no-secrets:**
+
+    ```bash
+    npm install --save-dev eslint-plugin-no-secrets
+    ```
+
+    **.eslintrc.json:**
+
+    ```json
+    {
+      "plugins": ["no-secrets"],
+      "rules": {
+        "no-secrets/no-secrets": "error",
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "CallExpression[callee.object.name='localStorage'][callee.property.name='setItem']",
+            "message": "Never use localStorage for tokens. Use httpOnly cookies instead."
+          },
+          {
+            "selector": "Literal[value='HS256']",
+            "message": "Never use HS256 for JWT. Use RS256 (asymmetric) instead."
+          }
+        ]
+      }
+    }
+    ```
+
+    Now Copilot suggestions trigger linting errors if they violate rules.
+  </TabItem>
+
+  <TabItem label="Fix: Review Suggestions Carefully">
+    Always review Copilot suggestions before accepting:
+
+    **Red flags:**
+
+    - `localStorage.setItem('token', ...)` → Reject
+    - `algorithm: 'HS256'` → Reject
+    - Hardcoded API keys → Reject
+    - SQL string concatenation → Reject
+
+    **Good signs:**
+
+    - `res.cookie('token', ..., { httpOnly: true })` → Accept
+    - `algorithm: 'RS256'` → Accept
+    - `process.env.API_KEY` → Accept
+    - Parameterized queries → Accept
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Combine documentation with linting. Copilot reads copilot-instructions.md, but ESLint enforces rules at build time.
+</Aside>
+
+---
+
+### Issue: Copilot Inline Suggestions Ignore Patterns
+
+#### Symptoms
+
+Copilot inline suggestions don't match project conventions:
+
+- Variable names use wrong casing (snake_case instead of camelCase)
+- Function structure doesn't match canonical examples
+- Import statements use wrong paths (relative instead of aliases)
+
+#### Cause
+
+Copilot inline suggestions use a smaller context window than chat. They prioritize:
+
+1. Current file content
+2. Recently opened files
+3. copilot-instructions.md (if under 100 lines)
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Open Canonical Examples">
+    Before coding, open canonical example files:
+
+    **Step 1: Open reference files**
+
+    ```bash
+    # Open canonical service
+    code src/services/tasks.service.ts
+
+    # Open canonical controller
+    code src/controllers/tasks.controller.ts
+
+    # Open canonical test
+    code src/services/tasks.service.test.ts
+    ```
+
+    **Step 2: Start coding in new file**
+
+    Copilot now has examples in context and will suggest matching patterns.
+
+    **Example:**
+
+    ```typescript
+    // In src/services/users.service.ts
+    // Type: export class UserService
+
+    // Copilot suggests (matching tasks.service.ts pattern):
+    export class UserService {
+      constructor(private db: Database) {}
+
+      async getById(id: string): Promise<User> {
+        const user = await this.db.query.users.findFirst({
+          where: eq(users.id, id)
+        });
+
+        if (!user) {
+          throw new AppError('User not found', 404);
+        }
+
+        return user;
+      }
+    }
+    ```
+
+    Copilot matched the structure from tasks.service.ts.
+  </TabItem>
+
+  <TabItem label="Fix: Add Comments as Hints">
+    Guide Copilot with comments:
+
+    ```typescript
+    // Follow the pattern from tasks.service.ts
+    // Use Drizzle query builder (not raw SQL)
+    // Throw AppError for not found (404)
+    export class UserService {
+      // Copilot now suggests code matching the hints
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Use Copilot Chat for Scaffolding">
+    For complex patterns, use Copilot Chat to generate boilerplate:
+
+    **In Copilot Chat:**
+
+    > "Create a new UserService class following the same pattern as src/services/tasks.service.ts. Include: constructor with db injection, getById method that throws AppError on not found, and createUser method."
+
+    Copilot generates code matching the reference file.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Keep canonical example files open in VS Code while coding. Copilot uses recently opened files as context for inline suggestions.
+</Aside>
+
+---
+
+## Cursor Troubleshooting
+
+### Issue: .cursorrules Not Detected
+
+#### Symptoms
+
+Cursor doesn't reference custom rules:
+
+- Chat responses don't mention project conventions
+- Code generations violate documented patterns
+- Cmd+K edits ignore .cursorrules
+
+#### Cause
+
+**Cause 1:** .cursorrules file doesn't exist
+
+**Cause 2:** .cursorrules is a broken symlink (Windows)
+
+**Cause 3:** Cursor settings disabled custom rules
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Create .cursorrules">
+    **Option 1: Copy from CLAUDE.md**
+
+    ```bash
+    cp CLAUDE.md .cursorrules
+    git add .cursorrules
+    ```
+
+    **Option 2: Create symlink (macOS/Linux)**
+
+    ```bash
+    ln -s CLAUDE.md .cursorrules
+    git add .cursorrules
+    ```
+
+    **Option 3: Create custom file**
+
+    ```bash
+    cat > .cursorrules <<'EOF'
+    # Cursor Rules
+
+    See `CLAUDE.md` for full conventions.
+
+    ## Tech Stack
+
+    - TypeScript (strict mode)
+    - Express.js
+    - PostgreSQL + Drizzle ORM
+    - Jest + Playwright
+
+    ## Critical Rules
+
+    - Never commit secrets
+    - Use RS256 JWT (not HS256)
+    - Store tokens in httpOnly cookies (not localStorage)
+
+    ## Cursor Workflows
+
+    **Multi-File Edits**: Use Cmd+K for single-file, Chat for multi-file
+
+    **Pattern Application**: Reference canonical files:
+    - Service: `src/services/tasks.service.ts`
+    - Controller: `src/controllers/tasks.controller.ts`
+
+    ## Quick Commands
+
+    - Test: `npm test`
+    - Lint: `npm run lint`
+    - Dev: `npm run dev`
+    EOF
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Symlink on Windows">
+    Windows symlinks require Developer Mode or Admin privileges.
+
+    **Option A: Enable Developer Mode**
+
+    1. Settings → Update & Security → For Developers
+    2. Enable "Developer Mode"
+    3. Restart terminal
+    4. Create symlink:
+
+    ```powershell
+    New-Item -ItemType SymbolicLink -Path .cursorrules -Target CLAUDE.md
+    ```
+
+    **Option B: Use Git symlink**
+
+    ```bash
+    # In Git Bash:
+    ln -s CLAUDE.md .cursorrules
+
+    # Enable symlinks in Git
+    git config core.symlinks true
+
+    # Commit
+    git add .cursorrules
+    git commit -m "chore: add .cursorrules symlink"
+    ```
+
+    **Option C: Copy instead (simpler)**
+
+    ```powershell
+    Copy-Item CLAUDE.md .cursorrules
+    ```
+
+    **⚠️ Remember to update both files when editing.**
+  </TabItem>
+
+  <TabItem label="Fix: Check Cursor Settings">
+    **Step 1: Open Cursor Settings**
+
+    `Cmd+,` (macOS) or `Ctrl+,` (Windows/Linux)
+
+    **Step 2: Search "cursorrules"**
+
+    **Step 3: Verify settings:**
+
+    - ✅ "Enable .cursorrules" should be checked
+    - ✅ "Rules File Path" should be `.cursorrules`
+
+    **Step 4: Reload Cursor**
+
+    `Cmd+Shift+P` → "Reload Window"
+  </TabItem>
+
+  <TabItem label="Fix: Test with Chat">
+    **Step 1: Open Cursor Chat**
+
+    Press `Cmd+L` (macOS) or `Ctrl+L` (Windows/Linux)
+
+    **Step 2: Ask about rules**
+
+    > "What are the coding conventions for this project?"
+
+    **Expected response:**
+
+    > Based on .cursorrules and CLAUDE.md:
+    > - TypeScript in strict mode
+    > - RS256 JWT tokens (not HS256)
+    > - httpOnly cookies for token storage
+    > - Follow patterns in docs/core/PATTERNS.md
+
+    **If Cursor doesn't mention .cursorrules:** File isn't being read.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Use symlinks (macOS/Linux) to keep .cursorrules in sync with CLAUDE.md. On Windows, use a copy and update both files together.
+</Aside>
+
+---
+
+### Issue: Cursor Composer Ignores Patterns
+
+#### Symptoms
+
+Cursor Composer applies multi-file changes that violate patterns:
+
+- Refactoring doesn't follow documented conventions
+- Generated code uses wrong naming conventions
+- Imports use wrong paths
+
+#### Cause
+
+Cursor Composer uses a broad context but may miss specific pattern files if not referenced explicitly.
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Reference Patterns Explicitly">
+    When using Composer, reference pattern files:
+
+    **Instead of:**
+
+    > "Refactor all services to use dependency injection"
+
+    **Say:**
+
+    > "Refactor all services to use dependency injection following the pattern in src/services/tasks.service.ts. Inject database via constructor, use Drizzle query builder, throw AppError for errors."
+
+    This ensures Composer reads the canonical example.
+  </TabItem>
+
+  <TabItem label="Fix: Use @Codebase">
+    Reference the entire codebase:
+
+    > "@Codebase Refactor all services to use dependency injection, following the pattern already used in the codebase"
+
+    Cursor scans all files and identifies the pattern.
+  </TabItem>
+
+  <TabItem label="Fix: Review Before Accepting">
+    Composer shows diffs before applying. Review each file:
+
+    **Check for:**
+
+    - ✅ Matches canonical example structure
+    - ✅ Uses correct naming conventions
+    - ✅ Follows documented error handling
+    - ✅ Imports use path aliases (not relative paths)
+
+    **Reject changes that violate patterns.**
+  </TabItem>
+
+  <TabItem label="Fix: Apply Incrementally">
+    Instead of refactoring all files at once, do one file at a time:
+
+    **Step 1:**
+
+    > "Refactor src/services/users.service.ts to use dependency injection"
+
+    **Step 2: Review and accept**
+
+    **Step 3:**
+
+    > "Apply the same refactoring to src/services/projects.service.ts"
+
+    **Step 4: Review and accept**
+
+    This gives you control over each change.
+  </TabItem>
+</Tabs>
+
+<Aside type="caution">
+  Cursor Composer can change 10+ files at once. Always review diffs carefully before accepting. Rollback with Git if changes violate patterns.
+</Aside>
+
+---
+
+## General AI Agent Issues
+
+### Issue: AI Violates PATTERNS.md Conventions
+
+#### Symptoms
+
+All AI agents (Claude Code, Copilot, Cursor) generate code that violates documented patterns:
+
+- Inconsistent naming conventions
+- Wrong error handling approach
+- Incorrect architectural decisions
+
+#### Cause
+
+**Cause 1:** PATTERNS.md is too abstract (no concrete examples)
+
+**Cause 2:** Patterns conflict with existing code
+
+**Cause 3:** Patterns not enforced by linting
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Add Concrete Examples">
+    **Before (abstract):**
+
+    ```markdown
+    ## Error Handling
+
+    Use a custom error class with HTTP status codes.
+    ```
+
+    **After (concrete):**
+
+    ```markdown
+    ## Error Handling
+
+    **Canonical Example**: `src/errors/AppError.ts`
+
+    **Always use this exact pattern:**
+
+    ` ` `typescript
+    // src/errors/AppError.ts
+    export class AppError extends Error {
+      constructor(
+        message: string,
+        public statusCode: number = 500,
+        public isOperational: boolean = true
+      ) {
+        super(message);
+        this.name = 'AppError';
+        Error.captureStackTrace(this, this.constructor);
+      }
+    }
+
+    // Usage in services:
+    export class UserService {
+      async getById(id: string): Promise<User> {
+        const user = await this.db.query.users.findFirst({
+          where: eq(users.id, id)
+        });
+
+        if (!user) {
+          // ✅ Throw AppError with 404 status
+          throw new AppError('User not found', 404);
+        }
+
+        return user;
+      }
+    }
+    ` ` `
+
+    **❌ Never do this:**
+
+    ` ` `typescript
+    // Bad: Generic Error without status code
+    throw new Error('User not found');
+
+    // Bad: Returning null instead of throwing
+    return null;
+    ` ` `
+    ```
+
+    AI agents can now copy the exact implementation.
+  </TabItem>
+
+  <TabItem label="Fix: Audit Existing Code">
+    If AI generates inconsistent code, audit existing codebase:
+
+    **Step 1: Search for pattern violations**
+
+    ```bash
+    # Find files NOT using AppError
+    grep -r "throw new Error" src/ | grep -v "AppError"
+
+    # Find localStorage usage
+    grep -r "localStorage" src/
+
+    # Find HS256 usage
+    grep -r "HS256" src/
+    ```
+
+    **Step 2: Fix violations**
+
+    ```bash
+    # Refactor old code to match PATTERNS.md
+    # Update or remove files that don't follow conventions
+    ```
+
+    **Step 3: Update PATTERNS.md if needed**
+
+    If existing code uses a different (better) pattern, update PATTERNS.md to match reality.
+  </TabItem>
+
+  <TabItem label="Fix: Enforce with Linting">
+    Add ESLint rules to enforce patterns:
+
+    **.eslintrc.json:**
+
+    ```json
+    {
+      "rules": {
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "NewExpression[callee.name='Error']",
+            "message": "Use AppError instead of generic Error class"
+          },
+          {
+            "selector": "CallExpression[callee.object.name='localStorage']",
+            "message": "Never use localStorage for tokens. Use httpOnly cookies."
+          }
+        ]
+      }
+    }
+    ```
+
+    Now AI-generated code that violates patterns fails linting.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Canonical examples are more effective than descriptions. AI agents learn better from copying real code than interpreting abstract rules.
+</Aside>
+
+---
+
+### Issue: Stale Context (AI Reading Old Files)
+
+#### Symptoms
+
+AI agents reference old code that no longer exists:
+
+- Claude suggests using a deleted function
+- Copilot autocompletes with old variable names
+- Cursor references deprecated APIs
+
+#### Cause
+
+AI agents cache file contents and may not pick up recent changes.
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Reload AI Agent">
+    **Claude Code:**
+
+    ```bash
+    # Exit and restart
+    exit
+    claude-code .
+    ```
+
+    **GitHub Copilot:**
+
+    ```
+    Cmd+Shift+P → "Reload Window"
+    ```
+
+    **Cursor:**
+
+    ```
+    Cmd+Shift+P → "Reload Window"
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Explicit File References">
+    Tell AI to re-read specific files:
+
+    > "Re-read src/services/users.service.ts and then implement the new feature"
+
+    This forces AI to fetch the latest content.
+  </TabItem>
+
+  <TabItem label="Fix: Clear Cache">
+    **Claude Code:**
+
+    ```bash
+    # Clear Claude's cache (if supported)
+    rm -rf ~/.claude-code/cache/
+    ```
+
+    **Copilot:**
+
+    ```
+    Cmd+Shift+P → "GitHub Copilot: Clear Cache"
+    ```
+
+    **Cursor:**
+
+    ```
+    Cmd+Shift+P → "Cursor: Clear Cache"
+    ```
+  </TabItem>
+</Tabs>
+
+---
+
+### Issue: Token Limits Hit
+
+#### Symptoms
+
+AI agents fail with token limit errors:
+
+- Claude: "Context window exceeded"
+- Copilot: "Request too large"
+- Cursor: "Reached token limit"
+
+#### Cause
+
+Large files, long conversations, or many files in context exceed AI token limits.
+
+#### Solution
+
+<Tabs>
+  <TabItem label="Fix: Reduce File Sizes">
+    ```bash
+    # Check file sizes
+    wc -l **/*.md
+
+    # Archive large files
+    cortex-tms validate --fix
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Start New Conversation">
+    Long chat histories consume tokens. Start fresh:
+
+    **Claude Code:** Exit and restart
+
+    **Copilot Chat:** Clear chat history
+
+    **Cursor Chat:** Start new chat session
+  </TabItem>
+
+  <TabItem label="Fix: Use Summaries">
+    Instead of including full files:
+
+    > "Summarize docs/core/PATTERNS.md in 5 bullet points, then implement authentication using those patterns"
+  </TabItem>
+</Tabs>
+
+---
+
+## AI Agent Best Practices
+
+<CardGrid>
+  <Card title="1. Keep Documentation Concise" icon="document">
+    - CLAUDE.md: under 500 lines
+    - copilot-instructions.md: under 100 lines
+    - PATTERNS.md: under 500 lines per file
+  </Card>
+
+  <Card title="2. Use Canonical Examples" icon="open-book">
+    Show concrete code examples, not abstract descriptions. AI learns by copying.
+  </Card>
+
+  <Card title="3. Security Rules First" icon="warning">
+    Put critical security rules at the top of instruction files. AI prioritizes early content.
+  </Card>
+
+  <Card title="4. Reference Files Explicitly" icon="seti:config">
+    In NEXT-TASKS.md, reference specific pattern files. Don't make AI search.
+  </Card>
+
+  <Card title="5. Validate AI Output" icon="approve-check">
+    Always review AI-generated code. Run tests and linting before committing.
+  </Card>
+
+  <Card title="6. Update Docs When AI Fails" icon="pencil">
+    When AI violates a pattern, update documentation to be more explicit.
+  </Card>
+</CardGrid>
+
+---
+
+## Improving AI Alignment
+
+### Step 1: Test AI with Sample Tasks
+
+After setting up Cortex TMS, test each AI agent:
+
+**Claude Code:**
+
+> "Read NEXT-TASKS.md and CLAUDE.md, then summarize the current sprint goal and operational workflow"
+
+**GitHub Copilot:**
+
+Open a new .ts file and type:
+
+```typescript
+// Create a new service class following our pattern
+```
+
+Verify Copilot suggests code matching your patterns.
+
+**Cursor:**
+
+In Cursor Chat:
+
+> "@Codebase What's our authentication pattern?"
+
+Verify Cursor references docs/core/PATTERNS.md.
+
+---
+
+### Step 2: Fix Documentation Gaps
+
+When AI makes mistakes, improve docs:
+
+**AI mistake:** Uses localStorage for tokens
+
+**Fix:** Add to copilot-instructions.md:
+
+```markdown
+## Critical Rules
+
+**NEVER store tokens in localStorage** → Use httpOnly cookies
+
+❌ Bad:
+` ` `typescript
+localStorage.setItem('token', token);
+` ` `
+
+✅ Good:
+` ` `typescript
+res.cookie('token', token, { httpOnly: true });
+` ` `
+```
+
+---
+
+### Step 3: Iterate and Refine
+
+AI alignment is iterative:
+
+1. AI generates code → 2. Review for violations → 3. Update docs → 4. Test again
+
+After 3-5 iterations, AI will consistently follow your patterns.
+
+---
+
+## Next Steps
+
+Now that you understand AI agent troubleshooting:
+
+- **[Integrating AI Agents Guide](/guides/integrating-ai-agents/)**: Full setup for Claude Code, Copilot, and Cursor
+- **[Team Adoption](/guides/team-adoption/)**: Onboard your team to TMS + AI workflow
+- **[Validation Errors](/troubleshooting/validation-errors/)**: Fix `cortex-tms validate` failures
+
+<Aside type="tip">
+  Keep canonical example files open in your editor. AI agents use recently opened files as context for better suggestions.
+</Aside>

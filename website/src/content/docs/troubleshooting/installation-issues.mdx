@@ -1,0 +1,1395 @@
+---
+title: Installation Issues
+description: Troubleshooting cortex-tms installation and initialization problems
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside } from '@astrojs/starlight/components';
+
+This guide covers common problems encountered when installing and initializing Cortex TMS. Whether you're facing npm installation failures, permission errors, or platform-specific issues, this page provides step-by-step solutions.
+
+## Quick Issue Navigator
+
+<CardGrid>
+  <Card title="Command Not Found" icon="warning">
+    After installing, `cortex-tms` command doesn't work
+
+    [Jump to solution →](#issue-cortex-tms-command-not-found)
+  </Card>
+
+  <Card title="Permission Errors" icon="error">
+    EACCES errors during npm install or init
+
+    [Jump to solution →](#issue-permission-denied-eacces)
+  </Card>
+
+  <Card title="Node Version Issues" icon="seti:nodejs">
+    Node.js version too old or incompatible
+
+    [Jump to solution →](#issue-node-version-incompatibility)
+  </Card>
+
+  <Card title="Init Failures" icon="puzzle">
+    `cortex-tms init` fails or produces incomplete files
+
+    [Jump to solution →](#issue-cortex-tms-init-fails)
+  </Card>
+</CardGrid>
+
+---
+
+## Issue: `cortex-tms: command not found`
+
+### Symptoms
+
+After running `npm install -g cortex-tms`, the command is not recognized:
+
+```bash
+$ cortex-tms --version
+cortex-tms: command not found
+```
+
+Or on Windows:
+
+```powershell
+$ cortex-tms --version
+'cortex-tms' is not recognized as an internal or external command
+```
+
+### Cause
+
+The global npm bin directory is not in your system's PATH environment variable. When npm installs global packages, it places executables in a specific directory that must be in PATH for the shell to find them.
+
+### Solution
+
+<Tabs>
+  <TabItem label="macOS/Linux">
+    **Step 1: Find npm's global bin directory**
+
+    ```bash
+    npm config get prefix
+    ```
+
+    **Expected output:**
+
+    ```text
+    /usr/local
+    ```
+
+    The global executables are in `<prefix>/bin`. For example: `/usr/local/bin`
+
+    **Step 2: Check if directory is in PATH**
+
+    ```bash
+    echo $PATH | grep -o '/usr/local/bin'
+    ```
+
+    If nothing is returned, the directory is NOT in PATH.
+
+    **Step 3: Add to PATH**
+
+    <Tabs>
+      <TabItem label="Bash (~/.bashrc)">
+        ```bash
+        # Add to ~/.bashrc or ~/.bash_profile
+        echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bashrc
+
+        # Reload shell configuration
+        source ~/.bashrc
+        ```
+      </TabItem>
+
+      <TabItem label="Zsh (~/.zshrc)">
+        ```bash
+        # Add to ~/.zshrc
+        echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+
+        # Reload shell configuration
+        source ~/.zshrc
+        ```
+      </TabItem>
+
+      <TabItem label="Fish (~/.config/fish/config.fish)">
+        ```bash
+        # Add to ~/.config/fish/config.fish
+        echo 'set -gx PATH /usr/local/bin $PATH' >> ~/.config/fish/config.fish
+
+        # Reload shell configuration
+        source ~/.config/fish/config.fish
+        ```
+      </TabItem>
+    </Tabs>
+
+    **Step 4: Verify**
+
+    ```bash
+    cortex-tms --version
+    ```
+
+    **Expected output:**
+
+    ```text
+    2.6.0
+    ```
+  </TabItem>
+
+  <TabItem label="Windows">
+    **Step 1: Find npm's global directory**
+
+    ```powershell
+    npm config get prefix
+    ```
+
+    **Expected output:**
+
+    ```text
+    C:\Users\YourName\AppData\Roaming\npm
+    ```
+
+    **Step 2: Add to PATH**
+
+    **Option A: Using System Settings (GUI)**
+
+    1. Open Start Menu → Search "Environment Variables"
+    2. Click "Edit the system environment variables"
+    3. Click "Environment Variables" button
+    4. Under "User variables", select "Path" and click "Edit"
+    5. Click "New" and add: `C:\Users\YourName\AppData\Roaming\npm`
+    6. Click "OK" on all dialogs
+    7. **Restart your terminal** (existing terminals won't see the change)
+
+    **Option B: Using PowerShell (Admin)**
+
+    ```powershell
+    # Get current npm prefix
+    $npmPrefix = npm config get prefix
+
+    # Add to user PATH
+    [Environment]::SetEnvironmentVariable(
+      "Path",
+      [Environment]::GetEnvironmentVariable("Path", "User") + ";$npmPrefix",
+      "User"
+    )
+    ```
+
+    **Step 3: Restart terminal and verify**
+
+    ```powershell
+    # Close and reopen PowerShell
+    cortex-tms --version
+    ```
+
+    **Expected output:**
+
+    ```text
+    2.6.0
+    ```
+  </TabItem>
+
+  <TabItem label="Using pnpm">
+    If you're using pnpm instead of npm:
+
+    ```bash
+    # Install globally with pnpm
+    pnpm add -g cortex-tms
+
+    # Find pnpm global bin directory
+    pnpm bin -g
+    ```
+
+    **Expected output:**
+
+    ```text
+    /Users/yourname/.local/share/pnpm
+    ```
+
+    **Add pnpm bin to PATH:**
+
+    ```bash
+    # Bash/Zsh
+    echo 'export PATH="$HOME/.local/share/pnpm:$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+
+    # Verify
+    cortex-tms --version
+    ```
+  </TabItem>
+
+  <TabItem label="Using Yarn">
+    If you're using Yarn instead of npm:
+
+    ```bash
+    # Install globally with Yarn
+    yarn global add cortex-tms
+
+    # Find Yarn global bin directory
+    yarn global bin
+    ```
+
+    **Expected output:**
+
+    ```text
+    /usr/local/bin
+    ```
+
+    **Add Yarn bin to PATH:**
+
+    ```bash
+    # Bash/Zsh
+    echo 'export PATH="$(yarn global bin):$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+
+    # Verify
+    cortex-tms --version
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  If you're still getting "command not found" after adding to PATH, try closing and reopening your terminal. Some shells require a full restart to pick up PATH changes.
+</Aside>
+
+### Prevention
+
+Use a Node.js version manager (nvm, fnm, or asdf) to automatically manage PATH:
+
+```bash
+# Install nvm
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+# Install Node.js with nvm
+nvm install 20
+nvm use 20
+
+# Now npm global installs automatically work
+npm install -g cortex-tms
+```
+
+---
+
+## Issue: Permission Denied (EACCES)
+
+### Symptoms
+
+Installation or initialization fails with permission errors:
+
+```bash
+$ npm install -g cortex-tms
+npm ERR! code EACCES
+npm ERR! syscall mkdir
+npm ERR! path /usr/local/lib/node_modules/cortex-tms
+npm ERR! errno -13
+npm ERR! Error: EACCES: permission denied, mkdir '/usr/local/lib/node_modules/cortex-tms'
+```
+
+Or during `cortex-tms init`:
+
+```bash
+$ cortex-tms init
+Error: EACCES: permission denied, open '/path/to/project/CLAUDE.md'
+```
+
+### Cause
+
+**Cause 1: npm global directory requires sudo**
+
+On some systems (especially Linux), npm's global directory is owned by root, requiring `sudo` for installation. This is a security risk.
+
+**Cause 2: File system permissions**
+
+During `cortex-tms init`, the CLI cannot write files due to directory permissions.
+
+### Solution
+
+<Tabs>
+  <TabItem label="Fix npm Permissions (Recommended)">
+    **Option A: Change npm's default directory (safest)**
+
+    This avoids needing `sudo` for global npm installs:
+
+    ```bash
+    # Create a directory for global packages
+    mkdir -p ~/.npm-global
+
+    # Configure npm to use this directory
+    npm config set prefix '~/.npm-global'
+
+    # Add to PATH
+    echo 'export PATH=~/.npm-global/bin:$PATH' >> ~/.bashrc
+    source ~/.bashrc
+
+    # Now install without sudo
+    npm install -g cortex-tms
+    ```
+
+    **Option B: Fix ownership of existing directory**
+
+    ```bash
+    # Find npm's global directory
+    npm config get prefix
+    # Output: /usr/local
+
+    # Fix ownership (replace 'youruser' with your username)
+    sudo chown -R $(whoami) /usr/local/lib/node_modules
+    sudo chown -R $(whoami) /usr/local/bin
+
+    # Now install without sudo
+    npm install -g cortex-tms
+    ```
+
+    **Option C: Use a Node version manager (best long-term)**
+
+    ```bash
+    # Install nvm (Node Version Manager)
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+    # Reload shell
+    source ~/.bashrc
+
+    # Install Node.js via nvm
+    nvm install 20
+    nvm use 20
+
+    # Now npm installs work without sudo
+    npm install -g cortex-tms
+    ```
+  </TabItem>
+
+  <TabItem label="Fix Directory Permissions">
+    If `cortex-tms init` fails due to file permissions:
+
+    ```bash
+    # Check directory permissions
+    ls -ld .
+
+    # Output example:
+    # drwxr-xr-x  10 root  staff  320 Jan 15 10:00 .
+    # ❌ Owned by root (bad)
+
+    # Fix: Change ownership to your user
+    sudo chown -R $(whoami) .
+
+    # Verify
+    ls -ld .
+    # drwxr-xr-x  10 youruser  staff  320 Jan 15 10:00 .
+    # ✅ Owned by youruser (good)
+
+    # Try init again
+    cortex-tms init
+    ```
+  </TabItem>
+
+  <TabItem label="Windows Permissions">
+    On Windows, permission errors are usually due to:
+
+    1. **Antivirus blocking npm**
+    2. **Windows Defender blocking file writes**
+    3. **User Account Control (UAC) restrictions**
+
+    **Fix:**
+
+    **Option A: Run PowerShell as Administrator**
+
+    1. Right-click PowerShell → "Run as Administrator"
+    2. Run installation:
+
+    ```powershell
+    npm install -g cortex-tms
+    ```
+
+    **Option B: Disable antivirus temporarily**
+
+    1. Disable Windows Defender Real-time Protection (temporarily)
+    2. Run installation
+    3. Re-enable Real-time Protection
+
+    **Option C: Add npm folder to exclusions**
+
+    1. Open Windows Security → Virus & threat protection
+    2. Manage settings → Add exclusion → Folder
+    3. Add: `C:\Users\YourName\AppData\Roaming\npm`
+    4. Run installation
+  </TabItem>
+
+  <TabItem label="Using sudo (Not Recommended)">
+    **⚠️ Warning:** Using `sudo` with npm is a security risk. Only use as a last resort.
+
+    ```bash
+    # Install with sudo (not recommended)
+    sudo npm install -g cortex-tms
+
+    # Problem: Now cortex-tms runs as root
+    # Files created by 'cortex-tms init' will be owned by root
+
+    # If you must use sudo, fix file ownership afterward:
+    cortex-tms init
+    sudo chown -R $(whoami) .
+    ```
+
+    **Why this is bad:**
+
+    - Creates security vulnerabilities
+    - Future npm installs require sudo
+    - Files created by CLI tools are owned by root
+    - Can break package managers and development tools
+
+    **Better solution:** Use Option A or C from "Fix npm Permissions" tab.
+  </TabItem>
+</Tabs>
+
+<Aside type="caution">
+  Never run `sudo npm install -g` as a long-term solution. It creates security risks and file ownership issues. Use a Node version manager (nvm, fnm, asdf) instead.
+</Aside>
+
+### Prevention
+
+Use a Node.js version manager from the start:
+
+```bash
+# Install fnm (Fast Node Manager)
+curl -fsSL https://fnm.vercel.app/install | bash
+
+# Install Node.js
+fnm install 20
+fnm use 20
+
+# Global npm installs now work without sudo
+npm install -g cortex-tms
+```
+
+---
+
+## Issue: Node Version Incompatibility
+
+### Symptoms
+
+Installation fails with errors about unsupported Node.js version:
+
+```bash
+$ npm install -g cortex-tms
+npm ERR! engine Unsupported engine
+npm ERR! engine Not compatible with your version of Node
+npm ERR! notsup Required: {"node":">=18.0.0"}
+npm ERR! notsup Actual:   {"node":"v16.14.0"}
+```
+
+Or runtime errors:
+
+```bash
+$ cortex-tms --version
+Error: Unexpected token '?'
+```
+
+### Cause
+
+Cortex TMS requires Node.js 18.0.0 or higher. Older Node versions lack modern JavaScript features used by the CLI.
+
+### Solution
+
+<Tabs>
+  <TabItem label="Using nvm (Recommended)">
+    **Step 1: Install nvm**
+
+    ```bash
+    # Install nvm
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+
+    # Reload shell
+    source ~/.bashrc  # or ~/.zshrc
+    ```
+
+    **Step 2: Install Node.js 20 (LTS)**
+
+    ```bash
+    # Install latest LTS version
+    nvm install 20
+
+    # Set as default
+    nvm alias default 20
+
+    # Verify
+    node --version
+    # Output: v20.10.0
+    ```
+
+    **Step 3: Install cortex-tms**
+
+    ```bash
+    npm install -g cortex-tms
+    cortex-tms --version
+    # Output: 2.6.0
+    ```
+  </TabItem>
+
+  <TabItem label="Using fnm (Fast Node Manager)">
+    fnm is faster than nvm and supports multiple shells:
+
+    ```bash
+    # Install fnm
+    curl -fsSL https://fnm.vercel.app/install | bash
+
+    # Reload shell
+    source ~/.bashrc  # or ~/.zshrc
+
+    # Install Node.js 20
+    fnm install 20
+    fnm use 20
+
+    # Verify
+    node --version
+    # Output: v20.10.0
+
+    # Install cortex-tms
+    npm install -g cortex-tms
+    ```
+  </TabItem>
+
+  <TabItem label="Manual Installation">
+    **macOS:**
+
+    ```bash
+    # Using Homebrew
+    brew install node@20
+
+    # Link to system
+    brew link node@20
+
+    # Verify
+    node --version
+    ```
+
+    **Ubuntu/Debian:**
+
+    ```bash
+    # Add NodeSource repository
+    curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
+
+    # Install Node.js
+    sudo apt-get install -y nodejs
+
+    # Verify
+    node --version
+    ```
+
+    **Windows:**
+
+    1. Download Node.js 20 installer: [nodejs.org](https://nodejs.org/)
+    2. Run installer (select "Add to PATH")
+    3. Verify in PowerShell:
+
+    ```powershell
+    node --version
+    # Output: v20.10.0
+    ```
+  </TabItem>
+
+  <TabItem label="Using Docker (Isolated)">
+    If you can't install Node.js globally, use Docker:
+
+    ```bash
+    # Pull Node.js 20 image
+    docker pull node:20
+
+    # Run cortex-tms in container
+    docker run -it --rm -v $(pwd):/app -w /app node:20 bash
+
+    # Inside container:
+    npm install -g cortex-tms
+    cortex-tms init
+    exit
+
+    # Files are created in your current directory
+    ls -la CLAUDE.md NEXT-TASKS.md
+    ```
+
+    **Create an alias for convenience:**
+
+    ```bash
+    # Add to ~/.bashrc or ~/.zshrc
+    alias cortex-tms='docker run -it --rm -v $(pwd):/app -w /app node:20 npx cortex-tms'
+
+    # Now use normally
+    cortex-tms --version
+    cortex-tms init
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Use Node.js 20 (LTS) for best stability. While Node.js 18 is supported, Node.js 20 includes performance improvements and longer support.
+</Aside>
+
+### Prevention
+
+Add a `.nvmrc` file to your project to pin the Node version:
+
+```bash
+# Create .nvmrc
+echo "20" > .nvmrc
+
+# Now anyone on the team can run:
+nvm install  # Installs version from .nvmrc
+nvm use      # Switches to version from .nvmrc
+```
+
+---
+
+## Issue: `cortex-tms init` Fails
+
+### Symptoms
+
+Running `cortex-tms init` produces errors or incomplete files:
+
+```bash
+$ cortex-tms init
+Error: ENOENT: no such file or directory, scandir '/usr/local/lib/node_modules/cortex-tms/templates'
+```
+
+Or:
+
+```bash
+$ cortex-tms init
+
+🧠 Cortex TMS Initialization
+
+✓ Project context detected
+✗ Failed to copy templates
+❌ Error: Template file not found
+```
+
+### Cause
+
+**Cause 1: Corrupted installation**
+
+The cortex-tms package was installed incompletely, missing template files.
+
+**Cause 2: Git not installed**
+
+cortex-tms init requires git for repository detection.
+
+**Cause 3: Non-interactive environment**
+
+Running in CI/CD or non-TTY environment without `--force` flag.
+
+### Solution
+
+<Tabs>
+  <TabItem label="Fix: Reinstall cortex-tms">
+    **Step 1: Uninstall completely**
+
+    ```bash
+    # Uninstall
+    npm uninstall -g cortex-tms
+
+    # Clear npm cache
+    npm cache clean --force
+
+    # Verify removal
+    which cortex-tms
+    # Output: (nothing - command not found)
+    ```
+
+    **Step 2: Reinstall**
+
+    ```bash
+    # Reinstall from npm registry
+    npm install -g cortex-tms@latest
+
+    # Verify installation
+    cortex-tms --version
+    # Output: 2.6.0
+    ```
+
+    **Step 3: Test templates exist**
+
+    ```bash
+    # Find cortex-tms installation directory
+    npm list -g cortex-tms
+
+    # Output: /usr/local/lib/node_modules/cortex-tms
+
+    # Check templates directory exists
+    ls -la /usr/local/lib/node_modules/cortex-tms/templates/
+
+    # Expected output:
+    # drwxr-xr-x  8 user  staff  256 Jan 15 10:00 .
+    # -rw-r--r--  1 user  staff 2048 Jan 15 10:00 CLAUDE.md
+    # -rw-r--r--  1 user  staff 1024 Jan 15 10:00 NEXT-TASKS.md
+    # ...
+    ```
+
+    **Step 4: Try init again**
+
+    ```bash
+    cd your-project
+    cortex-tms init
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Install Git">
+    cortex-tms init detects if the project is a git repository. Git must be installed:
+
+    **Check if Git is installed:**
+
+    ```bash
+    git --version
+    ```
+
+    **If not installed:**
+
+    <Tabs>
+      <TabItem label="macOS">
+        ```bash
+        # Using Homebrew
+        brew install git
+
+        # Or install Xcode Command Line Tools
+        xcode-select --install
+        ```
+      </TabItem>
+
+      <TabItem label="Ubuntu/Debian">
+        ```bash
+        sudo apt-get update
+        sudo apt-get install git
+        ```
+      </TabItem>
+
+      <TabItem label="Windows">
+        1. Download Git: [git-scm.com](https://git-scm.com/download/win)
+        2. Run installer
+        3. Select "Git from the command line and also from 3rd-party software"
+        4. Restart terminal
+        5. Verify:
+
+        ```powershell
+        git --version
+        ```
+      </TabItem>
+    </Tabs>
+
+    **Initialize Git repository (if needed):**
+
+    ```bash
+    # Initialize git in your project
+    git init
+
+    # Try cortex-tms init again
+    cortex-tms init
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Non-Interactive Mode">
+    If running in CI/CD or a non-interactive environment:
+
+    ```bash
+    # Use --force and --scope flags to skip prompts
+    cortex-tms init --scope standard --force
+
+    # Or for minimal setup:
+    cortex-tms init --scope nano --force
+
+    # Enterprise setup:
+    cortex-tms init --scope enterprise --force
+    ```
+
+    **Example CI/CD usage (GitHub Actions):**
+
+    ```yaml
+    name: Initialize Cortex TMS
+
+    on: [push]
+
+    jobs:
+      init-tms:
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v3
+
+          - name: Setup Node.js
+            uses: actions/setup-node@v3
+            with:
+              node-version: 20
+
+          - name: Install cortex-tms
+            run: npm install -g cortex-tms
+
+          - name: Initialize TMS
+            run: cortex-tms init --scope standard --force
+
+          - name: Commit TMS files
+            run: |
+              git config user.name "GitHub Actions"
+              git config user.email "actions@github.com"
+              git add .
+              git commit -m "chore: initialize Cortex TMS"
+              git push
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Existing Files">
+    If init fails because TMS files already exist:
+
+    ```bash
+    $ cortex-tms init
+
+    ⚠️  Warning: 3 TMS file(s) already exist:
+      - CLAUDE.md
+      - NEXT-TASKS.md
+      - .cortexrc
+
+    Use --force to overwrite, or remove existing files first.
+    ```
+
+    **Option A: Use --force to overwrite**
+
+    ```bash
+    cortex-tms init --force
+    # ⚠️ This will overwrite existing TMS files!
+    ```
+
+    **Option B: Back up and remove existing files**
+
+    ```bash
+    # Back up existing files
+    mkdir tms-backup
+    mv CLAUDE.md NEXT-TASKS.md .cortexrc tms-backup/
+
+    # Initialize fresh
+    cortex-tms init
+
+    # Manually merge changes if needed
+    ```
+
+    **Option C: Migrate existing setup**
+
+    ```bash
+    # If you have an older TMS setup, migrate:
+    cortex-tms migrate
+
+    # This updates files to latest format
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Always run `cortex-tms init` from your project root directory. The CLI creates files relative to your current working directory.
+</Aside>
+
+### Prevention
+
+Add a check to your project setup script:
+
+```bash
+#!/bin/bash
+# setup.sh
+
+# Check Node.js version
+NODE_VERSION=$(node --version | cut -d'v' -f2 | cut -d'.' -f1)
+if [ "$NODE_VERSION" -lt 18 ]; then
+  echo "Error: Node.js 18+ required (found: $(node --version))"
+  exit 1
+fi
+
+# Check Git installed
+if ! command -v git &> /dev/null; then
+  echo "Error: Git not installed"
+  exit 1
+fi
+
+# Initialize Git if needed
+if [ ! -d .git ]; then
+  git init
+fi
+
+# Initialize Cortex TMS
+cortex-tms init --scope standard
+
+echo "✅ Project initialized successfully"
+```
+
+---
+
+## Issue: Package Manager Conflicts
+
+### Symptoms
+
+Mixing npm, pnpm, and yarn causes installation issues:
+
+```bash
+$ npm install -g cortex-tms
+# Works
+
+$ pnpm add -g cortex-tms
+# Installs to different location
+
+$ cortex-tms --version
+cortex-tms: command not found
+```
+
+### Cause
+
+Each package manager (npm, pnpm, yarn) installs global packages to different directories:
+
+- npm: `/usr/local/lib/node_modules/`
+- pnpm: `~/.local/share/pnpm/`
+- yarn: `~/.yarn/bin/`
+
+If your PATH includes one but not others, commands may not be found.
+
+### Solution
+
+**Choose ONE package manager and stick with it:**
+
+<Tabs>
+  <TabItem label="npm (Default)">
+    ```bash
+    # Uninstall from all package managers
+    npm uninstall -g cortex-tms 2>/dev/null
+    pnpm remove -g cortex-tms 2>/dev/null
+    yarn global remove cortex-tms 2>/dev/null
+
+    # Install with npm
+    npm install -g cortex-tms
+
+    # Verify
+    which cortex-tms
+    # Output: /usr/local/bin/cortex-tms
+    ```
+  </TabItem>
+
+  <TabItem label="pnpm (Faster)">
+    ```bash
+    # Uninstall from other package managers
+    npm uninstall -g cortex-tms 2>/dev/null
+    yarn global remove cortex-tms 2>/dev/null
+
+    # Install with pnpm
+    pnpm add -g cortex-tms
+
+    # Add pnpm bin to PATH (if not already)
+    pnpm setup
+
+    # Verify
+    which cortex-tms
+    # Output: ~/.local/share/pnpm/cortex-tms
+    ```
+  </TabItem>
+
+  <TabItem label="Yarn">
+    ```bash
+    # Uninstall from other package managers
+    npm uninstall -g cortex-tms 2>/dev/null
+    pnpm remove -g cortex-tms 2>/dev/null
+
+    # Install with Yarn
+    yarn global add cortex-tms
+
+    # Add Yarn bin to PATH (if not already)
+    echo 'export PATH="$(yarn global bin):$PATH"' >> ~/.zshrc
+    source ~/.zshrc
+
+    # Verify
+    which cortex-tms
+    # Output: ~/.yarn/bin/cortex-tms
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  For teams, document which package manager to use in your project README. Mixing package managers leads to confusion and "works on my machine" issues.
+</Aside>
+
+### Prevention
+
+Add package manager enforcement to your project:
+
+```json
+// package.json
+{
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "packageManager": "pnpm@8.10.0"
+}
+```
+
+Or use Corepack (built into Node.js 16+):
+
+```bash
+# Enable Corepack
+corepack enable
+
+# Prepare pnpm
+corepack prepare pnpm@latest --activate
+
+# Now 'pnpm' is available, locked to version in package.json
+```
+
+---
+
+## Issue: Windows-Specific Problems
+
+### Symptoms
+
+Cortex TMS behaves differently on Windows:
+
+- Path separators (`\` vs `/`) cause errors
+- Line endings (CRLF vs LF) break file size validation
+- Symlinks don't work (`.cursorrules` → `CLAUDE.md`)
+- PowerShell execution policy blocks scripts
+
+### Cause
+
+Windows uses different conventions than Unix-like systems (macOS, Linux).
+
+### Solution
+
+<Tabs>
+  <TabItem label="Fix: Path Separators">
+    cortex-tms handles path separators automatically. If you see errors:
+
+    ```bash
+    Error: ENOENT: no such file or directory, open 'docs\core\PATTERNS.md'
+    ```
+
+    **Fix: Use forward slashes in .cortexrc:**
+
+    ```json
+    {
+      "version": "1.0.0",
+      "scope": "standard",
+      "paths": {
+        "docs": "docs/core",
+        "tasks": "NEXT-TASKS.md",
+        "archive": "docs/archive"
+      }
+    }
+    ```
+
+    cortex-tms will convert paths to the correct format automatically.
+  </TabItem>
+
+  <TabItem label="Fix: Line Endings">
+    Windows uses CRLF (`\r\n`), Unix uses LF (`\n`). This affects file size validation.
+
+    **Fix: Configure Git to normalize line endings**
+
+    Create `.gitattributes` in project root:
+
+    ```text
+    # .gitattributes
+    * text=auto
+
+    # Specific files always use LF
+    *.md text eol=lf
+    *.json text eol=lf
+    *.ts text eol=lf
+    *.js text eol=lf
+
+    # Binary files
+    *.png binary
+    *.jpg binary
+    ```
+
+    **Re-normalize existing files:**
+
+    ```bash
+    # Remove all files from Git cache
+    git rm --cached -r .
+
+    # Re-add with new settings
+    git reset --hard
+    ```
+
+    **Configure your editor:**
+
+    VS Code: Add to `.vscode/settings.json`:
+
+    ```json
+    {
+      "files.eol": "\n"
+    }
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: Symlinks">
+    Windows symlinks require administrator privileges or Developer Mode.
+
+    **Option A: Enable Developer Mode (Windows 10/11)**
+
+    1. Open Settings → Update & Security → For Developers
+    2. Enable "Developer Mode"
+    3. Restart terminal
+    4. Create symlink:
+
+    ```powershell
+    # Create symlink from .cursorrules to CLAUDE.md
+    New-Item -ItemType SymbolicLink -Path .cursorrules -Target CLAUDE.md
+    ```
+
+    **Option B: Copy instead of symlink**
+
+    ```powershell
+    # Copy CLAUDE.md to .cursorrules
+    Copy-Item CLAUDE.md .cursorrules
+
+    # ⚠️ Remember to update both files when editing
+    ```
+
+    **Option C: Use Git symlinks (if using Git Bash)**
+
+    ```bash
+    # In Git Bash:
+    ln -s CLAUDE.md .cursorrules
+
+    # Enable symlinks in Git
+    git config core.symlinks true
+    ```
+  </TabItem>
+
+  <TabItem label="Fix: PowerShell Execution Policy">
+    PowerShell may block cortex-tms scripts:
+
+    ```powershell
+    cortex-tms : File C:\Users\YourName\AppData\Roaming\npm\cortex-tms.ps1 cannot be loaded because
+    running scripts is disabled on this system.
+    ```
+
+    **Fix: Change execution policy**
+
+    ```powershell
+    # Check current policy
+    Get-ExecutionPolicy
+
+    # Output: Restricted (blocks all scripts)
+
+    # Allow scripts (run as Administrator)
+    Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+    # Verify
+    Get-ExecutionPolicy
+    # Output: RemoteSigned
+
+    # Try cortex-tms again
+    cortex-tms --version
+    ```
+
+    **Execution policy levels:**
+
+    - `Restricted`: No scripts allowed (default)
+    - `RemoteSigned`: Local scripts allowed, downloaded scripts require signature
+    - `Unrestricted`: All scripts allowed (not recommended)
+  </TabItem>
+</Tabs>
+
+<Aside type="caution">
+  On Windows, always use PowerShell or Git Bash instead of Command Prompt (cmd.exe). cortex-tms requires features not available in cmd.exe.
+</Aside>
+
+### Prevention
+
+Add Windows-specific configuration to your project:
+
+```json
+// .vscode/settings.json
+{
+  "files.eol": "\n",
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true
+}
+```
+
+```text
+# .gitattributes
+* text=auto eol=lf
+*.md text eol=lf
+*.json text eol=lf
+```
+
+---
+
+## Issue: Proxy/Firewall Blocking npm
+
+### Symptoms
+
+Installation fails in corporate environments:
+
+```bash
+$ npm install -g cortex-tms
+npm ERR! network request to https://registry.npmjs.org/cortex-tms failed, reason: connect ETIMEDOUT
+npm ERR! network This is a problem related to network connectivity.
+```
+
+### Cause
+
+Corporate firewalls or proxies block npm registry access.
+
+### Solution
+
+<Tabs>
+  <TabItem label="Configure npm Proxy">
+    **Step 1: Get proxy settings from IT**
+
+    Ask your IT department for:
+    - Proxy URL (e.g., `http://proxy.company.com:8080`)
+    - Authentication (username/password if required)
+
+    **Step 2: Configure npm**
+
+    ```bash
+    # Set HTTP proxy
+    npm config set proxy http://proxy.company.com:8080
+
+    # Set HTTPS proxy
+    npm config set https-proxy http://proxy.company.com:8080
+
+    # If authentication required:
+    npm config set proxy http://username:password@proxy.company.com:8080
+    npm config set https-proxy http://username:password@proxy.company.com:8080
+    ```
+
+    **Step 3: Verify settings**
+
+    ```bash
+    npm config get proxy
+    npm config get https-proxy
+    ```
+
+    **Step 4: Try installation**
+
+    ```bash
+    npm install -g cortex-tms
+    ```
+  </TabItem>
+
+  <TabItem label="Use Company Registry">
+    Some companies host an internal npm registry (Artifactory, Verdaccio):
+
+    ```bash
+    # Set registry to company mirror
+    npm config set registry https://npm.company.com/
+
+    # Install from company registry
+    npm install -g cortex-tms
+    ```
+
+    **If cortex-tms isn't in company registry:**
+
+    Ask IT to add `cortex-tms` to the allowlist, or:
+
+    ```bash
+    # Temporarily use public registry for one package
+    npm install -g cortex-tms --registry https://registry.npmjs.org/
+
+    # Reset to company registry
+    npm config set registry https://npm.company.com/
+    ```
+  </TabItem>
+
+  <TabItem label="Download Manually">
+    If all else fails, download and install manually:
+
+    **Step 1: Download tarball**
+
+    On a machine with internet access:
+
+    ```bash
+    # Download cortex-tms tarball
+    npm pack cortex-tms
+
+    # Output: cortex-tms-2.6.0.tgz
+    ```
+
+    **Step 2: Transfer to corporate machine**
+
+    Copy `cortex-tms-2.6.0.tgz` to your corporate machine (USB, email, etc.)
+
+    **Step 3: Install from tarball**
+
+    ```bash
+    # Install from local file
+    npm install -g ./cortex-tms-2.6.0.tgz
+
+    # Verify
+    cortex-tms --version
+    ```
+  </TabItem>
+
+  <TabItem label="Disable SSL Verification (Risky)">
+    **⚠️ Security Warning:** Only use as a last resort.
+
+    ```bash
+    # Disable SSL verification (NOT recommended)
+    npm config set strict-ssl false
+
+    # Install package
+    npm install -g cortex-tms
+
+    # Re-enable SSL verification
+    npm config set strict-ssl true
+    ```
+
+    **Why this is risky:**
+    - Man-in-the-middle attacks possible
+    - Malicious packages could be installed
+    - Violates security best practices
+
+    **Better solution:** Ask IT to add npm registry to SSL certificate allowlist.
+  </TabItem>
+</Tabs>
+
+<Aside type="tip">
+  Save proxy settings to `.npmrc` in your project root so team members can use the same configuration.
+</Aside>
+
+### Prevention
+
+Create a project `.npmrc` file:
+
+```text
+# .npmrc
+registry=https://npm.company.com/
+proxy=http://proxy.company.com:8080
+https-proxy=http://proxy.company.com:8080
+strict-ssl=true
+```
+
+Add to `.gitignore` if it contains credentials:
+
+```text
+# .gitignore
+.npmrc
+```
+
+---
+
+## Diagnostic Checklist
+
+Before asking for help, run through this checklist:
+
+- [ ] Node.js version is 18.0.0 or higher (`node --version`)
+- [ ] npm is installed (`npm --version`)
+- [ ] cortex-tms is installed globally (`cortex-tms --version`)
+- [ ] cortex-tms bin is in PATH (`which cortex-tms` or `where cortex-tms`)
+- [ ] Git is installed (`git --version`)
+- [ ] Current directory is writable (`touch test.txt && rm test.txt`)
+- [ ] No permission errors when creating files
+- [ ] Network connectivity works (`ping registry.npmjs.org`)
+- [ ] No antivirus blocking npm
+
+If all checks pass but issues persist, see [Getting Help](/troubleshooting/#getting-help).
+
+---
+
+## Next Steps
+
+Now that installation issues are resolved:
+
+- **[Validation Errors](/troubleshooting/validation-errors/)**: Fix `cortex-tms validate` failures
+- **[AI Agent Issues](/troubleshooting/ai-agent-issues/)**: Integrate Claude Code, Copilot, and Cursor
+- **[Quick Start Guide](/getting-started/quick-start/)**: Complete your first Cortex TMS project
+
+<Aside type="tip">
+  After fixing installation issues, run `cortex-tms validate --verbose` to ensure everything is working correctly.
+</Aside>
