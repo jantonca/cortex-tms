@@ -13,7 +13,8 @@ export default defineConfig({
       title: 'Cortex TMS',
       description: 'AI-powered project scaffolding for documentation and workflow automation',
       logo: {
-        src: './src/assets/logo.svg',
+        light: './src/assets/logo.svg',
+        dark: './src/assets/logo-dark.svg',
         alt: 'Cortex TMS Logo',
       },
       social: {
@@ -79,6 +80,14 @@ export default defineConfig({
       ],
       lastUpdated: true,
       head: [
+        {
+          tag: 'link',
+          attrs: {
+            rel: 'icon',
+            type: 'image/png',
+            href: '/favicon.png',
+          },
+        },
         {
           tag: 'meta',
           attrs: {
