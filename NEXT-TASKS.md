@@ -50,8 +50,8 @@
 | **AI Collaboration Policy** - Create docs/core/AI-COLLABORATION-POLICY.md | [TMS-289a] | 3h | 🔴 HIGH | ✅ Done |
 | **Website About Page** - Add "How We Build" transparency section | [TMS-289b] | 2h | 🟡 MED | ✅ Done |
 | **Homepage Hero Update** - Add "Built Using Our Own Standard" | [TMS-289c] | 1h | 🟡 MED | ⬜ Todo |
-| **Global Alias Support** - Add bin/cortex.js entry point | [TMS-290a] | 30m | 🟡 MED | ⬜ Todo |
-| **Quick Start Update** - Document global install benefits | [TMS-290b] | 30m | 🟡 MED | ⬜ Todo |
+| **Global Alias Support** - Add bin/cortex.js entry point | [TMS-290a] | 30m | 🟡 MED | ✅ Done |
+| **Quick Start Update** - Document global install benefits | [TMS-290b] | 30m | 🟡 MED | ✅ Done |
 
 **Blog Post Requirements**:
 - Reference tldraw issue #7695
