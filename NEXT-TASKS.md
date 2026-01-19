@@ -46,7 +46,7 @@
 | **Blog Infrastructure** - Add /blog route and RSS feed | [TMS-284a] | 2h | 🔴 HIGH | ✅ Done |
 | **Blog Post: PR Tsunami** - "How Cortex TMS Prevents Maintainer Burnout" | [TMS-284c] | 4h | 🔴 HIGH | ⬜ Todo |
 | **Blog Post: Tiered Memory** - "Why AI Agents Need More Than a README" | [TMS-284d] | 3h | 🟡 MED | ⬜ Todo |
-| **Demo GIF** - Record cortex-tms status/migrate workflow | [TMS-284e] | 1h | 🔴 HIGH | ⬜ Todo |
+| **Demo GIF** - Record cortex-tms status/migrate workflow | [TMS-284e] | 1h | 🔴 HIGH | ✅ Done |
 | **AI Collaboration Policy** - Create docs/core/AI-COLLABORATION-POLICY.md | [TMS-289a] | 3h | 🔴 HIGH | ✅ Done |
 | **Website About Page** - Add "How We Build" transparency section | [TMS-289b] | 2h | 🟡 MED | ✅ Done |
 | **Homepage Hero Update** - Add "Built Using Our Own Standard" | [TMS-289c] | 1h | 🟡 MED | ⬜ Todo |
@@ -80,7 +80,7 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **Shields & Topics** - Add badges and topics to README | [TMS-285a-b] | 45m | 🔴 HIGH | ⬜ Todo |
-| **Demo GIF in README** - Embed workflow recording | [TMS-285c] | 30m | 🔴 HIGH | ⬜ Todo |
+| **Demo GIF in README** - Embed workflow recording | [TMS-285c] | 30m | 🔴 HIGH | ✅ Done |
 | **Social Preview Image** - Custom OG image | [TMS-285d] | 2h | 🟡 MED | ⬜ Todo |
 
 **Shields**: npm version, downloads, license, node version
