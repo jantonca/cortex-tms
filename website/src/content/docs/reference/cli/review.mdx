@@ -1,0 +1,785 @@
+---
+title: cortex-tms review
+description: Guardian - AI-powered code review against project patterns and domain logic
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
+
+The `cortex-tms review` command (Guardian) analyzes code files against your project's documented patterns and domain logic using AI. It catches architectural violations before they reach production.
+
+## Synopsis
+
+```bash
+cortex-tms review <file> [options]
+```
+
+## Description
+
+**Guardian: Pattern Violation Detection**. Guardian uses LLMs to review code against your project-specific standards documented in `PATTERNS.md` and `DOMAIN-LOGIC.md`. Unlike generic linters, Guardian understands:
+
+- **Project Context**: Reviews against YOUR architectural patterns, not generic rules
+- **Business Logic**: Validates domain rules and constraints specific to your app
+- **Semantic Analysis**: Catches violations that static analysis tools miss
+- **Line-Level Precision**: References exact line numbers in violation reports
+
+**Typical usage**:
+```bash
+# Review a TypeScript file
+cortex-tms review src/components/Button.tsx
+
+# Output:
+# 🛡️  Guardian Code Review
+#
+# 📖 Reading project patterns...
+# 🤖 Analyzing code with anthropic ...
+#
+# ✅ Analysis Complete
+#
+# ## Summary
+# ⚠️  Minor Issues (2 violations)
+#
+# ## Violations
+#
+# ### 1. Pattern Violation: Component Naming
+# **Line**: 15
+# **Issue**: Component uses PascalCase for internal helper function
+# **Recommendation**: Use camelCase for non-exported functions per PATTERNS.md
+#
+# [...]
+```
+
+<Aside type="caution" title="BYOK Required">
+Guardian requires your own API key (OpenAI or Anthropic). Set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` environment variable, or pass `--api-key` flag.
+</Aside>
+
+---
+
+## Arguments
+
+### `<file>`
+
+Path to the file to review (required).
+
+**Supported file types**:
+- TypeScript/JavaScript (`.ts`, `.tsx`, `.js`, `.jsx`)
+- Python (`.py`)
+- Rust (`.rs`)
+- Go (`.go`)
+- Any text-based source code
+
+**Examples**:
+```bash
+# Review TypeScript file
+cortex-tms review src/utils/validator.ts
+
+# Review component
+cortex-tms review src/components/LoginForm.tsx
+
+# Review Python module
+cortex-tms review api/services/auth.py
+```
+
+**Path resolution**:
+- Relative to current working directory
+- Absolute paths supported
+
+---
+
+## Options
+
+### `-p, --provider <provider>`
+
+LLM provider to use.
+
+**Valid values**: `openai` | `anthropic`
+
+**Default**: `anthropic`
+
+**Examples**:
+```bash
+# Use Anthropic (default)
+cortex-tms review src/file.ts
+
+# Use OpenAI
+cortex-tms review src/file.ts --provider openai
+```
+
+**Provider comparison**:
+| Provider | Default Model | Cost/1M tokens | Strengths |
+|----------|---------------|----------------|-----------|
+| Anthropic | `claude-3-5-sonnet-20241022` | $3 in, $15 out | Better at code reasoning, context understanding |
+| OpenAI | `gpt-4-turbo-preview` | $10 in, $30 out | Faster responses, wider availability |
+
+---
+
+### `-m, --model <model>`
+
+Specific model to use (overrides provider default).
+
+**Anthropic models**:
+- `claude-3-5-sonnet-20241022` (default, recommended)
+- `claude-opus-4-5-20251101` (most capable, slower)
+- `claude-3-haiku-20240307` (fastest, cheapest)
+
+**OpenAI models**:
+- `gpt-4-turbo-preview` (default)
+- `gpt-4o` (faster, multimodal)
+- `gpt-3.5-turbo` (cheapest, less accurate)
+
+**Examples**:
+```bash
+# Use Claude Opus for complex analysis
+cortex-tms review src/core/engine.ts --model claude-opus-4-5-20251101
+
+# Use GPT-4o for faster analysis
+cortex-tms review src/utils.ts --provider openai --model gpt-4o
+
+# Use Haiku for quick/cheap reviews
+cortex-tms review src/types.ts --model claude-3-haiku-20240307
+```
+
+---
+
+### `--api-key <key>`
+
+API key for LLM provider (alternative to environment variable).
+
+**Security warning**: Only use in secure environments. Prefer environment variables.
+
+**Examples**:
+```bash
+# Pass API key directly
+cortex-tms review src/file.ts --api-key sk-ant-xxx
+
+# Better: Use environment variable
+export ANTHROPIC_API_KEY=sk-ant-xxx
+cortex-tms review src/file.ts
+```
+
+---
+
+## Setup
+
+### API Key Configuration
+
+<Tabs>
+  <TabItem label="Anthropic (Recommended)">
+
+**1. Get API Key**:
+- Visit https://console.anthropic.com/
+- Create account or sign in
+- Go to "API Keys"
+- Create new key
+
+**2. Set Environment Variable**:
+```bash
+# Linux/macOS (add to ~/.bashrc or ~/.zshrc)
+export ANTHROPIC_API_KEY=sk-ant-xxx
+
+# Windows (PowerShell)
+$env:ANTHROPIC_API_KEY="sk-ant-xxx"
+
+# Windows (CMD)
+set ANTHROPIC_API_KEY=sk-ant-xxx
+```
+
+**3. Verify**:
+```bash
+echo $ANTHROPIC_API_KEY  # Should show your key
+
+# Or test with Guardian
+cortex-tms review src/test.ts
+# Should not prompt for API key
+```
+
+  </TabItem>
+  <TabItem label="OpenAI">
+
+**1. Get API Key**:
+- Visit https://platform.openai.com/
+- Create account or sign in
+- Go to "API Keys"
+- Create new secret key
+
+**2. Set Environment Variable**:
+```bash
+# Linux/macOS
+export OPENAI_API_KEY=sk-xxx
+
+# Windows (PowerShell)
+$env:OPENAI_API_KEY="sk-xxx"
+```
+
+**3. Test**:
+```bash
+cortex-tms review src/test.ts --provider openai
+```
+
+  </TabItem>
+</Tabs>
+
+---
+
+### Project Requirements
+
+Guardian requires a Cortex TMS project with pattern documentation:
+
+**Mandatory**:
+- `docs/core/PATTERNS.md` - Coding patterns and conventions
+
+**Optional but recommended**:
+- `docs/core/DOMAIN-LOGIC.md` - Business rules and constraints
+
+**Check requirements**:
+```bash
+# Verify TMS files exist
+ls docs/core/PATTERNS.md docs/core/DOMAIN-LOGIC.md
+
+# If missing, initialize TMS
+cortex-tms init --scope standard
+```
+
+---
+
+## Usage Examples
+
+### Basic Code Review
+
+```bash
+# Review a single file
+cortex-tms review src/services/auth.ts
+```
+
+**Output**:
+```
+🛡️  Guardian Code Review
+
+📖 Reading project patterns...
+🤖 Analyzing code with anthropic ...
+
+✅ Analysis Complete
+
+## Summary
+✅ Compliant - No violations found
+
+## Positive Observations
+
+1. **Pattern Compliance**: All functions follow the documented naming
+   conventions from PATTERNS.md
+
+2. **Error Handling**: Consistent error handling using try/catch blocks
+   as specified in the Error Handling pattern
+
+3. **Type Safety**: Proper TypeScript types used throughout
+
+📊 Tokens: 2,345 total (1,800 prompt + 545 completion)
+```
+
+---
+
+### Catching Pattern Violations
+
+**File**: `src/utils/helpers.ts`
+```typescript
+// VIOLATION: Uses export default (not allowed per PATTERNS.md)
+export default function ParseUserInput(input: string) {
+  return input.trim().toLowerCase();
+}
+```
+
+**Guardian Review**:
+```bash
+cortex-tms review src/utils/helpers.ts
+```
+
+**Output**:
+```
+## Summary
+❌ Major Violations (2 issues)
+
+## Violations
+
+### 1. Pattern Violation: No Default Exports
+**Line**: 2
+**Issue**: Using `export default` violates Pattern 5 (Named Exports Only)
+**Recommendation**: Change to named export:
+```typescript
+export function parseUserInput(input: string) {
+  return input.trim().toLowerCase();
+}
+```
+
+### 2. Pattern Violation: Function Naming
+**Line**: 2
+**Issue**: Function name uses PascalCase (ParseUserInput) instead of camelCase
+**Recommendation**: Rename to `parseUserInput` per PATTERNS.md Section 2
+```
+
+---
+
+### Pre-Commit Hook Integration
+
+**Use Guardian in Git hooks**:
+
+**.husky/pre-commit**:
+```bash
+#!/bin/bash
+
+# Get staged .ts files
+FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.ts$')
+
+if [ -n "$FILES" ]; then
+  echo "🛡️  Running Guardian on staged files..."
+
+  for FILE in $FILES; do
+    echo "Reviewing: $FILE"
+    cortex-tms review "$FILE" || exit 1
+  done
+fi
+```
+
+**Result**: All commits must pass Guardian review
+
+---
+
+### CI/CD Integration
+
+**GitHub Actions Example**:
+
+**.github/workflows/guardian.yml**:
+```yaml
+name: Guardian Code Review
+
+on: [pull_request]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Cortex TMS
+        run: npm install -g cortex-tms
+
+      - name: Guardian Review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Review all changed files in PR
+          gh pr diff --name-only | while read file; do
+            if [[ $file == *.ts || $file == *.tsx ]]; then
+              echo "Reviewing: $file"
+              cortex-tms review "$file"
+            fi
+          done
+```
+
+**Add API key to GitHub Secrets**:
+1. Repository → Settings → Secrets
+2. Add `ANTHROPIC_API_KEY` or `OPENAI_API_KEY`
+
+---
+
+### Multi-File Review
+
+**Review multiple files**:
+```bash
+# Loop through files
+for file in src/**/*.ts; do
+  echo "Reviewing: $file"
+  cortex-tms review "$file"
+done
+
+# Or use find
+find src -name "*.ts" -exec cortex-tms review {} \;
+```
+
+**Batch script** (`review-all.sh`):
+```bash
+#!/bin/bash
+
+FILES=$(find src -name "*.ts" -o -name "*.tsx")
+FAILED=0
+
+for FILE in $FILES; do
+  echo "==> Reviewing: $FILE"
+
+  if ! cortex-tms review "$FILE"; then
+    FAILED=$((FAILED + 1))
+  fi
+
+  echo ""
+done
+
+echo "Review complete: $FAILED violations found"
+exit $FAILED
+```
+
+---
+
+## Understanding Results
+
+### Summary Status
+
+Guardian provides three levels of assessment:
+
+**✅ Compliant**: No violations
+- Code follows all documented patterns
+- Ready for merge
+- Example: Utility functions following naming conventions
+
+**⚠️  Minor Issues**: Non-critical violations
+- Code works but doesn't match preferred style
+- Should fix but not blocking
+- Example: Missing JSDoc comment on public function
+
+**❌ Major Violations**: Critical issues
+- Breaks architectural rules or domain logic
+- Must fix before merge
+- Example: Skipping authentication check, using deprecated pattern
+
+---
+
+### Violation Report Structure
+
+Each violation includes:
+
+**1. Pattern Reference**
+```
+Pattern Violation: Error Handling
+```
+Which pattern from `PATTERNS.md` was violated
+
+**2. Line Number**
+```
+Line: 42
+```
+Approximate location (AI-inferred, may be ±2 lines)
+
+**3. Issue Description**
+```
+Issue: Catching generic Error instead of specific exception types
+```
+What's wrong with the current code
+
+**4. Recommendation**
+```
+Recommendation: Catch specific exceptions (ValidationError, NetworkError)
+per PATTERNS.md Section 8
+```
+How to fix it with reference to documentation
+
+---
+
+### Token Usage
+
+Guardian reports token consumption:
+```
+📊 Tokens: 2,345 total (1,800 prompt + 545 completion)
+```
+
+**Typical costs** (Anthropic Claude 3.5 Sonnet):
+- Small file (<200 lines): ~$0.01
+- Medium file (200-500 lines): ~$0.02
+- Large file (500-1000 lines): ~$0.05
+
+**Cost optimization**:
+- Review changed files only (not entire codebase)
+- Use Haiku model for quick checks
+- Batch reviews in CI/CD (review all PR files once)
+
+---
+
+## Common Errors
+
+### Error: PATTERNS.md not found
+
+**Problem**: Not running from Cortex TMS project or missing documentation
+
+```
+❌ Error: PATTERNS.md not found at docs/core/PATTERNS.md
+
+Guardian requires a Cortex TMS project with pattern documentation.
+Run cortex-tms init to set up TMS files.
+```
+
+**Solution**:
+```bash
+# Initialize TMS
+cortex-tms init --scope standard
+
+# Or check working directory
+pwd  # Should be project root
+cd /path/to/project
+cortex-tms review src/file.ts
+```
+
+---
+
+### Error: File not found
+
+**Problem**: Invalid file path
+
+```
+❌ Error: File not found: src/nonexistent.ts
+```
+
+**Solution**:
+```bash
+# Verify file exists
+ls src/nonexistent.ts
+
+# Use correct path
+cortex-tms review src/existing-file.ts
+
+# For files with spaces, use quotes
+cortex-tms review "src/my file.ts"
+```
+
+---
+
+### Error: API key is required
+
+**Problem**: No API key configured
+
+**Solution**:
+```bash
+# Set environment variable
+export ANTHROPIC_API_KEY=sk-ant-xxx
+
+# Or pass directly
+cortex-tms review src/file.ts --api-key sk-ant-xxx
+
+# Verify environment variable
+echo $ANTHROPIC_API_KEY
+```
+
+---
+
+### Error: API rate limit exceeded
+
+**Problem**: Too many requests to LLM provider
+
+```
+❌ Error: Anthropic API error: 429 rate_limit_error
+```
+
+**Solutions**:
+1. **Wait and retry**:
+   ```bash
+   sleep 60
+   cortex-tms review src/file.ts
+   ```
+
+2. **Batch reviews**:
+   ```bash
+   # Don't review every file individually
+   # Review all changed files in one PR review cycle
+   ```
+
+3. **Upgrade API tier**: Check provider dashboard for rate limits
+
+---
+
+### Error: Invalid API key
+
+**Problem**: Incorrect or expired API key
+
+```
+❌ Error: Anthropic API error: 401 Invalid API key
+```
+
+**Solution**:
+```bash
+# Check key format
+echo $ANTHROPIC_API_KEY
+# Should start with: sk-ant-xxx (Anthropic) or sk-xxx (OpenAI)
+
+# Generate new key
+# Visit console.anthropic.com or platform.openai.com
+
+# Update environment variable
+export ANTHROPIC_API_KEY=sk-ant-NEW-KEY
+```
+
+---
+
+## Tips and Best Practices
+
+<CardGrid stagger>
+  <Card title="Review Before Committing" icon="star">
+    Run Guardian on changed files before `git commit`. Catch violations early.
+  </Card>
+
+  <Card title="Use in Pre-Commit Hooks" icon="rocket">
+    Automate Guardian in Git hooks. Enforces pattern compliance on every commit.
+  </Card>
+
+  <Card title="Target Changed Files Only" icon="approve-check">
+    Don't review entire codebase. Review files changed in PR to save costs.
+  </Card>
+
+  <Card title="Update PATTERNS.md Regularly" icon="pencil">
+    Keep pattern documentation current. Guardian is only as good as your docs.
+  </Card>
+</CardGrid>
+
+---
+
+## Workflow Integration
+
+### Pre-PR Review Workflow
+
+<Steps>
+
+1. **Make Code Changes**
+   ```bash
+   # Implement feature
+   vim src/features/auth.ts
+   ```
+
+2. **Run Guardian**
+   ```bash
+   # Review changed file
+   cortex-tms review src/features/auth.ts
+   ```
+
+3. **Fix Violations**
+   - Address each violation reported
+   - Update code to match patterns
+
+4. **Re-Review**
+   ```bash
+   # Verify compliance
+   cortex-tms review src/features/auth.ts
+   # Should show: ✅ Compliant
+   ```
+
+5. **Commit**
+   ```bash
+   git add src/features/auth.ts
+   git commit -m "feat: add authentication"
+   ```
+
+</Steps>
+
+---
+
+### Pattern Documentation Update
+
+<Steps>
+
+1. **Discover New Pattern**
+   - Implement feature
+   - Identify reusable pattern
+
+2. **Document in PATTERNS.md**
+   ```markdown
+   ## Pattern 11: Authentication Flow
+
+   **When to use**: All routes requiring user authentication
+
+   **Canonical example**: `src/middleware/auth.ts:15-30`
+
+   **Implementation**:
+   - Check JWT token in request headers
+   - Validate signature
+   - Attach user to request context
+   - Return 401 if invalid
+   ```
+
+3. **Test Guardian**
+   ```bash
+   # Guardian now enforces this pattern
+   cortex-tms review src/routes/admin.ts
+   # Will catch missing auth checks
+   ```
+
+</Steps>
+
+---
+
+## Advanced Usage
+
+### Custom Prompts (Future)
+
+Guardian uses built-in prompts optimized for pattern detection. Custom prompt support planned for v2.8.
+
+---
+
+### Multiple Providers (A/B Testing)
+
+Compare analysis quality:
+```bash
+# Test with both providers
+cortex-tms review src/complex.ts --provider anthropic > anthropic-review.txt
+cortex-tms review src/complex.ts --provider openai > openai-review.txt
+
+# Compare results
+diff anthropic-review.txt openai-review.txt
+```
+
+---
+
+### Cost Tracking
+
+Track Guardian API costs:
+```bash
+# Extract token usage from review output
+cortex-tms review src/file.ts | grep "Tokens:"
+
+# Calculate cost (example: Claude 3.5 Sonnet)
+# $3 per 1M input tokens, $15 per 1M output tokens
+# 1,800 input + 545 output = $0.0054 + $0.0082 = ~$0.014
+```
+
+---
+
+## Exit Codes
+
+| Code | Meaning | Scenario |
+|------|---------|----------|
+| `0` | Success | Review completed (violations may exist but reported) |
+| `1` | Error | Missing PATTERNS.md, file not found, API error |
+
+**Note**: Guardian doesn't fail builds on violations. It reports them. Integrate with CI to enforce.
+
+---
+
+## Limitations
+
+**Current Limitations** (v2.7):
+
+1. **Single File Review**: Guardian reviews one file at a time (no cross-file analysis)
+2. **AI Accuracy**: ~70% accuracy on pattern violations (false positives/negatives possible)
+3. **No Auto-Fix**: Guardian reports violations but doesn't fix code
+4. **Line Numbers**: Approximate (AI-inferred, may be ±2 lines off)
+
+**Planned Improvements** (v2.8+):
+
+- GitHub Action with PR comments
+- Cross-file analysis
+- Auto-fix suggestions with diffs
+- Hosted service (no API key needed)
+
+---
+
+## Related Commands
+
+- [`cortex-tms init`](/reference/cli/init/) - Initialize TMS (creates `PATTERNS.md`)
+- [`cortex-tms validate`](/reference/cli/validate/) - Validate TMS file integrity
+- [`cortex-tms status`](/reference/cli/status/) - View project state
+
+---
+
+## Learn More
+
+- [Tiered Memory System](/concepts/tiered-memory/) - Why pattern documentation matters
+- [Zero-Drift Governance](/concepts/zero-drift/) - Pattern compliance prevents drift
+- [Context Budget](/concepts/context-budget/) - Efficient pattern documentation
