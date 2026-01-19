@@ -25,7 +25,7 @@
 | **Domain Logic Checker** - Audit against DOMAIN-LOGIC.md rules | [TMS-283c] | 2h | 🔴 HIGH | ✅ Done |
 | **CLI Output Formatting** - Violation reports with line references | [TMS-283d] | 1h | 🟡 MED | ✅ Done |
 | **BYOK (Bring Your Own Key)** - OpenAI/Anthropic API key support | [TMS-283e] | 2h | 🟡 MED | ✅ Done |
-| **Guardian Documentation** - CLI reference and usage guide | [TMS-283f] | 2h | 🟡 MED | ⬜ Todo |
+| **Guardian Documentation** - CLI reference and usage guide | [TMS-283f] | 2h | 🟡 MED | ✅ Done |
 
 **Implementation Notes**:
 - User provides their own API key (BYOK approach)
