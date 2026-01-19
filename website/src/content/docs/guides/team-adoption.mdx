@@ -1,0 +1,1378 @@
+---
+title: Team Adoption Guide
+description: Rolling out Cortex TMS to multiple developers, establishing team conventions, and maintaining consistency
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside, FileTree } from '@astrojs/starlight/components';
+
+This guide covers everything you need to roll out Cortex TMS to a development team. You'll learn how to onboard new team members, establish shared conventions, integrate TMS into your Git workflow, and maintain consistency as your team scales.
+
+## Why Teams Need Cortex TMS
+
+Traditional documentation approaches fail at scale because:
+
+- **Knowledge silos**: Senior devs know conventions, juniors guess
+- **Inconsistent AI output**: Each developer's AI agent hallucinates different patterns
+- **Onboarding bottleneck**: New hires ask the same questions repeatedly
+- **Documentation drift**: Docs get outdated, no one updates them
+
+**Cortex TMS solves this** by creating a single source of truth that both humans and AI agents read.
+
+---
+
+## Team Adoption Roadmap
+
+
+
+1. **Pilot Phase (1-2 weeks)**
+   - Single developer (tech lead) sets up TMS
+   - Documents existing patterns and workflows
+   - Tests AI integration
+
+2. **Core Team Adoption (2-4 weeks)**
+   - Onboard 2-3 senior developers
+   - Establish team conventions collaboratively
+   - Validate patterns with real work
+
+3. **Full Rollout (4-6 weeks)**
+   - Onboard entire team
+   - Make TMS part of PR review process
+   - Enforce validation in CI/CD
+
+4. **Maintenance (Ongoing)**
+   - Regular pattern reviews
+   - Sprint archiving
+   - Continuous improvement
+
+
+
+This guide follows this roadmap step-by-step.
+
+---
+
+## Phase 1: Pilot Setup (Tech Lead)
+
+The first step is for a single person (usually the tech lead) to set up Cortex TMS and document existing conventions.
+
+### Step 1: Initialize TMS
+
+
+
+1. **Install Cortex TMS**
+
+   ```bash
+   npm install -g cortex-tms@2.6.0
+   ```
+
+2. **Initialize in the project**
+
+   ```bash
+   cd your-project
+   cortex-tms init --scope standard
+   ```
+
+3. **Create a feature branch**
+
+   ```bash
+   git checkout -b docs/add-cortex-tms
+   ```
+
+
+
+### Step 2: Document Current Patterns
+
+This is the most important step. You need to capture your team's existing conventions.
+
+<Tabs>
+  <TabItem label="Code Patterns">
+    Open `docs/core/PATTERNS.md` and document:
+
+    **File organization**:
+    ```markdown
+    ## File Organization
+
+    ```
+    src/
+    ├── components/     # React components (PascalCase.tsx)
+    ├── hooks/          # Custom hooks (useSomething.ts)
+    ├── services/       # API clients and business logic
+    ├── utils/          # Pure functions (no side effects)
+    └── types/          # TypeScript definitions
+    ```
+    ```
+
+    **Naming conventions**:
+    ```markdown
+    ## Naming Conventions
+
+    - **React Components**: PascalCase (`UserProfile.tsx`)
+    - **Hooks**: camelCase with "use" prefix (`useAuth.ts`)
+    - **Services**: camelCase with "Service" suffix (`authService.ts`)
+    - **Constants**: SCREAMING_SNAKE_CASE (`API_BASE_URL`)
+    ```
+
+    **API patterns**:
+    ```markdown
+    ## API Client Pattern
+
+    **Canonical Example**: `src/services/apiClient.ts`
+
+    All API calls go through a centralized client:
+
+    ```typescript
+    import axios from 'axios';
+
+    const apiClient = axios.create({
+      baseURL: process.env.NEXT_PUBLIC_API_URL,
+      timeout: 10000,
+    });
+
+    // Add auth token to all requests
+    apiClient.interceptors.request.use((config) => {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+      return config;
+    });
+    ```
+    ```
+
+    <Aside type="tip" title="Pro Tip">
+      Don't invent new patterns during this phase. Document what the team already does, even if it's not perfect.
+    </Aside>
+  </TabItem>
+
+  <TabItem label="Git Workflow">
+    Open `CLAUDE.md` and document your Git workflow:
+
+    ```markdown
+    ## 🛠 Git Workflow
+
+    **Branch Naming**:
+    - `feature/` - New features
+    - `fix/` - Bug fixes
+    - `docs/` - Documentation changes
+    - `refactor/` - Code refactoring
+
+    **Example**: `feature/user-authentication`
+
+    **Commit Messages**:
+    Follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+    - `feat: add user authentication`
+    - `fix: resolve race condition in checkout`
+    - `docs: update API documentation`
+    - `refactor: extract validation logic`
+
+    **Pull Request Process**:
+    1. Create feature branch from `main`
+    2. Implement feature with tests
+    3. Run `npm run lint && npm test`
+    4. Push to remote
+    5. Open PR with description (use template)
+    6. Request review from 2+ team members
+    7. Address feedback
+    8. Squash merge to `main`
+    ```
+  </TabItem>
+
+  <TabItem label="Tech Stack">
+    Open `CLAUDE.md` and document your tech stack:
+
+    ```markdown
+    ## 💻 Tech Stack
+
+    **Frontend**:
+    - React 18 with TypeScript
+    - Next.js 14 (App Router)
+    - TailwindCSS for styling
+    - React Query for data fetching
+    - Zustand for state management
+
+    **Backend**:
+    - Node.js 20
+    - Express.js API
+    - PostgreSQL database
+    - Drizzle ORM
+    - Redis for caching
+
+    **Testing**:
+    - Jest (unit tests)
+    - React Testing Library (component tests)
+    - Playwright (e2e tests)
+
+    **Deployment**:
+    - Frontend: Vercel
+    - Backend: Railway
+    - Database: Supabase
+    ```
+  </TabItem>
+
+  <TabItem label="Critical Rules">
+    Open `.github/copilot-instructions.md` and document critical rules:
+
+    ```markdown
+    ## Critical Rules (Must Never Violate)
+
+    **Security**:
+    - Never commit secrets (API keys, passwords, tokens)
+    - Never use `eval()` or `dangerouslySetInnerHTML` without sanitization
+    - Always validate user input (use Zod schemas)
+    - Use HTTPS for all API calls in production
+
+    **Data Integrity**:
+    - Never mutate state directly (use immutable updates)
+    - Never use `any` type (use `unknown` if type is truly unknown)
+    - Always handle loading and error states in components
+
+    **Performance**:
+    - Never fetch data in loops
+    - Always memoize expensive calculations (`useMemo`, `useCallback`)
+    - Always lazy load large components (`React.lazy`)
+    ```
+  </TabItem>
+</Tabs>
+
+### Step 3: Create Initial ADRs
+
+Document major architectural decisions that have already been made:
+
+
+
+1. **List past decisions**
+
+   Examples:
+   - Why Next.js instead of Create React App?
+   - Why PostgreSQL instead of MongoDB?
+   - Why Zustand instead of Redux?
+
+2. **Create ADR for each decision**
+
+   ```bash
+   touch docs/decisions/0001-use-nextjs-for-frontend.md
+   touch docs/decisions/0002-use-postgresql-for-data-storage.md
+   touch docs/decisions/0003-use-zustand-for-state-management.md
+   ```
+
+3. **Document the decision**
+
+   Example `0001-use-nextjs-for-frontend.md`:
+
+   ```markdown
+   # ADR-0001: Use Next.js for Frontend Framework
+
+   **Date**: 2026-01-15
+   **Status**: Accepted
+   **Deciders**: Tech Lead, Frontend Team
+
+   ## Context
+
+   We need a React framework that supports:
+   - Server-side rendering for SEO
+   - Static site generation for marketing pages
+   - API routes for backend-for-frontend pattern
+   - File-based routing
+
+   ## Decision
+
+   Use Next.js 14 with App Router.
+
+   ## Rationale
+
+   - **SSR & SSG**: Built-in support (no extra config)
+   - **Developer Experience**: Excellent tooling and documentation
+   - **Performance**: Automatic code splitting, image optimization
+   - **Ecosystem**: Large community, many examples
+   - **Team Experience**: Team already knows React
+
+   ## Consequences
+
+   **Positive**:
+   - SEO-friendly pages out of the box
+   - Fast initial load times
+   - Reduced backend load (static pages served from CDN)
+
+   **Negative**:
+   - Vendor lock-in to Vercel ecosystem
+   - Learning curve for App Router (new paradigm)
+   ```
+
+
+
+<Aside type="tip" title="Pro Tip">
+  Don't try to document every small decision. Focus on decisions that affect multiple developers (framework choices, architecture, major libraries).
+</Aside>
+
+### Step 4: Validate and Commit
+
+
+
+1. **Run validation**
+
+   ```bash
+   cortex-tms validate --strict
+   ```
+
+   Fix any issues reported.
+
+2. **Commit changes**
+
+   ```bash
+   git add .
+   git commit -m "docs: add Cortex TMS documentation structure
+
+   - Initialize TMS with Standard scope
+   - Document existing code patterns in PATTERNS.md
+   - Create ADRs for major architectural decisions
+   - Configure AI agent instructions (CLAUDE.md, copilot-instructions.md)
+
+   Co-Authored-By: Cortex TMS (noreply@cortex-tms.dev)"
+   ```
+
+3. **Push and create PR**
+
+   ```bash
+   git push origin docs/add-cortex-tms
+   gh pr create --title "Add Cortex TMS documentation" --body "See commit message"
+   ```
+
+4. **Get team buy-in**
+
+   Before merging, present the PR to the team:
+   - Explain what Cortex TMS is
+   - Show how AI agents will use the docs
+   - Invite feedback on patterns
+
+
+
+---
+
+## Phase 2: Core Team Adoption (2-3 Senior Devs)
+
+Once the pilot PR is merged, onboard 2-3 senior developers.
+
+### Step 5: Onboarding Senior Developers
+
+
+
+1. **Schedule a 1-hour onboarding session**
+
+   **Agenda**:
+   - 15 min: Explain Cortex TMS philosophy (HOT/WARM/COLD tiers)
+   - 15 min: Walk through `CLAUDE.md` and `PATTERNS.md`
+   - 15 min: Demo AI integration (Claude Code or Copilot)
+   - 15 min: Hands-on exercise (implement a small feature following patterns)
+
+2. **Share onboarding checklist**
+
+   ```markdown
+   ## Cortex TMS Onboarding Checklist
+
+   - [ ] Read [Tiered Memory System](/concepts/tiered-memory/) concept
+   - [ ] Read `CLAUDE.md` (AI workflow)
+   - [ ] Read `docs/core/PATTERNS.md` (coding conventions)
+   - [ ] Read recent ADRs in `docs/decisions/`
+   - [ ] Install AI agent (Claude Code, Copilot, or Cursor)
+   - [ ] Complete hands-on exercise (see below)
+
+   ### Hands-On Exercise
+
+   **Task**: Implement a new API endpoint for creating a task
+
+   **Requirements**:
+   1. Read `NEXT-TASKS.md` to find the task description
+   2. Follow `docs/core/PATTERNS.md#api-endpoints` for the pattern
+   3. Use AI agent to generate code
+   4. Write tests following `docs/core/PATTERNS.md#testing`
+   5. Run `cortex-tms validate` before submitting PR
+
+   **Expected Time**: 30-45 minutes
+
+   **Success Criteria**:
+   - Code matches documented patterns
+   - AI agent generated most of the code
+   - Tests pass
+   - Validation passes
+   ```
+
+3. **Pair with each developer**
+
+   Spend 30 minutes with each developer watching them:
+   - Read `NEXT-TASKS.md`
+   - Use AI agent to implement a feature
+   - Validate and commit
+
+   **Fix confusion immediately**. If they struggle, update the docs.
+
+
+
+### Step 6: Establish Team Conventions
+
+With 2-3 senior devs onboarded, hold a patterns review meeting.
+
+
+
+1. **Review PATTERNS.md together**
+
+   Go section-by-section and ask:
+   - "Is this accurate?"
+   - "Are there exceptions we should document?"
+   - "Are there missing patterns?"
+
+2. **Resolve disagreements**
+
+   If developers disagree on a pattern (e.g., "Should we use `interface` or `type`?"):
+
+   **Option A: Vote and Document**
+   - Take a vote
+   - Document the decision in PATTERNS.md
+   - Include rationale
+
+   **Option B: Create an ADR**
+   - If the decision is significant, create an ADR
+   - Document alternatives considered
+   - Document trade-offs
+
+   **Example**:
+   ```markdown
+   ## TypeScript: Interface vs Type
+
+   **Decision**: Prefer `interface` for object shapes, `type` for unions/intersections
+
+   **Rationale**:
+   - Interfaces can be extended (better for public APIs)
+   - Types are more flexible (better for complex logic)
+
+   **Exception**: Use `type` when you need computed properties:
+   ```typescript
+   type Keys = 'name' | 'age';
+   type Person = { [K in Keys]: string };
+   ```
+   ```
+
+3. **Update PATTERNS.md**
+
+   Make changes collaboratively during the meeting.
+
+4. **Commit the updates**
+
+   ```bash
+   git add docs/core/PATTERNS.md
+   git commit -m "docs: refine coding patterns based on team review"
+   git push
+   ```
+
+
+
+<Aside type="tip" title="Pro Tip">
+  Don't aim for perfection. Aim for **consensus**. Patterns will evolve over time as the team learns.
+</Aside>
+
+---
+
+## Phase 3: Full Team Rollout
+
+Once 2-3 senior devs are productive with TMS, roll out to the entire team.
+
+### Step 7: All-Hands Announcement
+
+
+
+1. **Send announcement email**
+
+   ```
+   Subject: Introducing Cortex TMS - New Documentation System
+
+   Hey team,
+
+   We're rolling out Cortex TMS, a new documentation system that helps
+   AI agents (Claude Code, Copilot, Cursor) follow our coding conventions.
+
+   What this means for you:
+   - AI agents will generate code matching our patterns (fewer corrections!)
+   - New hires onboard faster (all conventions documented)
+   - Less "how do we do X?" questions (check PATTERNS.md)
+
+   Action items:
+   1. Read CLAUDE.md and PATTERNS.md (15 minutes)
+   2. Set up your AI agent (see guide below)
+   3. Complete the onboarding exercise (30 minutes)
+
+   Resources:
+   - Onboarding Guide: [link]
+   - Slack channel: #cortex-tms
+   - Office hours: Tuesdays 2-3pm
+
+   Questions? Reply to this email or ask in #cortex-tms.
+
+   - [Your Name]
+   ```
+
+2. **Host office hours**
+
+   Schedule recurring office hours (e.g., Tuesdays 2-3pm) for the first month.
+
+   Developers can drop in and ask:
+   - "How do I use Claude Code?"
+   - "Where do I document X?"
+   - "Is this pattern documented?"
+
+3. **Create Slack/Discord channel**
+
+   Create a dedicated channel for TMS discussions:
+   - Questions about patterns
+   - Suggestions for improvements
+   - Announcements (e.g., "New ADR added")
+
+
+
+### Step 8: Onboarding Materials
+
+Create self-service onboarding materials:
+
+<Tabs>
+  <TabItem label="Quick Start Guide">
+    Create `docs/onboarding/quick-start.md`:
+
+    ## Cortex TMS Quick Start
+
+    Welcome to the team! This guide will get you up to speed with our
+    documentation system in 15 minutes.
+
+    ### What is Cortex TMS?
+
+    Cortex TMS organizes our documentation so AI agents (Claude Code,
+    Copilot, Cursor) can read and follow our conventions automatically.
+
+    ### File Overview
+
+    - **CLAUDE.md**: AI workflow instructions (read first!)
+    - **NEXT-TASKS.md**: Current sprint tasks (updated weekly)
+    - **docs/core/PATTERNS.md**: Coding conventions (reference often)
+    - **docs/decisions/**: Architectural decisions (read as needed)
+
+    ### Setup (5 minutes)
+
+    1. Install an AI agent:
+       - [Claude Code](https://claude.ai/claude-code) (recommended)
+       - [GitHub Copilot](https://github.com/features/copilot)
+       - [Cursor](https://cursor.sh)
+
+    2. Open the project with your AI agent:
+       ```bash
+       claude-code .   # or `code .` for Copilot, `cursor .` for Cursor
+       ```
+
+    3. Ask your AI: "What's the current sprint goal?"
+
+       If it reads NEXT-TASKS.md and responds, you're set up correctly!
+
+    ### First Task (30 minutes)
+
+    Pick a task from NEXT-TASKS.md and implement it with your AI agent:
+
+    1. Ask AI: "Read the task for [task name] and create a plan"
+    2. Ask AI: "Implement this following our patterns"
+    3. Review the generated code (don't blindly accept!)
+    4. Run tests: `npm test`
+    5. Run validation: `cortex-tms validate`
+    6. Commit with conventional format: `feat: add [feature]`
+
+    ### Questions?
+
+    - Check PATTERNS.md first
+    - Ask in #cortex-tms Slack channel
+    - Attend Tuesday office hours (2-3pm)
+  </TabItem>
+
+  <TabItem label="Video Walkthrough">
+    Record a 10-minute screen recording showing:
+
+    1. **Opening the project** (0:00-1:00)
+       - Show file structure
+       - Point out CLAUDE.md, PATTERNS.md
+
+    2. **Reading documentation** (1:00-3:00)
+       - Open NEXT-TASKS.md
+       - Highlight current sprint tasks
+       - Open PATTERNS.md
+       - Show a canonical example
+
+    3. **Using AI agent** (3:00-7:00)
+       - Open Claude Code / Copilot / Cursor
+       - Ask: "What's the auth pattern?"
+       - Show AI reading docs
+       - Ask AI to implement a small feature
+
+    4. **Validation and commit** (7:00-10:00)
+       - Run `cortex-tms validate`
+       - Run tests
+       - Commit with conventional format
+
+    Upload to YouTube (unlisted) or internal wiki.
+
+    <Aside type="tip" title="Pro Tip">
+      Developers prefer video over text for onboarding. A 10-minute video saves hours of Slack questions.
+    </Aside>
+  </TabItem>
+
+  <TabItem label="Cheat Sheet">
+    Create a one-page cheat sheet (PDF or Notion page):
+
+    ## Cortex TMS Cheat Sheet
+
+    ### Daily Workflow
+
+    1. **Start of day**: Read NEXT-TASKS.md for priorities
+    2. **Before coding**: Check PATTERNS.md for conventions
+    3. **During coding**: Let AI generate code following patterns
+    4. **Before committing**: Run `cortex-tms validate && npm test`
+
+    ### Key Files
+
+    | File | Purpose | Read Frequency |
+    |------|---------|----------------|
+    | `NEXT-TASKS.md` | Current sprint tasks | Daily |
+    | `CLAUDE.md` | AI workflow config | Once (onboarding) |
+    | `docs/core/PATTERNS.md` | Coding conventions | As needed |
+    | `docs/decisions/` | ADRs | When making architecture changes |
+
+    ### Common Commands
+
+    ```bash
+    # Validate documentation health
+    cortex-tms validate --strict
+
+    # Check project status
+    cortex-tms status
+
+    # Run tests
+    npm test
+
+    # Lint code
+    npm run lint
+    ```
+
+    ### AI Agent Setup
+
+    **Claude Code**: Reads CLAUDE.md automatically
+
+    **Copilot**: Reads .github/copilot-instructions.md
+
+    **Cursor**: Reads .cursorrules (symlinked to CLAUDE.md)
+
+    ### Troubleshooting
+
+    **AI not following patterns?**
+    → Check if pattern is in PATTERNS.md (if not, add it)
+
+    **Validation failing?**
+    → Run `cortex-tms validate --verbose` for details
+
+    **Don't know where to document something?**
+    → Ask in #cortex-tms Slack channel
+  </TabItem>
+</Tabs>
+
+---
+
+## Phase 4: Git Workflow Integration
+
+Integrate Cortex TMS into your PR review process.
+
+### Step 9: Pull Request Template
+
+Create `.github/pull_request_template.md`:
+
+```markdown
+## Description
+
+<!-- What does this PR do? Reference NEXT-TASKS.md if applicable -->
+
+## Type of Change
+
+- [ ] feat: New feature
+- [ ] fix: Bug fix
+- [ ] docs: Documentation update
+- [ ] refactor: Code refactoring
+- [ ] test: Test improvements
+- [ ] chore: Build/tooling changes
+
+## Checklist
+
+### Code Quality
+- [ ] Code follows patterns in `docs/core/PATTERNS.md`
+- [ ] Tests added/updated (unit + integration)
+- [ ] All tests pass (`npm test`)
+- [ ] Linting passes (`npm run lint`)
+- [ ] TypeScript compiles (`npm run type-check`)
+
+### Documentation
+- [ ] `cortex-tms validate --strict` passes
+- [ ] Updated `docs/core/PATTERNS.md` if adding new patterns
+- [ ] Created ADR if making architectural decision
+- [ ] Updated `NEXT-TASKS.md` if completing tasks
+
+### AI Agent Tested
+- [ ] Tested with Claude Code / Copilot / Cursor
+- [ ] AI agent can follow the new pattern (if applicable)
+
+## Screenshots (if applicable)
+
+<!-- Add screenshots for UI changes -->
+
+## Related Issues
+
+<!-- Link to GitHub issues: Closes #123 -->
+```
+
+<Aside type="tip" title="Pro Tip">
+  The "AI Agent Tested" checkbox encourages developers to verify their patterns work with AI. This prevents hallucination-prone patterns.
+</Aside>
+
+### Step 10: Code Review Process
+
+Update your code review guidelines to include TMS checks:
+
+```markdown
+# Code Review Checklist
+
+## Functional Review
+- [ ] Code solves the stated problem
+- [ ] Edge cases handled
+- [ ] Error handling appropriate
+
+## Pattern Compliance
+- [ ] **Follows PATTERNS.md**: Check that code matches documented conventions
+- [ ] **Canonical examples**: If adding new patterns, include canonical example
+- [ ] **No hallucinated patterns**: Code doesn't introduce undocumented conventions
+
+## Testing
+- [ ] Tests cover happy path and error cases
+- [ ] Test names are descriptive
+- [ ] Mocks are appropriate
+
+## Documentation
+- [ ] **NEXT-TASKS.md updated**: Mark tasks complete if applicable
+- [ ] **PATTERNS.md updated**: Add new patterns if introduced
+- [ ] **ADR created**: If making architectural decision
+- [ ] **Validation passes**: `cortex-tms validate` succeeds
+
+## Questions for Reviewer
+- Does this pattern make sense?
+- Should this be an ADR instead of a pattern?
+- Is the canonical example clear?
+```
+
+<Aside type="note">
+  The most important review is **pattern compliance**. If code doesn't match PATTERNS.md, either update the code or update the pattern (with team consensus).
+</Aside>
+
+---
+
+## Phase 5: Continuous Maintenance
+
+### Step 11: Weekly Sprint Management
+
+Establish a weekly ritual for maintaining `NEXT-TASKS.md`:
+
+<Tabs>
+  <TabItem label="Monday: Plan Sprint">
+    **Who**: Tech lead or product manager
+
+    **Steps**:
+
+
+      1. **Review backlog**
+
+         Check `FUTURE-ENHANCEMENTS.md` for upcoming work.
+
+      2. **Update NEXT-TASKS.md**
+
+         Add new tasks for the week:
+
+         ```markdown
+         ## Active Sprint: User Profile Feature (Week of Jan 20)
+
+         **Why this matters**: Users need to customize their profiles
+
+         **Sprint Goal**: Complete user profile CRUD operations
+
+         ### Tasks
+
+         #### 1. Create Profile API Endpoints
+         - [ ] GET /api/profile
+         - [ ] PUT /api/profile
+         - [ ] Tests for profile endpoints
+
+         #### 2. Build Profile UI
+         - [ ] Profile form component
+         - [ ] Avatar upload
+         - [ ] Form validation
+
+         #### 3. Update Documentation
+         - [ ] Add profile pattern to PATTERNS.md
+         - [ ] Create ADR for avatar storage decision
+         ```
+
+      3. **Communicate to team**
+
+         Post in Slack:
+         > "NEXT-TASKS.md updated with this week's sprint. Check it out: [link]"
+
+
+  </TabItem>
+
+  <TabItem label="Friday: Archive Sprint">
+    **Who**: Tech lead or team member on rotation
+
+    **Steps**:
+
+
+      1. **Review completed tasks**
+
+         Check which tasks in `NEXT-TASKS.md` are marked ✅ Done.
+
+      2. **Create archive file**
+
+         ```bash
+         touch docs/archive/sprint-2026-01-20-user-profile.md
+         ```
+
+      3. **Copy completed tasks to archive**
+
+         ```markdown
+         # Sprint: User Profile Feature (Jan 20-24, 2026)
+
+         **Goal**: Complete user profile CRUD operations
+
+         ## Completed Tasks
+
+         ### ✅ Create Profile API Endpoints
+         - GET /api/profile
+         - PUT /api/profile
+         - Tests for profile endpoints
+
+         **Outcome**: All endpoints working. 15 tests passing.
+
+         ### ✅ Build Profile UI
+         - Profile form component
+         - Avatar upload (S3 integration)
+         - Form validation with Zod
+
+         **Outcome**: Profile page live in production.
+
+         ## Metrics
+
+         - **Story Points**: 13
+         - **Completed**: 13/13
+         - **Blockers**: 1 (S3 permissions, resolved)
+
+         ## Retrospective
+
+         **What went well**:
+         - AI agents generated most boilerplate
+         - Patterns in PATTERNS.md prevented inconsistencies
+
+         **What to improve**:
+         - Avatar upload took longer than expected
+         - Need to document S3 setup in TROUBLESHOOTING.md
+         ```
+
+      4. **Clean up NEXT-TASKS.md**
+
+         Remove completed tasks, keep only upcoming work.
+
+      5. **Validate**
+
+         ```bash
+         cortex-tms validate --strict
+         ```
+
+      6. **Commit**
+
+         ```bash
+         git add docs/archive/ NEXT-TASKS.md
+         git commit -m "docs: archive sprint 2026-01-20 (user profile feature)"
+         git push
+         ```
+
+
+  </TabItem>
+
+  <TabItem label="Monthly: Pattern Review">
+    **Who**: Entire team (30-minute meeting)
+
+    **Steps**:
+
+
+      1. **Review PATTERNS.md**
+
+         Go through each section and ask:
+         - "Is this still accurate?"
+         - "Have we discovered better approaches?"
+         - "Are there new patterns to add?"
+
+      2. **Update patterns**
+
+         If the team agrees on a change, update PATTERNS.md immediately.
+
+      3. **Create ADRs for major changes**
+
+         If changing an established pattern (e.g., switching from REST to GraphQL):
+         - Create an ADR documenting the decision
+         - Update PATTERNS.md to reference the ADR
+
+      4. **Communicate changes**
+
+         Post in Slack:
+         > "PATTERNS.md updated: We're now using Zod for all validation (see ADR-0015)"
+
+
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Pro Tip">
+  Make sprint archiving someone's responsibility. Rotate weekly to distribute the load.
+</Aside>
+
+---
+
+## Handling Common Team Scenarios
+
+### Scenario 1: Disagreement on Patterns
+
+**Situation**: Two developers disagree on whether to use `interface` or `type` for TypeScript definitions.
+
+**Resolution Process**:
+
+
+
+1. **Discuss in Slack or PR comments**
+
+   Each developer presents their reasoning.
+
+2. **Check existing codebase**
+
+   Run a quick search to see what's more common:
+
+   ```bash
+   git grep "^interface " | wc -l  # Count interfaces
+   git grep "^type " | wc -l       # Count types
+   ```
+
+3. **Vote if needed**
+
+   If no clear consensus, take a team vote.
+
+4. **Document the decision**
+
+   Update `PATTERNS.md` with the decision and rationale:
+
+   ```markdown
+   ## TypeScript: Interface vs Type
+
+   **Decision**: Prefer `interface` for object shapes
+
+   **Rationale**:
+   - Existing codebase uses interfaces 70% of the time
+   - Interfaces can be extended (better for public APIs)
+   - Team voted 5-2 in favor
+
+   **Exception**: Use `type` for unions and intersections
+   ```
+
+5. **Commit and communicate**
+
+   ```bash
+   git commit -m "docs: document interface vs type preference"
+   ```
+
+   Post in Slack:
+   > "PATTERNS.md updated: Use `interface` for object shapes (see details in commit)"
+
+
+
+---
+
+### Scenario 2: Onboarding Mid-Level Developer
+
+**Situation**: A new mid-level developer joins the team.
+
+**Onboarding Plan**:
+
+
+
+1. **Day 1: Read documentation** (2 hours)
+
+   Assign the new hire to read:
+   - `CLAUDE.md` (AI workflow)
+   - `docs/core/PATTERNS.md` (coding conventions)
+   - Recent ADRs in `docs/decisions/`
+
+2. **Day 1: Pair with senior dev** (2 hours)
+
+   Pair with a senior developer to:
+   - Walk through the codebase
+   - Explain TMS philosophy
+   - Show AI agent integration
+
+3. **Day 2: Small PR** (4 hours)
+
+   Assign a small, well-defined task:
+   - Fix a bug from the backlog
+   - Add a simple feature
+   - **Must use AI agent** to implement
+
+   Senior dev reviews the PR with extra scrutiny on pattern compliance.
+
+4. **Day 3-5: Independent work with support** (3 days)
+
+   Assign progressively larger tasks:
+   - Day 3: Medium feature (4-6 hours)
+   - Day 4: Complex feature (1 day)
+   - Day 5: Review their PRs and provide feedback
+
+5. **End of Week 1: Check-in**
+
+   Ask:
+   - "Do you understand the TMS structure?"
+   - "Is anything unclear in PATTERNS.md?"
+   - "Is your AI agent working correctly?"
+
+   Update documentation based on feedback.
+
+
+
+<Aside type="tip" title="Pro Tip">
+  New hires spot documentation gaps better than existing team members. Listen to their feedback and update docs accordingly.
+</Aside>
+
+---
+
+### Scenario 3: AI Agent Suggests Wrong Pattern
+
+**Situation**: GitHub Copilot suggests code that violates a documented pattern.
+
+**Root Cause Analysis**:
+
+<Tabs>
+  <TabItem label="Cause 1: Pattern Not Documented">
+    **Problem**: The pattern isn't in `PATTERNS.md` yet.
+
+    **Solution**:
+
+
+      1. Add the pattern to `PATTERNS.md`
+      2. Include a canonical example
+      3. Commit the update
+      4. Retry with AI agent
+
+      ```markdown
+      ## API Response Format
+
+      **Canonical Example**: `src/controllers/tasks.controller.ts`
+
+      All API responses use this format:
+
+      ```typescript
+      // Success
+      { status: 'success', data: { ... } }
+
+      // Error
+      { status: 'error', message: '...' }
+      ```
+      ```
+
+  </TabItem>
+
+  <TabItem label="Cause 2: Pattern Is Buried">
+    **Problem**: The pattern is documented but buried in a 600-line file.
+
+    **Solution**:
+
+
+      1. Move critical patterns to `.github/copilot-instructions.md`
+      2. Reference detailed patterns from there
+
+      Example:
+
+      ```markdown
+      ## API Response Format (Critical)
+
+      ✅ **Always use**: `{ status, data }` or `{ status, message }`
+
+      See `docs/core/PATTERNS.md#api-responses` for full details.
+      ```
+
+  </TabItem>
+
+  <TabItem label="Cause 3: Codebase Has Counter-Examples">
+    **Problem**: Old code violates the pattern, and AI learns from it.
+
+    **Solution**:
+
+
+      1. **Short-term**: Add negative examples to PATTERNS.md
+
+         ```markdown
+         ❌ **Bad** (legacy code, do not replicate):
+         ```typescript
+         return { success: true, payload: data };
+         ```
+
+         ✅ **Good** (new code):
+         ```typescript
+         return { status: 'success', data };
+         ```
+         ```
+
+      2. **Long-term**: Refactor legacy code to match patterns
+
+         Create a backlog task:
+         > "Refactor legacy API responses to match new pattern"
+
+  </TabItem>
+</Tabs>
+
+---
+
+## Team Metrics and Success Indicators
+
+Track these metrics to measure TMS adoption success:
+
+### Leading Indicators (Short-term)
+
+<CardGrid>
+  <Card title="Documentation Coverage" icon="document">
+    **Metric**: Percentage of patterns documented
+
+    **Target**: 80%+ of common patterns in PATTERNS.md
+
+    **How to measure**:
+    - Survey team: "Do you find the pattern you need in PATTERNS.md?"
+    - Track "Where do I document X?" questions in Slack
+  </Card>
+
+  <Card title="Validation Pass Rate" icon="approve-check">
+    **Metric**: Percentage of PRs where `cortex-tms validate` passes
+
+    **Target**: 95%+ pass on first try
+
+    **How to measure**:
+    - Check CI/CD logs
+    - Track validation failures in PRs
+  </Card>
+
+  <Card title="AI Agent Adoption" icon="star">
+    **Metric**: Percentage of team using AI agents
+
+    **Target**: 80%+ of developers
+
+    **How to measure**:
+    - Survey: "Which AI agent do you use?"
+    - Track mentions of Claude Code / Copilot in PRs
+  </Card>
+
+  <Card title="Onboarding Time" icon="rocket">
+    **Metric**: Days to first PR for new hires
+
+    **Target**: under 3 days (down from ~7 days without TMS)
+
+    **How to measure**:
+    - Track hire date → first PR date
+  </Card>
+</CardGrid>
+
+### Lagging Indicators (Long-term)
+
+<CardGrid>
+  <Card title="Code Consistency" icon="approve-check">
+    **Metric**: Percentage of PRs requiring pattern corrections
+
+    **Target**: under 10% of PRs need pattern fixes
+
+    **How to measure**:
+    - Track PR comments like "This doesn't follow our pattern"
+  </Card>
+
+  <Card title="Documentation Freshness" icon="document">
+    **Metric**: Average age of patterns in PATTERNS.md
+
+    **Target**: No patterns older than 6 months without review
+
+    **How to measure**:
+    - Git blame `docs/core/PATTERNS.md`
+    - Flag sections not updated in 6+ months
+  </Card>
+
+  <Card title="Team Velocity" icon="rocket">
+    **Metric**: Story points completed per sprint
+
+    **Target**: Increase of 15-20% after TMS adoption
+
+    **How to measure**:
+    - Compare velocity before/after TMS
+    - Account for team size changes
+  </Card>
+
+  <Card title="Knowledge Silos" icon="open-book">
+    **Metric**: Distribution of knowledge across team
+
+    **Target**: Any developer can work on any feature
+
+    **How to measure**:
+    - Track: "How many developers can work on feature X?"
+    - Survey: "Do you feel comfortable working on any part of the codebase?"
+  </Card>
+</CardGrid>
+
+<Aside type="tip" title="Pro Tip">
+  Don't track all metrics at once. Start with 2-3 leading indicators and add more over time.
+</Aside>
+
+---
+
+## Troubleshooting Team Adoption
+
+### Issue: Developers don't read documentation
+
+**Symptoms**:
+- PRs violate documented patterns
+- Developers ask questions answered in PATTERNS.md
+- AI agents aren't used
+
+**Solutions**:
+
+
+
+1. **Make docs discoverable**
+
+   Add a prominent link in the README:
+
+   ```markdown
+   ## Documentation
+
+   - 📖 [Coding Patterns](docs/core/PATTERNS.md)
+   - 🤖 [AI Workflow](CLAUDE.md)
+   - 📋 [Current Sprint](NEXT-TASKS.md)
+   ```
+
+2. **Reference docs in PR template**
+
+   Update `.github/pull_request_template.md`:
+
+   ```markdown
+   ## Pattern Compliance
+
+   - [ ] Code follows [PATTERNS.md](docs/core/PATTERNS.md)
+   - [ ] Checked with AI agent (Claude / Copilot / Cursor)
+   ```
+
+3. **Enforce in code review**
+
+   Reviewers should comment:
+   > "This doesn't follow our auth pattern. See `docs/core/PATTERNS.md#authentication`"
+
+4. **Gamify adoption**
+
+   Track and celebrate:
+   - "Most patterns followed this month: @developer"
+   - "Cleanest PR (zero pattern violations): @developer"
+
+
+
+---
+
+### Issue: Documentation gets outdated
+
+**Symptoms**:
+- Patterns in PATTERNS.md don't match actual code
+- ADRs reference deprecated decisions
+- AI agents generate outdated code
+
+**Solutions**:
+
+
+
+1. **Schedule monthly pattern review**
+
+   Add recurring meeting:
+   - Review PATTERNS.md section by section
+   - Update or remove outdated patterns
+   - Add new patterns discovered
+
+2. **Make updates part of workflow**
+
+   When a developer introduces a new pattern:
+   - PR must include PATTERNS.md update
+   - AI agent should verify the update
+
+3. **Use Git blame to find stale sections**
+
+   ```bash
+   git blame docs/core/PATTERNS.md | grep "2025-06"
+   ```
+
+   Flag sections not updated in 6+ months.
+
+4. **Deprecation process**
+
+   When deprecating a pattern:
+
+   ```markdown
+   ## Old Pattern (Deprecated)
+
+   ⚠️ **Deprecated as of 2026-01-15**. Use [New Pattern](#new-pattern) instead.
+
+   [Old pattern details for reference]
+   ```
+
+   Remove after 3 months.
+
+
+
+---
+
+## Best Practices for Teams
+
+<CardGrid stagger>
+  <Card title="Start Small, Expand Gradually" icon="rocket">
+    Don't document everything on day 1. Start with 5-10 critical patterns and add more as needed.
+  </Card>
+
+  <Card title="Make It a Team Effort" icon="star">
+    Don't assign documentation to one person. Every developer should contribute to PATTERNS.md.
+  </Card>
+
+  <Card title="Review Patterns Monthly" icon="document">
+    Schedule a recurring meeting to review and update patterns. Documentation rots without maintenance.
+  </Card>
+
+  <Card title="Celebrate Wins" icon="approve-check">
+    Share success stories: "AI generated 80% of this PR following our patterns!" This encourages adoption.
+  </Card>
+
+  <Card title="Listen to New Hires" icon="open-book">
+    New hires spot documentation gaps. When they ask questions, update the docs instead of just answering.
+  </Card>
+
+  <Card title="Enforce in CI/CD" icon="seti:config">
+    Add `cortex-tms validate` to your CI pipeline. Fail PRs if validation doesn't pass.
+  </Card>
+</CardGrid>
+
+---
+
+## Next Steps
+
+Now that you understand team adoption:
+
+- **[CI/CD Integration](/guides/ci-cd-integration/)**: Automate validation in GitHub Actions
+- **[Integrating AI Agents](/guides/integrating-ai-agents/)**: Deep dive into Claude Code, Copilot, and Cursor
+- **[Customizing Templates](/guides/customizing-templates/)**: Modify templates for your organization's needs
+
+<Aside type="tip" title="Pro Tip">
+  Team adoption is an ongoing process, not a one-time event. Budget time each month for pattern reviews and documentation updates.
+</Aside>

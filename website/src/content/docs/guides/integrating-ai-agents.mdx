@@ -1,0 +1,1256 @@
+---
+title: Integrating AI Agents
+description: Complete setup guide for Claude Code, GitHub Copilot, and Cursor with Cortex TMS workflows
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside, FileTree } from '@astrojs/starlight/components';
+
+This guide covers everything you need to know about integrating AI coding agents with Cortex TMS. You'll learn how to configure Claude Code, GitHub Copilot, and Cursor to read your documentation, follow your patterns, and work autonomously within your established conventions.
+
+## Why AI Agents Need Cortex TMS
+
+Modern AI coding agents are powerful but suffer from a critical problem: **they don't know your project's conventions** unless you tell them explicitly.
+
+### The Traditional Workflow (Without TMS)
+
+```
+Developer: "Add authentication to the API"
+
+AI Agent: "Sure! I'll use HS256 JWT tokens stored in localStorage"
+
+Developer: "No, we use RS256 with httpOnly cookies"
+
+AI Agent: "Got it! Let me update..."
+
+Developer: "Also, tokens expire in 1 hour, not 24 hours"
+
+AI Agent: "Updating..."
+
+Developer: "And follow the error handling pattern from the last PR"
+
+AI Agent: "Which PR? Can you share the pattern?"
+
+Developer: 😩
+```
+
+**Problem**: Developers spend more time correcting AI than writing code themselves.
+
+### The Cortex TMS Workflow
+
+```
+Developer: "Add authentication to the API"
+
+AI Agent: [Reads NEXT-TASKS.md → sees "Implement auth"]
+          [Reads docs/core/PATTERNS.md#authentication]
+          [Generates code with RS256, httpOnly cookies, 15-min expiry]
+
+Developer: "Perfect! Ship it."
+```
+
+**Solution**: AI agents read your documented conventions and generate correct code the first time.
+
+---
+
+## Supported AI Agents
+
+Cortex TMS integrates with three major AI coding agents:
+
+<CardGrid>
+  <Card title="Claude Code" icon="star">
+    **Best for**: Autonomous workflows, complex refactoring, architectural decisions
+
+    **Reads**: `CLAUDE.md` automatically
+
+    **Strength**: Deep context understanding, follows multi-step workflows
+  </Card>
+
+  <Card title="GitHub Copilot" icon="github">
+    **Best for**: Inline suggestions, rapid autocomplete, incremental coding
+
+    **Reads**: `.github/copilot-instructions.md`
+
+    **Strength**: Fast suggestions, integrates with VS Code/JetBrains
+  </Card>
+
+  <Card title="Cursor" icon="seti:config">
+    **Best for**: Chat-based development, multi-file edits, codebase exploration
+
+    **Reads**: `.cursorrules`
+
+    **Strength**: Excellent chat interface, fast multi-file edits
+  </Card>
+</CardGrid>
+
+<Aside type="note">
+  You can use all three agents simultaneously! Each excels at different tasks.
+</Aside>
+
+---
+
+## Part 1: Claude Code Integration
+
+[Claude Code](https://claude.ai/claude-code) is Anthropic's official CLI for autonomous AI coding. It reads `CLAUDE.md` automatically and follows your documented workflows.
+
+### Prerequisites
+
+
+
+1. **Install Claude Code**
+
+   ```bash
+   # macOS
+   brew install anthropics/claude/claude-code
+
+   # Linux/Windows (download from website)
+   # Visit: https://claude.ai/claude-code
+   ```
+
+2. **Authenticate**
+
+   ```bash
+   claude-code auth
+   ```
+
+   Follow the browser authentication flow.
+
+3. **Verify installation**
+
+   ```bash
+   claude-code --version
+   ```
+
+
+
+### Understanding CLAUDE.md
+
+Cortex TMS generates `CLAUDE.md` with this structure:
+
+```markdown
+# 🤖 Agent Workflow & Persona
+
+## 🎯 Role
+
+Expert Senior Developer. Follow the **"Propose, Justify, Recommend"** framework.
+
+## 💻 CLI Commands
+
+- **Test**: `npm test` or `pnpm test`
+- **Lint**: `npm run lint`
+- **Build**: `npm run build`
+
+## 🛠 Operational Loop
+
+**Step 0: Git Protocol (MANDATORY)**
+- Before ANY code changes: Create a branch using `git checkout -b type/ID-description`
+- NEVER work directly on `main` branch
+
+**Implementation Steps:**
+1. Read `NEXT-TASKS.md` to understand the current objective.
+2. Cross-reference `docs/core/PATTERNS.md` for existing code conventions.
+3. If unsure of a term, check `docs/core/GLOSSARY.md`.
+4. Execute TDD (Test-Driven Development).
+
+## 🧹 Post-Task Protocol
+
+After completing a task:
+1. **Archive Completed Tasks**: Move done items from `NEXT-TASKS.md` to `docs/archive/`
+2. **Run Validation**: Execute `cortex-tms validate --strict`
+3. **Commit Changes**: Follow conventional commit format
+```
+
+**Key sections**:
+
+- **Role**: Defines the agent's persona (senior dev, junior dev, code reviewer, etc.)
+- **CLI Commands**: Project-specific commands Claude should run
+- **Operational Loop**: Step-by-step workflow for every task
+- **Post-Task Protocol**: Cleanup and maintenance steps
+
+### Customizing CLAUDE.md for Your Project
+
+Open `CLAUDE.md` and customize these sections:
+
+<Tabs>
+  <TabItem label="1. Role & Persona">
+    ```markdown
+    ## 🎯 Role
+
+    Expert TypeScript Developer specializing in React and Node.js APIs.
+
+    **Persona Traits**:
+    - Prioritize type safety (prefer strict TypeScript)
+    - Write testable code (dependency injection, pure functions)
+    - Follow functional programming principles where appropriate
+    - Question unclear requirements before implementing
+
+    **Communication Style**:
+    - Ask clarifying questions when acceptance criteria are vague
+    - Suggest improvements to patterns when you spot issues
+    - Explain trade-offs when multiple approaches exist
+    ```
+
+    <Aside type="tip" title="Pro Tip">
+      Define a specific persona that matches your team's philosophy. If you value simplicity over cleverness, say so explicitly.
+    </Aside>
+  </TabItem>
+
+  <TabItem label="2. CLI Commands">
+    ```markdown
+    ## 💻 CLI Commands
+
+    **Development**:
+    - `npm run dev` - Start dev server on http://localhost:3000
+    - `npm run dev:debug` - Start with Node debugger on port 9229
+
+    **Testing**:
+    - `npm test` - Run Jest tests with coverage
+    - `npm run test:watch` - Run tests in watch mode
+    - `npm run test:e2e` - Run Playwright e2e tests
+
+    **Quality Checks**:
+    - `npm run lint` - ESLint with autofix
+    - `npm run type-check` - TypeScript compiler (no emit)
+    - `npm run format` - Prettier formatting
+
+    **Database**:
+    - `npm run db:migrate` - Run pending migrations
+    - `npm run db:seed` - Seed development data
+    - `npm run db:studio` - Open Drizzle Studio
+
+    **Build & Deploy**:
+    - `npm run build` - Production build (outputs to dist/)
+    - `npm run preview` - Preview production build locally
+    ```
+
+    <Aside type="tip" title="Pro Tip">
+      Include the expected outcome of each command. "Outputs to dist/" helps Claude understand what files to check after building.
+    </Aside>
+  </TabItem>
+
+  <TabItem label="3. Git Workflow">
+    ```markdown
+    ## 🛠 Operational Loop
+
+    **Step 0: Git Protocol (MANDATORY)**
+
+    Before ANY code changes:
+    1. Create a feature branch: `git checkout -b feature/task-name`
+    2. NEVER work directly on `main` branch
+    3. Branch naming convention:
+       - `feature/` - New features
+       - `fix/` - Bug fixes
+       - `docs/` - Documentation changes
+       - `refactor/` - Code refactoring
+
+    **After completing work**:
+    1. Run all quality checks (lint, type-check, test)
+    2. Commit with conventional format:
+       - `feat: add user authentication`
+       - `fix: resolve race condition in task sync`
+       - `docs: update API documentation`
+    3. Push to remote: `git push origin feature/task-name`
+    4. Open PR with template (see .github/pull_request_template.md)
+    ```
+  </TabItem>
+
+  <TabItem label="4. Custom Workflows">
+    ```markdown
+    ## 🛠 Operational Loop
+
+    **Implementation Steps**:
+
+    1. **Understand the Task**
+       - Read `NEXT-TASKS.md` to understand the current objective
+       - Check for blockers or dependencies
+       - If unclear, ask for clarification before proceeding
+
+    2. **Check Existing Patterns**
+       - Read `docs/core/PATTERNS.md` for coding conventions
+       - Reference canonical examples (e.g., `src/services/tasks.service.ts`)
+       - Check `docs/core/GLOSSARY.md` for domain terminology
+
+    3. **Review Related ADRs**
+       - Check `docs/decisions/` for relevant architectural decisions
+       - If adding new architecture, create an ADR
+
+    4. **Test-Driven Development**
+       - Write failing test first
+       - Implement minimal code to pass
+       - Refactor for clarity
+       - Run full test suite: `npm test`
+
+    5. **Document as You Go**
+       - Update `docs/core/PATTERNS.md` if introducing new patterns
+       - Add inline comments for complex logic
+       - Update API docs if changing interfaces
+    ```
+
+    <Aside type="tip" title="Pro Tip">
+      Order steps from most important to least. Claude follows the workflow sequentially, so put critical checks first.
+    </Aside>
+  </TabItem>
+</Tabs>
+
+### Testing Claude Code Integration
+
+
+
+1. **Open your project with Claude Code**
+
+   ```bash
+   cd your-project
+   claude-code .
+   ```
+
+2. **Test: Reading NEXT-TASKS.md**
+
+   Ask Claude:
+
+   > "What's the current sprint goal?"
+
+   **Expected behavior**:
+   - Claude reads `NEXT-TASKS.md`
+   - Summarizes the active sprint and tasks
+   - Mentions blockers if any exist
+
+3. **Test: Following Patterns**
+
+   Ask Claude:
+
+   > "Implement the authentication middleware from the current sprint"
+
+   **Expected behavior**:
+   - Claude reads `NEXT-TASKS.md` to find the task
+   - Claude reads `docs/core/PATTERNS.md#authentication` for the pattern
+   - Claude generates code matching your documented pattern exactly
+
+4. **Test: Git Workflow**
+
+   Ask Claude:
+
+   > "Start working on the database setup task"
+
+   **Expected behavior**:
+   - Claude creates a feature branch: `git checkout -b feature/database-setup`
+   - Claude confirms branch creation before starting work
+
+5. **Test: Post-Task Protocol**
+
+   After implementing a feature, ask:
+
+   > "I'm done with this task. What's next?"
+
+   **Expected behavior**:
+   - Claude runs `cortex-tms validate`
+   - Claude commits changes with conventional format
+   - Claude updates `NEXT-TASKS.md` to mark task complete
+   - Claude suggests archiving if sprint is done
+
+
+
+<Aside type="caution">
+  If Claude doesn't follow the workflow, check that `CLAUDE.md` exists in the project root. Claude Code reads it automatically on startup.
+</Aside>
+
+### Advanced: Multi-Agent Collaboration
+
+You can configure Claude to work alongside other AI agents:
+
+```markdown
+## 🤝 Multi-Agent Workflow
+
+**When working with GitHub Copilot**:
+- Copilot handles inline autocomplete (micro-level)
+- Claude handles feature implementation (macro-level)
+- Copilot reads `.github/copilot-instructions.md` for critical rules
+- Claude reads full context from `CLAUDE.md` and `docs/core/`
+
+**Division of Labor**:
+- **Copilot**: Variable names, function signatures, repetitive code
+- **Claude**: Architecture decisions, test generation, refactoring
+
+**Communication Protocol**:
+- Copilot suggestions must follow patterns in `docs/core/PATTERNS.md`
+- If Copilot suggests code that violates patterns, reject it
+- Claude has final authority on architecture (defers to ADRs)
+```
+
+<Aside type="tip" title="Pro Tip">
+  Use Copilot for speed, Claude for correctness. Copilot autocompletes faster, but Claude understands broader context.
+</Aside>
+
+---
+
+## Part 2: GitHub Copilot Integration
+
+GitHub Copilot reads `.github/copilot-instructions.md` to understand project conventions. Cortex TMS generates this file with a reference to `CLAUDE.md`.
+
+### Prerequisites
+
+
+
+1. **Install GitHub Copilot**
+
+   - Subscribe at [github.com/copilot](https://github.com/features/copilot)
+   - Install the VS Code extension: [GitHub Copilot](https://marketplace.visualstudio.com/items?itemName=GitHub.copilot)
+
+2. **Verify installation**
+
+   Open VS Code → Settings → Search "Copilot" → Ensure enabled
+
+3. **Check Copilot reads instructions**
+
+   Open any `.ts` file and type a comment:
+
+   ```typescript
+   // Generate a function that
+   ```
+
+   Copilot should suggest completions based on your project context.
+
+
+
+### Understanding .github/copilot-instructions.md
+
+Cortex TMS generates `.github/copilot-instructions.md` with this default content:
+
+```markdown
+# GitHub Copilot Instructions for [Project Name]
+
+See `CLAUDE.md` for full project conventions and workflows.
+
+## Critical Rules (Security & Correctness)
+
+- **Never commit secrets**: No API keys, passwords, or tokens in source code
+- **Authentication**: Use RS256 JWT tokens with httpOnly cookies (see `docs/core/PATTERNS.md#authentication`)
+- **Error Handling**: Always use AppError class (see `docs/core/PATTERNS.md#error-handling`)
+
+## Tech Stack
+
+- **Language**: TypeScript (strict mode)
+- **Framework**: Express.js
+- **Database**: PostgreSQL with Drizzle ORM
+- **Testing**: Jest (unit), Playwright (e2e)
+
+## Quick Reference
+
+- Coding patterns: `docs/core/PATTERNS.md`
+- Architectural decisions: `docs/decisions/`
+- Current sprint: `NEXT-TASKS.md`
+```
+
+**Key sections**:
+
+- **Critical Rules**: Security and correctness rules that must never be violated
+- **Tech Stack**: Technologies Copilot should use
+- **Quick Reference**: Pointers to detailed documentation
+
+### Customizing Copilot Instructions
+
+Edit `.github/copilot-instructions.md` to add project-specific rules:
+
+<Tabs>
+  <TabItem label="Security Rules">
+    ```markdown
+    ## Critical Rules (Security & Correctness)
+
+    **Authentication & Authorization**:
+    - Never use HS256 for JWT tokens → Use RS256 (asymmetric)
+    - Never store tokens in localStorage → Use httpOnly cookies
+    - Access tokens expire in 15 minutes
+    - Refresh tokens expire in 7 days
+    - Always validate token signature server-side
+
+    **Data Validation**:
+    - Validate all user input with Zod schemas
+    - Sanitize SQL inputs (Drizzle handles this automatically)
+    - Never trust client-provided data
+
+    **Secrets Management**:
+    - Never commit secrets to Git (check .gitignore)
+    - Use environment variables for all secrets
+    - Never log secrets (even in debug mode)
+
+    **Financial Data**:
+    - Use `Decimal` type for money (never `number`)
+    - Store cents as integers (avoid floating-point errors)
+    - Round currency to 2 decimal places
+    ```
+
+    <Aside type="tip" title="Pro Tip">
+      List security rules first. Copilot prioritizes early content in the file.
+    </Aside>
+  </TabItem>
+
+  <TabItem label="Code Style">
+    ```markdown
+    ## Code Style Preferences
+
+    **TypeScript**:
+    - Prefer `interface` over `type` for object shapes
+    - Use `unknown` instead of `any` when type is truly unknown
+    - Enable `strict` mode (already enabled in tsconfig.json)
+
+    **Functions**:
+    - Prefer named exports over default exports
+    - Use arrow functions for callbacks
+    - Use function declarations for top-level functions
+
+    **Naming Conventions**:
+    - Variables: camelCase
+    - Constants: SCREAMING_SNAKE_CASE
+    - Classes: PascalCase
+    - Files: kebab-case.ts (e.g., `user-service.ts`)
+
+    **Imports**:
+    - Use path aliases: `@/services/user` instead of `../../services/user`
+    - Group imports: external, internal, types
+    - Sort imports alphabetically within groups
+    ```
+  </TabItem>
+
+  <TabItem label="Framework Patterns">
+    **Framework-Specific Patterns**
+
+    **Express.js Controllers**:
+    - Controllers are thin (delegate to services)
+    - Always use async/await (never callbacks)
+    - Return consistent response format: `{ status, data }` or `{ status, message }`
+
+    ```typescript
+    // Good: Thin controller
+    export async function getTask(req: Request, res: Response) {
+      const task = await taskService.getById(req.params.id);
+      return res.json({ status: 'success', data: { task } });
+    }
+
+    // Bad: Business logic in controller
+    export async function getTask(req: Request, res: Response) {
+      const task = await db.query.tasks.findFirst(/* ... */);
+      if (!task) throw new Error('Not found');
+      // ... 20 more lines
+    }
+    ```
+
+    **Drizzle ORM Queries**:
+    - Use query builder (not raw SQL)
+    - Always use parameterized queries
+    - Prefer `.returning()` for insert/update operations
+
+    ```typescript
+    // Good: Drizzle query builder
+    const [user] = await db
+      .insert(users)
+      .values({ name, email })
+      .returning();
+
+    // Bad: Raw SQL
+    const user = await db.execute(sql`INSERT INTO users ...`);
+    ```
+  </TabItem>
+
+  <TabItem label="Testing Patterns">
+    **Testing Patterns**
+
+    **Unit Tests**:
+    - One test file per source file: `user.service.ts` → `user.service.test.ts`
+    - Mock external dependencies (database, APIs, file system)
+    - Use descriptive test names: "should [expected] when [condition]"
+
+    ```typescript
+    // Good: Descriptive test name
+    it('should throw 404 error when task does not exist', async () => {
+      await expect(service.getById('invalid-id'))
+        .rejects.toThrow(new AppError('Task not found', 404));
+    });
+
+    // Bad: Vague test name
+    it('works correctly', async () => {
+      // What does "works correctly" mean?
+    });
+    ```
+
+    **Test Structure**:
+    - Arrange: Set up test data
+    - Act: Execute the function under test
+    - Assert: Verify the outcome
+
+    **Coverage Goals**:
+    - Services: 90%+ coverage (business logic must be tested)
+    - Controllers: 70%+ coverage (thin adapters need less)
+    - Utilities: 100% coverage (pure functions are easy to test)
+  </TabItem>
+</Tabs>
+
+### Testing Copilot Integration
+
+
+
+1. **Open VS Code** in your project
+
+   ```bash
+   code your-project
+   ```
+
+2. **Test: Inline Suggestions**
+
+   Create a new file `src/services/user.service.ts` and start typing:
+
+   ```typescript
+   import { db } from '@/db';
+   import { users } from '@/models';
+
+   export class UserService {
+     async createUser
+   ```
+
+   **Expected**: Copilot suggests a function signature matching your patterns:
+
+   ```typescript
+   async createUser(data: { name: string; email: string }) {
+     const [user] = await db
+       .insert(users)
+       .values(data)
+       .returning();
+
+     return user;
+   }
+   ```
+
+3. **Test: Security Rules**
+
+   Type a comment that violates security rules:
+
+   ```typescript
+   // Store JWT token in localStorage
+   ```
+
+   **Expected**: Copilot should NOT suggest `localStorage.setItem(...)` because `.github/copilot-instructions.md` forbids it.
+
+4. **Test: Chat Integration**
+
+   Open Copilot Chat (Cmd+Shift+I) and ask:
+
+   > "What's our authentication pattern?"
+
+   **Expected**: Copilot references `.github/copilot-instructions.md` and summarizes:
+   - RS256 JWT tokens
+   - httpOnly cookies
+   - 15-minute access token expiry
+
+5. **Test: Code Explanation**
+
+   Highlight a function and ask Copilot Chat:
+
+   > "Does this follow our error handling pattern?"
+
+   **Expected**: Copilot checks if the code uses `AppError` class (as specified in `.github/copilot-instructions.md`).
+
+
+
+<Aside type="caution">
+  GitHub Copilot has a 100-line limit for `.github/copilot-instructions.md`. Keep it concise and use references to `CLAUDE.md` or `docs/core/PATTERNS.md` for detailed patterns.
+</Aside>
+
+### Advanced: Copilot Chat Agents
+
+GitHub Copilot Chat supports custom agents that can read your documentation:
+
+```markdown
+## Copilot Chat Commands
+
+**@workspace**: Ask about the entire codebase
+- Example: "@workspace where is the authentication middleware?"
+
+**@terminal**: Execute commands and explain output
+- Example: "@terminal run npm test and explain failures"
+
+**Custom Slash Commands**:
+- `/explain`: Explain highlighted code
+- `/fix`: Suggest fixes for linting errors
+- `/tests`: Generate tests for highlighted function
+```
+
+<Aside type="tip" title="Pro Tip">
+  Use `@workspace` when asking Copilot about architecture or patterns. It scans all files, including your `docs/` directory.
+</Aside>
+
+---
+
+## Part 3: Cursor Integration
+
+[Cursor](https://cursor.sh) is an AI-powered code editor built on VS Code. It reads `.cursorrules` to understand project conventions.
+
+### Prerequisites
+
+
+
+1. **Download Cursor**
+
+   Visit [cursor.sh](https://cursor.sh) and download the installer for your OS.
+
+2. **Migrate from VS Code** (optional)
+
+   Cursor can import your VS Code settings:
+
+   ```
+   Cursor → Settings → General → Import VS Code Settings
+   ```
+
+3. **Enable AI features**
+
+   Cursor requires an account (free tier available):
+
+   ```
+   Cursor → Sign In → Create Account
+   ```
+
+
+
+### Understanding .cursorrules
+
+Cursor reads `.cursorrules` from the project root. This file uses the same format as `CLAUDE.md`.
+
+**Two approaches**:
+
+<Tabs>
+  <TabItem label="Approach 1: Copy CLAUDE.md">
+    ```bash
+    # Copy CLAUDE.md to .cursorrules
+    cp CLAUDE.md .cursorrules
+
+    # Add .cursorrules to .gitignore (if team uses different editors)
+    echo ".cursorrules" >> .gitignore
+    ```
+
+    **Pros**:
+    - Full context available to Cursor
+    - Includes all workflows and patterns
+
+    **Cons**:
+    - Must manually sync changes between files
+    - Risk of drift over time
+  </TabItem>
+
+  <TabItem label="Approach 2: Symlink (Recommended)">
+    ```bash
+    # Create symlink from .cursorrules to CLAUDE.md
+    ln -s CLAUDE.md .cursorrules
+
+    # Commit symlink to Git
+    git add .cursorrules
+    git commit -m "chore: link .cursorrules to CLAUDE.md"
+    ```
+
+    **Pros**:
+    - Files stay in sync automatically
+    - Single source of truth (CLAUDE.md)
+
+    **Cons**:
+    - Symlinks don't work on all Windows setups
+    - Team must use Cursor (or ignore .cursorrules)
+
+    <Aside type="tip" title="Pro Tip">
+      Use symlinks unless your team has Windows users without symlink support. Check with `git config core.symlinks`.
+    </Aside>
+  </TabItem>
+</Tabs>
+
+### Customizing .cursorrules
+
+If you choose to maintain a separate `.cursorrules` file, customize it for Cursor's strengths:
+
+```markdown
+# Cursor Rules for [Project Name]
+
+See `CLAUDE.md` for full project conventions.
+
+## Tech Stack
+
+- TypeScript (strict mode)
+- Express.js API
+- PostgreSQL with Drizzle ORM
+- Jest + Playwright for testing
+
+## Critical Rules
+
+- Never commit secrets (API keys, passwords)
+- Use RS256 JWT tokens (not HS256)
+- Store tokens in httpOnly cookies (not localStorage)
+- Follow patterns in `docs/core/PATTERNS.md`
+
+## Cursor-Specific Workflows
+
+**Multi-File Edits**:
+- Use Cmd+K for inline edits (single file)
+- Use Chat for multi-file refactoring (e.g., renaming across files)
+
+**Codebase Exploration**:
+- Use "@Codebase" in chat to search entire project
+- Ask: "@Codebase where is the authentication logic?"
+
+**Pattern Application**:
+- Reference canonical examples: "Follow `src/services/tasks.service.ts` pattern"
+- Cursor will analyze the example and apply the pattern
+
+## Quick Commands
+
+- **Test**: `npm test`
+- **Lint**: `npm run lint`
+- **Dev Server**: `npm run dev` (http://localhost:3000)
+```
+
+### Testing Cursor Integration
+
+
+
+1. **Open project in Cursor**
+
+   ```bash
+   cursor your-project
+   ```
+
+2. **Test: Inline Edits (Cmd+K)**
+
+   Open `src/services/user.service.ts` and place cursor on a function.
+
+   Press `Cmd+K` (or `Ctrl+K`) and type:
+
+   > "Add error handling following our AppError pattern"
+
+   **Expected**: Cursor reads `.cursorrules` → `docs/core/PATTERNS.md#error-handling` and wraps the function in try/catch with `AppError`.
+
+3. **Test: Chat Context (@Codebase)**
+
+   Open Cursor Chat (Cmd+L) and ask:
+
+   > "@Codebase What's our authentication pattern?"
+
+   **Expected**: Cursor searches the codebase, finds `.cursorrules` → `docs/core/PATTERNS.md#authentication`, and summarizes the pattern.
+
+4. **Test: Multi-File Refactoring**
+
+   In Cursor Chat, ask:
+
+   > "Rename `getUserTasks` to `fetchUserTasks` across all files"
+
+   **Expected**: Cursor identifies all occurrences and proposes changes across multiple files.
+
+5. **Test: Pattern Replication**
+
+   In Cursor Chat, ask:
+
+   > "Create a new ProjectService following the pattern in `src/services/tasks.service.ts`"
+
+   **Expected**: Cursor analyzes `tasks.service.ts` and generates `project.service.ts` with the same structure (class, methods, error handling, tests).
+
+
+
+<Aside type="note">
+  Cursor excels at multi-file edits. Use it for refactoring, renaming, and large-scale changes. Use Copilot for inline autocomplete.
+</Aside>
+
+### Advanced: Cursor Composer
+
+Cursor Composer is a multi-file editing mode that applies changes across your codebase:
+
+
+
+1. **Open Composer**
+
+   Press `Cmd+Shift+I` (or `Ctrl+Shift+I`)
+
+2. **Describe multi-file change**
+
+   Type:
+
+   > "Refactor all services to use dependency injection. Inject the database connection via constructor instead of importing `db` directly."
+
+3. **Review proposed changes**
+
+   Cursor shows a diff of all affected files.
+
+4. **Accept or reject**
+
+   Review each file and accept/reject changes individually.
+
+
+
+<Aside type="tip" title="Pro Tip">
+  Use Composer for large refactorings that span 10+ files. It's faster than manually editing each file.
+</Aside>
+
+---
+
+## Part 4: Comparing the Three Agents
+
+Each AI agent has strengths and weaknesses. Here's when to use each:
+
+### Feature Comparison Matrix
+
+| Feature | Claude Code | GitHub Copilot | Cursor |
+|---------|-------------|----------------|--------|
+| **Inline Autocomplete** | ❌ No | ✅ Excellent | ✅ Good |
+| **Multi-File Edits** | ✅ Excellent | ❌ No | ✅ Excellent |
+| **Chat Interface** | ✅ Terminal-based | ✅ VS Code sidebar | ✅ Built-in panel |
+| **Context Window** | 200k tokens | ~4k tokens | ~32k tokens |
+| **Reads Documentation** | ✅ CLAUDE.md | ⚠️ Limited (100 lines) | ✅ .cursorrules |
+| **Autonomous Workflows** | ✅ Yes (follows CLAUDE.md) | ❌ No | ⚠️ Limited |
+| **Code Explanation** | ✅ Excellent | ✅ Good | ✅ Good |
+| **Test Generation** | ✅ Excellent | ✅ Good | ✅ Good |
+| **Refactoring** | ✅ Excellent | ❌ Limited | ✅ Excellent |
+| **Cost** | Free tier + paid | $10-20/month | Free tier + paid |
+
+### Use Case Recommendations
+
+<CardGrid>
+  <Card title="Daily Coding" icon="pencil">
+    **Use Copilot**
+
+    Fast inline autocomplete for variable names, function signatures, and repetitive code.
+  </Card>
+
+  <Card title="Feature Implementation" icon="seti:config">
+    **Use Claude Code or Cursor**
+
+    Understands broader context, follows patterns, generates tests.
+  </Card>
+
+  <Card title="Large Refactoring" icon="random">
+    **Use Cursor Composer**
+
+    Multi-file edits with preview and granular accept/reject.
+  </Card>
+
+  <Card title="Architectural Decisions" icon="open-book">
+    **Use Claude Code**
+
+    Reads ADRs, suggests alternatives, creates documentation.
+  </Card>
+</CardGrid>
+
+---
+
+## Part 5: Multi-Agent Workflows
+
+You can use all three agents together for maximum productivity:
+
+### Example: Building a New Feature
+
+
+
+1. **Planning (Claude Code)**
+
+   Ask Claude Code:
+
+   > "Read NEXT-TASKS.md and create a plan for implementing the 'User Profile' feature"
+
+   **Claude does**:
+   - Reads `NEXT-TASKS.md` to understand requirements
+   - Checks `docs/core/PATTERNS.md` for existing patterns
+   - Creates a step-by-step implementation plan
+   - Suggests test cases
+
+2. **Implementation (Copilot + Cursor)**
+
+   **Copilot**: Use for inline autocomplete while writing:
+   - Controller methods
+   - Service functions
+   - Database queries
+
+   **Cursor**: Use Cmd+K for:
+   - Generating boilerplate (entire controller class)
+   - Adding error handling to functions
+   - Generating validation schemas
+
+3. **Testing (Claude Code)**
+
+   Ask Claude Code:
+
+   > "Generate unit tests for UserProfileService"
+
+   **Claude does**:
+   - Reads `docs/core/PATTERNS.md#testing`
+   - Generates tests matching your testing pattern
+   - Mocks dependencies correctly
+   - Runs `npm test` to verify
+
+4. **Refactoring (Cursor Composer)**
+
+   After initial implementation, use Cursor Composer:
+
+   > "Refactor UserProfileService to use dependency injection"
+
+   **Cursor does**:
+   - Edits `user-profile.service.ts`
+   - Updates `user-profile.service.test.ts` (mocks)
+   - Updates `src/index.ts` (service instantiation)
+
+5. **Documentation (Claude Code)**
+
+   Ask Claude Code:
+
+   > "Update docs/core/PATTERNS.md with the user profile pattern"
+
+   **Claude does**:
+   - Adds a new section to PATTERNS.md
+   - Includes canonical example
+   - Updates table of contents
+
+6. **Validation (Claude Code)**
+
+   Ask Claude Code:
+
+   > "Run the post-task protocol"
+
+   **Claude does**:
+   - Runs `cortex-tms validate --strict`
+   - Runs `npm test`
+   - Commits changes with conventional format
+   - Updates `NEXT-TASKS.md` to mark task complete
+
+
+
+<Aside type="tip" title="Pro Tip">
+  Use each agent for its strength. Copilot for speed, Cursor for multi-file edits, Claude Code for workflows and validation.
+</Aside>
+
+---
+
+## Part 6: Troubleshooting
+
+### Issue: AI agent isn't reading documentation
+
+**Symptoms**:
+- Claude Code generates code that violates patterns
+- Copilot suggests incorrect conventions
+- Cursor doesn't reference `.cursorrules`
+
+**Solutions**:
+
+<Tabs>
+  <TabItem label="Claude Code">
+
+      1. **Verify CLAUDE.md exists**
+
+         ```bash
+         ls -la CLAUDE.md
+         ```
+
+         If missing, run `cortex-tms init` to regenerate.
+
+      2. **Check file encoding**
+
+         CLAUDE.md must be UTF-8 encoded:
+
+         ```bash
+         file CLAUDE.md
+         # Output: CLAUDE.md: UTF-8 Unicode text
+         ```
+
+      3. **Test with explicit reference**
+
+         Ask: _"Read CLAUDE.md and summarize the operational loop"_
+
+         If Claude can't read it, report a bug.
+
+  </TabItem>
+
+  <TabItem label="GitHub Copilot">
+
+      1. **Verify .github/copilot-instructions.md exists**
+
+         ```bash
+         ls -la .github/copilot-instructions.md
+         ```
+
+      2. **Check file size**
+
+         Must be under 100 lines:
+
+         ```bash
+         wc -l .github/copilot-instructions.md
+         # Output: 68 .github/copilot-instructions.md
+         ```
+
+         If over 100 lines, move details to `CLAUDE.md` and reference it.
+
+      3. **Restart VS Code**
+
+         Copilot caches instructions. Reload window:
+
+         ```
+         Cmd+Shift+P → Reload Window
+         ```
+
+  </TabItem>
+
+  <TabItem label="Cursor">
+
+      1. **Verify .cursorrules exists**
+
+         ```bash
+         ls -la .cursorrules
+         ```
+
+         If symlink, ensure target exists:
+
+         ```bash
+         readlink .cursorrules
+         # Output: CLAUDE.md
+         ```
+
+      2. **Check Cursor settings**
+
+         Open Settings → Search "cursorrules" → Ensure enabled
+
+      3. **Reload Cursor**
+
+         ```
+         Cmd+Shift+P → Reload Window
+         ```
+
+  </TabItem>
+</Tabs>
+
+---
+
+### Issue: AI agent violates security rules
+
+**Symptoms**:
+- Copilot suggests storing tokens in localStorage
+- Claude generates HS256 tokens instead of RS256
+- Cursor suggests committing secrets
+
+**Solutions**:
+
+
+
+1. **Add security rule to instructions**
+
+   Edit `.github/copilot-instructions.md` (or `.cursorrules`):
+
+   ```markdown
+   ## Critical Rules (Security)
+
+   **NEVER**:
+   - Store tokens in localStorage (use httpOnly cookies)
+   - Use HS256 for JWT (use RS256)
+   - Commit secrets to Git (use environment variables)
+   ```
+
+2. **Move security rules to the top**
+
+   AI agents prioritize early content. Put critical rules first.
+
+3. **Use explicit negative examples**
+
+   ```markdown
+   ## Authentication (Critical)
+
+   ✅ **Good**: RS256 JWT tokens in httpOnly cookies
+   ```typescript
+   res.cookie('refreshToken', token, {
+     httpOnly: true,
+     secure: true,
+     sameSite: 'strict',
+   });
+   ```
+
+   ❌ **Bad**: HS256 tokens in localStorage
+   ```typescript
+   // NEVER DO THIS
+   localStorage.setItem('token', token);
+   ```
+   ```
+
+
+
+---
+
+### Issue: AI agent doesn't follow patterns
+
+**Symptoms**:
+- Generated code doesn't match `docs/core/PATTERNS.md`
+- Inconsistent naming conventions
+- Incorrect error handling
+
+**Solutions**:
+
+
+
+1. **Add canonical examples to PATTERNS.md**
+
+   AI agents learn better from examples than descriptions:
+
+   ```markdown
+   ## Authentication Pattern
+
+   **Canonical Example**: `src/middleware/auth.middleware.ts`
+
+   ```typescript
+   // Copy the ENTIRE implementation here
+   export async function authenticateToken(req, res, next) {
+     // ... full code
+   }
+   ```
+   ```
+
+2. **Reference patterns explicitly in NEXT-TASKS.md**
+
+   Instead of: "Implement authentication"
+
+   Write: "Implement authentication following `docs/core/PATTERNS.md#authentication` (RS256, 15-min expiry, httpOnly cookies)"
+
+3. **Use pattern validation**
+
+   After AI generates code, ask:
+
+   > "Does this code follow our authentication pattern from PATTERNS.md?"
+
+   AI will self-correct if it finds discrepancies.
+
+
+
+---
+
+## Best Practices
+
+<CardGrid stagger>
+  <Card title="Keep Instructions Under 100 Lines" icon="document">
+    GitHub Copilot has a 100-line limit for `.github/copilot-instructions.md`. Use references to longer docs.
+  </Card>
+
+  <Card title="Update Docs as You Learn" icon="pencil">
+    When AI makes a mistake, update `PATTERNS.md` with the correct approach. This prevents future errors.
+  </Card>
+
+  <Card title="Use Canonical Examples" icon="open-book">
+    Point AI to real files: "Follow `src/services/tasks.service.ts` pattern". Examples are better than descriptions.
+  </Card>
+
+  <Card title="Security Rules First" icon="warning">
+    Put critical security rules at the top of instruction files. AI agents prioritize early content.
+  </Card>
+
+  <Card title="Test AI Integration Early" icon="seti:test">
+    After setting up TMS, test each AI agent with sample tasks. Fix documentation gaps immediately.
+  </Card>
+
+  <Card title="Commit AI-Generated Code Carefully" icon="seti:git">
+    Always review AI suggestions. Run tests and linting before committing.
+  </Card>
+</CardGrid>
+
+---
+
+## Next Steps
+
+Now that you've integrated AI agents with Cortex TMS:
+
+- **[Team Adoption](/guides/team-adoption/)**: Onboard your team to the TMS + AI workflow
+- **[CI/CD Integration](/guides/ci-cd-integration/)**: Automate validation in GitHub Actions
+- **[First Project](/guides/first-project/)**: Build a complete project with AI agents
+
+<Aside type="tip" title="Pro Tip">
+  Start with one AI agent (Copilot or Cursor) and add others incrementally. Trying all three at once can be overwhelming.
+</Aside>

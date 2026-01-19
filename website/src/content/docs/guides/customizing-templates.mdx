@@ -1,0 +1,1213 @@
+---
+title: Customizing Templates Guide
+description: Modify Cortex TMS templates, create custom scopes, add organization-specific files, and maintain custom templates
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside, FileTree } from '@astrojs/starlight/components';
+
+This guide shows you how to customize Cortex TMS templates for your organization's specific needs. You'll learn how to modify existing templates, create custom scopes, add organization-specific files, and maintain your customizations over time.
+
+## Why Customize Templates
+
+Cortex TMS ships with sensible defaults (Standard, Nano, Enterprise), but organizations have unique needs:
+
+- **Custom file structures**: Your project layout differs from the template
+- **Organization standards**: You have specific conventions and governance files
+- **Legal requirements**: You need compliance documentation
+- **Integration requirements**: You use specific tools and platforms
+- **Team workflows**: Your SDLC has unique ceremonies and artifacts
+
+**Template customization lets you** encode your organization's standards into TMS initialization.
+
+---
+
+## Part 1: Understanding Template Structure
+
+### Template Anatomy
+
+Cortex TMS templates are stored in the package under `templates/` directory:
+
+<FileTree>
+- templates/
+  - standard/
+    - CLAUDE.md
+    - NEXT-TASKS.md
+    - docs/
+      - core/
+        - PATTERNS.md
+        - ARCHITECTURE.md
+        - GLOSSARY.md
+        - DOMAIN-LOGIC.md
+        - SCHEMA.md
+        - TROUBLESHOOTING.md
+      - decisions/
+        - .gitkeep
+      - archive/
+        - .gitkeep
+    - .github/
+      - copilot-instructions.md
+    - .cortexrc
+  - nano/
+  - enterprise/
+  - custom/
+</FileTree>
+
+Each scope defines:
+- Which files to include
+- Template content for each file
+- Placeholders for project-specific values
+- Dependencies and ordering
+
+### Understanding Placeholders
+
+Templates use placeholders that get replaced during initialization:
+
+- `{{PROJECT_NAME}}` - Your project name
+- `{{PROJECT_DESCRIPTION}}` - Your project description
+- `{{AUTHOR}}` - Your name or team
+- `{{YEAR}}` - Current year
+- `{{CUSTOM_*}}` - Any custom placeholder you define
+
+**Example from template**:
+
+```markdown
+# {{PROJECT_NAME}}
+
+{{PROJECT_DESCRIPTION}}
+
+**Maintained by**: {{AUTHOR}}
+**Last updated**: {{YEAR}}
+```
+
+---
+
+## Part 2: Modifying Existing Templates
+
+### Step 1: Fork the Templates
+
+Instead of modifying Cortex TMS core, create a fork in your organization:
+
+```bash
+# Clone the public Cortex TMS repo
+git clone https://github.com/cortex-tms/cortex-tms.git cortex-tms-custom
+cd cortex-tms-custom
+
+# Create organization repo
+git remote add org-origin https://github.com/your-org/cortex-tms-templates.git
+git push org-origin main
+```
+
+<Aside type="tip" title="Pro Tip">
+  Fork the repo so you can pull updates from Cortex TMS while maintaining your customizations.
+</Aside>
+
+### Step 2: Modify Standard Template
+
+Edit `templates/standard/CLAUDE.md`:
+
+```markdown
+# 🤖 Agent Workflow & Persona
+
+## 🎯 Role
+
+Expert Senior Developer at {{COMPANY_NAME}}.
+
+Follow our **"Propose, Justify, Recommend"** framework and our internal standards.
+
+## 🏢 Organization Standards
+
+- **Code Review**: See `docs/core/STANDARDS.md` for review process
+- **Security**: See `docs/core/SECURITY.md` for compliance requirements
+- **Performance**: See `docs/core/PERFORMANCE.md` for optimization guidelines
+
+## 💻 CLI Commands
+
+- **Test**: `npm test` or `pnpm test`
+- **Lint**: `npm run lint`
+- **Build**: `npm run build`
+
+## 🛠 Operational Loop
+
+(Rest of template...)
+```
+
+### Step 3: Add Organization-Specific Files
+
+Create new template files:
+
+`templates/standard/docs/core/STANDARDS.md`:
+
+```markdown
+# {{COMPANY_NAME}} Development Standards
+
+This document defines {{COMPANY_NAME}}'s development standards and best practices.
+
+## Code Review Process
+
+1. All PRs require 2 approvals (minimum 1 senior dev)
+2. Automated checks must pass (linting, tests, type-checking)
+3. PATTERNS.md must be followed (or pattern updated if needed)
+4. Documentation must be updated with code changes
+
+## Commit Message Format
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```text
+<type>(<scope>): <subject>
+
+<body>
+
+Co-Authored-By: Name (email@company.com)
+```
+
+**Types**:
+- `feat` - New feature
+- `fix` - Bug fix
+- `docs` - Documentation
+- `test` - Tests
+- `refactor` - Code refactoring
+- `perf` - Performance improvement
+- `chore` - Build/tooling changes
+
+**Example**:
+```
+feat(auth): implement JWT token refresh
+
+- Add refresh token endpoint
+- Implement 7-day expiry for refresh tokens
+- Add rotation mechanism
+
+Co-Authored-By: Alice Smith (alice@company.com)
+```
+
+## Testing Requirements
+
+- **Unit tests**: Minimum 80% code coverage
+- **Integration tests**: Required for APIs
+- **E2E tests**: Required for critical user flows
+- **Performance tests**: Required for backends handling 1000+ requests/sec
+
+## Documentation Requirements
+
+- ADRs for all architectural decisions
+- PATTERNS.md updated when introducing new conventions
+- TROUBLESHOOTING.md updated with known issues and solutions
+- Inline code comments for complex logic
+
+## Performance Targets
+
+- API response times: under 100ms for 95th percentile
+- Frontend load time: under 2 seconds (Lighthouse Score above 80)
+- Database query times: under 50ms for 95th percentile
+```
+
+<Aside type="note">
+  Add organization-specific files to the template. They'll be included in every new project initialized with your custom template.
+</Aside>
+
+### Step 4: Update .cortexrc Metadata
+
+Edit `templates/standard/.cortexrc`:
+
+```json
+{
+  "scope": "standard",
+  "version": "2.6.0",
+  "organization": "{{COMPANY_NAME}}",
+  "createdAt": "{{YEAR}}-{{MONTH}}-{{DAY}}",
+  "customizations": {
+    "organization": true,
+    "security": true,
+    "performance": true
+  }
+}
+```
+
+---
+
+## Part 3: Creating Custom Scopes
+
+### Step 1: Create New Scope Directory
+
+Create your custom scope:
+
+```bash
+mkdir -p templates/finance
+```
+
+<FileTree>
+- templates/
+  - finance/
+    - CLAUDE.md
+    - NEXT-TASKS.md
+    - docs/
+      - core/
+        - PATTERNS.md
+        - ARCHITECTURE.md
+        - GLOSSARY.md
+        - COMPLIANCE.md
+        - SECURITY.md
+      - decisions/
+        - .gitkeep
+      - archive/
+        - .gitkeep
+    - .github/
+      - copilot-instructions.md
+    - .cortexrc
+</FileTree>
+
+### Step 2: Create Scope-Specific Templates
+
+Create `templates/finance/docs/core/COMPLIANCE.md`:
+
+```markdown
+# {{COMPANY_NAME}} Compliance Standards
+
+This document defines compliance requirements for financial software.
+
+## Data Protection (GDPR)
+
+All customer data must:
+- Be encrypted at rest (AES-256)
+- Be encrypted in transit (TLS 1.3)
+- Have audit logs for access
+- Be deletable on request (right to be forgotten)
+
+See implementation in `src/security/encryption.ts`.
+
+## PCI Compliance
+
+Payment processing must:
+- Never store full credit card numbers (tokenize with Stripe/Adyen)
+- Use PCI-certified payment processors
+- Have quarterly security audits
+- Pass SOC 2 Type II compliance
+
+## SOX Compliance (if public company)
+
+Financial reporting systems must:
+- Have complete audit trails (who, what, when)
+- Support financial reconciliation
+- Have segregation of duties (no one person can approve payments)
+- Have monthly reconciliation procedures
+
+## Audit Trail Pattern
+
+All financial transactions must be logged:
+
+```typescript
+// Good
+interface AuditLog {
+  id: string;
+  action: 'payment_created' | 'payment_approved' | 'payment_rejected';
+  userId: string;
+  timestamp: Date;
+  amount: Decimal;
+  changes: Record<string, unknown>;
+  ipAddress: string;
+}
+
+// Store immutably in audit table
+await db.insert(auditLogs).values(log);
+```
+
+## Disaster Recovery
+
+- **RTO** (Recovery Time Objective): 1 hour
+- **RPO** (Recovery Point Objective): 15 minutes
+- Backup strategy: Continuous replication to backup region
+- Test recovery monthly
+```
+
+### Step 3: Create Scope Configuration
+
+Create `templates/finance/.cortexrc`:
+
+```json
+{
+  "scope": "finance",
+  "version": "2.6.0",
+  "organization": "{{COMPANY_NAME}}",
+  "description": "Cortex TMS configured for financial software projects",
+  "files": [
+    "CLAUDE.md",
+    "NEXT-TASKS.md",
+    "CHANGELOG.md",
+    "docs/core/PATTERNS.md",
+    "docs/core/ARCHITECTURE.md",
+    "docs/core/GLOSSARY.md",
+    "docs/core/COMPLIANCE.md",
+    "docs/core/SECURITY.md",
+    "docs/decisions/.gitkeep",
+    "docs/archive/.gitkeep",
+    ".github/copilot-instructions.md"
+  ],
+  "placeholders": {
+    "PROJECT_NAME": "Your project name",
+    "PROJECT_DESCRIPTION": "Your project description",
+    "COMPANY_NAME": "Your company name",
+    "COMPLIANCE_OFFICER": "Person responsible for compliance"
+  }
+}
+```
+
+---
+
+## Part 4: Template Placeholders
+
+### Common Placeholders
+
+Define standard placeholders that all templates support:
+
+| Placeholder | Example | Use Case |
+|-------------|---------|----------|
+| `{{PROJECT_NAME}}` | task-api | File headers, documentation |
+| `{{PROJECT_DESCRIPTION}}` | RESTful task management API | README, package.json |
+| `{{AUTHOR}}` | Jane Smith | Documentation attribution |
+| `{{YEAR}}` | 2026 | Dates, copyright notices |
+| `{{COMPANY_NAME}}` | Acme Corp | Organization-specific docs |
+| `{{REPOSITORY_URL}}` | github.com/acme/task-api | Links to repo |
+| `{{SLACK_CHANNEL}}` | #engineering | Communication channels |
+
+### Custom Placeholders
+
+Define project-specific placeholders:
+
+```json
+{
+  "placeholders": {
+    "PROJECT_NAME": "Name of your project",
+    "PROJECT_DESCRIPTION": "What does your project do?",
+    "TEAM_NAME": "Your team name (e.g., Backend, Frontend)",
+    "SLACK_CHANNEL": "Your team's Slack channel",
+    "ON_CALL_SCHEDULE": "Link to on-call rotation (PagerDuty, OpsGenie)",
+    "INCIDENT_RESPONSE_DOCS": "Link to incident response playbook"
+  }
+}
+```
+
+### Conditional Sections
+
+Use placeholders to include/exclude sections:
+
+```markdown
+{{#IF_COMPLIANCE}}
+## Compliance Requirements
+
+See docs/core/COMPLIANCE.md for detailed requirements.
+{{/IF_COMPLIANCE}}
+
+{{#IF_OPEN_SOURCE}}
+## Contributing
+
+See CONTRIBUTING.md for guidelines.
+{{/IF_OPEN_SOURCE}}
+```
+
+---
+
+## Part 5: Forking and Maintaining Custom Templates
+
+### Step 1: Set Up Your Template Repository
+
+```bash
+# Clone Cortex TMS as base
+git clone https://github.com/cortex-tms/cortex-tms.git org-cortex-tms
+cd org-cortex-tms
+
+# Configure for your org
+git config user.name "Your Organization"
+git config user.email "templates@your-org.com"
+
+# Push to your org
+git remote set-url origin https://github.com/your-org/cortex-tms-templates.git
+git push -u origin main
+```
+
+### Step 2: Create Local Override Directory
+
+Your developers can override templates locally:
+
+```bash
+# Create override directory
+mkdir -p ~/.cortex-tms/templates/custom
+
+# Copy and customize
+cp -r /path/to/cortex-tms/templates/standard ~/.cortex-tms/templates/my-company
+```
+
+### Step 3: Use Custom Templates During Init
+
+```bash
+# Initialize with custom template
+cortex-tms init --template-path ~/.cortex-tms/templates/my-company
+
+# Or from organization repo
+cortex-tms init --template-url https://github.com/your-org/cortex-tms-templates/templates/finance
+```
+
+### Step 4: Track Changes and Updates
+
+Create `CUSTOMIZATIONS.md` to document your changes:
+
+```markdown
+# {{COMPANY_NAME}} Cortex TMS Customizations
+
+Last updated: 2026-01-19
+
+## Custom Files Added
+
+- `docs/core/COMPLIANCE.md` - Financial compliance requirements
+- `docs/core/SECURITY.md` - Security practices
+- `docs/core/STANDARDS.md` - Code review and commit standards
+- `INCIDENT_RESPONSE.md` - On-call procedures
+
+## Placeholders Added
+
+- `{{COMPANY_NAME}}` - Organization name
+- `{{SLACK_CHANNEL}}` - Team communication channel
+- `{{COMPLIANCE_OFFICER}}` - Person responsible for compliance
+
+## Custom Scopes
+
+- `finance` - For financial software projects
+- `mlops` - For machine learning projects
+- `mobile` - For mobile app projects
+
+## Maintenance Schedule
+
+- **Quarterly**: Review Cortex TMS releases and merge updates
+- **Monthly**: Review and update organization standards
+- **Weekly**: Support teams using custom templates
+
+## How to Update
+
+1. Create a branch: `git checkout -b docs/update-templates`
+2. Make changes
+3. Update this file
+4. Create PR and get organization approval
+5. Merge to main
+6. Tag release: `git tag -a v1.1.0 -m "Update templates"`
+7. Push: `git push origin main --tags`
+
+## How Teams Use These Templates
+
+```bash
+# Initialize project with your organization's standards
+cortex-tms init --template https://github.com/your-org/cortex-tms-templates#v1.1.0
+
+# Choose scope at initialization
+# ❯ Standard (Recommended for most projects)
+#   Finance (For financial software)
+#   MLOps (For ML projects)
+#   Custom (Choose specific files)
+```
+```
+
+<Aside type="tip" title="Pro Tip">
+  Version your template repository with semantic versioning. Teams can pin specific versions: `--template https://...#v1.1.0`
+</Aside>
+
+---
+
+## Part 6: Contributing Improvements Back
+
+### Step 1: Identify Useful Customizations
+
+After using custom templates, identify patterns that might benefit the broader Cortex TMS community:
+
+```markdown
+## Customization: Micro-service Project Scope
+
+**Problem**: Microservices projects need different documentation structure than monoliths.
+
+**Solution**: Create a new scope with:
+- SERVICE_NAME placeholder for each service
+- docs/services/ directory for service-specific docs
+- docs/interactions/ for service-to-service communication
+- docs/contracts/ for API contracts
+
+**Value**: Teams building microservices can get properly structured docs.
+```
+
+### Step 2: Propose to Cortex TMS
+
+Open an issue on [cortex-tms/cortex-tms](https://github.com/cortex-tms/cortex-tms):
+
+```markdown
+## Proposal: Microservices Template Scope
+
+**Type**: Enhancement
+
+**Description**:
+Add a "microservices" scope to Cortex TMS for teams building service-oriented architectures.
+
+**Why**:
+Many organizations using TMS are moving to microservices, but the current scopes (standard, nano, enterprise) assume monolithic structure.
+
+**Suggested Changes**:
+- Add `templates/microservices/` scope
+- Include `docs/services/` directory
+- Add `docs/contracts/` for API specifications
+- Include service discovery documentation
+
+**Example Use**:
+```bash
+cortex-tms init --scope microservices
+```
+
+**Benefits**:
+- Consistency across microservices teams
+- Built-in service documentation patterns
+- Clear communication between services
+
+**Related Issues**: [links to related discussions]
+```
+
+### Step 3: Submit Pull Request
+
+Submit your improvements as a PR:
+
+```bash
+# Fetch latest Cortex TMS
+git remote add upstream https://github.com/cortex-tms/cortex-tms.git
+git fetch upstream
+
+# Create feature branch
+git checkout -b feature/microservices-scope
+
+# Make changes
+# ... modify templates, add docs, etc ...
+
+# Test your changes
+npm install
+npm run test
+
+# Push and create PR
+git push origin feature/microservices-scope
+```
+
+---
+
+## Part 7: Best Practices for Custom Templates
+
+<CardGrid stagger>
+  <Card title="Keep Templates Lean" icon="rocket">
+    Include only essential files. Developers can add extras as needed. Bloated templates are overwhelming.
+  </Card>
+
+  <Card title="Document Placeholders" icon="open-book">
+    Every placeholder should have a description explaining its use. Make it easy for new projects to customize.
+  </Card>
+
+  <Card title="Version Your Templates" icon="tag">
+    Use semantic versioning (v1.0.0, v1.1.0, v2.0.0). Teams should be able to pin versions.
+  </Card>
+
+  <Card title="Test Templates" icon="seti:test">
+    Before releasing, test templates by initializing a test project. Verify all placeholders work.
+  </Card>
+
+  <Card title="Review Regularly" icon="document">
+    Schedule quarterly reviews to update templates as organization standards evolve.
+  </Card>
+
+  <Card title="Share with Team" icon="star">
+    Document custom templates in your team wiki or README. Teams need to know they exist.
+  </Card>
+</CardGrid>
+
+---
+
+## Troubleshooting
+
+### Issue: Placeholder not being replaced
+
+**Symptoms**:
+- `{{PROJECT_NAME}}` appears literally in initialized files
+- Placeholders only work in some files
+
+**Solutions**:
+
+
+
+1. **Check placeholder syntax**
+
+   Ensure placeholders use double braces: `{{PLACEHOLDER}}`
+
+   Not: `{PLACEHOLDER}` or `${PLACEHOLDER}`
+
+2. **Verify file is included in scope**
+
+   Check `.cortexrc` file list includes the file with placeholders.
+
+3. **Check for escape sequences**
+
+   If placeholder contains special characters, it might be escaped:
+
+   ```markdown
+   # Bad
+   {{PROJECT_NAME}} - {{COMPANY_NAME}}
+
+   # Good
+   {{PROJECT_NAME}} - {{COMPANY_NAME}}
+   ```
+
+4. **Test placeholder definition**
+
+   Verify placeholder is defined in `.cortexrc`:
+
+   ```json
+   {
+     "placeholders": {
+       "PROJECT_NAME": "Your project name",
+       "COMPANY_NAME": "Your company name"
+     }
+   }
+   ```
+
+
+
+---
+
+### Issue: Custom template not found
+
+**Symptoms**:
+- `cortex-tms init --template-path /path/to/template` fails with "template not found"
+- Error: "Cannot locate .cortexrc in template directory"
+
+**Solutions**:
+
+
+
+1. **Verify template directory structure**
+
+   Template must have `.cortexrc` at root:
+
+   ```bash
+   ls -la /path/to/template/.cortexrc
+   # Should exist and be valid JSON
+   ```
+
+2. **Check template URL format**
+
+   For remote templates, ensure full path:
+
+   ```bash
+   # Good
+   cortex-tms init --template-url https://github.com/org/repo/templates/custom
+
+   # Bad
+   cortex-tms init --template-url https://github.com/org/repo
+   ```
+
+3. **Verify .cortexrc is valid JSON**
+
+   ```bash
+   cat /path/to/template/.cortexrc | jq .
+   # Should output valid JSON
+   ```
+
+4. **Check file permissions**
+
+   Template files must be readable:
+
+   ```bash
+   chmod -R 644 /path/to/template/
+   chmod 755 /path/to/template/
+   ```
+
+
+
+---
+
+### Issue: Template changes not applying to existing projects
+
+**Symptoms**:
+- You update a template
+- Projects initialized before the update don't change
+- Old files remain unchanged
+
+**Solution**:
+
+This is expected! Templates only apply during `cortex-tms init`. Existing projects don't automatically update.
+
+To update existing projects:
+
+```bash
+# Option 1: Manually merge changes
+git diff <old-template> <new-template>
+
+# Option 2: Re-initialize in new branch
+git checkout -b docs/update-from-template
+cortex-tms init --template [new-template] --overwrite
+
+# Review changes and commit
+git add .
+git commit -m "docs: update from latest template"
+```
+
+<Aside type="note">
+  Store your template version in `.cortexrc` so projects know when they were last updated.
+</Aside>
+
+---
+
+## Advanced: Programmatic Template Usage
+
+### Creating Templates Programmatically
+
+If you're creating many projects, automate template initialization:
+
+```javascript
+const { execSync } = require('child_process');
+const fs = require('fs');
+const path = require('path');
+
+async function initializeProject(projectConfig) {
+  const {
+    projectName,
+    projectDescription,
+    templatePath,
+    companyName,
+  } = projectConfig;
+
+  // Create project directory
+  const projectDir = path.join(process.cwd(), projectName);
+  fs.mkdirSync(projectDir, { recursive: true });
+
+  // Initialize Cortex TMS
+  const command = `
+    cd ${projectDir} &&
+    git init &&
+    npm init -y &&
+    cortex-tms init \
+      --template-path ${templatePath} \
+      --name "${projectName}" \
+      --description "${projectDescription}" \
+      --placeholder COMPANY_NAME="${companyName}"
+  `;
+
+  execSync(command, { stdio: 'inherit' });
+
+  console.log(`✅ Project initialized at ${projectDir}`);
+}
+
+// Usage
+initializeProject({
+  projectName: 'payment-api',
+  projectDescription: 'Payment processing API',
+  templatePath: '~/.cortex-tms/templates/finance',
+  companyName: 'Acme Corp',
+});
+```
+
+---
+
+## Part 8: Real-World Template Examples
+
+### Example 1: Startup Template
+
+For early-stage startups with rapid iteration:
+
+Create `templates/startup/CLAUDE.md`:
+
+```markdown
+# 🤖 {{COMPANY_NAME}} Agent Workflow
+
+## 🎯 Role
+
+Scrappy startup engineer. Prioritize speed and learning over perfection.
+
+**Mindset**:
+- Move fast, iterate continuously
+- Document as you learn, not before
+- Suggest pragmatic solutions over "best practices"
+- Challenge requirements if they seem wrong
+
+## 🛠 Tech Stack
+
+**Approved for use**:
+- **Frontend**: React or Vue (team preference)
+- **Backend**: Node.js, Python, or Go
+- **Database**: PostgreSQL or MongoDB
+- **Hosting**: Vercel, Railway, or AWS
+
+**Not approved**:
+- New frameworks without team consensus
+- Databases not in approved list
+- Complex infrastructure (keep it simple for MVP)
+
+## 🚀 Speed Guidelines
+
+- **Features over refactoring**: Ship features, refactor later
+- **MVP mentality**: What's the minimum to learn if this works?
+- **Deploy daily**: Multiple small deployments beat one big release
+- **Metrics over intuition**: Let data guide decisions
+
+## 📋 Task Tracking
+
+Every task in NEXT-TASKS.md must have:
+- **Time estimate**: How long do you think this takes?
+- **Learning goal**: What will we learn by building this?
+- **Success metric**: How will we measure if this worked?
+
+## 🔒 Non-Negotiables
+
+Even in a startup, never compromise on:
+- **Security**: No hardcoded secrets, use .env files
+- **Testing**: At least one test per feature (not 80% coverage, just coverage)
+- **Monitoring**: Know when your app breaks (basic error tracking)
+- **Data integrity**: Customers must trust their data with us
+```
+
+<Aside type="tip" title="Pro Tip">
+  Startup templates should emphasize speed and learning. They're intentionally lighter weight than enterprise templates.
+</Aside>
+
+### Example 2: Enterprise Template
+
+For large organizations with strict governance:
+
+Create `templates/enterprise/docs/core/GOVERNANCE.md`:
+
+```markdown
+# {{COMPANY_NAME}} Governance Framework
+
+## Change Control Board (CCB)
+
+All architectural changes require CCB approval:
+
+**Process**:
+1. **Proposal**: Write ADR and submit to CCB
+2. **Review**: CCB reviews for risk and compliance (5 business days)
+3. **Approval**: CCB votes (2/3 majority required)
+4. **Implementation**: Only proceed after approval
+5. **Audit**: CCB reviews implementation (3 months post-launch)
+
+**CCB Members**:
+- VP of Engineering (chair)
+- Head of Security
+- Head of Infrastructure
+- Head of Product
+
+**Escalation**: If disagreement, escalate to CTO
+
+## Code Review Requirements
+
+**Mandatory**:
+- 2 code reviews (minimum 1 senior engineer)
+- Security review (if handling customer data)
+- Performance review (if backend changes)
+- Documentation review (verify PATTERNS.md updated)
+
+**SLA**: Reviews completed within 24 hours
+
+## Release Checklist
+
+Before any production release:
+
+- [ ] All tests passing (100% CI/CD green)
+- [ ] Security review completed
+- [ ] Performance review completed
+- [ ] Documentation updated (CHANGELOG, ADRs, PATTERNS.md)
+- [ ] Data migration tested in staging
+- [ ] Rollback plan documented
+- [ ] Incident response updated
+- [ ] Customer communication prepared
+- [ ] CCB approval (if architectural change)
+
+## Compliance Attestation
+
+Quarterly compliance attestation required:
+
+```markdown
+# Q1 2026 Compliance Attestation
+
+**Project**: {{PROJECT_NAME}}
+**Attesting Engineer**: [Name]
+**Date**: 2026-03-31
+
+## Checklist
+
+- [ ] All customer data encrypted at rest and in transit
+- [ ] No hardcoded secrets found in codebase
+- [ ] Audit logs enabled for all sensitive operations
+- [ ] Incident response plan tested in past 90 days
+- [ ] Disaster recovery tested in past 90 days
+- [ ] All third-party dependencies up-to-date
+- [ ] Security vulnerability scan: 0 critical findings
+
+**Status**: ✅ PASSED
+
+**Signature**: [Digital signature]
+```
+
+## Audit Trail
+
+All changes must be auditable:
+
+```typescript
+// Every change must have context
+interface AuditableChange {
+  id: string;
+  timestamp: Date;
+  userId: string;
+  userRole: 'admin' | 'engineer' | 'finance';
+  action: string;
+  resourceType: string;
+  resourceId: string;
+  oldValue: unknown;
+  newValue: unknown;
+  reason: string; // Why was this changed?
+  approver?: string; // Who approved this?
+  ipAddress: string;
+}
+```
+```
+
+### Example 3: Open Source Template
+
+For open source projects:
+
+Create `templates/open-source/CONTRIBUTING.md`:
+
+```markdown
+# Contributing to {{PROJECT_NAME}}
+
+Thank you for interest in contributing! This document explains our contribution process.
+
+## Getting Started
+
+1. **Fork the repo**: Click "Fork" on GitHub
+2. **Clone locally**: `git clone https://github.com/YOUR_USERNAME/{{PROJECT_NAME}}.git`
+3. **Create branch**: `git checkout -b feature/your-feature`
+4. **Read CLAUDE.md**: Understand our development workflow
+5. **Read docs/core/PATTERNS.md**: Follow our coding conventions
+
+## Types of Contributions
+
+### Bug Reports
+
+**Good bug report includes**:
+- Clear description of the bug
+- Steps to reproduce
+- Expected vs. actual behavior
+- Your environment (OS, Node version, etc.)
+- Screenshots (if applicable)
+
+[Report a bug](https://github.com/{{GITHUB_ORG}}/{{PROJECT_NAME}}/issues/new?template=bug.md)
+
+### Feature Requests
+
+**Good feature request includes**:
+- Use case: Why do you need this?
+- Expected behavior: How should it work?
+- Alternatives considered: What else could solve this?
+- Context: Where will you use this?
+
+[Request a feature](https://github.com/{{GITHUB_ORG}}/{{PROJECT_NAME}}/issues/new?template=feature.md)
+
+### Code Contributions
+
+**Process**:
+1. Find an issue labeled `good-first-issue` or `help-wanted`
+2. Comment to claim the issue
+3. Follow [PATTERNS.md](/docs/core/PATTERNS.md) for code style
+4. Write tests for your changes
+5. Run `npm test` and verify all pass
+6. Create PR with description
+7. Respond to feedback (we're friendly!)
+8. Celebrate when merged! 🎉
+
+## Commit Message Format
+
+We follow [Conventional Commits](https://www.conventionalcommits.org/):
+
+```
+feat(scope): short description
+
+Longer explanation of the change. Why did you make this change?
+What problem does it solve?
+
+Closes #123
+```
+
+**Scope examples**: `auth`, `api`, `docs`, `types`
+
+## Code Style
+
+- **Language**: TypeScript (strict mode required)
+- **Formatter**: Prettier (automatic on commit)
+- **Linter**: ESLint with TypeScript plugin
+- **Tests**: Jest with 80%+ coverage
+
+Run locally:
+```bash
+npm run lint      # Check style
+npm run format    # Auto-fix style
+npm test          # Run tests
+```
+
+## Getting Help
+
+- **Discord**: Join our [community Discord](https://discord.gg/...)
+- **Discussions**: Ask in [GitHub Discussions](https://github.com/{{GITHUB_ORG}}/{{PROJECT_NAME}}/discussions)
+- **Issues**: Found a problem? [Report it](https://github.com/{{GITHUB_ORG}}/{{PROJECT_NAME}}/issues)
+
+## Recognition
+
+We recognize all contributors in our [CONTRIBUTORS.md](/CONTRIBUTORS.md) file. Thank you!
+
+---
+
+**Happy contributing!** 🚀
+```
+
+---
+
+## Part 9: Template Testing and Validation
+
+### Testing Your Custom Template
+
+Before releasing a template, test it thoroughly:
+
+```bash
+#!/bin/bash
+set -e
+
+echo "🧪 Testing Cortex TMS template..."
+
+# Create temporary test directory
+test_dir=$(mktemp -d)
+cd "$test_dir"
+
+# Test 1: Basic initialization
+echo "✓ Test 1: Basic initialization"
+cortex-tms init \
+  --template-path ~/my-templates/standard \
+  --name test-project \
+  --description "Test project"
+
+# Test 2: Verify required files exist
+echo "✓ Test 2: Verify required files"
+required_files=(
+  "CLAUDE.md"
+  "NEXT-TASKS.md"
+  "docs/core/PATTERNS.md"
+  "docs/core/ARCHITECTURE.md"
+)
+
+for file in "${required_files[@]}"; do
+  if [ ! -f "$file" ]; then
+    echo "✗ Missing file: $file"
+    exit 1
+  fi
+done
+
+# Test 3: Verify placeholders replaced
+echo "✓ Test 3: Verify placeholders replaced"
+if grep -r "{{" . --include="*.md"; then
+  echo "✗ Unreplaced placeholders found"
+  exit 1
+fi
+
+# Test 4: Validate markdown
+echo "✓ Test 4: Validate markdown syntax"
+# Use a markdown linter like markdownlint
+markdownlint "*.md" "docs/**/*.md" || true
+
+# Test 5: Run cortex-tms validate
+echo "✓ Test 5: Run validation"
+cortex-tms validate --strict
+
+echo "✅ All tests passed!"
+cd ..
+rm -rf "$test_dir"
+```
+
+### Automated Template CI/CD
+
+Add this to `.github/workflows/test-templates.yml`:
+
+```yaml
+name: Test Templates
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  test-templates:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        template: [standard, finance, startup]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install cortex-tms
+        run: npm install -g cortex-tms@2.6.0
+
+      - name: Test ${{ matrix.template }} template
+        run: |
+          temp_dir=$(mktemp -d)
+          cd "$temp_dir"
+
+          cortex-tms init \
+            --template-path ${{ github.workspace }}/templates/${{ matrix.template }} \
+            --name test-project
+
+          cortex-tms validate --strict
+
+          echo "✅ Template test passed: ${{ matrix.template }}"
+```
+
+---
+
+## Next Steps
+
+Now that you understand template customization:
+
+- **[Team Adoption](/guides/team-adoption/)**: Distribute your custom templates to the team
+- **[CI/CD Integration](/guides/ci-cd-integration/)**: Validate custom templates in your CI pipeline
+- **[First Project](/guides/first-project/)**: Initialize your first project with custom templates
+
+<Aside type="tip" title="Pro Tip">
+  Document your custom templates in your team's developer onboarding guide. Make it easy for new projects to use them.
+</Aside>
+
+---
+
+## Key Takeaways
+
+<CardGrid stagger>
+  <Card title="Fork, Don't Modify Core" icon="git">
+    Fork Cortex TMS to customize without breaking upstream updates. Merge improvements back.
+  </Card>
+
+  <Card title="Use Placeholders Extensively" icon="pencil">
+    Make templates flexible with placeholders. Teams should customize with minimal friction.
+  </Card>
+
+  <Card title="Create Scopes for Domain Needs" icon="star">
+    Build custom scopes for specific types of projects (finance, microservices, etc.).
+  </Card>
+
+  <Card title="Version and Document" icon="document">
+    Version your templates. Document what makes them unique and how to use them.
+  </Card>
+
+  <Card title="Contribute Back" icon="approve-check">
+    Share useful customizations with the Cortex TMS community. Everyone benefits.
+  </Card>
+</CardGrid>

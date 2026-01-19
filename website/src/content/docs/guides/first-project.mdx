@@ -1,0 +1,1548 @@
+---
+title: Your First Project with Cortex TMS
+description: Complete end-to-end walkthrough from empty directory to fully functional TMS project with AI agents
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside, FileTree } from '@astrojs/starlight/components';
+
+This comprehensive guide walks you through building your first project with Cortex TMS, from an empty directory to a fully functional development workflow with AI agents. Unlike the [Quick Start](/getting-started/quick-start/) which gets you up and running in 5 minutes, this tutorial provides deep explanations and best practices for every step.
+
+## What You'll Build
+
+By the end of this guide, you'll have:
+
+- A complete TMS-powered project structure
+- Your first documented architectural decision
+- A working sprint in `NEXT-TASKS.md`
+- Custom patterns codified in `docs/core/PATTERNS.md`
+- AI agents (Claude Code, Copilot, or Cursor) actively following your conventions
+- A validated, production-ready documentation system
+
+**Time commitment**: 30-45 minutes
+
+---
+
+## Prerequisites
+
+Before you begin, ensure you have:
+
+<CardGrid>
+  <Card title="Node.js 18+" icon="seti:nodejs">
+    Check with `node --version`
+
+    Install from [nodejs.org](https://nodejs.org)
+  </Card>
+
+  <Card title="Git" icon="seti:git">
+    Check with `git --version`
+
+    Required for version control
+  </Card>
+
+  <Card title="Code Editor" icon="seti:config">
+    VS Code, Cursor, or any editor
+
+    VS Code recommended for snippets
+  </Card>
+
+  <Card title="AI Agent (Optional)" icon="star">
+    Claude Code, GitHub Copilot, or Cursor
+
+    For hands-on AI workflow testing
+  </Card>
+</CardGrid>
+
+---
+
+## Part 1: Project Setup
+
+### Step 1: Create Your Project Directory
+
+Let's build a realistic example: a task management API.
+
+```bash
+# Create project directory
+mkdir task-api
+cd task-api
+
+# Initialize Git repository
+git init
+```
+
+<Aside type="tip" title="Pro Tip">
+  Always initialize Git before running `cortex-tms init`. Cortex TMS detects Git repositories and automatically configures `.github/` directories for CI/CD integration.
+</Aside>
+
+### Step 2: Initialize Node.js Project
+
+```bash
+# Create package.json
+npm init -y
+
+# Update project metadata
+npm pkg set name="task-api"
+npm pkg set description="RESTful API for task management with team collaboration"
+npm pkg set version="0.1.0"
+```
+
+**Result**: You now have a basic `package.json`:
+
+```json
+{
+  "name": "task-api",
+  "version": "0.1.0",
+  "description": "RESTful API for task management with team collaboration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
+```
+
+### Step 3: Install Cortex TMS
+
+<Tabs>
+  <TabItem label="Global Install (Recommended)">
+    ```bash
+    npm install -g cortex-tms@2.6.0
+
+    # Verify installation
+    cortex-tms --version
+    # Output: 2.6.0
+    ```
+  </TabItem>
+
+  <TabItem label="npx (No Install)">
+    ```bash
+    # Run directly without installing
+    npx cortex-tms@2.6.0 init
+
+    # All subsequent commands require npx prefix
+    npx cortex-tms validate
+    ```
+  </TabItem>
+
+  <TabItem label="pnpm">
+    ```bash
+    pnpm add -g cortex-tms@2.6.0
+
+    cortex-tms --version
+    ```
+  </TabItem>
+</Tabs>
+
+### Step 4: Initialize Cortex TMS
+
+Run the interactive initialization:
+
+```bash
+cortex-tms init
+```
+
+**You'll be prompted**:
+
+
+
+1. **Project name**: Enter `task-api` (or accept default)
+
+2. **Project scope**: Select **Standard** (use arrow keys + Enter)
+
+   ```
+   ? Select your project scope:
+   ❯ Standard (Recommended for most teams)
+     Nano (Minimal for solo developers)
+     Enterprise (Full governance suite)
+     Custom (Choose specific files)
+   ```
+
+3. **VS Code snippets**: Select **Yes** (if using VS Code)
+
+   ```
+   ? Install VS Code snippets for rapid documentation? (Y/n) Y
+   ```
+
+4. **Confirmation**: Review summary and confirm
+
+   ```
+   📋 Installation Summary:
+     Project: task-api
+     Scope: Standard
+     Files: 12 files to be created
+     Snippets: Yes
+
+   Continue? (Y/n) Y
+   ```
+
+
+
+**Output**:
+
+```
+✓ Templates copied: 12 files
+✓ VS Code snippets installed
+✓ Configuration saved
+
+✨ Success! Cortex TMS initialized.
+
+Next Steps:
+  1. Review NEXT-TASKS.md for active sprint tasks
+  2. Update docs/core/ with your project details
+  3. Customize .github/copilot-instructions.md for AI rules
+```
+
+### Step 5: Examine Generated Structure
+
+```bash
+tree -a -L 3 -I 'node_modules'
+```
+
+<FileTree>
+- task-api/
+  - .cortexrc Configuration metadata
+  - .github/
+    - copilot-instructions.md AI critical rules (HOT tier)
+  - .gitignore
+  - CHANGELOG.md Version history
+  - CLAUDE.md AI workflow config (HOT tier)
+  - FUTURE-ENHANCEMENTS.md Backlog (HOT tier)
+  - NEXT-TASKS.md Current sprint (HOT tier)
+  - docs/
+    - archive/ Historical tasks (COLD tier)
+      - .gitkeep
+    - core/ Reference docs (WARM tier)
+      - ARCHITECTURE.md System design
+      - DOMAIN-LOGIC.md Business rules
+      - GLOSSARY.md Terminology
+      - PATTERNS.md Coding standards
+      - SCHEMA.md Data models
+      - TROUBLESHOOTING.md Common issues
+    - decisions/ ADRs (WARM tier)
+      - .gitkeep
+  - package.json
+</FileTree>
+
+<Aside type="note">
+  The structure follows the **Tiered Memory System**: HOT files (always read), WARM files (read on demand), and COLD files (historical archive).
+</Aside>
+
+### Step 6: Validate Installation
+
+```bash
+cortex-tms validate --strict
+```
+
+**Expected output**:
+
+```
+Running validation checks...
+
+✓ CLAUDE.md exists and is well-formed
+✓ NEXT-TASKS.md exists and has current objective
+✓ All core docs exist (PATTERNS, ARCHITECTURE, etc.)
+✓ .cortexrc is valid JSON
+✓ No dead links in documentation
+✓ File sizes within recommended limits
+
+Project health: EXCELLENT
+All checks passed (6/6)
+```
+
+<Aside type="tip" title="Pro Tip">
+  Run `cortex-tms validate` regularly during development. Add it to your Git pre-commit hook to prevent documentation drift.
+</Aside>
+
+---
+
+## Part 2: Customizing for Your Project
+
+Now let's transform the generic templates into project-specific documentation.
+
+### Step 7: Define Your Tech Stack
+
+Open `CLAUDE.md` and update the CLI commands section:
+
+<Tabs>
+  <TabItem label="Before (Template)">
+    ```markdown
+    ## 💻 CLI Commands
+
+    - **Test**: `npm test` or `pnpm test`
+    - **Lint**: `npm run lint`
+    - **Build**: `npm run build`
+    ```
+  </TabItem>
+
+  <TabItem label="After (Customized)">
+    ```markdown
+    ## 💻 CLI Commands
+
+    - **Test**: `npm test` (Jest with coverage)
+    - **Test Watch**: `npm run test:watch`
+    - **Lint**: `npm run lint` (ESLint + Prettier)
+    - **Type Check**: `npm run type-check` (TypeScript)
+    - **Dev Server**: `npm run dev` (Runs on http://localhost:3000)
+    - **Build**: `npm run build` (Production bundle)
+    ```
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Pro Tip">
+  Include the actual outcome of each command. "Runs on http://localhost:3000" helps AI agents (and humans) understand what to expect.
+</Aside>
+
+### Step 8: Document Your First Sprint
+
+Edit `NEXT-TASKS.md` to define your initial objectives:
+
+```markdown
+# Current Tasks
+
+## Active Sprint: Project Foundation (Week 1-2)
+
+**Why this matters**: Establish core architecture and development workflow before building features. A solid foundation prevents technical debt.
+
+**Sprint Goal**: Set up project infrastructure with testing, linting, and database connection.
+
+### Tasks
+
+#### 1. Configure Development Environment
+
+**Context**: Need consistent tooling across the team
+
+**Acceptance Criteria**:
+- [ ] ESLint configured with Airbnb style guide
+- [ ] Prettier integrated with ESLint
+- [ ] Husky pre-commit hooks for linting
+- [ ] TypeScript strict mode enabled
+- [ ] VS Code settings shared in repo
+
+**Blockers**: None
+
+---
+
+#### 2. Set Up Database Layer
+
+**Context**: Need PostgreSQL connection with migration support
+
+**Acceptance Criteria**:
+- [ ] PostgreSQL Docker Compose configuration
+- [ ] Drizzle ORM installed and configured
+- [ ] Initial schema: users, tasks, projects tables
+- [ ] Migration script in package.json
+- [ ] Seed script for development data
+
+**Blockers**: None
+
+---
+
+#### 3. Implement Authentication Middleware
+
+**Context**: All API endpoints require JWT authentication
+
+**Acceptance Criteria**:
+- [ ] JWT token generation on login
+- [ ] Token validation middleware
+- [ ] Refresh token rotation (7-day expiry)
+- [ ] Unit tests for auth flow
+- [ ] Document in docs/core/PATTERNS.md#authentication
+
+**Blockers**: Requires Task #2 (database) to be completed first
+
+---
+
+## Next Up (Not Started)
+
+- API endpoint for creating tasks
+- WebSocket real-time updates
+- Role-based access control (RBAC)
+```
+
+<Aside type="note">
+  Notice the structure: Each task has **Context** (why it matters), **Acceptance Criteria** (testable outcomes), and **Blockers** (dependencies or issues).
+</Aside>
+
+### Step 9: Codify Your First Pattern
+
+Open `docs/core/PATTERNS.md` and add your first coding convention:
+
+```markdown
+# Coding Patterns
+
+This document defines the canonical coding patterns for task-api. When implementing features, AI agents and developers should follow these conventions to maintain consistency.
+
+## File Organization
+
+### Directory Structure
+
+```
+src/
+├── controllers/    # Route handlers (thin, delegate to services)
+├── services/       # Business logic (thick, testable)
+├── models/         # Drizzle ORM schemas
+├── middleware/     # Express middleware (auth, validation, errors)
+├── utils/          # Pure functions (no side effects)
+└── types/          # TypeScript type definitions
+```
+
+**Rationale**: Separating concerns makes code testable and maintainable. Controllers are thin adapters, services contain business logic.
+
+---
+
+## Naming Conventions
+
+### Files
+
+- **Controllers**: `{resource}.controller.ts` (e.g., `tasks.controller.ts`)
+- **Services**: `{resource}.service.ts` (e.g., `tasks.service.ts`)
+- **Models**: `{resource}.model.ts` (e.g., `tasks.model.ts`)
+- **Tests**: `{filename}.test.ts` (e.g., `tasks.service.test.ts`)
+
+### Variables & Functions
+
+- **Use camelCase** for variables and functions
+- **Use PascalCase** for classes and types
+- **Use SCREAMING_SNAKE_CASE** for constants
+
+```typescript
+// Good
+const userId = req.user.id;
+const MAX_RETRIES = 3;
+
+class TaskService { }
+type TaskStatus = 'pending' | 'completed';
+
+// Bad
+const UserID = req.user.id;  // Wrong case
+const max_retries = 3;       // Wrong case for constant
+```
+
+---
+
+## Authentication Pattern
+
+**Canonical Example**: `src/middleware/auth.middleware.ts`
+
+### JWT Token Generation
+
+```typescript
+import jwt from 'jsonwebtoken';
+
+interface TokenPayload {
+  userId: string;
+  email: string;
+  role: 'admin' | 'user';
+}
+
+export function generateAccessToken(payload: TokenPayload): string {
+  return jwt.sign(
+    payload,
+    process.env.JWT_SECRET!,
+    {
+      algorithm: 'RS256',      // Asymmetric signing
+      expiresIn: '15m',        // Short-lived access tokens
+      issuer: 'task-api',
+      audience: 'task-api-client',
+    }
+  );
+}
+
+export function generateRefreshToken(userId: string): string {
+  return jwt.sign(
+    { userId },
+    process.env.REFRESH_SECRET!,
+    {
+      algorithm: 'RS256',
+      expiresIn: '7d',         // Long-lived refresh tokens
+      issuer: 'task-api',
+    }
+  );
+}
+```
+
+### Token Validation Middleware
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+import jwt from 'jsonwebtoken';
+
+export async function authenticateToken(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader?.split(' ')[1]; // "Bearer TOKEN"
+
+  if (!token) {
+    return res.status(401).json({ error: 'No token provided' });
+  }
+
+  try {
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
+    req.user = payload; // Attach user to request
+    next();
+  } catch (error) {
+    return res.status(403).json({ error: 'Invalid token' });
+  }
+}
+```
+
+**Critical Rules**:
+- Never use HS256 (symmetric) in production → Use RS256 (asymmetric)
+- Never store tokens in localStorage → Use httpOnly cookies
+- Access tokens expire in 15 minutes → Refresh tokens expire in 7 days
+- Always validate token signature → Never trust client-provided data
+
+---
+
+## Error Handling Pattern
+
+**Canonical Example**: `src/middleware/error.middleware.ts`
+
+### Custom Error Class
+
+```typescript
+export class AppError extends Error {
+  constructor(
+    public message: string,
+    public statusCode: number = 500,
+    public isOperational: boolean = true
+  ) {
+    super(message);
+    Object.setPrototypeOf(this, AppError.prototype);
+  }
+}
+
+// Usage in services
+throw new AppError('Task not found', 404);
+throw new AppError('Unauthorized access', 403);
+```
+
+### Global Error Handler
+
+```typescript
+import { Request, Response, NextFunction } from 'express';
+
+export function errorHandler(
+  error: Error | AppError,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  // Type guard for AppError
+  if (error instanceof AppError) {
+    return res.status(error.statusCode).json({
+      status: 'error',
+      message: error.message,
+    });
+  }
+
+  // Unexpected errors
+  console.error('Unexpected error:', error);
+  return res.status(500).json({
+    status: 'error',
+    message: 'Internal server error',
+  });
+}
+```
+
+**Critical Rules**:
+- Never expose stack traces in production
+- Log unexpected errors (non-AppError) to monitoring service
+- Return consistent error response format
+- Use appropriate HTTP status codes (400, 404, 500, etc.)
+
+---
+
+## Testing Pattern
+
+**Canonical Example**: `src/services/tasks.service.test.ts`
+
+### Unit Test Structure
+
+```typescript
+import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { TaskService } from './tasks.service';
+import { db } from '@/db';
+
+// Mock database
+vi.mock('@/db', () => ({
+  db: {
+    query: {
+      tasks: {
+        findMany: vi.fn(),
+        findFirst: vi.fn(),
+      },
+    },
+    insert: vi.fn(),
+  },
+}));
+
+describe('TaskService', () => {
+  let service: TaskService;
+
+  beforeEach(() => {
+    service = new TaskService();
+    vi.clearAllMocks();
+  });
+
+  describe('createTask', () => {
+    it('should create task with valid data', async () => {
+      const taskData = {
+        title: 'Write documentation',
+        userId: 'user-123',
+      };
+
+      const result = await service.createTask(taskData);
+
+      expect(result).toHaveProperty('id');
+      expect(result.title).toBe('Write documentation');
+      expect(db.insert).toHaveBeenCalledTimes(1);
+    });
+
+    it('should throw error for duplicate task title', async () => {
+      const taskData = { title: 'Duplicate', userId: 'user-123' };
+
+      await expect(service.createTask(taskData))
+        .rejects
+        .toThrow('Task already exists');
+    });
+  });
+
+  describe('getTaskById', () => {
+    it('should return task when found', async () => {
+      const mockTask = { id: 'task-1', title: 'Test' };
+      vi.mocked(db.query.tasks.findFirst).mockResolvedValue(mockTask);
+
+      const result = await service.getTaskById('task-1');
+
+      expect(result).toEqual(mockTask);
+    });
+
+    it('should throw 404 when task not found', async () => {
+      vi.mocked(db.query.tasks.findFirst).mockResolvedValue(null);
+
+      await expect(service.getTaskById('invalid'))
+        .rejects
+        .toThrow(new AppError('Task not found', 404));
+    });
+  });
+});
+```
+
+**Critical Rules**:
+- One `describe` block per method/function
+- At least 2 test cases per method (happy path + error case)
+- Mock external dependencies (database, APIs, file system)
+- Use descriptive test names: "should [expected behavior] when [condition]"
+- Aim for 80%+ code coverage
+
+---
+
+## Database Query Pattern
+
+**Canonical Example**: `src/services/tasks.service.ts`
+
+### Using Drizzle ORM
+
+```typescript
+import { db } from '@/db';
+import { tasks, users } from '@/models';
+import { eq, and, desc } from 'drizzle-orm';
+
+export class TaskService {
+  async getUserTasks(userId: string, status?: 'pending' | 'completed') {
+    const conditions = [eq(tasks.userId, userId)];
+
+    if (status) {
+      conditions.push(eq(tasks.status, status));
+    }
+
+    return await db.query.tasks.findMany({
+      where: and(...conditions),
+      orderBy: [desc(tasks.createdAt)],
+      with: {
+        assignee: {
+          columns: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+      },
+    });
+  }
+
+  async createTask(data: NewTask) {
+    const [task] = await db
+      .insert(tasks)
+      .values(data)
+      .returning();
+
+    return task;
+  }
+
+  async updateTask(id: string, data: Partial<Task>) {
+    const [updated] = await db
+      .update(tasks)
+      .set({ ...data, updatedAt: new Date() })
+      .where(eq(tasks.id, id))
+      .returning();
+
+    if (!updated) {
+      throw new AppError('Task not found', 404);
+    }
+
+    return updated;
+  }
+}
+```
+
+**Critical Rules**:
+- Always use parameterized queries (Drizzle does this by default)
+- Use `.returning()` to get inserted/updated data
+- Add indexes for frequently queried columns (userId, status, createdAt)
+- Use transactions for multi-step operations
+
+---
+
+## API Response Pattern
+
+**Canonical Example**: `src/controllers/tasks.controller.ts`
+
+### Consistent Response Format
+
+```typescript
+// Success response
+{
+  "status": "success",
+  "data": {
+    "task": {
+      "id": "task-123",
+      "title": "Write documentation"
+    }
+  }
+}
+
+// Error response
+{
+  "status": "error",
+  "message": "Task not found"
+}
+
+// List response (with pagination)
+{
+  "status": "success",
+  "data": {
+    "tasks": [...],
+    "pagination": {
+      "total": 42,
+      "page": 1,
+      "pageSize": 10,
+      "totalPages": 5
+    }
+  }
+}
+```
+
+### Controller Implementation
+
+```typescript
+import { Request, Response } from 'express';
+import { TaskService } from '@/services/tasks.service';
+
+export class TaskController {
+  private service = new TaskService();
+
+  async getTask(req: Request, res: Response) {
+    const { id } = req.params;
+    const task = await this.service.getTaskById(id);
+
+    return res.status(200).json({
+      status: 'success',
+      data: { task },
+    });
+  }
+
+  async createTask(req: Request, res: Response) {
+    const task = await this.service.createTask({
+      ...req.body,
+      userId: req.user.userId,
+    });
+
+    return res.status(201).json({
+      status: 'success',
+      data: { task },
+    });
+  }
+}
+```
+
+**Critical Rules**:
+- Always wrap data in `{ status, data }` or `{ status, message }`
+- Use correct HTTP status codes (200, 201, 204, 400, 404, 500)
+- Never expose internal error details in production
+- Include pagination metadata for list endpoints
+
+---
+
+## When to Deviate from Patterns
+
+**Patterns are guidelines, not laws**. Deviate when:
+
+1. **Performance requires it**: Caching, denormalization, etc.
+2. **Third-party library has better approach**: Follow library conventions
+3. **Edge case not covered**: Document the exception in an ADR
+
+**Process for deviations**:
+1. Create an ADR explaining why the deviation is necessary
+2. Update this PATTERNS.md to note the exception
+3. Ensure the team approves the change
+
+---
+
+## Questions?
+
+If a pattern is unclear, ambiguous, or missing:
+
+1. Ask in team Slack/Discord
+2. Create a GitHub issue with label `pattern-clarification`
+3. Schedule a pattern review session
+
+This document is a living reference. Update it as you learn better approaches.
+```
+
+<Aside type="tip" title="Pro Tip">
+  Include **canonical examples** (real file paths) in your patterns. AI agents can reference these examples when implementing similar features.
+</Aside>
+
+---
+
+## Part 3: Making Your First Architectural Decision
+
+### Step 10: Create Your First ADR
+
+You've decided to use PostgreSQL for data storage. Document this decision:
+
+```bash
+# Cortex TMS doesn't have an ADR command yet, so we create manually
+touch docs/decisions/0001-use-postgresql-for-data-storage.md
+```
+
+Edit `docs/decisions/0001-use-postgresql-for-data-storage.md`:
+
+```markdown
+# ADR-0001: Use PostgreSQL for Data Storage
+
+**Date**: 2026-01-19
+**Status**: Accepted
+**Deciders**: [Your Name], [Team Lead]
+**Tags**: database, infrastructure
+
+## Context and Problem Statement
+
+We need a database system for task-api that supports:
+- Relational data (tasks, users, projects with foreign keys)
+- ACID transactions for data consistency
+- JSON columns for flexible metadata
+- Full-text search for task descriptions
+- Scale to ~100k tasks per project
+
+**Constraints**:
+- Team has SQL experience (not MongoDB)
+- Budget: Free or low-cost for MVP
+- Must run locally for development
+
+## Decision Drivers
+
+- **Developer Experience**: Prefer familiar technologies
+- **Data Integrity**: Need strong consistency (no eventual consistency)
+- **Query Complexity**: Joins and aggregations required
+- **Ecosystem**: ORM and migration tools must exist
+
+## Considered Options
+
+### Option 1: PostgreSQL
+
+**Pros**:
+- ✅ Free and open-source
+- ✅ ACID compliant with strong consistency
+- ✅ Excellent JSON support (JSONB columns)
+- ✅ Built-in full-text search
+- ✅ Mature ecosystem (Drizzle ORM, TypeORM, Prisma)
+- ✅ Team has experience
+
+**Cons**:
+- ❌ Scaling vertically requires larger servers
+- ❌ Complex setup compared to SQLite
+
+---
+
+### Option 2: MySQL
+
+**Pros**:
+- ✅ Free and open-source
+- ✅ Good performance for read-heavy workloads
+- ✅ Team has some experience
+
+**Cons**:
+- ❌ Weaker JSON support than PostgreSQL
+- ❌ No built-in full-text search (requires external tools)
+- ❌ Less modern ORM support
+
+---
+
+### Option 3: SQLite
+
+**Pros**:
+- ✅ Zero configuration
+- ✅ Perfect for local development
+- ✅ Extremely fast for small datasets
+
+**Cons**:
+- ❌ Not suitable for production multi-user apps
+- ❌ No full-text search
+- ❌ Concurrent writes are limited
+
+---
+
+### Option 4: MongoDB
+
+**Pros**:
+- ✅ Flexible schema (good for rapid prototyping)
+- ✅ Horizontal scaling is easier
+
+**Cons**:
+- ❌ No ACID transactions (until v4.0, and still limited)
+- ❌ Team lacks experience
+- ❌ Join-like operations are inefficient
+
+---
+
+## Decision Outcome
+
+**Chosen option: PostgreSQL**
+
+**Rationale**:
+- Strong relational data model fits our domain (tasks belong to projects, users)
+- JSONB columns provide flexibility for task metadata without sacrificing consistency
+- Built-in full-text search eliminates need for Elasticsearch
+- Free tier on Supabase/Neon for production deployment
+- Team expertise reduces learning curve
+
+## Implementation Plan
+
+1. **Development**: Use Docker Compose for local PostgreSQL instance
+2. **ORM**: Use Drizzle for type-safe queries and migrations
+3. **Hosting**: Deploy to Supabase free tier for MVP
+4. **Migrations**: Store in `db/migrations/` directory
+5. **Seed Data**: Create `db/seeds/` for development fixtures
+
+## Consequences
+
+### Positive
+
+- Strong data consistency prevents bugs
+- Powerful query capabilities for analytics
+- JSON columns allow schema evolution without migrations
+- Easy to find PostgreSQL developers for hiring
+
+### Negative
+
+- Requires Docker for local development (adds complexity)
+- Vertical scaling costs more than horizontal (but not an issue until 1M+ tasks)
+- Team must learn Drizzle ORM (minor learning curve)
+
+### Neutral
+
+- We're committed to SQL (switching to NoSQL later would be expensive)
+
+## References
+
+- [PostgreSQL Documentation](https://www.postgresql.org/docs/)
+- [Drizzle ORM Documentation](https://orm.drizzle.team/)
+- [Supabase PostgreSQL Hosting](https://supabase.com/)
+
+## Follow-Up Actions
+
+- [ ] Set up Docker Compose with PostgreSQL 16
+- [ ] Install and configure Drizzle ORM
+- [ ] Create initial schema migration
+- [ ] Document database setup in `docs/core/ARCHITECTURE.md`
+```
+
+<Aside type="note">
+  ADRs (Architectural Decision Records) are immutable. If you change your mind, create a new ADR that supersedes the old one. This preserves the decision-making history.
+</Aside>
+
+---
+
+## Part 4: Working with AI Agents
+
+Now let's test the TMS setup with AI agents.
+
+### Step 11: Testing with Claude Code
+
+If you have Claude Code installed:
+
+
+
+1. **Open the project**
+
+   ```bash
+   claude-code task-api
+   ```
+
+2. **Test context awareness**
+
+   Ask Claude: _"What's the current sprint goal?"_
+
+   **Expected**: Claude reads `NEXT-TASKS.md` and responds:
+
+   > "The current sprint is **Project Foundation (Week 1-2)**. The goal is to set up project infrastructure with testing, linting, and database connection before building features."
+
+3. **Test pattern following**
+
+   Ask Claude: _"Implement the authentication middleware from Task #3"_
+
+   **Expected**: Claude reads `docs/core/PATTERNS.md#authentication` and implements the exact pattern you defined (RS256, 15-minute expiry, httpOnly cookies).
+
+4. **Test ADR awareness**
+
+   Ask Claude: _"Why are we using PostgreSQL?"_
+
+   **Expected**: Claude reads `docs/decisions/0001-use-postgresql-for-data-storage.md` and summarizes the decision rationale.
+
+
+
+<Aside type="tip" title="Pro Tip">
+  If Claude doesn't reference your docs, explicitly ask: _"Read PATTERNS.md and implement auth middleware"_. This trains Claude to check documentation first.
+</Aside>
+
+### Step 12: Testing with GitHub Copilot
+
+If you have GitHub Copilot installed:
+
+
+
+1. **Open VS Code** in the project directory
+
+   ```bash
+   code task-api
+   ```
+
+2. **Check Copilot reads instructions**
+
+   Open `.github/copilot-instructions.md` and verify it contains:
+
+   ```markdown
+   See CLAUDE.md for full project conventions and workflows.
+   ```
+
+3. **Test inline suggestions**
+
+   Create a new file `src/middleware/auth.middleware.ts` and start typing:
+
+   ```typescript
+   import jwt from 'jsonwebtoken';
+
+   export function generateAccessToken
+   ```
+
+   **Expected**: Copilot suggests code matching your pattern (RS256, 15-minute expiry).
+
+4. **Test chat context**
+
+   Open Copilot Chat and ask: _"What's our authentication pattern?"_
+
+   **Expected**: Copilot references `.github/copilot-instructions.md` → `CLAUDE.md` → `docs/core/PATTERNS.md`.
+
+
+
+### Step 13: Testing with Cursor
+
+If you have Cursor:
+
+
+
+1. **Create `.cursorrules` file**
+
+   ```bash
+   # Option 1: Copy CLAUDE.md
+   cp CLAUDE.md .cursorrules
+
+   # Option 2: Create symlink (keeps in sync)
+   ln -s CLAUDE.md .cursorrules
+   ```
+
+2. **Open project in Cursor**
+
+   ```bash
+   cursor task-api
+   ```
+
+3. **Test pattern awareness**
+
+   Press `Cmd+K` (or `Ctrl+K`) and ask:
+
+   _"Generate a controller for tasks following our API response pattern"_
+
+   **Expected**: Cursor generates code with `{ status, data }` response format from `PATTERNS.md`.
+
+
+
+<Aside type="caution">
+  Cursor reads `.cursorrules` only. It does not read `CLAUDE.md` or `.github/copilot-instructions.md`. Always keep `.cursorrules` updated with your latest conventions.
+</Aside>
+
+---
+
+## Part 5: Implementing Your First Feature
+
+Let's implement Task #1 from `NEXT-TASKS.md`: Configure Development Environment.
+
+### Step 14: Install Development Dependencies
+
+```bash
+# TypeScript and Node types
+npm install -D typescript @types/node
+
+# ESLint and Prettier
+npm install -D eslint prettier eslint-config-prettier eslint-plugin-prettier
+npm install -D @typescript-eslint/parser @typescript-eslint/eslint-plugin
+
+# Husky for Git hooks
+npm install -D husky lint-staged
+
+# Initialize TypeScript
+npx tsc --init
+```
+
+### Step 15: Configure TypeScript
+
+Edit `tsconfig.json`:
+
+```json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "commonjs",
+    "lib": ["ES2022"],
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}
+```
+
+### Step 16: Configure ESLint
+
+Create `.eslintrc.json`:
+
+```json
+{
+  "parser": "@typescript-eslint/parser",
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "prettier"
+  ],
+  "plugins": ["@typescript-eslint"],
+  "env": {
+    "node": true,
+    "es2022": true
+  },
+  "rules": {
+    "@typescript-eslint/no-unused-vars": "error",
+    "@typescript-eslint/no-explicit-any": "warn",
+    "no-console": "off"
+  }
+}
+```
+
+### Step 17: Configure Prettier
+
+Create `.prettierrc`:
+
+```json
+{
+  "semi": true,
+  "trailingComma": "es5",
+  "singleQuote": true,
+  "printWidth": 80,
+  "tabWidth": 2
+}
+```
+
+### Step 18: Add Scripts to package.json
+
+```bash
+npm pkg set scripts.dev="tsx watch src/index.ts"
+npm pkg set scripts.build="tsc"
+npm pkg set scripts.lint="eslint . --ext .ts"
+npm pkg set scripts.format="prettier --write \"src/**/*.ts\""
+npm pkg set scripts.type-check="tsc --noEmit"
+```
+
+### Step 19: Set Up Husky
+
+```bash
+npx husky init
+echo "npm run lint" > .husky/pre-commit
+chmod +x .husky/pre-commit
+```
+
+### Step 20: Mark Task as Complete
+
+Edit `NEXT-TASKS.md` and check off all acceptance criteria:
+
+```markdown
+#### 1. Configure Development Environment
+
+**Context**: Need consistent tooling across the team
+
+**Acceptance Criteria**:
+- [x] ESLint configured with TypeScript support
+- [x] Prettier integrated with ESLint
+- [x] Husky pre-commit hooks for linting
+- [x] TypeScript strict mode enabled
+- [x] Path aliases configured (@/* → src/*)
+
+**Blockers**: None
+
+✅ **Completed**: 2026-01-19
+```
+
+<Aside type="tip" title="Pro Tip">
+  When you complete a task, immediately commit the changes with a descriptive message. This creates a clear history of progress.
+</Aside>
+
+---
+
+## Part 6: Validation and Maintenance
+
+### Step 21: Validate Project Health
+
+```bash
+cortex-tms validate --strict
+```
+
+**Expected output**:
+
+```
+Running validation checks...
+
+✓ CLAUDE.md exists and is well-formed
+✓ NEXT-TASKS.md exists and has current objective
+✓ All core docs exist (PATTERNS, ARCHITECTURE, etc.)
+✓ .cortexrc is valid JSON
+✓ No dead links in documentation
+✓ File sizes within recommended limits
+  - NEXT-TASKS.md: 142 lines (under 200 limit) ✓
+  - PATTERNS.md: 487 lines (under 650 limit) ✓
+  - .github/copilot-instructions.md: 68 lines (under 100 limit) ✓
+
+Project health: EXCELLENT
+All checks passed (6/6)
+```
+
+### Step 22: Archive Completed Tasks
+
+When you finish the entire sprint, archive it:
+
+
+
+1. **Create archive file**
+
+   ```bash
+   touch docs/archive/sprint-2026-01-project-foundation.md
+   ```
+
+2. **Move completed tasks**
+
+   Copy the completed section from `NEXT-TASKS.md` to the archive:
+
+   ```markdown
+   # Sprint: Project Foundation (2026-01-15 to 2026-01-19)
+
+   **Goal**: Set up project infrastructure with testing, linting, and database connection.
+
+   ## Completed Tasks
+
+   ### ✅ Configure Development Environment
+   - ESLint configured with TypeScript support
+   - Prettier integrated with ESLint
+   - Husky pre-commit hooks for linting
+   - TypeScript strict mode enabled
+   - Path aliases configured
+
+   **Outcome**: Development environment is consistent across team members. Linting catches errors before commit.
+
+   ---
+
+   ### ✅ Set Up Database Layer
+   - PostgreSQL Docker Compose configuration
+   - Drizzle ORM installed and configured
+   - Initial schema: users, tasks, projects tables
+   - Migration script working
+   - Seed script for development data
+
+   **Outcome**: Database layer ready for feature development. 15 seed tasks created for testing.
+
+   ---
+
+   ## Metrics
+
+   - **Duration**: 5 days
+   - **Story Points**: 13
+   - **Blockers**: None
+   - **Team Velocity**: 2.6 points/day
+
+   ## Retrospective
+
+   **What went well**:
+   - Clear acceptance criteria made tasks easy to complete
+   - AI agents (Claude Code) followed patterns perfectly
+   - No merge conflicts
+
+   **What to improve**:
+   - TypeScript strict mode caught more errors than expected (good, but slowed initial setup)
+   - Husky hook could be faster (investigate lint-staged for incremental checks)
+
+   **Action items**:
+   - Add lint-staged for faster pre-commit hooks
+   - Document Docker setup in TROUBLESHOOTING.md
+   ```
+
+3. **Clean up NEXT-TASKS.md**
+
+   Remove completed tasks from `NEXT-TASKS.md` and add the next sprint.
+
+
+
+<Aside type="tip" title="Pro Tip">
+  Archive sprints regularly (every 1-2 weeks). This keeps `NEXT-TASKS.md` under 200 lines and preserves historical context in the COLD tier.
+</Aside>
+
+### Step 23: Update CHANGELOG.md
+
+When you complete major milestones, update the changelog:
+
+```markdown
+# Changelog
+
+All notable changes to task-api will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [Unreleased]
+
+### Added
+- TypeScript strict mode configuration
+- ESLint + Prettier with pre-commit hooks
+- PostgreSQL database with Drizzle ORM
+- Initial schema: users, tasks, projects tables
+- Authentication patterns documented in PATTERNS.md
+- ADR-0001: Use PostgreSQL for data storage
+
+### Infrastructure
+- Docker Compose for local PostgreSQL
+- Migration and seed scripts
+- Path aliases (@/* → src/*)
+
+---
+
+## [0.1.0] - 2026-01-19
+
+### Added
+- Initial project setup with Cortex TMS
+- Documentation structure (HOT/WARM/COLD tiers)
+- AI agent integration (CLAUDE.md, copilot-instructions.md)
+```
+
+---
+
+## Part 7: Next Steps
+
+Congratulations! You've built your first Cortex TMS-powered project. Here's what to explore next:
+
+### Continue Building Features
+
+<CardGrid>
+  <Card title="Implement Task #2" icon="approve-check">
+    Set up the database layer following your documented patterns.
+  </Card>
+
+  <Card title="Write Tests" icon="seti:test">
+    Follow the testing pattern in `PATTERNS.md` to add unit tests.
+  </Card>
+
+  <Card title="Create More ADRs" icon="document">
+    Document decisions as you make them (framework choices, API design, etc.).
+  </Card>
+
+  <Card title="Expand GLOSSARY.md" icon="open-book">
+    Define domain terms (e.g., "Task", "Project", "Sprint").
+  </Card>
+</CardGrid>
+
+### Explore Advanced Features
+
+- **[Team Adoption](/guides/team-adoption/)**: Onboard your team to Cortex TMS
+- **[CI/CD Integration](/guides/ci-cd-integration/)**: Automate validation in GitHub Actions
+- **[Customizing Templates](/guides/customizing-templates/)**: Modify templates for your org's needs
+- **[Integrating AI Agents](/guides/integrating-ai-agents/)**: Deep dive into Claude Code, Copilot, and Cursor
+
+### Join the Community
+
+- **GitHub**: [cortex-tms/cortex-tms](https://github.com/cortex-tms/cortex-tms) - Star the repo, report issues
+- **Documentation**: [cortex-tms.dev](https://cortex-tms.dev) - Explore concepts and CLI reference
+- **Examples**: See [examples/](https://github.com/cortex-tms/cortex-tms/tree/main/examples) for real-world projects
+
+---
+
+## Troubleshooting
+
+### Issue: AI agent isn't following my patterns
+
+**Symptoms**: Claude Code or Copilot generates code that doesn't match `PATTERNS.md`.
+
+**Solutions**:
+
+
+
+1. **Verify the agent reads the file**
+
+   Ask explicitly: _"Read docs/core/PATTERNS.md and summarize the authentication pattern"_
+
+2. **Check file size limits**
+
+   Run `cortex-tms validate` to ensure `PATTERNS.md` is under 650 lines. Large files may be truncated.
+
+3. **Add canonical examples**
+
+   AI agents learn better from examples than descriptions. Include full code samples in `PATTERNS.md`.
+
+4. **Use explicit references in NEXT-TASKS.md**
+
+   Instead of: "Implement authentication"
+
+   Write: "Implement authentication following `docs/core/PATTERNS.md#authentication` (RS256, 15-min expiry)"
+
+
+
+---
+
+### Issue: Validation fails with "NEXT-TASKS.md malformed"
+
+**Symptoms**: `cortex-tms validate` reports errors.
+
+**Solutions**:
+
+
+
+1. **Check Markdown syntax**
+
+   Ensure proper heading hierarchy (##, ###, ####) and no unclosed code blocks.
+
+2. **Verify required sections**
+
+   `NEXT-TASKS.md` must have:
+   - `# Current Tasks` heading
+   - At least one `## Active Sprint` section
+   - At least one task with acceptance criteria
+
+3. **Run validate with verbose output**
+
+   ```bash
+   cortex-tms validate --verbose
+   ```
+
+   This shows the exact line causing issues.
+
+
+
+---
+
+### Issue: Too many files to track
+
+**Symptoms**: `NEXT-TASKS.md` has grown to 300+ lines with dozens of tasks.
+
+**Solutions**:
+
+
+
+1. **Move backlog to FUTURE-ENHANCEMENTS.md**
+
+   Only keep 1-2 weeks of work in `NEXT-TASKS.md`. Everything else goes in the backlog.
+
+2. **Break large tasks into smaller increments**
+
+   Instead of: "Build entire authentication system"
+
+   Split into: "JWT generation", "Token validation", "Refresh rotation"
+
+3. **Archive completed sprints**
+
+   Move finished work to `docs/archive/sprint-YYYY-MM.md` every 1-2 weeks.
+
+
+
+---
+
+## Key Takeaways
+
+<CardGrid stagger>
+  <Card title="Documentation is Code" icon="document">
+    Treat `NEXT-TASKS.md` and `PATTERNS.md` like source code. Version control, code review, and validate them.
+  </Card>
+
+  <Card title="AI Agents Follow Patterns" icon="star">
+    When patterns are clear and canonical, AI agents (Claude, Copilot) generate consistent code without hallucinations.
+  </Card>
+
+  <Card title="Archive Aggressively" icon="archive">
+    Keep HOT tier lean by moving completed work to COLD tier. Your context budget is precious.
+  </Card>
+
+  <Card title="ADRs Preserve History" icon="open-book">
+    Document decisions as you make them. Future you (and future team members) will thank you.
+  </Card>
+</CardGrid>
+
+---
+
+## What You've Learned
+
+By completing this guide, you've:
+
+- ✅ Set up a complete Cortex TMS project structure
+- ✅ Customized templates for your specific tech stack
+- ✅ Defined coding patterns for consistency
+- ✅ Created your first ADR to preserve decision history
+- ✅ Integrated AI agents (Claude Code, Copilot, or Cursor)
+- ✅ Implemented a feature following documented patterns
+- ✅ Validated project health with `cortex-tms validate`
+- ✅ Archived completed work to maintain context budget
+
+You're now ready to scale this approach to larger projects and teams!
+
+---
+
+<Aside type="tip" title="Pro Tip">
+  Bookmark this guide and revisit it when onboarding new team members. It serves as both a tutorial and a reference for best practices.
+</Aside>

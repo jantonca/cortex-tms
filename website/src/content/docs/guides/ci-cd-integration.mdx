@@ -1,0 +1,1063 @@
+---
+title: CI/CD Integration Guide
+description: Automate Cortex TMS validation, archiving, and deployment in GitHub Actions, GitLab CI, CircleCI, and other platforms
+---
+
+import { Card, CardGrid, Tabs, TabItem, Steps, Aside, FileTree } from '@astrojs/starlight/components';
+
+This guide covers integrating Cortex TMS into your continuous integration and continuous deployment pipelines. You'll learn how to automate documentation validation, enforce patterns in code reviews, archive sprints automatically, release with validated docs, and deploy with confidence.
+
+## Why CI/CD Integration Matters
+
+Without CI/CD integration, documentation validation and pattern enforcement rely on developers remembering to run commands manually. This leads to:
+
+- **Documentation drift**: Docs get out of sync with code
+- **Pattern violations**: Code inconsistency slips through code review
+- **Incomplete releases**: Versions released without updated CHANGELOG
+- **Sprint chaos**: Completed sprints never get archived
+
+**CI/CD integration fixes this** by making validation mandatory before merging, releasing, or deploying.
+
+---
+
+## Part 1: GitHub Actions Setup
+
+GitHub Actions is the easiest platform to integrate with Cortex TMS.
+
+### Step 1: Create Validation Workflow
+
+Create `.github/workflows/validate.yml`:
+
+```yaml
+name: Validate Cortex TMS
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install cortex-tms
+        run: npm install -g cortex-tms@2.6.0
+
+      - name: Validate Cortex TMS
+        run: cortex-tms validate --strict
+
+      - name: Run linting
+        run: npm run lint
+
+      - name: Run type checking
+        run: npm run type-check
+
+      - name: Run tests
+        run: npm test -- --coverage
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./coverage/coverage-final.json
+          fail_ci_if_error: true
+```
+
+**What this does**:
+1. Runs on every push and PR
+2. Installs Cortex TMS globally
+3. Validates documentation structure
+4. Runs linting and type checking
+5. Runs full test suite
+6. Uploads coverage to Codecov
+
+<Aside type="tip" title="Pro Tip">
+  Run validation **before** linting. This catches documentation errors early and fails fast.
+</Aside>
+
+### Step 2: Add PR Status Checks
+
+Create `.github/workflows/pr-checks.yml`:
+
+```yaml
+name: PR Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  pattern-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install cortex-tms
+        run: npm install -g cortex-tms@2.6.0
+
+      - name: Check if PATTERNS.md was updated
+        run: |
+          if git diff origin/main...HEAD --name-only | grep -q "docs/core/PATTERNS.md"; then
+            echo "✓ PATTERNS.md was updated"
+          else
+            echo "⚠️  New code patterns detected but PATTERNS.md not updated"
+            echo "Consider updating docs/core/PATTERNS.md with your new pattern"
+          fi
+
+      - name: Check if NEXT-TASKS.md marks task complete
+        run: |
+          # Verify task completion if implementing a feature
+          if git diff origin/main...HEAD --name-only | grep -q "src/"; then
+            echo "✓ Code changes detected"
+            echo "Please verify NEXT-TASKS.md marks related tasks as complete"
+          fi
+
+      - name: Validate documentation
+        run: cortex-tms validate --strict
+```
+
+**What this does**:
+- Warns if code changes don't include pattern updates
+- Reminds developers to mark tasks complete
+- Fails PR if validation fails
+
+### Step 3: Add Automated Sprint Archiving
+
+Create `.github/workflows/archive-sprint.yml`:
+
+```yaml
+name: Archive Completed Sprint
+
+on:
+  schedule:
+    # Every Friday at 5 PM UTC
+    - cron: '0 17 * * 5'
+  workflow_dispatch:
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install cortex-tms
+        run: npm install -g cortex-tms@2.6.0
+
+      - name: Check if sprint is complete
+        id: sprint-complete
+        run: |
+          # Count incomplete tasks
+          incomplete=$(grep -c "^- \[ \]" NEXT-TASKS.md || echo 0)
+
+          if [ "$incomplete" -eq 0 ]; then
+            echo "sprint_complete=true" >> $GITHUB_OUTPUT
+          else
+            echo "sprint_complete=false" >> $GITHUB_OUTPUT
+            echo "⚠️  Sprint has $incomplete incomplete tasks. Skipping archive."
+          fi
+
+      - name: Create archive file
+        if: steps.sprint-complete.outputs.sprint_complete == 'true'
+        run: |
+          date_str=$(date +%Y-%m-%d)
+          sprint_name=$(grep "## Active Sprint:" NEXT-TASKS.md | head -1 | sed 's/## Active Sprint: //' | sed 's/ (.*//')
+          archive_file="docs/archive/sprint-${date_str}-${sprint_name// /-}.md"
+
+          # Create archive with completed tasks
+          cp NEXT-TASKS.md "$archive_file"
+          echo "✓ Created $archive_file"
+
+      - name: Clear completed tasks from NEXT-TASKS.md
+        if: steps.sprint-complete.outputs.sprint_complete == 'true'
+        run: |
+          # Keep only the header and active sprint section
+          head -n 5 NEXT-TASKS.md > NEXT-TASKS.tmp
+          mv NEXT-TASKS.tmp NEXT-TASKS.md
+
+      - name: Commit and push
+        if: steps.sprint-complete.outputs.sprint_complete == 'true'
+        run: |
+          git config user.name "cortex-tms[bot]"
+          git config user.email "noreply@cortex-tms.dev"
+          git add docs/archive/ NEXT-TASKS.md
+          git commit -m "docs: archive completed sprint
+
+          Co-Authored-By: Cortex TMS (noreply@cortex-tms.dev)"
+          git push origin main
+```
+
+**What this does**:
+- Runs every Friday (configurable)
+- Checks if all sprint tasks are complete
+- Creates archive file with completed tasks
+- Clears NEXT-TASKS.md for next sprint
+- Auto-commits and pushes
+
+<Aside type="note">
+  This workflow only archives if all tasks are marked complete. Incomplete sprints are skipped.
+</Aside>
+
+### Step 4: Add Release Workflow
+
+Create `.github/workflows/release.yml`:
+
+```yaml
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  validate-and-release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install cortex-tms
+        run: npm install -g cortex-tms@2.6.0
+
+      - name: Validate documentation
+        run: cortex-tms validate --strict
+
+      - name: Check CHANGELOG updated
+        run: |
+          # Extract version from tag
+          version=${GITHUB_REF#refs/tags/v}
+
+          # Check if CHANGELOG mentions this version
+          if grep -q "## \[$version\]" CHANGELOG.md; then
+            echo "✓ CHANGELOG updated for version $version"
+          else
+            echo "✗ CHANGELOG.md must be updated with version $version"
+            exit 1
+          fi
+
+      - name: Run full test suite
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Create GitHub Release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          body: |
+            See CHANGELOG.md for details.
+          draft: false
+          prerelease: false
+```
+
+**What this does**:
+- Triggers on new version tags (v1.0.0, v2.1.3, etc.)
+- Validates documentation
+- Verifies CHANGELOG is updated
+- Runs full test suite
+- Builds production code
+- Creates GitHub Release
+
+<Aside type="tip" title="Pro Tip">
+  Always require CHANGELOG updates before releasing. This ensures release notes are accurate and up-to-date.
+</Aside>
+
+### Step 5: Add Status Badge to README
+
+Add this to your `README.md`:
+
+```markdown
+[![Cortex TMS Validation](https://github.com/your-org/your-repo/actions/workflows/validate.yml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/validate.yml)
+[![Tests](https://github.com/your-org/your-repo/actions/workflows/test.yml/badge.svg)](https://github.com/your-org/your-repo/actions/workflows/test.yml)
+[![Coverage](https://codecov.io/gh/your-org/your-repo/branch/main/graph/badge.svg)](https://codecov.io/gh/your-org/your-repo)
+```
+
+This shows project health at a glance.
+
+---
+
+## Part 2: GitLab CI Integration
+
+If you use GitLab, integrate Cortex TMS with `.gitlab-ci.yml`.
+
+### Step 1: Create GitLab CI Pipeline
+
+Create `.gitlab-ci.yml`:
+
+```yaml
+image: node:20
+
+stages:
+  - validate
+  - test
+  - build
+  - release
+
+variables:
+  npm_config_cache: "$CI_PROJECT_DIR/.npm"
+
+cache:
+  paths:
+    - .npm/
+    - node_modules/
+
+before_script:
+  - npm ci
+  - npm install -g cortex-tms@2.6.0
+
+validate:cortex-tms:
+  stage: validate
+  script:
+    - cortex-tms validate --strict
+  only:
+    - merge_requests
+    - main
+    - develop
+  allow_failure: false
+
+validate:lint:
+  stage: validate
+  script:
+    - npm run lint
+  only:
+    - merge_requests
+    - main
+    - develop
+
+validate:type-check:
+  stage: validate
+  script:
+    - npm run type-check
+  only:
+    - merge_requests
+    - main
+    - develop
+
+test:unit:
+  stage: test
+  script:
+    - npm test -- --coverage
+  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: coverage/cobertura-coverage.xml
+    paths:
+      - coverage/
+    expire_in: 30 days
+  only:
+    - merge_requests
+    - main
+    - develop
+
+build:production:
+  stage: build
+  script:
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 day
+  only:
+    - tags
+    - main
+
+release:create:
+  stage: release
+  script:
+    - npm install -g semantic-release @semantic-release/git @semantic-release/gitlab
+    - semantic-release
+  only:
+    - main
+  when: manual
+```
+
+**What this does**:
+- Validates documentation and code
+- Runs tests with coverage reporting
+- Builds production artifacts
+- Supports semantic versioning releases
+
+### Step 2: Configure Merge Request Rules
+
+Create `.gitlab/merge_request_templates/default.md`:
+
+```markdown
+## Description
+
+<!-- What does this MR do? -->
+
+## Type of Change
+
+- [ ] Feature
+- [ ] Bug fix
+- [ ] Documentation
+- [ ] Refactor
+- [ ] Test improvement
+
+## Checklist
+
+### Code Quality
+- [ ] Code follows patterns in `docs/core/PATTERNS.md`
+- [ ] Tests added/updated
+- [ ] All tests pass locally
+- [ ] Linting passes locally
+
+### Documentation
+- [ ] `cortex-tms validate` passes
+- [ ] Updated PATTERNS.md if adding new patterns
+- [ ] Created ADR if making architectural decision
+- [ ] Updated NEXT-TASKS.md if completing tasks
+
+### Testing
+- [ ] Unit tests added
+- [ ] Integration tests added (if applicable)
+- [ ] Coverage maintained or improved
+
+## Related Issues
+
+<!-- Link to GitLab issues: Closes #123 -->
+```
+
+---
+
+## Part 3: CircleCI Integration
+
+If you use CircleCI, here's how to integrate Cortex TMS.
+
+### Step 1: Create CircleCI Config
+
+Create `.circleci/config.yml`:
+
+```yaml
+version: 2.1
+
+orbs:
+  node: circleci/node@5
+  codecov: codecov/codecov@3
+
+jobs:
+  validate:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Install cortex-tms
+          command: npm install -g cortex-tms@2.6.0
+      - run:
+          name: Validate Cortex TMS
+          command: cortex-tms validate --strict
+      - run:
+          name: Run linting
+          command: npm run lint
+      - run:
+          name: Run type checking
+          command: npm run type-check
+
+  test:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Run tests with coverage
+          command: npm test -- --coverage
+      - codecov/upload:
+          file: ./coverage/coverage-final.json
+
+  build:
+    executor: node/default
+    steps:
+      - checkout
+      - node/install-packages
+      - run:
+          name: Build production
+          command: npm run build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - dist/
+
+  release:
+    executor: node/default
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - node/install-packages
+      - run:
+          name: Install cortex-tms
+          command: npm install -g cortex-tms@2.6.0
+      - run:
+          name: Validate before release
+          command: cortex-tms validate --strict
+      - run:
+          name: Verify CHANGELOG
+          command: |
+            version=${CIRCLE_TAG#v}
+            if grep -q "## \[$version\]" CHANGELOG.md; then
+              echo "✓ CHANGELOG updated"
+            else
+              echo "✗ CHANGELOG not updated for $version"
+              exit 1
+            fi
+      - run:
+          name: Setup npm auth
+          command: echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > ~/.npmrc
+      - run:
+          name: Publish to npm
+          command: npm publish
+
+workflows:
+  validate-and-test:
+    jobs:
+      - validate:
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+                - /^feature\/.*/
+      - test:
+          filters:
+            branches:
+              only:
+                - main
+                - develop
+                - /^feature\/.*/
+      - build:
+          requires:
+            - validate
+            - test
+
+  release:
+    jobs:
+      - validate:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - test:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - build:
+          requires:
+            - validate
+            - test
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+      - release:
+          requires:
+            - build
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
+```
+
+**What this does**:
+- Validates on every commit to main/develop
+- Runs full test suite
+- Builds production artifacts
+- Publishes to npm on release tags
+- Verifies CHANGELOG before publishing
+
+---
+
+## Part 4: Pre-Commit Hooks
+
+Use pre-commit hooks to validate locally before pushing.
+
+### Step 1: Install Husky and Pre-Commit
+
+```bash
+npm install -D husky lint-staged
+
+npx husky install
+npx husky add .husky/pre-commit "cortex-tms validate && npm run lint"
+npx husky add .husky/pre-push "npm test"
+```
+
+### Step 2: Configure lint-staged
+
+Update `package.json`:
+
+```json
+{
+  "lint-staged": {
+    "*.ts": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.md": [
+      "prettier --write"
+    ],
+    "NEXT-TASKS.md": [
+      "cortex-tms validate"
+    ],
+    "PATTERNS.md": [
+      "cortex-tms validate"
+    ]
+  }
+}
+```
+
+<Aside type="tip" title="Pro Tip">
+  Pre-commit hooks catch errors early, before they reach CI. This speeds up feedback loops.
+</Aside>
+
+---
+
+## Part 5: Deployment Pipelines
+
+Integrate Cortex TMS validation into your deployment process.
+
+### Step 1: Validate Before Deploying
+
+Add this to your deployment script (`deploy.sh`):
+
+```bash
+#!/bin/bash
+set -e
+
+echo "🔍 Validating Cortex TMS..."
+cortex-tms validate --strict
+
+echo "🧪 Running tests..."
+npm test
+
+echo "🏗️  Building..."
+npm run build
+
+echo "📦 Deploying to production..."
+# Your deployment command here
+# Example: vercel --prod
+
+echo "✅ Deployment complete!"
+```
+
+### Step 2: Create Deployment Checklist
+
+Create `.github/workflows/pre-deploy-check.yml`:
+
+```yaml
+name: Pre-Deploy Checks
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Deployment environment'
+        required: true
+        default: 'staging'
+        type: choice
+        options:
+          - staging
+          - production
+
+jobs:
+  pre-deploy-checks:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install cortex-tms
+        run: npm install -g cortex-tms@2.6.0
+
+      - name: Validate documentation
+        run: cortex-tms validate --strict
+
+      - name: Run full test suite
+        run: npm test -- --coverage
+
+      - name: Build
+        run: npm run build
+
+      - name: Check if git is clean
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "✓ Git working directory is clean"
+          else
+            echo "✗ Git working directory has uncommitted changes"
+            git status
+            exit 1
+          fi
+
+      - name: Check if on main branch
+        if: github.event.inputs.environment == 'production'
+        run: |
+          if [ "$(git rev-parse --abbrev-ref HEAD)" == "main" ]; then
+            echo "✓ On main branch"
+          else
+            echo "✗ Production deployments require main branch"
+            exit 1
+          fi
+
+      - name: Ready for deployment
+        run: |
+          echo "✅ All pre-deploy checks passed!"
+          echo "Environment: ${{ github.event.inputs.environment }}"
+          echo "Ready to deploy"
+```
+
+**What this does**:
+- Validates documentation before deployment
+- Runs full test suite
+- Verifies git is clean
+- Ensures main branch for production deploys
+- Acts as a safety gate
+
+<Aside type="note">
+  Run pre-deploy checks as a separate workflow. This prevents accidental deployments from feature branches.
+</Aside>
+
+---
+
+## Part 6: Monitoring and Alerts
+
+### Step 1: Add Validation Metrics
+
+Create a script to track validation health (`scripts/track-validation.js`):
+
+```javascript
+const fs = require('fs');
+const path = require('path');
+const { execSync } = require('child_process');
+
+const validationLog = {
+  timestamp: new Date().toISOString(),
+  branch: process.env.GITHUB_REF || 'local',
+  commit: process.env.GITHUB_SHA || 'local',
+  checks: {},
+};
+
+try {
+  // Check CLAUDE.md
+  const claudeMd = fs.readFileSync('CLAUDE.md', 'utf8');
+  validationLog.checks.claudeMd = {
+    exists: true,
+    size: claudeMd.length,
+    sections: (claudeMd.match(/^## /gm) || []).length,
+  };
+} catch {
+  validationLog.checks.claudeMd = { exists: false };
+}
+
+try {
+  // Check PATTERNS.md
+  const patternsMd = fs.readFileSync('docs/core/PATTERNS.md', 'utf8');
+  validationLog.checks.patternsMd = {
+    exists: true,
+    size: patternsMd.length,
+    patterns: (patternsMd.match(/^## /gm) || []).length,
+  };
+} catch {
+  validationLog.checks.patternsMd = { exists: false };
+}
+
+try {
+  // Check task completion rate
+  const nextTasks = fs.readFileSync('NEXT-TASKS.md', 'utf8');
+  const totalTasks = (nextTasks.match(/^- \[./gm) || []).length;
+  const completedTasks = (nextTasks.match(/^- \[x\]/gm) || []).length;
+
+  validationLog.checks.taskCompletion = {
+    total: totalTasks,
+    completed: completedTasks,
+    percentage: totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0,
+  };
+} catch {
+  validationLog.checks.taskCompletion = { error: 'Could not parse NEXT-TASKS.md' };
+}
+
+// Log results
+console.log(JSON.stringify(validationLog, null, 2));
+
+// Save to file for historical tracking
+const logsDir = '.validation-logs';
+if (!fs.existsSync(logsDir)) {
+  fs.mkdirSync(logsDir);
+}
+
+const logFile = path.join(logsDir, `${Date.now()}.json`);
+fs.writeFileSync(logFile, JSON.stringify(validationLog, null, 2));
+```
+
+### Step 2: Slack Notifications
+
+Create a workflow that sends Slack alerts:
+
+```yaml
+name: Validation Alert
+
+on:
+  workflow_run:
+    workflows: ["Validate Cortex TMS"]
+    types: [completed]
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+
+    steps:
+      - name: Send Slack notification
+        uses: slackapi/slack-github-action@v1.24.0
+        with:
+          payload: |
+            {
+              "text": "🚨 Cortex TMS Validation Failed",
+              "blocks": [
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": "Cortex TMS validation failed on `${{ github.ref_name }}`\n*Commit:* <${{ github.event.workflow_run.html_url }}|${{ github.event.workflow_run.head_commit.message }}>"
+                  }
+                },
+                {
+                  "type": "actions",
+                  "elements": [
+                    {
+                      "type": "button",
+                      "text": {
+                        "type": "plain_text",
+                        "text": "View Workflow"
+                      },
+                      "url": "${{ github.event.workflow_run.html_url }}"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: INCOMING_WEBHOOK
+```
+
+---
+
+## Part 7: Best Practices
+
+<CardGrid stagger>
+  <Card title="Fail Fast" icon="warning">
+    Run validation first before other checks. Invalid docs should fail immediately.
+  </Card>
+
+  <Card title="Require Tests with Changes" icon="seti:test">
+    Every code change must include tests. CI should fail if coverage drops.
+  </Card>
+
+  <Card title="Validate Before Release" icon="approve-check">
+    Never release without validating docs, updating CHANGELOG, and running full tests.
+  </Card>
+
+  <Card title="Archive Automatically" icon="archive">
+    Use scheduled workflows to archive completed sprints. Keep NEXT-TASKS.md lean.
+  </Card>
+
+  <Card title="Use Status Badges" icon="star">
+    Display CI status in README. Green badges indicate healthy projects.
+  </Card>
+
+  <Card title="Monitor Metrics" icon="pencil">
+    Track validation health, test coverage, and pattern compliance over time.
+  </Card>
+</CardGrid>
+
+---
+
+## Troubleshooting
+
+### Issue: Validation fails on CI but passes locally
+
+**Symptoms**:
+- `cortex-tms validate` works on your machine
+- Fails in GitHub Actions / GitLab CI
+
+**Solutions**:
+
+
+
+1. **Check file encoding**
+
+   CI might use different line endings. Ensure Unix line endings:
+
+   ```bash
+   dos2unix NEXT-TASKS.md PATTERNS.md
+   ```
+
+2. **Check file permissions**
+
+   Some files might need executable permissions:
+
+   ```bash
+   chmod +x deploy.sh
+   ```
+
+3. **Verify Node version**
+
+   CI might use different Node version:
+
+   ```bash
+   node --version
+   # Compare with: cat .nvmrc or .node-version
+   ```
+
+4. **Check environment variables**
+
+   Missing env vars can cause validation failures:
+
+   ```bash
+   # List all env vars in your workflow
+   - name: Debug env vars
+     run: env | grep -E "(NODE|NPM|CORTEX)" | sort
+   ```
+
+
+
+---
+
+### Issue: Archive workflow doesn't create files
+
+**Symptoms**:
+- Archive workflow runs but no sprint archive created
+- NEXT-TASKS.md not cleared
+
+**Solutions**:
+
+
+
+1. **Check task completion**
+
+   Archive only runs if ALL tasks are complete. Verify:
+
+   ```bash
+   grep -c "^- \[ \]" NEXT-TASKS.md
+   # Should output 0
+   ```
+
+2. **Check workflow logs**
+
+   View Actions/Pipelines → Archive Sprint → Logs to see what failed.
+
+3. **Manually archive if needed**
+
+   ```bash
+   git checkout -b docs/archive-sprint
+
+   # Create archive file
+   date_str=$(date +%Y-%m-%d)
+   cp NEXT-TASKS.md "docs/archive/sprint-${date_str}.md"
+
+   # Clear for next sprint
+   echo "# Current Tasks" > NEXT-TASKS.md
+
+   git add .
+   git commit -m "docs: archive sprint"
+   git push origin docs/archive-sprint
+   ```
+
+
+
+---
+
+## Next Steps
+
+Now that you've integrated CI/CD:
+
+- **[Team Adoption](/guides/team-adoption/)**: Roll out TMS + CI/CD to your team
+- **[Customizing Templates](/guides/customizing-templates/)**: Create custom templates for your org
+- **[Integrating AI Agents](/guides/integrating-ai-agents/)**: Use AI agents with validated documentation
+
+<Aside type="tip" title="Pro Tip">
+  Start with GitHub Actions if you use GitHub. It's the easiest to set up and requires no additional accounts or configuration.
+</Aside>
+
+---
+
+## Key Takeaways
+
+<CardGrid stagger>
+  <Card title="Validation is Mandatory" icon="approve-check">
+    Make `cortex-tms validate` part of every PR and release. Enforcement prevents documentation drift.
+  </Card>
+
+  <Card title="Automate Repetitive Tasks" icon="rocket">
+    Archive sprints, release versions, and update CHANGELOG automatically. Reduce manual work.
+  </Card>
+
+  <Card title="Provide Feedback Early" icon="pencil">
+    Pre-commit hooks and PR checks catch issues before they merge. Fast feedback loops improve quality.
+  </Card>
+
+  <Card title="Monitor Health Over Time" icon="star">
+    Track validation metrics, test coverage, and pattern compliance. Use trends to improve process.
+  </Card>
+</CardGrid>
