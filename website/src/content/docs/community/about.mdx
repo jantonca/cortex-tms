@@ -1,0 +1,300 @@
+---
+title: About Cortex TMS
+description: How we build Cortex TMS - dogfooding our own standard and AI collaboration transparency
+---
+
+import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+
+## How We Build
+
+Cortex TMS isn't just a tool we've built for others - **it's the standard we use to build itself**. This page explains our approach to development, AI collaboration, and quality standards.
+
+<Aside type="tip" title="Dogfooding in Action">
+Every feature, documentation page, and architectural decision in Cortex TMS follows the same TMS structure we recommend to users. We eat our own dog food.
+</Aside>
+
+---
+
+## Built Using Our Own Standard
+
+### The Meta Approach
+
+Cortex TMS development follows the exact workflow we advocate:
+
+**1. Documentation-Driven Development**
+- All work starts with updates to `NEXT-TASKS.md` (our sprint backlog)
+- Feature specs documented in `docs/core/PATTERNS.md` before implementation
+- Architectural decisions captured in `docs/decisions/` (ADRs)
+
+**2. Tiered Memory in Practice**
+- **HOT Tier**: `NEXT-TASKS.md` (current 2-week sprint), `.github/copilot-instructions.md` (critical rules)
+- **WARM Tier**: `docs/core/PATTERNS.md` (coding standards), `docs/core/DOMAIN-LOGIC.md` (business rules)
+- **COLD Tier**: `docs/archive/` (historical sprint records, completed tasks)
+
+**3. Zero-Drift Governance**
+- Git Guardian pre-commit hook enforces branch naming
+- `cortex-tms validate --strict` runs before releases
+- Truth syncing: README, CHANGELOG, and package.json stay in sync
+
+**Real Example**: When building Guardian (v2.7), we:
+1. Documented requirements in `NEXT-TASKS.md` (TMS-283a-f)
+2. Created patterns in `PATTERNS.md` for LLM client architecture
+3. Wrote tests first (21 new tests, 74 total)
+4. Used Guardian to review its own code (meta dogfooding!)
+
+---
+
+## AI Collaboration Transparency
+
+<Aside type="note">
+We believe AI-assisted development should be transparent. Here's exactly how we work with AI agents.
+</Aside>
+
+### Human-in-the-Loop (HITL) Workflow
+
+**Every commit** to Cortex TMS follows this process:
+
+1. **Human provides direction**: Features, priorities, and business decisions come from human maintainers
+2. **AI implements**: Claude Code or GitHub Copilot writes code following our documented patterns
+3. **Human reviews**: All code reviewed by humans before merge
+4. **AI assists review**: Guardian CLI (`cortex-tms review`) audits pattern compliance
+5. **Automated testing**: 74 tests must pass (human-written, AI-maintained)
+
+**We don't**:
+- Let AI make product decisions
+- Merge code without human review
+- Skip testing because "AI wrote it"
+- Hide AI involvement in commits
+
+**We do**:
+- Credit AI collaboration in every commit (`Co-Authored-By: Claude Sonnet 4.5`)
+- Document AI limitations in Known Issues
+- Use AI to accelerate, not replace, engineering judgment
+
+### Authorship Metadata
+
+**All AI-assisted commits include**:
+
+```bash
+git commit -m "feat: add Guardian CLI core
+
+[Implementation details...]
+
+Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
+```
+
+This provides:
+- **Transparency**: Clear which commits involved AI
+- **Accountability**: Humans still responsible for merged code
+- **Auditability**: Track AI contribution patterns over time
+
+**Statistics** (as of v2.6.0):
+- ~80% of commits include AI co-authorship
+- 100% of commits reviewed by humans
+- 0 critical bugs in production (74/74 tests passing)
+
+---
+
+## Quality Standards
+
+### Our Commitment
+
+Despite heavy AI assistance, we maintain professional standards:
+
+<CardGrid stagger>
+  <Card title="100% Test Coverage (Critical Paths)" icon="approve-check">
+    All CLI commands, validation logic, and migration systems have comprehensive test coverage. 74 tests, all passing.
+  </Card>
+
+  <Card title="Real-World Validation" icon="rocket">
+    Every feature dogfooded in Cortex TMS development before release. We experience bugs before users do.
+  </Card>
+
+  <Card title="Documentation-First" icon="open-book">
+    All features documented before implementation. AI agents follow our docs, ensuring consistency.
+  </Card>
+
+  <Card title="Performance Matters" icon="star">
+    Context budget limits (200 lines for NEXT-TASKS.md) ensure fast AI agent response times. Real performance testing.
+  </Card>
+</CardGrid>
+
+### What We Don't Compromise
+
+**Even with AI acceleration, we maintain**:
+
+- **Security**: No secrets in code, all API keys via environment variables (BYOK approach)
+- **Accessibility**: Website built with Starlight (WCAG compliant), semantic HTML
+- **Performance**: Lightweight builds, fast CLI commands (&lt;500ms for validation)
+- **Backward compatibility**: Semantic versioning, migration tools for breaking changes
+
+---
+
+## The Team
+
+### Core Contributors
+
+**Primary Maintainer**: Human-led with AI assistance (Claude Code, GitHub Copilot)
+
+**Philosophy**: Small team, high leverage. We ship quality software by:
+- Documenting patterns instead of tribal knowledge
+- Automating validation instead of manual reviews
+- Using AI to amplify, not replace, expertise
+
+### Community-Driven
+
+Cortex TMS is **open source** (MIT License):
+- Public GitHub repository: [cortex-tms/cortex-tms](https://github.com/cortex-tms/cortex-tms)
+- Community contributions welcome (see [Contributing Guide](/community/contributing/))
+- Transparent roadmap in `NEXT-TASKS.md` (public repo)
+
+---
+
+## Positioning: Most Transparent AI-Assisted Project
+
+### Why Transparency Matters
+
+**Many projects use AI secretly**. We believe users deserve to know:
+- How software is built
+- What quality standards apply
+- Where AI helps (and where it doesn't)
+- Real limitations and trade-offs
+
+### Our Transparency Commitments
+
+**1. Public Development**
+- All code open source on GitHub
+- Issue tracking public
+- Roadmap visible in `NEXT-TASKS.md`
+- Commit history shows AI co-authorship
+
+**2. Honest Limitations**
+- Documented in [Known Issues](/community/known-issues/)
+- No hiding bugs or constraints
+- Clear about what works and what doesn't
+- Workarounds provided for limitations
+
+**3. Real Metrics**
+- Test coverage: 74 tests across 5 test suites
+- Build time: ~12 seconds for documentation site
+- CLI performance: &lt;500ms for most commands
+- Token usage: Documented in Guardian CLI output
+
+**4. Learning in Public**
+- Blog posts explain design decisions
+- ADRs (Architecture Decision Records) in `docs/decisions/`
+- Sprint retrospectives archived for reference
+- Mistakes documented (see Known Issues: MDX validation workflow)
+
+---
+
+## How This Compares
+
+### Traditional Development
+
+**Old Approach**:
+- Tribal knowledge in senior developers' heads
+- README gradually diverges from code
+- "Just read the code" for onboarding
+- Documentation written after (if at all)
+
+### AI-Assisted Development (Most Projects)
+
+**Current Industry Standard**:
+- AI writes code, humans review
+- No public acknowledgment of AI use
+- Documentation still manual
+- Quality varies wildly
+
+### Cortex TMS Approach
+
+**Our Method**:
+- Documentation-first (AI follows patterns)
+- AI co-authorship credited in commits
+- Dogfooding ensures quality
+- Transparent limitations and metrics
+- **Guardian validates AI output against documented patterns**
+
+**Result**: AI acceleration with human quality standards.
+
+---
+
+## Continuous Improvement
+
+### Current Focus (v2.7)
+
+We're building **Guardian** - AI-powered code review that catches pattern violations:
+- Audits code against `PATTERNS.md` and `DOMAIN-LOGIC.md`
+- Prevents "AI PR Tsunami" (100+ PRs with inconsistent patterns)
+- Targets 70%+ accuracy on architectural violations
+- Read more: [`cortex-tms review` CLI Reference](/reference/cli/review/)
+
+### Learning & Iteration
+
+**Recent Learnings**:
+- MDX validation workflow: [Documented in Known Issues](/community/known-issues/#development-workflow-constraints)
+- Pre-commit hook scope: Fast iteration > perfect automation
+- Test-driven development with AI: Works well when patterns documented
+
+**Next Iteration**:
+- AI Collaboration Policy (formal document in `docs/core/`)
+- Blog content explaining our approach
+- Video demonstrations of dogfooding workflow
+
+---
+
+## Get Involved
+
+### Ways to Contribute
+
+**1. Use Cortex TMS**
+- Try it on your project: [`npm install cortex-tms`](/getting-started/installation/)
+- Report bugs: [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues)
+- Share feedback: [GitHub Discussions](https://github.com/cortex-tms/cortex-tms/discussions)
+
+**2. Contribute Code**
+- Read our [Contributing Guide](/community/contributing/)
+- Check open issues labeled "good first issue"
+- Follow our patterns (documented in repo)
+
+**3. Spread the Word**
+- Star us on [GitHub](https://github.com/cortex-tms/cortex-tms)
+- Share your experience (blog, Twitter, etc.)
+- Recommend to teams struggling with AI-assisted development
+
+**4. Provide Feedback**
+- What works in your workflow?
+- What doesn't work?
+- What's missing?
+
+---
+
+## Contact & Resources
+
+- **GitHub**: [cortex-tms/cortex-tms](https://github.com/cortex-tms/cortex-tms)
+- **Documentation**: [cortex-tms.org](https://cortex-tms.org)
+- **Blog**: [Blog posts](/blog/)
+- **Issues**: [Report bugs](https://github.com/cortex-tms/cortex-tms/issues)
+- **Discussions**: [Community forum](https://github.com/cortex-tms/cortex-tms/discussions)
+
+---
+
+## License
+
+Cortex TMS is **MIT Licensed** - free for personal and commercial use.
+
+Read the full license: [LICENSE](https://github.com/cortex-tms/cortex-tms/blob/main/LICENSE)
+
+---
+
+<Aside type="tip" title="Want to Build Like This?">
+Install Cortex TMS and start using the same workflow we use to build it:
+
+```bash
+npm install -g cortex-tms
+cortex-tms init --scope standard
+cortex-tms prompt init-session
+```
+
+You'll get the same documentation structure, validation tools, and AI workflows we use every day.
+</Aside>

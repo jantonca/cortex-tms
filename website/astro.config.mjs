@@ -77,6 +77,7 @@ export default defineConfig({
           label: 'Community',
           collapsed: true,
           items: [
+            { label: 'About', link: '/community/about/' },
             { label: 'Known Issues', link: '/community/known-issues/' },
             { label: 'Changelog', link: '/community/changelog/' },
             { label: 'Contributing', link: '/community/contributing/' },
