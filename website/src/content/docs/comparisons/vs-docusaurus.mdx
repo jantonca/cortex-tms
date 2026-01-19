@@ -1,0 +1,947 @@
+---
+title: Cortex TMS vs. Docusaurus
+description: Documentation framework vs. architectural governance - Different tools for different problems
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside, FileTree } from '@astrojs/starlight/components';
+
+You are evaluating documentation tools and wondering: Should I use Docusaurus or Cortex TMS?
+
+**Short answer: Both. They solve different problems.**
+
+**Docusaurus** builds beautiful, public-facing documentation websites for your product. Think Stripe docs, React docs, Tailwind CSS docs.
+
+**Cortex TMS** structures in-repo governance files that AI coding assistants read to understand your architectural decisions and coding patterns.
+
+**They are complementary, not competitive.** Many teams use both: Docusaurus for external product documentation, Cortex TMS for internal AI governance.
+
+---
+
+## What is Docusaurus?
+
+[Docusaurus](https://docusaurus.io/) is a static site generator built by Meta (Facebook). It transforms Markdown files into a polished documentation website with:
+
+- Beautiful, responsive UI
+- Built-in search
+- Versioned documentation
+- Internationalization (i18n)
+- Blog support
+- Dark mode
+- Interactive components (tabs, code blocks, diagrams)
+
+**Perfect for:**
+- Product documentation (API references, user guides)
+- Open source project websites
+- Public-facing tutorials and walkthroughs
+- Developer portals
+
+**Examples:**
+- [React Documentation](https://react.dev) (Docusaurus-based)
+- [Jest Documentation](https://jestjs.io)
+- [Supabase Documentation](https://supabase.com/docs)
+- [Redwood Documentation](https://redwoodjs.com/docs)
+
+<Aside type="note">
+  Docusaurus excels at presenting information to humans via a web interface. It is optimized for browsing, searching, and learning.
+</Aside>
+
+---
+
+## What is Cortex TMS?
+
+**Cortex TMS** is a documentation scaffolding CLI that structures your in-repo governance files for AI agents to read. It creates files like:
+
+- `NEXT-TASKS.md` (current sprint, under 200 lines)
+- `docs/core/PATTERNS.md` (code conventions with canonical examples)
+- `docs/core/ARCHITECTURE.md` (tech stack and architectural decisions)
+- `docs/adr/` (Architecture Decision Records)
+- `CLAUDE.md` (AI workflow configuration)
+
+**Perfect for:**
+- AI agent governance (Claude Code, GitHub Copilot, Cursor)
+- Architectural decision tracking
+- Code pattern enforcement
+- Developer onboarding (human and AI)
+- In-repo single source of truth
+
+**Examples:**
+- Cortex TMS itself (dogfooding)
+- Internal engineering wikis (private repos)
+- Monorepo documentation (per-package governance)
+- Open source projects with AI-powered contributors
+
+<Aside type="note">
+  Cortex TMS excels at structuring information for machines (AI agents) and humans via file reading. It is optimized for consumption within IDEs and CLI workflows.
+</Aside>
+
+---
+
+## Side-by-Side Comparison
+
+| Dimension | Docusaurus | Cortex TMS |
+|:----------|:-----------|:-----------|
+| **Purpose** | Public-facing product documentation | Internal architectural governance |
+| **Primary Audience** | End users, API consumers, community | Developers, AI coding assistants |
+| **Output Format** | Static website (HTML/CSS/JS) | Markdown files in repository |
+| **Hosting** | Vercel, Netlify, GitHub Pages | Git repository (no hosting needed) |
+| **UI** | Beautiful web interface with search, navigation | Plain Markdown files (read in IDE or CLI) |
+| **Versioning** | Built-in versioned docs (v1, v2, v3) | Git history (conventional commits) |
+| **Search** | Algolia DocSearch, local search | IDE search, `grep`, GitHub search |
+| **Internationalization** | Full i18n support (multi-language) | Not applicable (governance is usually in English) |
+| **Content Type** | Product features, API references, tutorials | Architecture decisions, code patterns, current sprint |
+| **Update Frequency** | Major releases, feature launches | Daily (as code evolves) |
+| **Maintenance** | Manual updates, versioned releases | Automated validation via CLI |
+| **Enforcement** | None (documentation is informational) | CLI validation, CI/CD checks |
+| **AI Consumption** | Not optimized for AI (web UI focused) | Optimized for AI (structured Markdown, tiered memory) |
+| **Context Budget** | Not a concern (humans browse) | Critical (AI agents have token limits) |
+| **Canonical Examples** | Code snippets in docs (may be outdated) | Links to actual code in repo (always current) |
+| **Local Dev** | Requires build step (Docusaurus dev server) | No build step (just Markdown files) |
+| **Complexity** | Medium (requires Node.js, build config) | Low (CLI scaffolds files, no build) |
+| **Learning Curve** | Medium (learn Docusaurus config, MDX) | Low (standard Markdown, simple CLI) |
+| **Cost** | Free (hosting costs only) | Free (open source CLI) |
+
+<Aside type="tip" title="Pro Tip">
+  If you are asking "Which one should I use?", the real question is: "Who is my audience?" If your audience is external (users, community), use Docusaurus. If your audience is internal (developers, AI agents), use Cortex TMS.
+</Aside>
+
+---
+
+## They Solve Different Problems
+
+### Docusaurus: Public Documentation
+
+**Problem**: Your product has complex features. Users need tutorials, API references, and guides.
+
+**Solution**: Build a Docusaurus site:
+
+<FileTree>
+- website/
+  - docs/
+    - intro.md
+    - getting-started/
+      - installation.md
+      - quick-start.md
+    - api/
+      - authentication.md
+      - endpoints.md
+    - guides/
+      - deploying.md
+      - troubleshooting.md
+  - blog/
+    - 2026-01-15-v2-release.md
+  - src/
+    - pages/
+      - index.tsx (landing page)
+  - docusaurus.config.js
+</FileTree>
+
+**Output**: A public website at `docs.yourproduct.com` with:
+- Search functionality
+- Responsive design
+- Versioned docs (v1, v2)
+- SEO optimization
+- Analytics integration
+
+**Users experience:**
+1. Google search: "How to authenticate with YourProduct API"
+2. Land on `docs.yourproduct.com/api/authentication`
+3. Read tutorial with code examples
+4. Copy code snippet, integrate into their app
+
+**Perfect for product documentation.**
+
+---
+
+### Cortex TMS: Internal Governance
+
+**Problem**: Your team uses AI coding assistants. AI generates code that works but violates your architecture.
+
+**Solution**: Scaffold a TMS structure:
+
+<FileTree>
+- NEXT-TASKS.md (current sprint)
+- CLAUDE.md (AI workflow)
+- docs/
+  - core/
+    - ARCHITECTURE.md (tech decisions)
+    - PATTERNS.md (code conventions)
+    - GLOSSARY.md (domain terms)
+  - adr/ (architectural decision records)
+    - 0001-use-postgresql.md
+    - 0002-jwt-auth-strategy.md
+  - archive/ (completed sprints)
+    - sprint-2026-01.md
+</FileTree>
+
+**Output**: Structured documentation in your repository that AI agents read automatically.
+
+**Developers experience:**
+1. Ask Claude Code: "Implement user authentication"
+2. Claude reads `docs/core/PATTERNS.md#authentication`
+3. Claude generates code following your documented pattern
+4. Code review passes (no pattern violations)
+
+**Perfect for AI governance and developer onboarding.**
+
+---
+
+## The "Both" Strategy: When to Use Together
+
+Many successful teams use both Docusaurus and Cortex TMS. They serve different audiences and different purposes.
+
+### Real-World Example: Vercel's Approach
+
+Vercel (the company behind Next.js) uses a similar dual-documentation strategy:
+
+<Tabs>
+  <TabItem label="Public Docs (Docusaurus-like)">
+    **Audience**: Next.js users (external developers)
+
+    **Location**: [nextjs.org/docs](https://nextjs.org/docs)
+
+    **Content**:
+    - Getting Started tutorials
+    - API reference (components, functions)
+    - Deployment guides
+    - Migration guides (v12 → v13 → v14)
+    - Blog (release announcements)
+
+    **Tech**: Custom static site generator (similar to Docusaurus)
+
+    **Purpose**: Help developers learn and use Next.js
+
+    **Updated**: Every major release (v13, v14, v15)
+  </TabItem>
+
+  <TabItem label="Internal Governance (TMS-like)">
+    **Audience**: Vercel engineers (internal developers)
+
+    **Location**: Private GitHub repository (not public)
+
+    **Content** (inferred from public statements):
+    - Architectural decision records (ADRs)
+    - Code patterns for Next.js monorepo
+    - Internal API conventions
+    - Testing strategies
+    - Performance budgets
+    - Security guidelines
+
+    **Tech**: Markdown files in repository (likely similar to TMS)
+
+    **Purpose**: Ensure consistent implementation across 100+ engineers
+
+    **Updated**: Daily (as codebase evolves)
+  </TabItem>
+</Tabs>
+
+**Key insight**: Public docs explain how to use the product. Internal governance explains how to build the product.
+
+<Aside type="tip" title="Pro Tip">
+  Open source projects need both: Docusaurus for community documentation, TMS for maintainer governance. This is how you scale contribution quality.
+</Aside>
+
+### Recommended Architecture
+
+For projects that need both public and internal documentation:
+
+<FileTree>
+- repo/
+  - NEXT-TASKS.md (TMS: current sprint)
+  - CLAUDE.md (TMS: AI workflow)
+  - docs/ (TMS: internal governance)
+    - core/
+      - ARCHITECTURE.md
+      - PATTERNS.md
+    - adr/
+      - 0001-use-postgresql.md
+    - archive/
+      - sprint-2026-01.md
+  - website/ (Docusaurus: public documentation)
+    - docs/
+      - intro.md
+      - getting-started/
+      - api/
+      - guides/
+    - blog/
+    - docusaurus.config.js
+  - src/ (actual codebase)
+</FileTree>
+
+**Content division:**
+
+**TMS files (`docs/` root level)**:
+- For developers contributing to this repository
+- Architectural decisions (why PostgreSQL, why RS256)
+- Code patterns (how we structure API routes)
+- Current sprint (what we are building this week)
+- **Private information** (can stay in private repo)
+
+**Docusaurus files (`website/docs/`)**:
+- For users consuming the product
+- Product features (what our API does)
+- Usage tutorials (how to call our API)
+- Migration guides (v1 → v2 breaking changes)
+- **Public information** (published to docs.yourproduct.com)
+
+<Aside type="note">
+  Notice the separation: TMS is in `docs/` at root level (in-repo governance). Docusaurus is in `website/` subdirectory (public documentation site). They do not conflict.
+</Aside>
+
+---
+
+## Decision Framework: Which One Do I Need?
+
+Use this decision tree to determine if you need Docusaurus, Cortex TMS, or both.
+
+### Question 1: Do you have external users?
+
+**Yes → You likely need Docusaurus**
+
+External users need:
+- A searchable website (not just GitHub README)
+- Versioned documentation (v1 docs vs v2 docs)
+- Beautiful presentation (first impressions matter)
+- SEO (Google search for "how to use YourProduct")
+
+**No → Docusaurus is optional**
+
+Internal tools or private projects do not need public documentation sites.
+
+---
+
+### Question 2: Do you use AI coding assistants?
+
+**Yes → You likely need Cortex TMS**
+
+AI coding assistants (Claude Code, Copilot, Cursor) need:
+- Structured governance files (PATTERNS.md, ARCHITECTURE.md)
+- Current sprint context (NEXT-TASKS.md)
+- Canonical code examples (links to actual code)
+- Explicit prohibitions (NEVER do X, ALWAYS do Y)
+
+**No → Cortex TMS is optional**
+
+If you do not use AI tools, traditional documentation (README, wiki) is sufficient.
+
+---
+
+### Question 3: Do you have architectural decisions to enforce?
+
+**Yes → You likely need Cortex TMS**
+
+Even without AI agents, TMS helps enforce:
+- Code patterns (via automated validation)
+- Tech stack decisions (via ADRs)
+- Security conventions (via PATTERNS.md)
+
+**No → Cortex TMS is optional**
+
+If your project is simple enough that everyone knows the patterns, TMS adds overhead without benefit.
+
+---
+
+### Question 4: Do you need versioned documentation?
+
+**Yes → You likely need Docusaurus**
+
+Versioned documentation is hard to manage in Markdown files. Docusaurus makes it easy:
+- `/docs/v1/` for version 1 users
+- `/docs/v2/` for version 2 users
+- Dropdown selector to switch versions
+
+**No → Docusaurus is optional**
+
+If you only support the latest version, Markdown in your repo is sufficient.
+
+---
+
+### Decision Matrix
+
+| Scenario | Docusaurus | Cortex TMS |
+|:---------|:-----------|:-----------|
+| **Open source library with public API** | ✅ Yes | ✅ Yes (if AI contributors) |
+| **SaaS product with complex features** | ✅ Yes | ✅ Yes (internal governance) |
+| **Internal company tool (no external users)** | ❌ No | ✅ Yes (if AI usage) |
+| **Solo developer hobby project** | ❌ No | ❌ No (README is enough) |
+| **Startup with distributed team** | ⚠️ Maybe | ✅ Yes (async governance) |
+| **Enterprise monorepo (100+ developers)** | ⚠️ Maybe | ✅ Yes (enforce patterns) |
+| **Open source with 10+ maintainers** | ✅ Yes | ✅ Yes (contributor alignment) |
+| **Mobile app (no API, no SDK)** | ❌ No | ⚠️ Maybe (internal patterns) |
+| **CLI tool for developers** | ✅ Yes | ✅ Yes (if complex) |
+| **Documentation site for a framework** | ✅ Yes | ✅ Yes (maintainer governance) |
+
+**Legend:**
+- ✅ Yes: Strongly recommended
+- ⚠️ Maybe: Consider based on team size, complexity
+- ❌ No: Not recommended (adds overhead without benefit)
+
+<Aside type="tip" title="Pro Tip">
+  If you are building a developer-facing product (API, SDK, library, framework), you almost certainly need both Docusaurus and Cortex TMS.
+</Aside>
+
+---
+
+## Real-World Example: Building a Developer Platform
+
+Let's walk through a concrete example: You are building an authentication SDK for web developers.
+
+### What You Are Building
+
+**Product**: `AuthKit` - A drop-in authentication solution for Next.js applications
+
+**Features**:
+- Google OAuth integration
+- Email/password authentication
+- Session management
+- Protected route middleware
+- React hooks for auth state
+
+**Team**: 5 engineers, using Claude Code and GitHub Copilot
+
+**Users**: External developers (JavaScript/TypeScript developers using Next.js)
+
+---
+
+### Documentation Strategy
+
+<Tabs>
+  <TabItem label="Docusaurus (Public)">
+    **Audience**: Developers using AuthKit in their applications
+
+    **Location**: `https://docs.authkit.dev`
+
+    **Content**:
+
+    **Getting Started**:
+    ```markdown
+    # Quick Start
+
+    Install AuthKit:
+
+    npm install @authkit/nextjs
+
+    Add the provider to your app:
+
+    // app/layout.tsx
+    import { AuthProvider } from '@authkit/nextjs';
+
+    export default function RootLayout({ children }) {
+      return (
+        <AuthProvider>
+          {children}
+        </AuthProvider>
+      );
+    }
+
+    Protect a route:
+
+    // app/dashboard/page.tsx
+    import { requireAuth } from '@authkit/nextjs';
+
+    export default requireAuth(function Dashboard() {
+      return <div>Protected Dashboard</div>;
+    });
+    ```
+
+    **API Reference**:
+    - `<AuthProvider>` component props
+    - `useAuth()` hook return values
+    - `requireAuth()` middleware options
+    - `signIn()` function parameters
+
+    **Guides**:
+    - Customizing login UI
+    - Adding social providers
+    - Handling redirects
+    - Testing authenticated routes
+
+    **Purpose**: Help users integrate AuthKit into their applications
+  </TabItem>
+
+  <TabItem label="Cortex TMS (Internal)">
+    **Audience**: Engineers building AuthKit (internal team)
+
+    **Location**: `github.com/yourcompany/authkit` (private repo)
+
+    **Content**:
+
+    **NEXT-TASKS.md**:
+    ```markdown
+    # NEXT: Upcoming Tasks
+
+    ## Active Sprint: OAuth Provider Refactoring
+
+    **Why this matters**: Current implementation duplicates code
+    across Google, GitHub, Facebook providers. Need DRY approach.
+
+    | Task | Effort | Priority | Status |
+    | :--- | :----- | :------- | :----- |
+    | Extract base OAuth provider class | 3h | HIGH | In Progress |
+    | Migrate Google provider to base class | 2h | HIGH | Todo |
+    | Migrate GitHub provider to base class | 2h | MEDIUM | Todo |
+    | Update tests for new structure | 2h | MEDIUM | Todo |
+
+    ## Definition of Done
+
+    - All providers extend BaseOAuthProvider
+    - Zero code duplication across providers
+    - Tests pass with 90+ percent coverage
+    - Pattern documented in PATTERNS.md
+    ```
+
+    **docs/core/PATTERNS.md**:
+    ```markdown
+    ## OAuth Provider Pattern
+
+    **Canonical Example**: `src/providers/GoogleOAuthProvider.ts`
+
+    All OAuth providers must extend BaseOAuthProvider:
+
+    ```typescript
+    // src/providers/BaseOAuthProvider.ts
+    export abstract class BaseOAuthProvider {
+      abstract getAuthUrl(): string;
+      abstract exchangeCodeForToken(code: string): Promise<Token>;
+      abstract getUserProfile(token: Token): Promise<User>;
+    }
+
+    // src/providers/GoogleOAuthProvider.ts
+    export class GoogleOAuthProvider extends BaseOAuthProvider {
+      getAuthUrl() {
+        return `https://accounts.google.com/o/oauth2/v2/auth?...`;
+      }
+      // ... implement abstract methods
+    }
+    ```
+
+    **Critical Rules**:
+    - NEVER implement OAuth flow from scratch
+    - ALWAYS extend BaseOAuthProvider
+    - ALWAYS validate state parameter (CSRF protection)
+    - ALWAYS use PKCE for public clients
+    ```
+
+    **docs/adr/0003-base-oauth-provider.md**:
+    ```markdown
+    # ADR-003: Extract Base OAuth Provider Class
+
+    **Date**: 2026-01-18
+    **Status**: Accepted
+
+    ## Context
+
+    We support 3 OAuth providers: Google, GitHub, Facebook.
+    Each provider duplicates 60 percent of the same code.
+
+    ## Decision
+
+    Extract common OAuth logic into BaseOAuthProvider abstract class.
+
+    ## Rationale
+
+    **Benefits**:
+    - DRY (Don't Repeat Yourself) principle
+    - Easier to add new providers (extend base class)
+    - Security improvements in base class benefit all providers
+    - Consistent error handling across providers
+
+    **Trade-offs**:
+    - Slightly more abstraction
+    - Need to migrate existing providers
+
+    ## Consequences
+
+    All new OAuth providers MUST extend BaseOAuthProvider.
+    ```
+
+    **Purpose**: Ensure team implements OAuth providers consistently
+  </TabItem>
+</Tabs>
+
+### How They Work Together
+
+**Scenario 1: External Developer Integrates AuthKit**
+
+1. Developer visits `docs.authkit.dev` (Docusaurus)
+2. Reads "Getting Started" tutorial
+3. Copies code examples
+4. Integrates AuthKit into their Next.js app
+5. Searches docs for "how to customize login UI"
+6. Finds guide, implements customization
+
+**Docusaurus served its purpose**: Beautiful, searchable, user-facing documentation.
+
+---
+
+**Scenario 2: Internal Engineer Adds New OAuth Provider**
+
+1. Engineer asks Claude Code: "Add Microsoft OAuth provider"
+2. Claude reads `NEXT-TASKS.md` (sees OAuth refactoring context)
+3. Claude reads `docs/core/PATTERNS.md#oauth-provider-pattern`
+4. Claude reads canonical example: `src/providers/GoogleOAuthProvider.ts`
+5. Claude generates `MicrosoftOAuthProvider.ts` extending `BaseOAuthProvider`
+6. Engineer reviews (code follows pattern, no violations)
+7. PR merges
+
+**Cortex TMS served its purpose**: AI generated consistent code following internal patterns.
+
+---
+
+**Scenario 3: External Developer Reports Bug**
+
+1. Developer files issue: "Google OAuth returns 500 error"
+2. Maintainer investigates
+3. Maintainer asks Claude Code: "Debug Google OAuth error handling"
+4. Claude reads `docs/core/PATTERNS.md#error-handling`
+5. Claude identifies bug: missing try/catch in token exchange
+6. Claude generates fix following error handling pattern
+7. Maintainer reviews, merges fix
+8. New version released
+9. **Maintainer updates Docusaurus docs** with troubleshooting section
+
+**Both served their purpose**: TMS enabled consistent fix, Docusaurus communicated fix to users.
+
+<Aside type="note">
+  Notice the flow: Internal changes (guided by TMS) eventually surface in public docs (Docusaurus). But the internal governance happens first, in the repository, via TMS.
+</Aside>
+
+---
+
+## Common Misconceptions
+
+### "Docusaurus can replace TMS"
+
+**Reality**: Docusaurus is optimized for web presentation, not AI consumption.
+
+AI agents do not browse Docusaurus websites. They read Markdown files in your repository.
+
+You could put all your governance in Docusaurus docs, but:
+- AI would need to clone the website repo
+- AI would read website UI/config files (noise)
+- Context budget wasted on Docusaurus infrastructure
+
+**Better**: Keep governance in main repository (TMS), public docs in Docusaurus.
+
+---
+
+### "TMS can replace Docusaurus"
+
+**Reality**: TMS files are not designed for public consumption.
+
+TMS files contain internal governance:
+- "NEVER use HS256 (security vulnerability)"
+- "Current sprint: Refactoring auth layer"
+- "TODO: Fix bug in token refresh"
+
+External users do not need this information. They need:
+- "How to install AuthKit"
+- "API reference for useAuth() hook"
+- "Troubleshooting common errors"
+
+**Better**: Use TMS for internal governance, Docusaurus for user documentation.
+
+---
+
+### "I can just use GitHub wiki"
+
+**Reality**: GitHub wikis are separate from your repository.
+
+AI agents do not read GitHub wikis by default. They read files in the repo.
+
+GitHub wikis are also:
+- Not versioned with your code (separate git repo)
+- Not validated in CI/CD
+- Not optimized for AI consumption (no structured format)
+
+**Better**: Use in-repo documentation (TMS) that AI reads automatically.
+
+---
+
+### "Docusaurus is too complex"
+
+**Reality**: Docusaurus initial setup is 30 minutes, then it just works.
+
+```bash
+npx create-docusaurus@latest website classic
+cd website
+npm start
+```
+
+You get:
+- Beautiful docs site
+- Search functionality
+- Dark mode
+- Responsive design
+- Blog support
+
+**Complexity comes later** if you customize heavily, but for basic documentation, Docusaurus is straightforward.
+
+---
+
+## Migration Considerations
+
+### You Have Docusaurus, Adding TMS
+
+**Scenario**: You have a Docusaurus site with public docs. You want to add internal governance for AI agents.
+
+**Strategy**:
+
+1. **Keep Docusaurus** in `website/` subdirectory (unchanged)
+2. **Add TMS files** at repository root:
+
+```bash
+npx cortex-tms init
+```
+
+3. **Separate content**:
+   - **TMS files**: Internal patterns, current sprint, ADRs
+   - **Docusaurus files**: Public tutorials, API reference, guides
+
+4. **Example structure**:
+
+<FileTree>
+- repo/
+  - NEXT-TASKS.md (TMS)
+  - CLAUDE.md (TMS)
+  - docs/ (TMS)
+    - core/
+      - PATTERNS.md
+      - ARCHITECTURE.md
+    - adr/
+  - website/ (Docusaurus)
+    - docs/
+      - intro.md
+      - api/
+      - guides/
+    - docusaurus.config.js
+  - src/ (codebase)
+</FileTree>
+
+**No conflict**: TMS is in `docs/` root, Docusaurus is in `website/`.
+
+<Aside type="tip" title="Pro Tip">
+  You can link from Docusaurus to TMS files for contributors: "See internal PATTERNS.md for implementation details" (link to GitHub file).
+</Aside>
+
+---
+
+### You Have TMS, Adding Docusaurus
+
+**Scenario**: You have TMS governance files. Your project grew and now you need public documentation.
+
+**Strategy**:
+
+1. **Keep TMS files** at repository root (unchanged)
+2. **Add Docusaurus** in `website/` subdirectory:
+
+```bash
+npx create-docusaurus@latest website classic
+```
+
+3. **Migrate public-facing content**:
+   - README → `website/docs/intro.md`
+   - API patterns (public) → `website/docs/api/`
+   - Keep internal patterns in `docs/core/PATTERNS.md` (TMS)
+
+4. **Update links**:
+   - External users → Point to Docusaurus site
+   - Internal developers → Point to TMS files in repo
+
+**Result**: Public documentation separate from internal governance.
+
+---
+
+### You Have Neither, Starting Fresh
+
+**Strategy**:
+
+1. **Start with TMS** (faster, lighter):
+
+```bash
+npx cortex-tms init
+```
+
+2. **Evaluate Docusaurus later** when you have:
+   - External users asking for documentation
+   - Complex API that needs reference docs
+   - Multiple versions to support
+
+**Most projects start with TMS**, add Docusaurus if they grow.
+
+<Aside type="note">
+  TMS has near-zero setup cost (just Markdown files). Docusaurus requires build infrastructure. Start simple, add complexity when needed.
+</Aside>
+
+---
+
+## When to Choose One Over the Other
+
+### Choose Only Docusaurus If:
+
+- You have a product with external users
+- You have no AI coding assistants
+- Your team is small (under 3 people) with daily communication
+- You need public-facing documentation only
+
+**Example**: Marketing website with product tutorials.
+
+---
+
+### Choose Only Cortex TMS If:
+
+- You have an internal tool (no external users)
+- Your team uses AI coding assistants heavily
+- You need governance and pattern enforcement
+- You do not need a public documentation website
+
+**Example**: Internal company monorepo.
+
+---
+
+### Choose Both If:
+
+- You have a developer-facing product (API, SDK, library)
+- You have external users AND internal developers
+- Your team uses AI coding assistants
+- You need both public documentation and internal governance
+
+**Example**: Open source framework with 10+ maintainers.
+
+---
+
+## Frequently Asked Questions
+
+### Can I build a Docusaurus site from TMS files?
+
+**Partially.** You can symlink or copy TMS files into Docusaurus:
+
+```javascript
+// docusaurus.config.js
+module.exports = {
+  plugins: [
+    [
+      '@docusaurus/plugin-content-docs',
+      {
+        id: 'internal',
+        path: '../docs/core', // Point to TMS files
+        routeBasePath: 'internal',
+      },
+    ],
+  ],
+};
+```
+
+**But**: TMS files are designed for AI consumption, not web presentation. They lack:
+- Beautiful formatting (optimized for plain text)
+- Explanatory prose (assume reader has context)
+- Screenshots and diagrams
+
+**Better**: Keep them separate. Link to TMS files on GitHub for contributors.
+
+---
+
+### Can AI agents read Docusaurus docs?
+
+**Yes, but inefficiently.** AI would need to:
+1. Clone the Docusaurus repo
+2. Parse Markdown files (ignoring UI/config files)
+3. Load into context (wasting tokens on website infrastructure)
+
+**Better**: Keep governance in main repo (TMS), let AI read those files directly.
+
+---
+
+### Which one is easier to maintain?
+
+**TMS is easier** (plain Markdown files, no build step).
+
+**Docusaurus requires**:
+- Node.js build infrastructure
+- Deployment pipeline (Vercel, Netlify, etc.)
+- Version management (if you support multiple versions)
+
+**Trade-off**: Docusaurus gives you beautiful UI, but requires more maintenance.
+
+---
+
+### Can I use Starlight instead of Docusaurus?
+
+**Yes.** [Starlight](https://starlight.astro.build/) is an Astro-based documentation framework (similar to Docusaurus).
+
+The comparison between TMS and Starlight is the same:
+- Starlight: Public-facing documentation website
+- TMS: Internal governance for AI agents
+
+They are complementary.
+
+---
+
+### What if I already have Notion or Confluence?
+
+**Notion/Confluence** are great for collaborative wikis, but:
+- AI agents cannot read them (not in repository)
+- Not versioned with code (separate system)
+- Not validated in CI/CD
+
+**Strategy**:
+- Keep Notion for team wikis, meeting notes, project planning
+- Use TMS for code governance (in repository, version-controlled)
+- Use Docusaurus for public documentation
+
+Each tool serves a different purpose.
+
+---
+
+## Next Steps
+
+<CardGrid>
+  <Card title="vs. Traditional Documentation" icon="document">
+    Learn how Cortex TMS differs from README files, wikis, and conventional docs.
+
+    [Read Comparison →](/comparisons/vs-traditional-docs/)
+  </Card>
+
+  <Card title="When to Use Cortex TMS" icon="seti:todo">
+    Decision framework: Is Cortex TMS right for your project?
+
+    [Read Guide →](/comparisons/when-to-use/)
+  </Card>
+
+  <Card title="Quick Start" icon="rocket">
+    Install Cortex TMS and scaffold your first governance structure.
+
+    [Get Started →](/getting-started/quick-start/)
+  </Card>
+
+  <Card title="Integrating AI Agents" icon="seti:config">
+    Configure Claude Code, GitHub Copilot, and Cursor to read TMS files.
+
+    [Read Guide →](/guides/integrating-ai-agents/)
+  </Card>
+</CardGrid>
+
+---
+
+## Conclusion: Complementary, Not Competitive
+
+The question is not "Docusaurus OR Cortex TMS."
+
+The question is: **Who is your audience?**
+
+**External users (developers using your product)** → Docusaurus
+
+**Internal developers (engineers building your product)** → Cortex TMS
+
+**Both audiences** → Use both
+
+**Think of it this way:**
+- **Docusaurus** is your product's public face (like a storefront)
+- **Cortex TMS** is your product's internal handbook (like an operations manual)
+
+You would not hand your operations manual to customers. You would not build your product using only the storefront brochure.
+
+**Different tools for different jobs.**
+
+<Aside type="tip" title="Pro Tip">
+  Many successful teams use both: Docusaurus for "how to use our product" and Cortex TMS for "how to build our product." They are complementary layers in your documentation strategy.
+</Aside>

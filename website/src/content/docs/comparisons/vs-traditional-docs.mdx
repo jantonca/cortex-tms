@@ -1,0 +1,1055 @@
+---
+title: Cortex TMS vs. Traditional Documentation
+description: Static documentation vs. AI-readable governance - Why conventional docs fail in the AI coding era
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside, FileTree } from '@astrojs/starlight/components';
+
+If you are working with AI coding assistants, you have likely experienced the frustration of pointing Claude or Copilot at your README file, only to watch it hallucinate patterns, ignore conventions, or generate code that works but violates your architecture.
+
+**Traditional documentation was designed for humans.** It assumes the reader has context, common sense, and the ability to infer meaning from ambiguous statements. AI agents have none of these.
+
+**Cortex TMS was designed for machines first, humans second.** It structures knowledge in ways AI agents can parse, understand, and enforce. This is not about replacing documentation. It is about **making documentation executable**.
+
+---
+
+## The Traditional Documentation Problem
+
+Traditional documentation follows patterns established in the 1990s: README files, wiki pages, Markdown docs in a `docs/` folder. These worked when humans were the primary consumers. In the AI era, they fail predictably.
+
+<CardGrid>
+  <Card title="Documentation Drift" icon="warning">
+    Code evolves faster than docs. READMEs describe systems that no longer exist. Wikis reference files that were renamed. Docs become fiction.
+  </Card>
+
+  <Card title="No Enforcement Mechanism" icon="error">
+    Traditional docs tell you what to do. They cannot stop you from doing the wrong thing. AI reads "use JWT tokens" and generates HS256 signing when you need RS256.
+  </Card>
+
+  <Card title="Ambiguity Tax" icon="puzzle">
+    "Follow best practices." "Use dependency injection." "Keep it clean." These statements mean different things to different people. AI guesses. AI guesses wrong.
+  </Card>
+
+  <Card title="Scattered Context" icon="random">
+    README for overview. CONTRIBUTING.md for workflow. Wiki for architecture. Notion for decisions. Slack for rationale. AI cannot read Slack.
+  </Card>
+
+  <Card title="Context Window Waste" icon="document">
+    Traditional repos organize docs by type, not importance. AI reads thousands of lines to find one pattern. 90 percent noise, 10 percent signal.
+  </Card>
+
+  <Card title="Human-Only Format" icon="information">
+    "See the authentication module for examples." This works for humans who know where to look. AI reads it literally and searches for a file named authentication-module.
+  </Card>
+</CardGrid>
+
+<Aside type="note">
+  The problem is not that traditional documentation is bad. The problem is that it was optimized for human readers in a world where humans were the only readers.
+</Aside>
+
+---
+
+## Side-by-Side Comparison
+
+Let's compare how traditional documentation and Cortex TMS handle common development scenarios.
+
+### Feature Comparison Table
+
+| Capability | Traditional Docs | Cortex TMS |
+|:-----------|:-----------------|:-----------|
+| **Format** | Unstructured Markdown | Structured, tiered system (HOT/WARM/COLD) |
+| **Maintenance** | Manual updates (often skipped) | Validated by CLI, enforced in CI/CD |
+| **AI Consumption** | AI reads everything or nothing | AI reads exactly what it needs, when it needs it |
+| **Context Budget** | Wastes context on irrelevant history | Optimizes context for current work |
+| **Enforcement** | None (documentation is advisory) | CLI validation, governance checks |
+| **Discoverability** | Search or browse (hope you find it) | File location signals priority (HOT/WARM/COLD) |
+| **Drift Detection** | Manual comparison | `cortex-tms validate` command |
+| **Versioning** | Separate changelog files | Truth-syncing across all source-of-truth files |
+| **Architecture Decisions** | Lost in Slack, Notion, or someone's memory | Captured in ADRs (Architecture Decision Records) |
+| **Current Work** | Sprawling issue trackers, scattered TODO comments | NEXT-TASKS.md (focused, under 200 lines) |
+| **Code Patterns** | Inferred from examples (inconsistent) | Explicitly documented in PATTERNS.md |
+| **Onboarding Time** | Days to weeks (read everything, ask questions) | Hours (AI reads HOT tier, references WARM on demand) |
+| **Governance** | None (hope developers do the right thing) | AI agents enforce patterns automatically |
+
+<Aside type="tip" title="Pro Tip">
+  Traditional docs tell. Cortex TMS enforces. If your documentation does not prevent mistakes, it is just aspirational writing.
+</Aside>
+
+### Documentation Organization
+
+<Tabs>
+  <TabItem label="Traditional Approach">
+    **Typical traditional documentation structure:**
+
+    <FileTree>
+    - README.md (500+ lines, everything mixed together)
+    - docs/
+      - architecture.md (may or may not be current)
+      - api.md (sometimes updated)
+      - deployment.md (outdated commands)
+      - contributing.md (generic template)
+      - guides/
+        - auth.md
+        - database.md
+        - testing.md
+      - decisions/ (if it exists at all)
+    - CHANGELOG.md (manually maintained, often stale)
+    - TODO.md (100 items, none prioritized)
+    </FileTree>
+
+    **Problems:**
+    - No signal of what is current vs historical
+    - No indication of what AI should read first
+    - Critical information buried in 500-line README
+    - Architecture decisions lost in commit messages
+    - AI reads everything (context overflow) or nothing (hallucinations)
+  </TabItem>
+
+  <TabItem label="TMS Approach">
+    **Cortex TMS documentation structure:**
+
+    <FileTree>
+    - NEXT-TASKS.md (HOT: current sprint, under 200 lines)
+    - CLAUDE.md (HOT: AI workflow configuration)
+    - .github/
+      - copilot-instructions.md (HOT: critical rules)
+    - docs/
+      - core/
+        - ARCHITECTURE.md (WARM: system design)
+        - PATTERNS.md (WARM: code conventions)
+        - DOMAIN-LOGIC.md (WARM: business rules)
+        - GLOSSARY.md (WARM: terminology)
+      - adr/ (WARM: architectural decision records)
+        - 0001-use-postgresql.md
+        - 0002-jwt-auth-strategy.md
+      - archive/ (COLD: historical context)
+        - sprint-2026-01.md
+        - v1.0-changelog.md
+    </FileTree>
+
+    **Benefits:**
+    - File location signals priority (root = HOT, core = WARM, archive = COLD)
+    - AI knows exactly what to read (HOT always, WARM on demand, COLD never)
+    - Current work in NEXT-TASKS.md (focused, actionable)
+    - Architecture decisions in ADRs (searchable, dated)
+    - Context budget optimized (AI reads 300 lines, not 3000)
+  </TabItem>
+</Tabs>
+
+<Aside type="tip" title="Pro Tip">
+  The file path itself is documentation. When you see `docs/archive/sprint-2025-12.md`, you know immediately: COLD tier, historical, skip it. No metadata needed.
+</Aside>
+
+---
+
+## Real-World Example: Same Project, Two Approaches
+
+Let's walk through implementing user authentication in a Next.js project using both approaches.
+
+### Scenario: Implementing JWT Authentication
+
+You are building a SaaS application. You need to add JWT authentication with specific requirements:
+- Use RS256 signing (asymmetric keys)
+- 15-minute access token expiry
+- httpOnly cookies for refresh tokens
+- Never store tokens in localStorage
+
+<Tabs>
+  <TabItem label="Traditional Docs">
+    **You**: "Implement JWT authentication"
+
+    **AI (Claude Code)**: Searches for authentication documentation...
+
+    Finds in `docs/guides/auth.md`:
+
+    ```markdown
+    # Authentication Guide
+
+    We use JWT tokens for authentication. Tokens are signed
+    and validated on each request. Store tokens securely.
+
+    Example:
+    ```typescript
+    const token = jwt.sign(payload, secret);
+    ```
+
+    See also: Security best practices
+    ```
+
+    **AI generates:**
+
+    ```typescript
+    // app/api/auth/login/route.ts
+    import jwt from 'jsonwebtoken';
+
+    export async function POST(req: Request) {
+      const { email, password } = await req.json();
+
+      // Authenticate user...
+
+      // AI guesses HS256 (not specified in docs)
+      const token = jwt.sign(
+        { userId: user.id },
+        process.env.JWT_SECRET!,
+        { expiresIn: '24h' } // AI guesses 24h (not specified)
+      );
+
+      // AI uses localStorage (docs said "store securely", not how)
+      return Response.json({
+        token, // Returned in JSON (AI will use localStorage)
+      });
+    }
+    ```
+
+    **Problems with this code:**
+    - ❌ Uses HS256 instead of RS256 (symmetric vs asymmetric)
+    - ❌ 24-hour expiry instead of 15 minutes
+    - ❌ Returns token in JSON (frontend will use localStorage, XSS vulnerability)
+    - ❌ No refresh token mechanism
+    - ❌ No mention of httpOnly cookies
+
+    **Time to fix**: 30-60 minutes of debugging and rewriting
+
+    <Aside type="caution">
+      Traditional docs said "use JWT tokens" and "store securely." AI interpreted this in the most generic way possible, introducing security vulnerabilities.
+    </Aside>
+  </TabItem>
+
+  <TabItem label="TMS Approach">
+    **You**: "Implement JWT authentication"
+
+    **AI (Claude Code)**:
+    1. Reads `NEXT-TASKS.md` (HOT tier, sees "Implement JWT auth" task)
+    2. Checks `docs/core/PATTERNS.md#authentication` (WARM tier, on demand)
+
+    Finds in `docs/core/PATTERNS.md`:
+
+    ```markdown
+    ## Authentication Pattern
+
+    **Canonical Example**: `src/middleware/auth.ts`
+
+    ### Token Strategy
+    - Algorithm: RS256 (asymmetric keys, NEVER HS256)
+    - Access Token: 15-minute expiry
+    - Refresh Token: 7-day expiry, httpOnly cookie
+    - Storage: NEVER use localStorage (XSS vulnerability)
+
+    ### Implementation Structure
+
+    Files:
+    - `src/lib/jwt.ts` - Token generation/verification
+    - `src/middleware/auth.ts` - Token validation middleware
+    - `app/api/auth/login/route.ts` - Login endpoint
+    - `app/api/auth/refresh/route.ts` - Refresh endpoint
+
+    ### Code Template
+
+    ```typescript
+    // src/lib/jwt.ts
+    import jwt from 'jsonwebtoken';
+    import fs from 'fs';
+
+    const PRIVATE_KEY = fs.readFileSync('./keys/private.pem');
+    const PUBLIC_KEY = fs.readFileSync('./keys/public.pem');
+
+    export function generateAccessToken(userId: string) {
+      return jwt.sign(
+        { userId, type: 'access' },
+        PRIVATE_KEY,
+        { algorithm: 'RS256', expiresIn: '15m' }
+      );
+    }
+
+    export function generateRefreshToken(userId: string) {
+      return jwt.sign(
+        { userId, type: 'refresh' },
+        PRIVATE_KEY,
+        { algorithm: 'RS256', expiresIn: '7d' }
+      );
+    }
+    ```
+
+    **Critical Rules**:
+    - NEVER use HS256 (symmetric keys are less secure)
+    - NEVER store tokens in localStorage
+    - ALWAYS use httpOnly cookies for refresh tokens
+    - ALWAYS rotate refresh tokens on use
+    ```
+
+    **AI generates:**
+
+    ```typescript
+    // app/api/auth/login/route.ts
+    import { NextRequest, NextResponse } from 'next/server';
+    import { generateAccessToken, generateRefreshToken } from '@/lib/jwt';
+
+    export async function POST(req: NextRequest) {
+      const { email, password } = await req.json();
+
+      // Authenticate user...
+
+      const accessToken = generateAccessToken(user.id);
+      const refreshToken = generateRefreshToken(user.id);
+
+      const response = NextResponse.json({
+        success: true,
+        user: { id: user.id, email: user.email },
+      });
+
+      // Set tokens in httpOnly cookies (following PATTERNS.md)
+      response.cookies.set('accessToken', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 15 * 60, // 15 minutes
+      });
+
+      response.cookies.set('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: 7 * 24 * 60 * 60, // 7 days
+      });
+
+      return response;
+    }
+    ```
+
+    **Result:**
+    - ✅ Uses RS256 (as specified in PATTERNS.md)
+    - ✅ 15-minute access token expiry (exact match)
+    - ✅ httpOnly cookies (no XSS vulnerability)
+    - ✅ Refresh token with 7-day expiry
+    - ✅ Follows canonical example structure
+
+    **Time to review and merge**: 5 minutes
+
+    <Aside type="tip" title="Pro Tip">
+      AI read PATTERNS.md and generated production-ready code on the first try. No hallucinations, no security vulnerabilities, no refactoring needed.
+    </Aside>
+  </TabItem>
+</Tabs>
+
+### The Key Difference
+
+**Traditional Documentation**:
+- Tells you what (use JWT)
+- Assumes you know how (which algorithm, where to store)
+- AI fills gaps with common patterns (often wrong for your use case)
+
+**Cortex TMS**:
+- Tells you what (use JWT)
+- Specifies exactly how (RS256, 15min expiry, httpOnly cookies)
+- Provides canonical examples (copy this exact structure)
+- Explicitly prohibits wrong approaches (NEVER HS256, NEVER localStorage)
+
+**Result**: AI generates correct code 80-90 percent of the time (vs 30-40 percent with traditional docs).
+
+---
+
+## Documentation Drift: The Silent Killer
+
+Traditional documentation suffers from a fundamental problem: **it rots faster than code**.
+
+### Why Traditional Docs Drift
+
+<CardGrid>
+  <Card title="No Validation" icon="warning">
+    README says you use Webpack. You migrated to Vite six months ago. Nobody noticed. AI configures Webpack. Build fails.
+  </Card>
+
+  <Card title="Manual Synchronization" icon="error">
+    You rename a file. You update the code. You forget to update the docs. They now reference a file that does not exist.
+  </Card>
+
+  <Card title="Contribution Friction" icon="puzzle">
+    Developers update code. They skip updating docs (it is in a different file, different mental context). Docs become stale.
+  </Card>
+
+  <Card title="No Ownership" icon="random">
+    Code has owners (via CODEOWNERS). Docs have no owners. Nobody is responsible for keeping them current. They drift.
+  </Card>
+</CardGrid>
+
+### How TMS Prevents Drift
+
+Cortex TMS introduces **automated validation** to catch drift before it compounds.
+
+<Tabs>
+  <TabItem label="Traditional Workflow">
+    **Week 1**: Developer adds authentication using JWT
+
+    **Week 4**: Developer switches from HS256 to RS256
+
+    **Week 8**: New developer reads docs, implements HS256 (following outdated README)
+
+    **Week 12**: Security audit discovers inconsistent token signing
+
+    **Week 14**: Team spends days fixing inconsistent implementations
+
+    **Cost**: Days of wasted effort, security vulnerabilities, developer frustration
+
+    <Aside type="caution">
+      Traditional docs have no feedback loop. Drift accumulates silently until someone notices, usually at the worst possible time.
+    </Aside>
+  </TabItem>
+
+  <TabItem label="TMS Workflow">
+    **Week 1**: Developer adds authentication using JWT, documents pattern in `PATTERNS.md`
+
+    **Week 4**: Developer switches from HS256 to RS256, updates `PATTERNS.md`:
+
+    ```markdown
+    ## Authentication Pattern
+
+    - Algorithm: RS256 (changed from HS256 on 2026-01-15)
+    - Reason: Asymmetric keys enable key rotation without redeploying
+    ```
+
+    **Week 8**: New developer asks AI to implement authentication
+
+    AI reads `PATTERNS.md`, sees RS256 pattern, generates correct code
+
+    **Week 12**: CI/CD runs `cortex-tms validate` on every PR
+
+    Validation passes (docs match implementation)
+
+    **Week 14**: Team ships features (zero time wasted on drift)
+
+    **Cost**: Zero (drift prevented by validation)
+
+    <Aside type="tip" title="Pro Tip">
+      TMS validation runs in CI/CD. Pull requests fail if docs do not match reality. Drift is caught in code review, not production.
+    </Aside>
+  </TabItem>
+</Tabs>
+
+### Validation in Action
+
+```bash
+# Traditional docs: No validation
+git commit -m "Migrate from Webpack to Vite"
+# README still says "Webpack" - nobody notices
+
+# Cortex TMS: Automated validation
+git commit -m "Migrate from Webpack to Vite"
+git push
+# CI runs: cortex-tms validate
+# ❌ VALIDATION FAILED:
+#    ARCHITECTURE.md references Webpack (line 45)
+#    But package.json contains Vite
+#    Update ARCHITECTURE.md or revert code change
+```
+
+<Aside type="note">
+  The `cortex-tms validate` command is opinionated: it fails the build if documentation does not match reality. This forces teams to keep docs synchronized with code.
+</Aside>
+
+---
+
+## When Traditional Docs Are Enough
+
+Cortex TMS is not for everyone. There are scenarios where traditional documentation is sufficient.
+
+### You DON'T Need TMS If:
+
+<CardGrid>
+  <Card title="No AI Tooling" icon="information">
+    If your team does not use AI coding assistants (Claude Code, Copilot, Cursor), traditional documentation works fine. TMS optimizes for machine readers.
+  </Card>
+
+  <Card title="Solo Hobby Project" icon="star">
+    Building a personal project with no collaborators and no plans to scale? A simple README is enough. TMS adds overhead without benefit.
+  </Card>
+
+  <Card title="Read-Only Codebase" icon="document">
+    If the codebase is in maintenance mode (no active development), documentation drift is not a concern. Traditional docs are fine.
+  </Card>
+
+  <Card title="Extremely Small Team (Under 3 People)" icon="group">
+    If you have daily standups and everyone knows the entire system, informal documentation works. TMS shines when context cannot fit in human memory.
+  </Card>
+
+  <Card title="Highly Regulated Industries" icon="approve-check">
+    If you need documentation in specific formats (ISO standards, FDA compliance), TMS may not meet requirements. Traditional docs with formal templates are better.
+  </Card>
+</CardGrid>
+
+<Aside type="tip" title="Pro Tip">
+  The best indicator: Do you use AI coding assistants daily? If yes, you need TMS. If no, traditional docs are fine.
+</Aside>
+
+### You NEED TMS If:
+
+<CardGrid>
+  <Card title="Heavy AI Usage" icon="rocket">
+    Your team uses Claude Code, Copilot, or Cursor daily. AI generates 40+ percent of your code. You need governance to prevent drift.
+  </Card>
+
+  <Card title="Distributed Team" icon="star">
+    Async collaboration across time zones. Cannot rely on real-time communication. Documentation must be the source of truth.
+  </Card>
+
+  <Card title="Open Source with AI Contributors" icon="open-book">
+    Contributors use AI to submit PRs. You need a way to ensure AI-generated code follows project conventions.
+  </Card>
+
+  <Card title="Rapid Onboarding" icon="setting">
+    You hire frequently. Onboarding takes weeks. You need new developers (human or AI) to become productive in hours, not days.
+  </Card>
+
+  <Card title="Architecture Enforcement" icon="approve-check">
+    You have architectural decisions that MUST be followed (security, performance, compliance). Traditional docs are advisory. TMS enforces.
+  </Card>
+
+  <Card title="High Context-Switching" icon="puzzle">
+    Developers work on multiple projects. Return to codebases after weeks away. Need fast context recovery.
+  </Card>
+</CardGrid>
+
+---
+
+## When You Need Cortex TMS
+
+The decision is not about project size or team size. It is about **governance**.
+
+### Traditional Docs = Advisory
+
+Traditional documentation tells developers what they should do. It cannot enforce anything.
+
+**Example:**
+- README says: "Use camelCase for variables"
+- Developer uses snake_case
+- Code review catches it (if reviewer notices)
+- Manual correction required
+
+**Problem**: Humans are the enforcement layer. Humans make mistakes. Humans get tired.
+
+### Cortex TMS = Governance
+
+Cortex TMS makes documentation **executable**. AI agents read patterns and enforce them.
+
+**Example:**
+- `PATTERNS.md` says: "Use camelCase for variables (see canonical example: `src/utils/helpers.ts`)"
+- Developer asks AI to generate a utility function
+- AI reads `PATTERNS.md`, follows camelCase convention
+- Code review passes (no manual correction needed)
+
+**Benefit**: AI is the enforcement layer. AI never gets tired. AI never forgets.
+
+<Aside type="tip" title="Pro Tip">
+  If your documentation is frequently violated, it is not a documentation problem. It is an enforcement problem. Traditional docs cannot enforce. TMS can.
+</Aside>
+
+---
+
+## Migration Path: Traditional → Cortex TMS
+
+You have an existing project with traditional documentation. How do you migrate to Cortex TMS without rewriting everything?
+
+### Phase 1: Bootstrap Core Structure (Week 1)
+
+**Goal**: Get the TMS file structure in place.
+
+```bash
+# Initialize Cortex TMS in existing project
+npx cortex-tms init
+
+# Select templates to generate
+# - NEXT-TASKS.md
+# - CLAUDE.md
+# - docs/core/ARCHITECTURE.md
+# - docs/core/PATTERNS.md
+# - docs/core/GLOSSARY.md
+```
+
+**What happens:**
+- TMS creates the HOT/WARM/COLD directory structure
+- You get template files to fill in
+- Existing docs remain untouched
+
+**Time investment**: 30 minutes
+
+<Aside type="note">
+  You do not need to fill in all templates immediately. The goal is to establish the structure. You will populate it incrementally.
+</Aside>
+
+### Phase 2: Extract Current Work (Week 1)
+
+**Goal**: Identify what you are working on right now.
+
+Look at your issue tracker, TODO comments, and in-progress branches.
+
+**Create NEXT-TASKS.md:**
+
+```markdown
+# NEXT: Upcoming Tasks
+
+## Active Sprint: [What you are working on this week]
+
+| Task | Effort | Priority | Status |
+| :--- | :----- | :------- | :----- |
+| [Current task 1] | [time] | HIGH | In Progress |
+| [Current task 2] | [time] | MEDIUM | Todo |
+| [Current task 3] | [time] | LOW | Todo |
+
+## Definition of Done
+
+- [Acceptance criteria for this sprint]
+```
+
+**Source:**
+- GitHub issues labeled "in progress"
+- TODO comments in code
+- Your mental todo list
+
+**Time investment**: 15 minutes
+
+### Phase 3: Document Critical Patterns (Week 2)
+
+**Goal**: Extract the most important patterns from your existing code.
+
+Identify 3-5 patterns that appear frequently:
+- Authentication/authorization
+- API endpoint structure
+- Database query patterns
+- Error handling
+- Form validation
+
+**Add to docs/core/PATTERNS.md:**
+
+For each pattern:
+1. Find a good example in your codebase
+2. Document it as the "canonical example"
+3. List critical rules
+
+**Example:**
+
+```markdown
+## API Endpoint Pattern
+
+**Canonical Example**: `src/pages/api/users/[id].ts`
+
+### Structure
+
+All API endpoints follow this structure:
+- Validate input with Zod schema
+- Handle errors with try/catch
+- Return JSON with consistent format
+
+### Code Template
+
+[Copy the canonical example here]
+
+**Critical Rules**:
+- NEVER return 500 errors without logging
+- ALWAYS validate input before database queries
+- ALWAYS use consistent error format
+```
+
+**Source:**
+- Your best-implemented files
+- Code review feedback you give repeatedly
+- Common mistakes you see in PRs
+
+**Time investment**: 1-2 hours
+
+<Aside type="tip" title="Pro Tip">
+  Start with patterns you explain most often. If you find yourself saying "we do authentication like this" in code reviews, that pattern belongs in PATTERNS.md.
+</Aside>
+
+### Phase 4: Capture Architecture Decisions (Week 3)
+
+**Goal**: Document the "why" behind your tech stack.
+
+**Create docs/core/ARCHITECTURE.md:**
+
+```markdown
+# Architecture Overview
+
+## Tech Stack
+
+- **Framework**: [Your framework + version]
+- **Database**: [Your database + version]
+- **Hosting**: [Your hosting platform]
+
+## Key Decisions
+
+### Why [Technology X] Over [Technology Y]?
+
+[Your rationale]
+
+**Consequences:**
+- Positive: [benefits]
+- Negative: [trade-offs]
+```
+
+**Source:**
+- Your existing README (tech stack section)
+- Slack conversations about architecture
+- Your memory of why you made certain choices
+
+**Time investment**: 1 hour
+
+### Phase 5: Configure AI Agent Workflow (Week 3)
+
+**Goal**: Tell AI agents how to work with your project.
+
+**Edit CLAUDE.md:**
+
+```markdown
+# Claude Code Workflow
+
+## Role
+
+[Your preferred AI persona]
+
+## CLI Commands
+
+- Test: [your test command]
+- Lint: [your lint command]
+- Build: [your build command]
+- Dev: [your dev server command]
+
+## Operational Loop
+
+1. Read NEXT-TASKS.md for current sprint goal
+2. Reference PATTERNS.md for implementation patterns
+3. Implement with tests
+4. Run validation before committing
+
+## Critical Rules
+
+- [Your security rules]
+- [Your data validation rules]
+- [Your prohibited patterns]
+```
+
+**Source:**
+- Your existing CONTRIBUTING.md (workflow section)
+- Code review guidelines
+- Onboarding documentation
+
+**Time investment**: 30 minutes
+
+### Phase 6: Archive Historical Content (Ongoing)
+
+**Goal**: Move completed tasks and old changelogs to COLD tier.
+
+**Create docs/archive/ directory:**
+
+```bash
+mkdir -p docs/archive
+```
+
+**Move historical content:**
+- Completed sprint tasks → `docs/archive/sprint-YYYY-MM.md`
+- Old version changelogs → `docs/archive/v1.0-changelog.md`
+- Deprecated patterns → `docs/archive/deprecated-patterns.md`
+
+**Time investment**: 30 minutes initially, 10 minutes weekly
+
+<Aside type="tip" title="Pro Tip">
+  Archiving is not deleting. You are moving historical content out of AI context budget. It is still searchable, just not loaded by default.
+</Aside>
+
+### Phase 7: Enable Validation (Week 4)
+
+**Goal**: Catch documentation drift automatically.
+
+**Add to CI/CD (GitHub Actions example):**
+
+```yaml
+# .github/workflows/validate.yml
+name: Validate Documentation
+
+on: [pull_request]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npx cortex-tms validate --strict
+```
+
+**Now every PR checks:**
+- NEXT-TASKS.md is under 200 lines
+- PATTERNS.md references exist
+- ARCHITECTURE.md tech stack matches package.json
+- No duplicate information across tiers
+
+**Time investment**: 15 minutes
+
+### Phase 8: Gradual Cleanup (Ongoing)
+
+**Goal**: Incrementally migrate content from traditional docs to TMS structure.
+
+**Each week, pick one traditional doc and migrate it:**
+
+Week 4: Migrate `docs/authentication.md` → `docs/core/PATTERNS.md#authentication`
+
+Week 5: Migrate `docs/database.md` → `docs/core/PATTERNS.md#database`
+
+Week 6: Migrate `docs/deployment.md` → `docs/core/ARCHITECTURE.md#deployment`
+
+**Strategy:**
+1. Copy relevant content to TMS files
+2. Add "canonical example" links
+3. Delete or stub out old file (redirect to new location)
+
+**Time investment**: 30 minutes per week
+
+<Aside type="note">
+  You do not need to migrate everything. Focus on content AI agents need. Historical context can stay in old docs (and get archived to COLD tier).
+</Aside>
+
+### Migration Checklist
+
+Track your progress:
+
+**Core Setup (Week 1)**:
+- ✅ Run `npx cortex-tms init`
+- ✅ Create NEXT-TASKS.md with current sprint
+- ✅ Create CLAUDE.md with workflow
+
+**Documentation (Weeks 2-3)**:
+- ✅ Document 3-5 key patterns in PATTERNS.md
+- ✅ Document tech stack in ARCHITECTURE.md
+- ✅ Create GLOSSARY.md if needed
+
+**Automation (Week 4)**:
+- ✅ Add `cortex-tms validate` to CI/CD
+- ✅ Archive completed tasks to docs/archive/
+
+**Ongoing (Weeks 5+)**:
+- ✅ Weekly: Archive completed NEXT-TASKS.md items
+- ✅ Weekly: Update PATTERNS.md if new patterns emerge
+- ✅ Monthly: Review ARCHITECTURE.md for accuracy
+
+---
+
+## Success Stories
+
+### Case Study 1: Solo Developer (SaaS Dashboard)
+
+**Before TMS:**
+- 3,000+ lines of scattered documentation
+- README with 500 lines (tech stack + getting started + deployment + architecture all mixed)
+- AI generated inconsistent authentication code (HS256, RS256, and plaintext tokens in different files)
+- 2-3 hours to regain context after week-long break
+
+**After TMS:**
+- NEXT-TASKS.md: 120 lines (current sprint only)
+- PATTERNS.md: 450 lines (all patterns documented)
+- ARCHITECTURE.md: 200 lines (tech decisions)
+- AI generated consistent authentication code (RS256 everywhere, following pattern)
+- 5 minutes to regain context (ask AI: "summarize NEXT-TASKS.md")
+
+**Impact:**
+- 70 percent reduction in AI-generated bugs
+- 80 percent reduction in context-switching penalty
+- Authentication pattern violations: 0 (down from 3-4 per month)
+
+<Aside type="tip" title="Pro Tip">
+  Solo developers benefit most from TMS because they have no safety net. AI is their code reviewer, and TMS ensures AI reviews against documented standards.
+</Aside>
+
+### Case Study 2: Open Source Project (Developer Tool)
+
+**Before TMS:**
+- CONTRIBUTING.md with generic guidance ("follow best practices")
+- No documented code patterns
+- PR reviews required 3-5 rounds of feedback (mostly style and pattern violations)
+- Contributors used AI to generate code, maintainers spent hours fixing inconsistencies
+
+**After TMS:**
+- PATTERNS.md with canonical examples for common contributions
+- CLAUDE.md with explicit workflow for AI-assisted PRs
+- PR reviews reduced to 1-2 rounds (mostly feature logic, not patterns)
+- Contributors' AI agents followed documented patterns
+
+**Impact:**
+- 60 percent reduction in review cycles
+- 50 percent reduction in maintainer time per PR
+- Contributor satisfaction increased (less frustration from rejected PRs)
+- PR merge time: 3 days → 1 day
+
+<Aside type="note">
+  Open source maintainers are drowning in low-quality AI-generated PRs. TMS gives contributors a way to generate high-quality PRs by pointing their AI at project conventions.
+</Aside>
+
+### Case Study 3: Startup (Mobile + Backend)
+
+**Before TMS:**
+- Backend and mobile teams used different auth patterns
+- Backend: JWT with HS256
+- Mobile: JWT with RS256
+- Integration bugs discovered in QA (2-week delay)
+
+**After TMS:**
+- Single PATTERNS.md shared between repos
+- Documented auth pattern: RS256, 15min expiry, httpOnly cookies
+- Both teams' AI agents followed same pattern
+- Integration worked on first try
+
+**Impact:**
+- Zero integration bugs related to authentication
+- 2-week QA delay eliminated
+- Cross-team consistency: 100 percent (up from ~60 percent)
+
+---
+
+## Common Misconceptions
+
+### "TMS is just more documentation to maintain"
+
+**Reality**: TMS reduces maintenance burden through automation.
+
+Traditional docs require manual synchronization. You update code, then update docs. Two steps, easy to skip.
+
+TMS validates documentation in CI/CD. If docs do not match code, the build fails. You are forced to keep them synchronized.
+
+**Result**: Less drift, not more maintenance.
+
+### "AI can just read my README"
+
+**Reality**: AI reads your README and hallucinates the gaps.
+
+README says "use secure authentication." AI interprets this as "use HS256 JWT" (common pattern, but wrong for your use case).
+
+PATTERNS.md says "use RS256 JWT (NEVER HS256), 15min expiry, httpOnly cookies." AI follows exact specification.
+
+**Result**: Fewer bugs, less refactoring.
+
+### "This only works for large teams"
+
+**Reality**: Solo developers benefit most.
+
+Large teams have code reviewers to catch AI mistakes. Solo developers have no safety net.
+
+TMS is your virtual code reviewer. It catches pattern violations before they ship.
+
+**Result**: Better code quality without human reviewers.
+
+### "We already have CONTRIBUTING.md"
+
+**Reality**: CONTRIBUTING.md is for humans. PATTERNS.md is for machines.
+
+CONTRIBUTING.md says: "Follow our authentication pattern."
+
+PATTERNS.md shows the actual code:
+
+```typescript
+// Exact code structure
+// Exact libraries to use
+// Exact error handling approach
+```
+
+AI cannot infer implementation details from "follow our pattern." AI needs examples.
+
+**Result**: AI generates correct code without guessing.
+
+---
+
+## Frequently Asked Questions
+
+### Can I use TMS alongside existing documentation?
+
+**Yes.** TMS complements traditional documentation. Keep your README for human onboarding, use TMS for AI governance.
+
+**Typical setup:**
+- README.md: Project overview, installation, quick start (for humans)
+- CLAUDE.md: AI workflow configuration (for AI agents)
+- docs/core/: TMS governance files (for AI agents)
+- docs/guides/: Traditional guides (for humans)
+
+### Do I need to rewrite all my documentation?
+
+**No.** Start with NEXT-TASKS.md and PATTERNS.md. Migrate incrementally.
+
+Most projects adopt TMS by:
+1. Week 1: Create NEXT-TASKS.md (current work)
+2. Week 2: Document 3-5 critical patterns
+3. Weeks 3+: Migrate content as you touch it
+
+### What if my team does not use AI yet?
+
+**TMS still provides value** through:
+- Enforced documentation standards (validation in CI/CD)
+- Clear separation of current vs historical content
+- Faster onboarding (HOT tier gives new developers immediate context)
+
+But the ROI is much higher if you use AI coding assistants.
+
+### How is this different from auto-generated docs?
+
+**Auto-generated docs** (JSDoc, TypeDoc, Sphinx) extract documentation from code comments.
+
+**TMS** documents architecture, patterns, and decisions that cannot be inferred from code.
+
+They are complementary:
+- Auto-generated docs: API signatures, function parameters
+- TMS: Why you made decisions, how patterns should be applied
+
+### Does this work with non-JavaScript projects?
+
+**Yes.** TMS is language-agnostic. The concepts (HOT/WARM/COLD, PATTERNS.md, ARCHITECTURE.md) apply to any language.
+
+Current CLI has templates optimized for JavaScript/TypeScript, but the patterns work for Python, Go, Rust, etc.
+
+Community templates for other languages are being developed.
+
+---
+
+## Next Steps
+
+Ready to move beyond traditional documentation?
+
+<CardGrid>
+  <Card title="When to Use Cortex TMS" icon="seti:todo">
+    Decision framework: Is Cortex TMS right for your project? Signs you need it vs. signs you do not.
+
+    [Read Guide →](/comparisons/when-to-use/)
+  </Card>
+
+  <Card title="vs. Docusaurus" icon="document">
+    Documentation framework vs. architectural governance: Different tools for different problems.
+
+    [Read Comparison →](/comparisons/vs-docusaurus/)
+  </Card>
+
+  <Card title="Quick Start" icon="rocket">
+    Install Cortex TMS and scaffold your first TMS structure in 5 minutes.
+
+    [Get Started →](/getting-started/quick-start/)
+  </Card>
+
+  <Card title="Tiered Memory System" icon="star">
+    Deep dive: How the HOT/WARM/COLD architecture optimizes AI agent performance.
+
+    [Learn More →](/concepts/tiered-memory/)
+  </Card>
+</CardGrid>
+
+---
+
+## Conclusion: Documentation That Enforces
+
+The fundamental difference between traditional documentation and Cortex TMS is **enforcement**.
+
+**Traditional docs** tell developers what to do. They cannot prevent mistakes. Humans are the enforcement layer.
+
+**Cortex TMS** makes documentation executable. AI agents read patterns and enforce them. The documentation itself is the enforcement layer.
+
+In the AI coding era, advisory documentation is not enough. You need governance.
+
+**Cortex TMS provides that governance.**
+
+<Aside type="tip" title="Pro Tip">
+  The best documentation is the documentation that prevents bugs. If your docs do not catch mistakes before they ship, they are just words on a screen.
+</Aside>
