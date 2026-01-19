@@ -47,7 +47,7 @@
 | **Blog Post: PR Tsunami** - "How Cortex TMS Prevents Maintainer Burnout" | [TMS-284c] | 4h | 🔴 HIGH | ⬜ Todo |
 | **Blog Post: Tiered Memory** - "Why AI Agents Need More Than a README" | [TMS-284d] | 3h | 🟡 MED | ⬜ Todo |
 | **Demo GIF** - Record cortex-tms status/migrate workflow | [TMS-284e] | 1h | 🔴 HIGH | ⬜ Todo |
-| **AI Collaboration Policy** - Create docs/core/AI-COLLABORATION-POLICY.md | [TMS-289a] | 3h | 🔴 HIGH | ⬜ Todo |
+| **AI Collaboration Policy** - Create docs/core/AI-COLLABORATION-POLICY.md | [TMS-289a] | 3h | 🔴 HIGH | ✅ Done |
 | **Website About Page** - Add "How We Build" transparency section | [TMS-289b] | 2h | 🟡 MED | ✅ Done |
 | **Homepage Hero Update** - Add "Built Using Our Own Standard" | [TMS-289c] | 1h | 🟡 MED | ⬜ Todo |
 | **Global Alias Support** - Add bin/cortex.js entry point | [TMS-290a] | 30m | 🟡 MED | ⬜ Todo |
