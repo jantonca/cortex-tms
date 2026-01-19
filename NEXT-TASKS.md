@@ -50,6 +50,8 @@
 | **AI Collaboration Policy** - Create docs/core/AI-COLLABORATION-POLICY.md | [TMS-289a] | 3h | 🔴 HIGH | ⬜ Todo |
 | **Website About Page** - Add "How We Build" transparency section | [TMS-289b] | 2h | 🟡 MED | ⬜ Todo |
 | **Homepage Hero Update** - Add "Built Using Our Own Standard" | [TMS-289c] | 1h | 🟡 MED | ⬜ Todo |
+| **Global Alias Support** - Add bin/cortex.js entry point | [TMS-290a] | 30m | 🟡 MED | ⬜ Todo |
+| **Quick Start Update** - Document global install benefits | [TMS-290b] | 30m | 🟡 MED | ⬜ Todo |
 
 **Blog Post Requirements**:
 - Reference tldraw issue #7695
@@ -62,7 +64,12 @@
 - Position as "most transparent AI-assisted project"
 - Dogfooding narrative: "Built using our own standard"
 
-**Total Effort**: ~16 hours
+**Global Install Notes**:
+- Enable `cortex` shorthand command via global install
+- Gateway to Pro Workflow: Try with npx, upgrade to global
+- Prepares for v2.8 cross-project features (`cortex list`)
+
+**Total Effort**: ~17 hours
 
 ---
 
@@ -102,7 +109,7 @@
 
 ## 📊 v2.7 Sprint Summary
 
-**Total Effort**: ~37.5 hours across 3 weeks
+**Total Effort**: ~38.5 hours across 3 weeks
 **Success Metrics**:
 - 70%+ accuracy on pattern violations (Guardian)
 - 100+ GitHub stars
@@ -124,6 +131,17 @@
 | **Governance Dashboard** | [TMS-287d] | 8h | Pro feature |
 
 **Total**: ~23 hours | **Monetization**: Enables Pro/Enterprise tiers
+
+---
+
+### Global Install v2.8: Cross-Project Governance
+
+| Task | Ref | Effort | Notes |
+| :--- | :--- | :----- | :----- |
+| **`cortex list` Command** | [TMS-290c] | 2h | Scan directories for TMS projects |
+| **Health Status Integration** | [TMS-290d] | 1h | Show validation status per project |
+
+**Total**: ~3 hours | **Business Value**: Enables Developer License model, enterprise compliance
 
 ---
 
