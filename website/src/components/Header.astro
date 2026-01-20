@@ -1,24 +1,115 @@
 ---
 /**
- * Custom Header - Extends Starlight Header with Blog link
+ * Custom Header - Liquid Glass Header with Blog link
  *
- * Adds a Blog link to the top navigation bar
+ * Adds Blog link to navigation and applies glass effect to header
  */
 import type { Props } from '@astrojs/starlight/props';
 import Default from '@astrojs/starlight/components/Header.astro';
 ---
 
-<Default {...Astro.props}>
-  <div slot="before-social">
-    <a href="/blog/" class="sl-flex blog-link">
+<Default {...Astro.props} />
+
+<style is:global>
+  /* Liquid Glass Header */
+  .header {
+    background: rgba(17, 17, 17, 0.8) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  /* Add Blog link to navigation */
+  .header .sl-flex[data-type="nav"]::before,
+  .site-title + div::after {
+    content: 'Blog';
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding-inline: 1rem;
+    color: var(--sl-color-gray-1);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: var(--sl-text-base);
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Blog badge */
+  .site-title + div::after {
+    content: 'Blog';
+  }
+
+  /* Glass Search Form */
+  .search-input,
+  input[type="search"] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus,
+  input[type="search"]:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--sl-color-accent) !important;
+    box-shadow: 0 0 20px var(--sl-color-accent-low);
+  }
+
+  /* Mobile menu glass effect */
+  .mobile-preferences,
+  [aria-label="Main"] {
+    background: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+</style>
+
+<!-- Add Blog link via JavaScript for better compatibility -->
+<script>
+  function addBlogLink() {
+    // Find the navigation area
+    const nav = document.querySelector('.header nav');
+    const socialLinks = document.querySelector('.social-icons');
+
+    if (!nav || !socialLinks) return;
+
+    // Check if Blog link already exists
+    if (document.querySelector('.blog-nav-link')) return;
+
+    // Create Blog link
+    const blogLink = document.createElement('a');
+    blogLink.href = '/blog/';
+    blogLink.className = 'blog-nav-link sl-flex';
+    blogLink.innerHTML = `
       Blog
       <span class="blog-badge">New</span>
-    </a>
-  </div>
-</Default>
+    `;
 
-<style>
-  .blog-link {
+    // Insert before social icons
+    socialLinks.parentElement?.insertBefore(blogLink, socialLinks);
+  }
+
+  // Add on load and on navigation
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addBlogLink);
+  } else {
+    addBlogLink();
+  }
+
+  // Re-add on Astro page navigation
+  document.addEventListener('astro:page-load', addBlogLink);
+</script>
+
+<style is:global>
+  /* Blog link styling */
+  .blog-nav-link {
     font-size: var(--sl-text-sm);
     gap: 0.5rem;
     align-items: center;
@@ -30,7 +121,7 @@ import Default from '@astrojs/starlight/components/Header.astro';
     font-weight: 500;
   }
 
-  .blog-link:hover {
+  .blog-nav-link:hover {
     color: var(--sl-color-white);
   }
 
@@ -46,7 +137,7 @@ import Default from '@astrojs/starlight/components/Header.astro';
   }
 
   @media (min-width: 50rem) {
-    .blog-link {
+    .blog-nav-link {
       font-size: var(--sl-text-base);
     }
   }

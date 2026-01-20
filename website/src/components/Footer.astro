@@ -63,6 +63,14 @@ import type { Props } from '@astrojs/starlight/props';
 
 <style>
   .cortex-footer {
+    /* Force full width - break out of Starlight container */
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+
     border-top: 1px solid var(--sl-color-gray-5);
     margin-top: 4rem;
     padding: 3rem 1rem 2rem;
@@ -72,6 +80,7 @@ import type { Props } from '@astrojs/starlight/props';
   .footer-content {
     max-width: 1200px;
     margin: 0 auto;
+    padding: 0 1rem;
   }
 
   .footer-columns {
