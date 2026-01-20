@@ -181,4 +181,4 @@ See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for 2 completed tasks.
 - **v2.2**: [Automation & Precision](docs/archive/sprint-2026-01.md)
 - **v2.1**: [Foundation](docs/archive/sprint-2026-01-dogfooding.md)
 
-<!-- @cortex-tms-version 2.7.0 -->
+<!-- @cortex-tms-version 2.6.0 -->
