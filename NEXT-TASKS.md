@@ -14,79 +14,41 @@
 
 ---
 
-### Phase 2: Guardian MVP (Week 2) - IN PROGRESS
+### Phase 2: Guardian MVP ✅ COMPLETE
 
-**Goal**: Validate AI governance hypothesis with working prototype
+See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for completed tasks (TMS-283a through TMS-283f).
 
-| Task | Ref | Effort | Priority | Status |
-| :--- | :--- | :----- | :------- | :----- |
-| **Guardian CLI Core** - `cortex-tms review <file>` command | [TMS-283a] | 4h | 🔴 HIGH | ✅ Done |
-| **Pattern Violation Detection** - LLM-based audit against PATTERNS.md | [TMS-283b] | 3h | 🔴 HIGH | ✅ Done |
-| **Domain Logic Checker** - Audit against DOMAIN-LOGIC.md rules | [TMS-283c] | 2h | 🔴 HIGH | ✅ Done |
-| **CLI Output Formatting** - Violation reports with line references | [TMS-283d] | 1h | 🟡 MED | ✅ Done |
-| **BYOK (Bring Your Own Key)** - OpenAI/Anthropic API key support | [TMS-283e] | 2h | 🟡 MED | ✅ Done |
-| **Guardian Documentation** - CLI reference and usage guide | [TMS-283f] | 2h | 🟡 MED | ✅ Done |
-
-**Implementation Notes**:
-- User provides their own API key (BYOK approach)
-- Reuse prompt templates from `cortex-tms prompt` (TMS-240)
-- Target: 70%+ accuracy on architectural violations
-- Exit early if TMS files missing (PATTERNS.md, DOMAIN-LOGIC.md)
-
-**Total Effort**: ~14 hours
+**All 6 core features delivered**: CLI core, pattern detection, domain logic checker, output formatting, BYOK, documentation.
 
 ---
 
-### Phase 3: Distribution & Content (Week 2-3)
+### Phase 3: Distribution & Content 🟡 IN PROGRESS
 
-**Goal**: Launch Guardian with strategic content marketing
+See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for 8 completed tasks.
+
+**Remaining**:
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Blog Infrastructure** - Add /blog route and RSS feed | [TMS-284a] | 2h | 🔴 HIGH | ✅ Done |
-| **Blog Post: PR Tsunami** - "Our Approach to the AI PR Problem" | [TMS-284c] | 4h | 🔴 HIGH | ✅ Done |
 | **Blog Post: Tiered Memory** - "Why AI Agents Need More Than a README" | [TMS-284d] | 3h | 🟡 MED | ⬜ Todo |
-| **Demo GIF** - Record cortex-tms status/migrate workflow | [TMS-284e] | 1h | 🔴 HIGH | ✅ Done |
-| **AI Collaboration Policy** - Create docs/core/AI-COLLABORATION-POLICY.md | [TMS-289a] | 3h | 🔴 HIGH | ✅ Done |
-| **Website About Page** - Add "How We Build" transparency section | [TMS-289b] | 2h | 🟡 MED | ✅ Done |
-| **Homepage Hero Update** - Add "Built Using Our Own Standard" | [TMS-289c] | 1h | 🟡 MED | ✅ Done |
-| **Global Alias Support** - Add bin/cortex.js entry point | [TMS-290a] | 30m | 🟡 MED | ✅ Done |
-| **Quick Start Update** - Document global install benefits | [TMS-290b] | 30m | 🟡 MED | ✅ Done |
 
 **Blog Post Requirements**:
-- Reference tldraw issue #7695
-- Preview Guardian MVP with CLI examples
-- Real metrics: 66% time savings, 80% merge rate
-- Link to use cases (open-source.mdx, enterprise.mdx)
-
-**AI Transparency Notes**:
-- Policy includes HITL workflow, authorship metadata, quality standards
-- Position as "most transparent AI-assisted project"
-- Dogfooding narrative: "Built using our own standard"
-
-**Global Install Notes**:
-- Enable `cortex` shorthand command via global install
-- Gateway to Pro Workflow: Try with npx, upgrade to global
-- Prepares for v2.8 cross-project features (`cortex list`)
-
-**Total Effort**: ~17 hours
+- Explain multi-tier memory architecture (NEXT-TASKS.md, PATTERNS.md, ADRs)
+- Why README-only approaches fail for complex projects
+- Real examples from Cortex TMS development
+- Link to use cases and Guardian integration
 
 ---
 
-### Phase 4: GitHub Enhancement (Week 2-3)
+### Phase 4: GitHub Enhancement 🟡 IN PROGRESS
 
-**Goal**: Optimize repository discoverability
+See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for 2 completed tasks.
+
+**Remaining**:
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Shields & Topics** - Add badges and topics to README | [TMS-285a-b] | 45m | 🔴 HIGH | ✅ Done |
-| **Demo GIF in README** - Embed workflow recording | [TMS-285c] | 30m | 🔴 HIGH | ✅ Done |
 | **Social Preview Image** - Custom OG image | [TMS-285d] | 2h | 🟡 MED | ⬜ Todo |
-
-**Shields**: npm version, downloads, license, node version
-**Topics**: ai, llm, claude-code, github-copilot, cursor, governance, architecture
-
-**Total Effort**: ~3.5 hours
 
 ---
 
@@ -109,13 +71,16 @@
 
 ## 📊 v2.7 Sprint Summary
 
-**Total Effort**: ~38.5 hours across 3 weeks
+**Completed**: ~39 hours (28h Guardian/Blog + 10h Design + 1h fixes)
+**Remaining**: ~9 hours (Blog post, OG image, Community launch)
+**Completion Rate**: 81% of sprint complete
+
 **Success Metrics**:
-- 70%+ accuracy on pattern violations (Guardian)
-- 100+ GitHub stars
-- 5+ community beta testers
-- 1,000+ blog post views
-- Position as most transparent AI-assisted project
+- ✅ Guardian MVP functional with 70%+ accuracy
+- ⬜ 100+ GitHub stars
+- ⬜ 5+ community beta testers
+- ⬜ 1,000+ blog post views
+- ✅ Positioned as most transparent AI-assisted project
 
 ---
 
@@ -180,22 +145,12 @@
 | **Pre-Commit MDX Build Validation** | [TMS-291] | 1h | 🟢 LOW | Implement if 3+ MDX errors occur in single sprint |
 | **Automated Test Runs on Code Changes** | [TMS-292] | 30m | 🟢 LOW | Implement if test failures reach production |
 
-**Pre-Commit Build Validation Details**:
-- Add website build check for `.mdx` file changes
-- Only runs when documentation is modified
-- Adds ~15-30s to docs commits
-- **Trade-off**: Slows iteration vs prevents syntax errors
-- **Current Decision**: Manual validation sufficient (errors caught in <2 min during preview)
-
 **Deferred Rationale**:
 - MDX errors are rare (1 occurrence in 10 commits to date)
 - Fast feedback from browser preview works well
 - Pre-commit overhead not justified for current frequency
-- Will reassess if error rate increases
 
-**Review Date**: After v2.7 completion (Feb 2026) - evaluate if patterns have changed
-
-**Total**: 1.5 hours | **Business Value**: Marginal (prevents rare errors that are already caught quickly)
+**Review Date**: After v2.7 completion (Feb 2026)
 
 ---
 
@@ -218,6 +173,7 @@
 
 ## 🗂️ Sprint Archive
 
+- **v2.7**: [Guardian MVP](docs/archive/sprint-v2.7-jan-2026.md) (In Progress - 81% complete)
 - **v2.6**: [Integrity & Atomicity](docs/archive/sprint-v2.6-integrity-atomicity.md)
 - **v2.5**: [Guidance & Growth](docs/archive/sprint-v2.5-guidance-growth.md)
 - **v2.4**: [Scaling Intelligence](docs/archive/sprint-v2.4-scaling-intelligence.md)
@@ -225,4 +181,4 @@
 - **v2.2**: [Automation & Precision](docs/archive/sprint-2026-01.md)
 - **v2.1**: [Foundation](docs/archive/sprint-2026-01-dogfooding.md)
 
-<!-- @cortex-tms-version 2.6.0 -->
+<!-- @cortex-tms-version 2.7.0 -->
