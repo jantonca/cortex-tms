@@ -15,7 +15,13 @@ hero:
       variant: minimal
 ---
 
-import { Card, CardGrid, Aside } from '@astrojs/starlight/components';
+import { Aside } from '@astrojs/starlight/components';
+import GlassPanel from '../../components/GlassPanel.astro';
+import GlassButton from '../../components/GlassButton.astro';
+import GlassQuote from '../../components/GlassQuote.astro';
+
+{/* Ambient background gradients */}
+<div class="liquid-ambient-bg"></div>
 
 ## The Problem
 
@@ -23,11 +29,9 @@ AI coding assistants struggle when your documentation is scattered, outdated, or
 
 **Cortex TMS solves this.** It scaffolds a project structure that AI agents can parse, navigate, and trust—keeping your codebase and its documentation in perfect sync.
 
-<Aside type="tip" title="Built Using Our Own Standard">
-  **We dogfood everything.** This project uses Cortex TMS to build itself—our `NEXT-TASKS.md` tracks development, our `PATTERNS.md` guides AI collaboration, and our Guardian CLI reviews every commit.
-
-  Every feature is battle-tested on Cortex TMS before release. [See how we build →](/community/about/)
-</Aside>
+<GlassQuote author="Cortex TMS Team" liquidBlob={true}>
+  We dogfood everything. This project uses Cortex TMS to build itself—our NEXT-TASKS.md tracks development, our PATTERNS.md guides AI collaboration, and our Guardian CLI reviews every commit.
+</GlassQuote>
 
 ---
 
@@ -35,33 +39,65 @@ AI coding assistants struggle when your documentation is scattered, outdated, or
 
 ```bash
 # Install globally
-npm install -g cortex-tms@2.6.0
+npm install -g cortex-tms@2.7.0
 
 # Or use with npx (no installation required)
-npx cortex-tms@2.6.0 init
+npx cortex-tms@2.7.0 init
 ```
 
 ---
 
 ## Key Features
 
-<CardGrid>
-  <Card title="Zero-Drift Governance" icon="approve-check">
-    Automated validation ensures your documentation always matches reality. No more outdated ADRs or forgotten task lists. The CLI continuously checks for drift and alerts you when documentation needs updating.
-  </Card>
+<div class="glass-grid">
+  <GlassPanel variant="bordered" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; color: var(--sl-color-accent);">
+        <span style="font-size: 2rem; margin-right: 0.5rem;">✓</span>
+        Zero-Drift Governance
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        Automated validation ensures your documentation always matches reality. No more outdated ADRs or forgotten task lists. The CLI continuously checks for drift and alerts you when documentation needs updating.
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="LLM-Optimized Structure" icon="seti:config">
-    Documentation organized exactly how AI agents expect it—parseable, hierarchical, and semantic. Every file has a defined purpose, location, and format that LLMs can reliably consume.
-  </Card>
+  <GlassPanel variant="bordered" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; color: var(--sl-color-accent);">
+        <span style="font-size: 2rem; margin-right: 0.5rem;">⚙</span>
+        LLM-Optimized Structure
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        Documentation organized exactly how AI agents expect it—parseable, hierarchical, and semantic. Every file has a defined purpose, location, and format that LLMs can reliably consume.
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="Instant Setup" icon="rocket">
-    One command to scaffold your entire project structure with best practices baked in. From task management to architectural decision records, everything is configured and ready to use.
-  </Card>
+  <GlassPanel variant="bordered" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; color: var(--sl-color-accent);">
+        <span style="font-size: 2rem; margin-right: 0.5rem;">🚀</span>
+        Instant Setup
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        One command to scaffold your entire project structure with best practices baked in. From task management to architectural decision records, everything is configured and ready to use.
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="Open Source & Extensible" icon="open-book">
-    MIT licensed with a powerful template system for custom workflows and project types. Extend Cortex TMS to match your team's unique processes and requirements.
-  </Card>
-</CardGrid>
+  <GlassPanel variant="bordered" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; color: var(--sl-color-accent);">
+        <span style="font-size: 2rem; margin-right: 0.5rem;">📖</span>
+        Open Source & Extensible
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        MIT licensed with a powerful template system for custom workflows and project types. Extend Cortex TMS to match your team's unique processes and requirements.
+      </p>
+    </div>
+  </GlassPanel>
+</div>
 
 ---
 
@@ -69,67 +105,160 @@ npx cortex-tms@2.6.0 init
 
 When you run `cortex-tms init`, you get a complete suite of AI-optimized documentation:
 
-<CardGrid stagger>
-  <Card title="CLAUDE.md" icon="document">
-    Instructions Claude Code reads automatically on every session
-  </Card>
+<div class="glass-grid" style="grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));">
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📄</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">CLAUDE.md</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        Instructions Claude Code reads automatically on every session
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="NEXT-TASKS.md" icon="list-format">
-    Task tracking that keeps AI focused on current objectives
-  </Card>
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📋</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">NEXT-TASKS.md</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        Task tracking that keeps AI focused on current objectives
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="docs/decisions/" icon="puzzle">
-    ADR templates for documenting architectural "why"
-  </Card>
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🧩</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">docs/decisions/</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        ADR templates for documenting architectural "why"
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="docs/core/PATTERNS.md" icon="setting">
-    Codified conventions that AI agents follow
-  </Card>
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">⚙️</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">PATTERNS.md</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        Codified conventions that AI agents follow
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="docs/core/GLOSSARY.md" icon="translate">
-    Project terminology for consistent language
-  </Card>
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">🌐</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">GLOSSARY.md</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        Project terminology for consistent language
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="docs/core/INFRASTRUCTURE.md" icon="laptop">
-    System architecture and deployment overview
-  </Card>
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">💻</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">INFRASTRUCTURE.md</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        System architecture and deployment overview
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="docs/playbooks/" icon="open-book">
-    Runbooks for common operations and troubleshooting
-  </Card>
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">📚</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">docs/playbooks/</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        Runbooks for common operations and troubleshooting
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="Validation CLI" icon="approve-check-circle">
-    Commands to verify documentation health and prevent drift
-  </Card>
-</CardGrid>
+  <GlassPanel tilt="light">
+    <div style="padding: 1.5rem; text-align: center;">
+      <div style="font-size: 2.5rem; margin-bottom: 0.5rem;">✅</div>
+      <h4 style="margin-bottom: 0.5rem; font-weight: 600;">Validation CLI</h4>
+      <p style="font-size: 0.85rem; color: var(--sl-color-gray-3);">
+        Commands to verify documentation health and prevent drift
+      </p>
+    </div>
+  </GlassPanel>
+</div>
 
 ---
 
 ## Who Is This For?
 
-<CardGrid stagger>
-  <Card title="Solo Developers" icon="star">
-    Using Claude Code, GitHub Copilot, or Cursor to accelerate your workflow. Get the benefits of enterprise-grade documentation without the overhead.
-  </Card>
+<div class="glass-grid">
+  <GlassPanel variant="default" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 2rem;">⭐</span>
+        Solo Developers
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        Using Claude Code, GitHub Copilot, or Cursor to accelerate your workflow. Get the benefits of enterprise-grade documentation without the overhead.
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="Teams" icon="group">
-    Collaborating with LLM-augmented workflows. Ensure every team member (human and AI) has access to the same source of truth.
-  </Card>
+  <GlassPanel variant="default" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 2rem;">👥</span>
+        Teams
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        Collaborating with LLM-augmented workflows. Ensure every team member (human and AI) has access to the same source of truth.
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="Open Source Maintainers" icon="github">
-    Onboarding AI-powered contributors. Let AI agents understand your project instantly, from first principles to implementation patterns.
-  </Card>
+  <GlassPanel variant="default" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 2rem;">🌟</span>
+        Open Source Maintainers
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        Onboarding AI-powered contributors. Let AI agents understand your project instantly, from first principles to implementation patterns.
+      </p>
+    </div>
+  </GlassPanel>
 
-  <Card title="Educators & Students" icon="information">
-    Teaching AI-assisted development practices. Demonstrate professional-grade project structure and documentation hygiene.
-  </Card>
-</CardGrid>
+  <GlassPanel variant="default" tilt="full">
+    <div style="padding: 2rem;">
+      <h3 style="margin-bottom: 1rem; display: flex; align-items: center; gap: 0.75rem;">
+        <span style="font-size: 2rem;">🎓</span>
+        Educators & Students
+      </h3>
+      <p style="line-height: 1.6; color: var(--sl-color-gray-2);">
+        Teaching AI-assisted development practices. Demonstrate professional-grade project structure and documentation hygiene.
+      </p>
+    </div>
+  </GlassPanel>
+</div>
 
 ---
 
 ## Ready to Start?
 
-Jump into the [Introduction](/getting-started/introduction/) to learn core concepts, or skip straight to the [Quick Start](/getting-started/quick-start/) for a 5-minute tutorial.
+<div style="text-align: center; margin: 3rem 0;">
+  <p style="font-size: 1.1rem; margin-bottom: 2rem; color: var(--sl-color-gray-2);">
+    Jump into the <a href="/getting-started/introduction/">Introduction</a> to learn core concepts, or skip straight to the <a href="/getting-started/quick-start/">Quick Start</a> for a 5-minute tutorial.
+  </p>
+
+  <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+    <GlassButton variant="neon" href="/getting-started/quick-start/">
+      Quick Start →
+    </GlassButton>
+    <GlassButton variant="prism" href="/getting-started/introduction/">
+      Learn More
+    </GlassButton>
+  </div>
+</div>
 
 <Aside type="tip" title="Need Help?">
   <a href="https://github.com/cortex-tms/cortex-tms/issues/new" target="_blank" rel="noopener noreferrer">Open an issue</a> on GitHub for support, bug reports, or feature requests.
