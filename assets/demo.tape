@@ -12,6 +12,9 @@ Set Theme "Dracula"
 Set TypingSpeed 50ms
 Set PlaybackSpeed 0.8
 
+# Hide all setup from recording
+Hide
+
 # Set a clean, generic prompt (no real paths shown)
 Type "export PS1='$ '" Enter
 Sleep 200ms
@@ -21,6 +24,9 @@ Sleep 200ms
 # Clear screen to hide setup commands
 Type "clear" Enter
 Sleep 1s
+
+# Start showing from here (screen is now clean)
+Show
 
 # Initial setup
 Type "# Cortex TMS Demo - Project Dashboard & Migration" Sleep 500ms Enter
