@@ -1,0 +1,55 @@
+---
+/**
+ * GlassPanel - Base glass container component
+ *
+ * A reusable glassmorphism panel with optional tilt and liquid blob effects
+ *
+ * Usage:
+ * <GlassPanel variant="card" tilt="full">
+ *   <h2>Content here</h2>
+ * </GlassPanel>
+ */
+
+interface Props {
+  /** Visual variant: default, bordered, elevated */
+  variant?: 'default' | 'bordered' | 'elevated';
+  /** Tilt interaction: none, light (sheen only), full (3D rotation) */
+  tilt?: 'none' | 'light' | 'full';
+  /** Add animated liquid blob background */
+  liquidBlob?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+  /** Custom inline styles */
+  style?: string;
+}
+
+const {
+  variant = 'default',
+  tilt = 'none',
+  liquidBlob = false,
+  class: className = '',
+  style = '',
+} = Astro.props;
+
+// Build class list
+const variantClass = variant !== 'default' ? `glass-panel--${variant}` : '';
+const tiltAttr = tilt === 'full' ? 'data-tilt' : tilt === 'light' ? 'data-tilt-light' : '';
+const classList = ['glass-panel', variantClass, className].filter(Boolean).join(' ');
+---
+
+<div
+  class={classList}
+  {...(tiltAttr && { [tiltAttr]: '' })}
+  style={style}
+>
+  <!-- Sheen effect layer (cursor-following highlight) -->
+  <div class="sheen"></div>
+
+  <!-- Optional liquid blob animation -->
+  {liquidBlob && <div class="liquid-bg"></div>}
+
+  <!-- Content slot -->
+  <div class="glass-content">
+    <slot />
+  </div>
+</div>

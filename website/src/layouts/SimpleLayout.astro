@@ -1,0 +1,307 @@
+---
+/**
+ * Simple Layout - For Homepage, Blog, and Blog Posts
+ *
+ * Three-element structure: header - main - footer
+ * No sidebar, no complex Starlight PageFrame structure
+ */
+import SimpleHeader from '../components/SimpleHeader.astro'
+import Footer from '../components/Footer.astro'
+import type { Props as StarlightProps } from '@astrojs/starlight/props'
+
+// Import custom styles
+import '../styles/custom.css'
+import '../styles/glass-system.css'
+import '../styles/glass-components.css'
+
+interface SimpleLayoutProps {
+  title: string
+  description: string
+  lang?: string
+  dir?: 'ltr' | 'rtl'
+}
+
+const {
+  title,
+  description,
+  lang = 'en',
+  dir = 'ltr',
+} = Astro.props as SimpleLayoutProps
+
+const site = 'https://cortex-tms.org'
+
+// Create minimal props object for components that need it
+const componentProps: Partial<StarlightProps> = {
+  hasSidebar: false,
+  toc: undefined,
+  entry: {
+    data: {
+      title,
+      description,
+    },
+    slug: '',
+  } as any,
+  entryMeta: {
+    lang,
+    dir,
+    locale: lang,
+  },
+  lang,
+  dir,
+  sidebar: [],
+  labels: {},
+  editUrl: undefined,
+  lastUpdated: undefined,
+  pagination: undefined,
+  siteTitle: 'Cortex TMS',
+  siteTitleHref: '/',
+}
+---
+
+<!doctype html>
+<html
+  lang={lang}
+  dir={dir}
+  data-theme='dark'
+>
+  <head>
+    <meta charset='utf-8' />
+    <meta
+      name='viewport'
+      content='width=device-width, initial-scale=1'
+    />
+    <title>{title}</title>
+    <meta
+      name='description'
+      content={description}
+    />
+    <meta
+      name='generator'
+      content={Astro.generator}
+    />
+
+    {/* Favicon */}
+    <link
+      rel='icon'
+      type='image/png'
+      href='/favicon.png'
+    />
+
+    {/* RSS Feed */}
+    <link
+      rel='alternate'
+      type='application/rss+xml'
+      title='Cortex TMS Blog'
+      href='/rss.xml'
+    />
+
+    {/* Open Graph */}
+    <meta
+      property='og:image'
+      content='/og-image.png'
+    />
+    <meta
+      property='og:type'
+      content='website'
+    />
+    <meta
+      property='og:title'
+      content={title}
+    />
+    <meta
+      property='og:description'
+      content={description}
+    />
+    <meta
+      property='og:url'
+      content={site}
+    />
+
+    {/* Twitter Card */}
+    <meta
+      name='twitter:card'
+      content='summary_large_image'
+    />
+    <meta
+      name='twitter:title'
+      content={title}
+    />
+    <meta
+      name='twitter:description'
+      content={description}
+    />
+    <meta
+      name='twitter:image'
+      content='/og-image.png'
+    />
+
+    {/* Import custom fonts and styles */}
+    <link
+      rel='stylesheet'
+      href='https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-sans/index.css'
+    />
+    <link
+      rel='stylesheet'
+      href='https://cdn.jsdelivr.net/npm/@fontsource-variable/noto-serif/index.css'
+    />
+    <link
+      rel='stylesheet'
+      href='https://cdn.jsdelivr.net/npm/@fontsource/noto-sans-mono/index.css'
+    />
+
+    {/* External scripts */}
+    <script
+      is:inline
+      src='/external-links.js'
+    ></script>
+    <script
+      is:inline
+      src='/glass-effects.js'
+    ></script>
+
+    <style is:global>
+      /* CSS Custom Properties - matching Starlight theme */
+      :root {
+        /* Brand tokens */
+        --sl-color-accent: #f97316;
+        --sl-color-accent-low: #f9731626;
+        --sl-color-accent-high: #ff8c42;
+        --sl-color-black: #111111;
+        --sl-color-white: #ffffff;
+
+        /* Default palette (dark) */
+        --sl-color-gray-1: #eeeeee;
+        --sl-color-gray-2: #c2c2c2;
+        --sl-color-gray-3: #8b8b8b;
+        --sl-color-gray-4: #585858;
+        --sl-color-gray-5: #383838;
+        --sl-color-gray-6: #1f2024;
+        --sl-color-bg: #0f1115;
+        --sl-color-bg-nav: rgba(15, 17, 21, 0.9);
+        --sl-color-bg-sidebar: #1a1c21;
+        --sl-color-bg-inline-code: #1f2027;
+        --sl-color-hairline: #1b1d22;
+        --sl-color-hairline-shade: #14161b;
+        --sl-color-text: #e5e7ec;
+        --sl-color-text-accent: var(--sl-color-accent-high);
+        --simple-header-bg: var(--sl-color-bg-nav);
+        --simple-header-border: var(--sl-color-hairline);
+        color-scheme: dark;
+
+        /* Fonts */
+        --sl-font: 'Noto Sans Variable', system-ui, -apple-system, sans-serif;
+        --sl-font-system: system-ui, -apple-system, sans-serif;
+        --sl-font-mono: 'Noto Sans Mono', 'Consolas', monospace;
+
+        /* Spacing */
+        --sl-nav-height: 4rem;
+        --sl-nav-pad-x: 1.5rem;
+        --sl-nav-pad-y: 0.75rem;
+
+        /* Text sizes */
+        --sl-text-xs: 0.8125rem;
+        --sl-text-sm: 0.875rem;
+        --sl-text-base: 1rem;
+        --sl-text-lg: 1.125rem;
+        --sl-text-xl: 1.25rem;
+        --sl-text-2xl: 1.5rem;
+        --sl-text-3xl: 1.875rem;
+        --sl-text-4xl: 2.25rem;
+        --sl-text-5xl: 3rem;
+      }
+
+      :root[data-theme='light'] {
+        color-scheme: light;
+        --sl-color-gray-1: #0f172a;
+        --sl-color-gray-2: #1f2937;
+        --sl-color-gray-3: #475467;
+        --sl-color-gray-4: #6b7280;
+        --sl-color-gray-5: #d4d4d8;
+        --sl-color-gray-6: #f2f3f5;
+        --sl-color-bg: #f7f7f9;
+        --sl-color-bg-nav: rgba(255, 255, 255, 0.9);
+        --sl-color-bg-sidebar: #ffffff;
+        --sl-color-bg-inline-code: #f3f1e8;
+        --sl-color-hairline: #e5e7eb;
+        --sl-color-hairline-shade: #d1d5db;
+        --sl-color-text: #111827;
+        --sl-color-text-accent: #9a3412;
+        --simple-header-bg: var(--sl-color-bg-nav);
+        --simple-header-border: var(--sl-color-hairline);
+      }
+
+      /* Reset and base styles */
+      * {
+        box-sizing: border-box;
+      }
+
+      html {
+        font-family: var(--sl-font);
+        color: var(--sl-color-text);
+        background: var(--sl-color-bg);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      a {
+        color: var(--sl-color-accent);
+        text-decoration: none;
+      }
+
+      a:hover {
+        color: var(--sl-color-accent-high);
+      }
+
+      code {
+        font-family: var(--sl-font-mono);
+        font-size: 0.9em;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        margin: 0;
+        font-weight: 600;
+        line-height: 1.2;
+        color: var(--sl-color-white);
+      }
+    </style>
+  </head>
+  <body>
+    <SimpleHeader {...componentProps as StarlightProps} />
+
+    <main class='simple-main'>
+      <slot />
+    </main>
+
+    <div class='simple-footer'>
+      <Footer {...componentProps as StarlightProps} />
+    </div>
+
+    <style>
+      .simple-main {
+        flex: 1;
+        width: 100%;
+        padding-top: calc(var(--sl-nav-height, 4rem) + 2rem);
+        padding-bottom: 2rem;
+      }
+
+      .simple-footer {
+        width: 100%;
+        margin-top: auto;
+      }
+    </style>
+  </body>
+</html>

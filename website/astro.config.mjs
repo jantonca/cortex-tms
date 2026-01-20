@@ -28,8 +28,11 @@ export default defineConfig({
         '@fontsource-variable/noto-serif',
         '@fontsource/noto-sans-mono',
         './src/styles/custom.css',
+        './src/styles/glass-system.css',
+        './src/styles/glass-components.css',
       ],
       components: {
+        Header: './src/components/Header.astro',
         Footer: './src/components/Footer.astro',
       },
       sidebar: [
@@ -124,6 +127,12 @@ export default defineConfig({
           tag: 'script',
           attrs: {
             src: '/external-links.js',
+          },
+        },
+        {
+          tag: 'script',
+          attrs: {
+            src: '/glass-effects.js',
           },
         },
       ],

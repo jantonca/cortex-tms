@@ -4,6 +4,7 @@ description: "tldraw paused external contributions due to AI-generated PRs. Here
 pubDate: 2026-01-20
 author: "Cortex TMS Team"
 tags: ["ai", "open-source", "guardian", "code-review"]
+heroImage: "/images/blog/preventing-ai-pr-tsunami.webp"
 draft: false
 ---
 

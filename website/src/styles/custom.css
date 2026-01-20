@@ -26,10 +26,50 @@ article {
   letter-spacing: -0.01em;
 }
 
-/* Headings optimization */
-h1, h2, h3, h4, h5, h6 {
+/* Typography Hierarchy - Noto Sans Family */
+/* Major headings - Bold weight for impact */
+h1, h2, .hero-title {
   font-family: var(--sl-font);
+  font-weight: 700;
   letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Sub-headings - Semi-bold for structure */
+h3, h4 {
+  font-family: var(--sl-font);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  line-height: 1.3;
+}
+
+/* Minor headings - Medium weight */
+h5, h6 {
+  font-family: var(--sl-font);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.4;
+}
+
+/* Body text - Regular weight */
+body, p {
+  font-family: var(--sl-font);
+  font-weight: 400;
+}
+
+/* Emphasized text */
+strong, b {
+  font-weight: 600;
+}
+
+/* Category tags and technical labels */
+.category-tag,
+.tag,
+.profile-role,
+.news-meta,
+.quote-author {
+  font-family: var(--sl-font-mono);
+  font-weight: 400;
 }
 
 /* Code block styling */

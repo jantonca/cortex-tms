@@ -1,0 +1,349 @@
+---
+/**
+ * Homepage - Simple Layout
+ *
+ * Uses SimpleLayout (header - main - footer) without sidebar
+ */
+import SimpleLayout from '../layouts/SimpleLayout.astro'
+import GlassPanel from '../components/GlassPanel.astro'
+import GlassButton from '../components/GlassButton.astro'
+import GlassQuote from '../components/GlassQuote.astro'
+---
+
+<SimpleLayout
+  title='Cortex TMS - AI-Optimized Project Scaffolding'
+  description='Documentation that AI coding agents actually read. Zero-drift governance for LLM-assisted development. Built using our own standard.'
+  lang='en'
+  dir='ltr'
+>
+  {/* Ambient background gradients */}
+  <div class='liquid-ambient-bg'></div>
+
+  <div class='homepage-container'>
+    {/* Hero Section */}
+    <div class='hero-section'>
+      <h1 class='hero-title'>Cortex TMS</h1>
+      <p class='hero-tagline'>
+        AI-powered project scaffolding for Claude Code, GitHub Copilot, and
+        beyond. Built using our own standard—we dogfood everything.
+      </p>
+      <div class='hero-actions'>
+        <GlassButton
+          variant='neon'
+          href='/getting-started/introduction/'
+        >
+          Get Started →
+        </GlassButton>
+        <GlassButton
+          variant='prism'
+          href='https://github.com/cortex-tms/cortex-tms'
+        >
+          View on GitHub
+        </GlassButton>
+      </div>
+    </div>
+
+    {/* The Problem */}
+    <section class='content-section'>
+      <h2>The Problem</h2>
+      <p>
+        AI coding assistants struggle when your documentation is scattered,
+        outdated, or formatted for humans instead of LLMs. They hallucinate
+        conventions, reinvent patterns you've already established, and drift
+        from your architectural decisions.
+      </p>
+      <p>
+        <strong>Cortex TMS solves this.</strong> It scaffolds a project structure
+        that AI agents can parse, navigate, and trust—keeping your codebase and its
+        documentation in perfect sync.
+      </p>
+
+      <GlassQuote
+        author='Cortex TMS Team'
+        liquidBlob={true}
+      >
+        We dogfood everything. This project uses Cortex TMS to build itself—our
+        NEXT-TASKS.md tracks development, our PATTERNS.md guides AI
+        collaboration, and our Guardian CLI reviews every commit.
+      </GlassQuote>
+    </section>
+
+    {/* Quick Installation */}
+    <section class='content-section'>
+      <h2>Quick Installation</h2>
+      <pre><code># Install globally
+npm install -g cortex-tms@2.7.0
+
+# Or use with npx (no installation required)
+npx cortex-tms@2.7.0 init</code></pre>
+    </section>
+
+    {/* Key Features */}
+    <section class='content-section'>
+      <h2>Key Features</h2>
+      <div class='glass-grid'>
+        <GlassPanel
+          variant='bordered'
+          tilt='full'
+        >
+          <div style='padding: 2rem;'>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
+              <span style='font-size: 2rem; margin-right: 0.5rem;'>✓</span>
+              Zero-Drift Governance
+            </h3>
+            <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
+              Automated validation ensures your documentation always matches
+              reality. No more outdated ADRs or forgotten task lists. The CLI
+              continuously checks for drift and alerts you when documentation
+              needs updating.
+            </p>
+          </div>
+        </GlassPanel>
+
+        <GlassPanel
+          variant='bordered'
+          tilt='full'
+        >
+          <div style='padding: 2rem;'>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
+              <span style='font-size: 2rem; margin-right: 0.5rem;'>⚙</span>
+              LLM-Optimized Structure
+            </h3>
+            <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
+              Documentation organized exactly how AI agents expect it—parseable,
+              hierarchical, and semantic. Every file has a defined purpose,
+              location, and format that LLMs can reliably consume.
+            </p>
+          </div>
+        </GlassPanel>
+
+        <GlassPanel
+          variant='bordered'
+          tilt='full'
+        >
+          <div style='padding: 2rem;'>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
+              <span style='font-size: 2rem; margin-right: 0.5rem;'>🚀</span>
+              Instant Setup
+            </h3>
+            <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
+              One command to scaffold your entire project structure with best
+              practices baked in. From task management to architectural decision
+              records, everything is configured and ready to use.
+            </p>
+          </div>
+        </GlassPanel>
+
+        <GlassPanel
+          variant='bordered'
+          tilt='full'
+        >
+          <div style='padding: 2rem;'>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
+              <span style='font-size: 2rem; margin-right: 0.5rem;'>📖</span>
+              Open Source & Extensible
+            </h3>
+            <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
+              MIT licensed with a powerful template system for custom workflows
+              and project types. Extend Cortex TMS to match your team's unique
+              processes and requirements.
+            </p>
+          </div>
+        </GlassPanel>
+      </div>
+    </section>
+
+    {/* How It Works */}
+    <section class='content-section'>
+      <h2>How It Works</h2>
+      <div class='glass-grid'>
+        <GlassPanel variant='bordered'>
+          <div style='padding: 2rem;'>
+            <h3 style='color: var(--sl-color-accent); margin-bottom: 1rem;'>
+              <span style='font-size: 1.5rem; margin-right: 0.5rem;'>1</span>
+              Initialize Your Project
+            </h3>
+            <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
+              Run <code>cortex-tms init</code> to scaffold the entire structure—task
+              management, ADRs, patterns, and more. Everything is preconfigured and
+              ready to use.
+            </p>
+          </div>
+        </GlassPanel>
+
+        <GlassPanel variant='bordered'>
+          <div style='padding: 2rem;'>
+            <h3 style='color: var(--sl-color-accent); margin-bottom: 1rem;'>
+              <span style='font-size: 1.5rem; margin-right: 0.5rem;'>2</span>
+              Work with AI Agents
+            </h3>
+            <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
+              AI agents automatically read your documentation structure,
+              understand conventions, and follow established patterns. No more
+              hallucinations or drift.
+            </p>
+          </div>
+        </GlassPanel>
+
+        <GlassPanel variant='bordered'>
+          <div style='padding: 2rem;'>
+            <h3 style='color: var(--sl-color-accent); margin-bottom: 1rem;'>
+              <span style='font-size: 1.5rem; margin-right: 0.5rem;'>3</span>
+              Stay Validated
+            </h3>
+            <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
+              Run <code>cortex-tms validate</code> anytime to check for documentation
+              drift. Integrate with CI/CD to block merges when documentation is out
+              of sync.
+            </p>
+          </div>
+        </GlassPanel>
+      </div>
+    </section>
+
+    {/* Ready to Get Started */}
+    <section class='content-section cta-section'>
+      <h2>Ready to Get Started?</h2>
+      <p>
+        Install Cortex TMS and scaffold your first project in under 5 minutes.
+        Join the growing community of teams using AI-optimized documentation.
+      </p>
+      <div class='cta-actions'>
+        <GlassButton
+          variant='neon'
+          href='/getting-started/quick-start/'
+        >
+          Quick Start Guide →
+        </GlassButton>
+        <GlassButton
+          variant='prism'
+          href='/getting-started/installation/'
+        >
+          Installation Guide
+        </GlassButton>
+      </div>
+    </section>
+  </div>
+
+  <style>
+    .homepage-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Hero Section */
+    .hero-section {
+      text-align: center;
+      padding: 4rem 0 6rem;
+    }
+
+    .hero-title {
+      font-size: clamp(3rem, 8vw, 5rem);
+      font-weight: 700;
+      margin: 0 0 1.5rem 0;
+      background: linear-gradient(
+        135deg,
+        var(--sl-color-white),
+        var(--sl-color-accent-high)
+      );
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-tagline {
+      font-size: 1.25rem;
+      line-height: 1.6;
+      color: var(--sl-color-gray-2);
+      max-width: 800px;
+      margin: 0 auto 2.5rem;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* Content Sections */
+    .content-section {
+      margin-bottom: 5rem;
+    }
+
+    .content-section h2 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: var(--sl-color-text);
+    }
+
+    .content-section p {
+      font-size: 1.125rem;
+      line-height: 1.75;
+      color: var(--sl-color-gray-2);
+      margin-bottom: 1.5rem;
+    }
+
+    .content-section pre {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 12px;
+      padding: 1.5rem;
+      overflow-x: auto;
+      margin: 2rem 0;
+      color: var(--sl-color-text);
+    }
+
+    .content-section code {
+      font-family: var(--sl-font-mono);
+      font-size: 0.9em;
+      color: var(--sl-color-accent-high);
+    }
+
+    :root[data-theme='light'] .content-section pre {
+      background: rgba(0, 0, 0, 0.03);
+      border: 1px solid rgba(0, 0, 0, 0.08);
+    }
+
+    /* CTA Section */
+    .cta-section {
+      text-align: center;
+      padding: 3rem 0;
+    }
+
+    .cta-actions {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero-section {
+        padding: 2rem 0 3rem;
+      }
+
+      .hero-title {
+        font-size: 2.5rem;
+      }
+
+      .hero-tagline {
+        font-size: 1.125rem;
+      }
+
+      .content-section h2 {
+        font-size: 2rem;
+      }
+
+      .content-section p {
+        font-size: 1rem;
+      }
+    }
+  </style>
+</SimpleLayout>

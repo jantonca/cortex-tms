@@ -1,0 +1,76 @@
+---
+/**
+ * GlassButton - Glass-styled button component
+ *
+ * Three variants with different visual styles:
+ * - prism: Subtle glass effect, rounded
+ * - neon: Pumpkin orange accent with glow
+ * - orb: Circular icon button
+ *
+ * Usage:
+ * <GlassButton variant="neon" href="/docs">Get Started</GlassButton>
+ * <GlassButton variant="orb" icon="heart" />
+ */
+
+interface Props {
+  /** Button visual style */
+  variant?: 'prism' | 'neon' | 'orb';
+  /** Link URL (renders as <a> instead of <button>) */
+  href?: string;
+  /** Icon name (for orb variant) */
+  icon?: string;
+  /** Button type (for form buttons) */
+  type?: 'button' | 'submit' | 'reset';
+  /** Additional CSS classes */
+  class?: string;
+  /** Custom inline styles */
+  style?: string;
+}
+
+const {
+  variant = 'prism',
+  href,
+  icon,
+  type = 'button',
+  class: className = '',
+  style = '',
+} = Astro.props;
+
+const buttonClass = `btn-${variant} ${className}`.trim();
+const Tag = href ? 'a' : 'button';
+---
+
+{Tag === 'a' ? (
+  <a
+    href={href}
+    class={buttonClass}
+    style={style}
+  >
+    {variant === 'orb' && icon ? (
+      <i class={`fas fa-${icon}`}></i>
+    ) : (
+      <slot />
+    )}
+  </a>
+) : (
+  <button
+    type={type}
+    class={buttonClass}
+    style={style}
+  >
+    {variant === 'orb' && icon ? (
+      <i class={`fas fa-${icon}`}></i>
+    ) : (
+      <slot />
+    )}
+  </button>
+)}
+
+<!-- Font Awesome for icons (only load if using orb variant) -->
+{variant === 'orb' && (
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    slot="head"
+  />
+)}

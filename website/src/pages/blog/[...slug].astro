@@ -1,76 +1,220 @@
 ---
-import { getCollection } from 'astro:content';
-import type { GetStaticPaths } from 'astro';
-import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import { getCollection } from 'astro:content'
+import type { GetStaticPaths } from 'astro'
+import SimpleLayout from '../../layouts/SimpleLayout.astro'
 
 export const getStaticPaths = (async () => {
   const blogEntries = await getCollection('blog', ({ data }) => {
-    return import.meta.env.PROD ? data.draft !== true : true;
-  });
+    return import.meta.env.PROD ? data.draft !== true : true
+  })
 
   return blogEntries.map((entry) => ({
     params: { slug: entry.slug },
     props: { entry },
-  }));
-}) satisfies GetStaticPaths;
+  }))
+}) satisfies GetStaticPaths
 
-const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { entry } = Astro.props
+const { Content } = await entry.render()
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
-  }).format(date);
-};
+  }).format(date)
+}
+
+// Construct Open Graph image URL
+const ogImageUrl =
+  entry.data.heroImage && entry.data.heroImage.trim()
+    ? new URL(entry.data.heroImage, Astro.site).toString()
+    : new URL('/og-image.png', Astro.site).toString()
+
+// Construct canonical URL
+const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
 ---
 
-<StarlightPage
-  frontmatter={{
-    title: entry.data.title,
-    description: entry.data.description,
-  }}
-  headings={[]}
+<SimpleLayout
+  title={entry.data.title}
+  description={entry.data.description}
+  lang='en'
+  dir='ltr'
 >
-  <article class="blog-post">
-    <header class="post-header">
+  {/* Open Graph / Social Media Meta Tags */}
+  <meta
+    slot='head'
+    property='og:type'
+    content='article'
+  />
+  <meta
+    slot='head'
+    property='og:title'
+    content={entry.data.title}
+  />
+  <meta
+    slot='head'
+    property='og:description'
+    content={entry.data.description}
+  />
+  <meta
+    slot='head'
+    property='og:url'
+    content={canonicalURL}
+  />
+  <meta
+    slot='head'
+    property='og:image'
+    content={ogImageUrl}
+  />
+  <meta
+    slot='head'
+    property='og:image:width'
+    content='1200'
+  />
+  <meta
+    slot='head'
+    property='og:image:height'
+    content='630'
+  />
+  <meta
+    slot='head'
+    property='article:published_time'
+    content={entry.data.pubDate.toISOString()}
+  />
+  {
+    entry.data.updatedDate && (
+      <meta
+        slot='head'
+        property='article:modified_time'
+        content={entry.data.updatedDate.toISOString()}
+      />
+    )
+  }
+  {
+    entry.data.author && (
+      <meta
+        slot='head'
+        property='article:author'
+        content={entry.data.author}
+      />
+    )
+  }
+  {
+    entry.data.tags &&
+      entry.data.tags.map((tag) => (
+        <meta
+          slot='head'
+          property='article:tag'
+          content={tag}
+        />
+      ))
+  }
+
+  {/* Twitter Card Meta Tags */}
+  <meta
+    slot='head'
+    name='twitter:card'
+    content='summary_large_image'
+  />
+  <meta
+    slot='head'
+    name='twitter:title'
+    content={entry.data.title}
+  />
+  <meta
+    slot='head'
+    name='twitter:description'
+    content={entry.data.description}
+  />
+  <meta
+    slot='head'
+    name='twitter:image'
+    content={ogImageUrl}
+  />
+
+  {/* Canonical URL */}
+  <link
+    slot='head'
+    rel='canonical'
+    href={canonicalURL}
+  />
+
+  <article class='blog-post'>
+    {
+      entry.data.heroImage && (
+        <figure class='hero-image'>
+          <img
+            src={entry.data.heroImage}
+            alt={entry.data.heroAlt ?? entry.data.title}
+            loading='lazy'
+            decoding='async'
+          />
+        </figure>
+      )
+    }
+
+    <header class='post-header'>
       <h1>{entry.data.title}</h1>
-      <div class="post-meta">
+      <div class='post-meta'>
         <time datetime={entry.data.pubDate.toISOString()}>
           {formatDate(entry.data.pubDate)}
         </time>
-        {entry.data.author && (
-          <span class="author"> by {entry.data.author}</span>
-        )}
-        {entry.data.updatedDate && (
-          <span class="updated">
-            {' '}· Updated {formatDate(entry.data.updatedDate)}
-          </span>
-        )}
+        {
+          entry.data.author && (
+            <span class='author'> by {entry.data.author}</span>
+          )
+        }
+        {
+          entry.data.updatedDate && (
+            <span class='updated'>
+              {' '}
+              · Updated {formatDate(entry.data.updatedDate)}
+            </span>
+          )
+        }
       </div>
-      {entry.data.tags && entry.data.tags.length > 0 && (
-        <div class="post-tags">
-          {entry.data.tags.map((tag) => (
-            <span class="tag">{tag}</span>
-          ))}
-        </div>
-      )}
+      {
+        entry.data.tags && entry.data.tags.length > 0 && (
+          <div class='post-tags'>
+            {entry.data.tags.map((tag) => (
+              <span class='tag'>{tag}</span>
+            ))}
+          </div>
+        )
+      }
     </header>
 
-    <div class="post-content">
+    <div class='post-content'>
       <Content />
     </div>
 
-    <footer class="post-footer">
-      <a href="/blog/" class="back-link">← Back to Blog</a>
+    <footer class='post-footer'>
+      <a
+        href='/blog/'
+        class='back-link'
+        >← Back to Blog</a
+      >
     </footer>
   </article>
 
   <style>
     .blog-post {
-      max-width: 65ch;
+      max-width: min(82ch, 100%);
       margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .hero-image {
+      margin: 0 0 2rem;
+    }
+
+    .hero-image img {
+      display: block;
+      width: 100%;
+      height: auto;
+      border-radius: 1rem;
+      object-fit: cover;
     }
 
     .post-header {
@@ -83,7 +227,7 @@ const formatDate = (date: Date) => {
       font-size: 2.5rem;
       line-height: 1.2;
       margin: 0 0 1rem 0;
-      color: var(--sl-color-white);
+      color: var(--sl-color-text);
     }
 
     .post-meta {
@@ -126,12 +270,14 @@ const formatDate = (date: Date) => {
       margin-top: 2.5rem;
       margin-bottom: 1rem;
       font-size: 1.875rem;
+      color: var(--sl-color-text);
     }
 
     .post-content :global(h3) {
       margin-top: 2rem;
       margin-bottom: 0.75rem;
       font-size: 1.5rem;
+      color: var(--sl-color-text);
     }
 
     .post-content :global(p) {
@@ -211,4 +357,4 @@ const formatDate = (date: Date) => {
       }
     }
   </style>
-</StarlightPage>
+</SimpleLayout>

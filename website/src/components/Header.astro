@@ -1,0 +1,176 @@
+---
+/**
+ * Custom Header - Liquid Glass Header with Blog link
+ *
+ * Adds Blog link to navigation and applies glass effect to header
+ */
+import type { Props } from '@astrojs/starlight/props'
+import Default from '@astrojs/starlight/components/Header.astro'
+---
+
+<Default {...Astro.props} />
+
+<style is:global>
+  /* Liquid Glass Header */
+  .header {
+    background: rgba(17, 17, 17, 0.8) !important;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  header {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+  }
+
+  /* Light mode header styling */
+  :root[data-theme='light'] .header {
+    background: rgba(255, 255, 255, 0.85) !important;
+  }
+
+  :root[data-theme='light'] header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* Add Blog link to navigation */
+  .header .sl-flex[data-type='nav']::before,
+  .site-title + div::after {
+    content: 'Blog';
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 2.5rem;
+    padding-inline: 1rem;
+    color: var(--sl-color-gray-1);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: var(--sl-text-base);
+    cursor: pointer;
+    position: relative;
+  }
+
+  /* Blog badge */
+  .site-title + div::after {
+    content: 'Blog';
+  }
+
+  /* Glass Search Form */
+  .search-input,
+  input[type='search'] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+    transition: all 0.3s ease;
+  }
+
+  .search-input:focus,
+  input[type='search']:focus {
+    background: rgba(255, 255, 255, 0.08) !important;
+    border-color: var(--sl-color-accent) !important;
+    box-shadow: 0 0 20px var(--sl-color-accent-low);
+  }
+
+  /* Light mode search styling */
+  :root[data-theme='light'] .search-input,
+  :root[data-theme='light'] input[type='search'] {
+    background: rgba(0, 0, 0, 0.05) !important;
+    border: 1px solid rgba(0, 0, 0, 0.1) !important;
+    color: var(--sl-color-text);
+  }
+
+  :root[data-theme='light'] .search-input:focus,
+  :root[data-theme='light'] input[type='search']:focus {
+    background: rgba(0, 0, 0, 0.08) !important;
+    border-color: var(--sl-color-accent) !important;
+  }
+
+  /* Mobile menu glass effect */
+  .mobile-preferences {
+    background: rgba(17, 17, 17, 0.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+
+  :root[data-theme='light'] .mobile-preferences {
+    background: rgba(255, 255, 255, 0.95);
+  }
+</style>
+
+<!-- Add Blog link via JavaScript for better compatibility -->
+<script>
+  function addBlogLink() {
+    // Find the navigation area
+    const nav = document.querySelector('.header nav')
+    const socialLinks = document.querySelector('.social-icons')
+
+    if (!nav || !socialLinks) return
+
+    // Check if Blog link already exists
+    if (document.querySelector('.blog-nav-link')) return
+
+    // Create Blog link
+    const blogLink = document.createElement('a')
+    blogLink.href = '/blog/'
+    blogLink.className = 'blog-nav-link sl-flex'
+    blogLink.innerHTML = `
+      Blog
+      <span class="blog-badge">New</span>
+    `
+
+    // Insert before social icons
+    socialLinks.parentElement?.insertBefore(blogLink, socialLinks)
+  }
+
+  // Add on load and on navigation
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', addBlogLink)
+  } else {
+    addBlogLink()
+  }
+
+  // Re-add on Astro page navigation
+  document.addEventListener('astro:page-load', addBlogLink)
+</script>
+
+<style is:global>
+  /* Blog link styling */
+  .blog-nav-link {
+    font-size: var(--sl-text-sm);
+    gap: 0.5rem;
+    align-items: center;
+    min-height: 2.5rem;
+    padding-inline: 1rem;
+    color: var(--sl-color-gray-1);
+    text-decoration: none;
+    transition: color 0.2s;
+    font-weight: 500;
+  }
+
+  .blog-nav-link:hover {
+    color: var(--sl-color-white);
+  }
+
+  :root[data-theme='light'] .blog-nav-link:hover {
+    color: var(--sl-color-black);
+  }
+
+  .blog-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 0.125rem 0.375rem;
+    background: var(--sl-color-accent);
+    color: var(--sl-color-black);
+    border-radius: 0.25rem;
+  }
+
+  @media (min-width: 50rem) {
+    .blog-nav-link {
+      font-size: var(--sl-text-base);
+    }
+  }
+</style>

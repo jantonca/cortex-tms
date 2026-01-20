@@ -1,0 +1,80 @@
+---
+/**
+ * BlogPostCard - Editorial glass card for blog posts
+ *
+ * A visually striking blog post preview card with:
+ * - Featured image with gradient overlay
+ * - Category tag
+ * - Title and excerpt
+ * - Read more link
+ * - Hover effects (lift + image scale)
+ *
+ * Usage:
+ * <BlogPostCard
+ *   title="Post Title"
+ *   excerpt="Post excerpt..."
+ *   heroImage="/images/post.jpg"
+ *   category="Tutorial"
+ *   slug="post-slug"
+ * />
+ */
+
+interface Props {
+  /** Post title */
+  title: string
+  /** Post excerpt/description */
+  excerpt: string
+  /** Featured image URL */
+  heroImage?: string
+  /** Category/tag */
+  category?: string
+  /** Post slug for link */
+  slug: string
+  /** Additional CSS classes */
+  class?: string
+}
+
+const {
+  title,
+  excerpt,
+  heroImage,
+  category,
+  slug,
+  class: className = '',
+} = Astro.props
+
+// Default image if none provided
+const imageSrc = heroImage || '/images/blog/default-hero.webp'
+---
+
+<a
+  href={`/blog/${slug}/`}
+  class='post-card-link'
+>
+  <article
+    class={`glass-panel post-card ${className}`}
+    data-tilt
+  >
+    <div class='sheen'></div>
+
+    {/* Featured image */}
+    <div class='post-image-wrapper'>
+      <img
+        src={imageSrc}
+        alt={title}
+        loading='lazy'
+      />
+    </div>
+
+    {/* Content */}
+    <div class='post-content'>
+      {category && <span class='category-tag'>{category}</span>}
+
+      <h2 class='post-title'>{title}</h2>
+
+      <p class='post-excerpt'>{excerpt}</p>
+
+      <span class='read-more'> Read Article → </span>
+    </div>
+  </article>
+</a>

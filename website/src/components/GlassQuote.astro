@@ -1,0 +1,67 @@
+---
+/**
+ * GlassQuote - Glass-styled blockquote component
+ *
+ * A visually striking quote component with:
+ * - Glass panel background
+ * - Optional liquid blob animation
+ * - Stylized quotation marks
+ * - Author attribution
+ *
+ * Usage:
+ * <GlassQuote author="John Doe" role="CEO, Company">
+ *   This is an amazing quote about something important.
+ * </GlassQuote>
+ */
+
+import GlassPanel from './GlassPanel.astro';
+
+interface Props {
+  /** Quote author name */
+  author?: string;
+  /** Author role/title (optional) */
+  role?: string;
+  /** Add animated liquid blob background */
+  liquidBlob?: boolean;
+  /** Additional CSS classes */
+  class?: string;
+}
+
+const {
+  author,
+  role,
+  liquidBlob = true,
+  class: className = '',
+} = Astro.props;
+---
+
+<GlassPanel
+  variant="default"
+  tilt="full"
+  liquidBlob={liquidBlob}
+  class={`quote-card ${className}`}
+>
+  <div class="quote-icon">"</div>
+
+  <div class="quote-content">
+    <blockquote class="quote-text">
+      <slot />
+    </blockquote>
+
+    {author && (
+      <cite class="quote-author">
+        {author}
+        {role && (
+          <span class="quote-role"> · {role}</span>
+        )}
+      </cite>
+    )}
+  </div>
+</GlassPanel>
+
+<style>
+  .quote-role {
+    font-weight: 400;
+    opacity: 0.7;
+  }
+</style>

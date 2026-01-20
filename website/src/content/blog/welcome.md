@@ -1,9 +1,10 @@
 ---
-title: "Welcome to the Cortex TMS Blog"
-description: "Introducing the Cortex TMS blog - insights on AI-powered development, documentation patterns, and building maintainable software."
+title: 'Welcome to the Cortex TMS Blog'
+description: 'Introducing the Cortex TMS blog - insights on AI-powered development, documentation patterns, and building maintainable software.'
 pubDate: 2026-01-20
-author: "Cortex TMS Team"
-tags: ["announcement", "cortex-tms"]
+author: 'Cortex TMS Team'
+tags: ['announcement', 'cortex-tms']
+heroImage: '/images/blog/default-hero.webp'
 draft: false
 ---
 
