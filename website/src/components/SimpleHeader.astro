@@ -5,7 +5,7 @@
  * Standalone header with logo, search, theme switcher, and navigation
  */
 import Search from 'virtual:starlight/components/Search';
-import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import SimpleThemeSelect from './SimpleThemeSelect.astro';
 import type { Props } from '@astrojs/starlight/props';
 import logoDark from '../assets/logo-dark.svg';
 
@@ -70,7 +70,7 @@ const componentProps = {
         </div>
 
         {/* Theme Selector */}
-        <ThemeSelect {...componentProps} />
+        <SimpleThemeSelect />
       </div>
     </div>
   </div>
