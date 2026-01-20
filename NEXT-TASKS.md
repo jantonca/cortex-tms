@@ -22,25 +22,13 @@ See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for completed tasks (TM
 
 ---
 
-### Phase 3: Distribution & Content 🟡 IN PROGRESS
+### Phase 3: Distribution & Content ✅ COMPLETE
 
-See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for 8 completed tasks.
-
-**Remaining**:
-
-| Task | Ref | Effort | Priority | Status |
-| :--- | :--- | :----- | :------- | :----- |
-| **Blog Post: Tiered Memory** - "Why AI Agents Need More Than a README" | [TMS-284d] | 3h | 🟡 MED | ⬜ Todo |
-
-**Blog Post Requirements**:
-- Explain multi-tier memory architecture (NEXT-TASKS.md, PATTERNS.md, ADRs)
-- Why README-only approaches fail for complex projects
-- Real examples from Cortex TMS development
-- Link to use cases and Guardian integration
+See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for all completed tasks.
 
 ---
 
-### Phase 4: GitHub Enhancement 🟡 IN PROGRESS
+### Phase 4: Website Enhancement 🟡 IN PROGRESS
 
 See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for 2 completed tasks.
 
@@ -49,6 +37,13 @@ See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for 2 completed tasks.
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **Social Preview Image** - Custom OG image | [TMS-285d] | 2h | 🟡 MED | ⬜ Todo |
+| **Blog Category Pages** - Filter by tag with archive pages | [TMS-293] | 2h | 🟡 MED | ⬜ Todo |
+
+**Blog Category Requirements**:
+- Create `/blog/tags/[tag]/` archive pages
+- List all posts with specific tag
+- Use glass design system for tag cards
+- Add tag navigation to blog index
 
 ---
 
@@ -71,9 +66,9 @@ See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for 2 completed tasks.
 
 ## 📊 v2.7 Sprint Summary
 
-**Completed**: ~39 hours (28h Guardian/Blog + 10h Design + 1h fixes)
-**Remaining**: ~9 hours (Blog post, OG image, Community launch)
-**Completion Rate**: 81% of sprint complete
+**Completed**: ~42 hours (28h Guardian/Blog + 10h Design + 3h Tiered Memory post + 1h fixes)
+**Remaining**: ~8 hours (Blog categories, OG image, Community launch)
+**Completion Rate**: 84% of sprint complete
 
 **Success Metrics**:
 - ✅ Guardian MVP functional with 70%+ accuracy
