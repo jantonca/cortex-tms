@@ -2,31 +2,76 @@
 /**
  * Simple Header - For SimpleLayout (Homepage/Blog)
  *
- * Standalone header with glass effect, logo, and navigation
+ * Standalone header with logo, search, theme switcher, and navigation
  */
+import Search from 'virtual:starlight/components/Search';
+import ThemeSelect from 'virtual:starlight/components/ThemeSelect';
+import type { Props } from '@astrojs/starlight/props';
+import logoDark from '../assets/logo-dark.svg';
+
+// Create minimal props for Starlight components
+const componentProps = {
+  ...Astro.props,
+  hasSidebar: false,
+  toc: undefined,
+  entry: {
+    data: {
+      title: 'Cortex TMS',
+      description: 'AI-powered project scaffolding',
+    },
+    slug: '',
+  },
+  entryMeta: {
+    lang: 'en',
+    dir: 'ltr',
+  },
+  lang: 'en',
+  dir: 'ltr',
+  sidebar: [],
+  siteTitle: 'Cortex TMS',
+  siteTitleHref: '/',
+} as Props;
 ---
 
 <header class="simple-site-header">
   <div class="header-container">
-    <div class="header-content">
+    <div class="header-content sl-flex">
       {/* Site Title/Logo */}
-      <a href="/" class="site-title">
-        <span class="logo-text">Cortex TMS</span>
-      </a>
+      <div class="title-wrapper sl-flex">
+        <a href="/" class="site-title">
+          <img src={logoDark.src} alt="Cortex TMS Logo" class="logo-image" width="32" height="32" />
+          <span class="logo-text">Cortex TMS</span>
+        </a>
+      </div>
 
-      {/* Navigation */}
-      <nav class="main-nav">
-        <a href="/blog/" class="nav-link">
-          Blog
-          <span class="badge">New</span>
-        </a>
-        <a href="/getting-started/introduction/" class="nav-link">Docs</a>
-        <a href="https://github.com/cortex-tms/cortex-tms" class="nav-link" target="_blank" rel="noopener">
-          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3"/>
-          </svg>
-        </a>
-      </nav>
+      {/* Search */}
+      <div class="sl-flex search-wrapper print:hidden">
+        <Search {...componentProps} />
+      </div>
+
+      {/* Right Group: Navigation + Theme + Social */}
+      <div class="right-group sl-flex print:hidden">
+        {/* Navigation Links */}
+        <nav class="main-nav sl-flex">
+          <a href="/blog/" class="nav-link">
+            Blog
+            <span class="badge">New</span>
+          </a>
+          <a href="/getting-started/introduction/" class="nav-link">Docs</a>
+        </nav>
+
+        {/* Social Icons */}
+        <div class="social-icons sl-flex">
+          <a href="https://github.com/cortex-tms/cortex-tms" class="nav-link" target="_blank" rel="noopener" aria-label="GitHub">
+            <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 .3a12 12 0 0 0-3.8 23.38c.6.12.83-.26.83-.57L9 21.07c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.08-.74.09-.73.09-.73 1.2.09 1.83 1.24 1.83 1.24 1.07 1.83 2.81 1.3 3.5 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.14-.3-.54-1.52.1-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.28-1.55 3.29-1.23 3.29-1.23.64 1.66.24 2.88.12 3.18a4.65 4.65 0 0 1 1.23 3.22c0 4.61-2.8 5.63-5.48 5.92.42.36.81 1.1.81 2.22l-.01 3.29c0 .31.2.69.82.57A12 12 0 0 0 12 .3"/>
+            </svg>
+          </a>
+        </div>
+
+        {/* Theme Selector */}
+        <ThemeSelect {...componentProps} />
+      </div>
     </div>
   </div>
 </header>
@@ -46,18 +91,24 @@
   }
 
   .header-container {
-    max-width: 1400px;
+    max-width: 100%;
     margin: 0 auto;
     height: 100%;
-    padding: 0 var(--sl-nav-pad-x, 1.5rem);
+    padding: var(--sl-nav-pad-y, 0.75rem) var(--sl-nav-pad-x, 1.5rem);
   }
 
   .header-content {
-    display: flex;
-    align-items: center;
+    gap: var(--sl-nav-gap, 1rem);
     justify-content: space-between;
+    align-items: center;
     height: 100%;
-    gap: 2rem;
+  }
+
+  .title-wrapper {
+    overflow: clip;
+    padding: 0.25rem;
+    margin: -0.25rem;
+    min-width: 0;
   }
 
   .site-title {
@@ -67,7 +118,7 @@
     text-decoration: none;
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: 0.75rem;
     transition: color 0.2s;
   }
 
@@ -75,17 +126,44 @@
     color: var(--sl-color-accent-high);
   }
 
+  .logo-image {
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+  }
+
   .logo-text {
     background: linear-gradient(135deg, var(--sl-color-white), var(--sl-color-accent-high));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    white-space: nowrap;
+  }
+
+  .search-wrapper {
+    flex: 1;
+    max-width: 600px;
+  }
+
+  .right-group {
+    gap: 1rem;
+    align-items: center;
   }
 
   .main-nav {
-    display: flex;
+    gap: 1.5rem;
     align-items: center;
-    gap: 2rem;
+  }
+
+  .social-icons {
+    gap: 1rem;
+    align-items: center;
+  }
+
+  .social-icons::after {
+    content: '';
+    height: 2rem;
+    border-inline-end: 1px solid var(--sl-color-gray-5);
   }
 
   .nav-link {
@@ -119,28 +197,37 @@
     height: 1.25rem;
   }
 
-  /* Responsive */
+  /* Responsive - hide some elements on mobile */
   @media (max-width: 768px) {
-    .header-content {
-      gap: 1rem;
+    .logo-text {
+      display: none;
     }
 
     .main-nav {
-      gap: 1rem;
+      gap: 0.75rem;
     }
 
-    .nav-link {
-      font-size: var(--sl-text-sm);
-    }
-
-    .site-title {
-      font-size: var(--sl-text-lg);
+    .right-group {
+      gap: 0.5rem;
     }
   }
 
   @media (max-width: 480px) {
-    .nav-link span:not(.badge) {
+    .search-wrapper {
       display: none;
+    }
+
+    .badge {
+      display: none;
+    }
+  }
+
+  /* Desktop layout - similar to Starlight header */
+  @media (min-width: 50rem) {
+    .header-content {
+      display: grid;
+      grid-template-columns: auto 1fr auto;
+      align-content: center;
     }
   }
 </style>
