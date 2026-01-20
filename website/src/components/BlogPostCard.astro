@@ -21,17 +21,17 @@
 
 interface Props {
   /** Post title */
-  title: string;
+  title: string
   /** Post excerpt/description */
-  excerpt: string;
+  excerpt: string
   /** Featured image URL */
-  heroImage?: string;
+  heroImage?: string
   /** Category/tag */
-  category?: string;
+  category?: string
   /** Post slug for link */
-  slug: string;
+  slug: string
   /** Additional CSS classes */
-  class?: string;
+  class?: string
 }
 
 const {
@@ -41,36 +41,40 @@ const {
   category,
   slug,
   class: className = '',
-} = Astro.props;
+} = Astro.props
 
 // Default image if none provided
-const imageSrc = heroImage || '/images/blog/default-hero.webp';
+const imageSrc = heroImage || '/images/blog/default-hero.webp'
 ---
 
-<article class={`glass-panel post-card ${className}`} data-tilt>
-  <div class="sheen"></div>
+<a
+  href={`/blog/${slug}/`}
+  class='post-card-link'
+>
+  <article
+    class={`glass-panel post-card ${className}`}
+    data-tilt
+  >
+    <div class='sheen'></div>
 
-  {/* Featured image */}
-  <div class="post-image-wrapper">
-    <img
-      src={imageSrc}
-      alt={title}
-      loading="lazy"
-    />
-  </div>
+    {/* Featured image */}
+    <div class='post-image-wrapper'>
+      <img
+        src={imageSrc}
+        alt={title}
+        loading='lazy'
+      />
+    </div>
 
-  {/* Content */}
-  <div class="post-content">
-    {category && (
-      <span class="category-tag">{category}</span>
-    )}
+    {/* Content */}
+    <div class='post-content'>
+      {category && <span class='category-tag'>{category}</span>}
 
-    <h2 class="post-title">{title}</h2>
+      <h2 class='post-title'>{title}</h2>
 
-    <p class="post-excerpt">{excerpt}</p>
+      <p class='post-excerpt'>{excerpt}</p>
 
-    <a href={`/blog/${slug}/`} class="read-more">
-      Read Article →
-    </a>
-  </div>
-</article>
+      <span class='read-more'> Read Article → </span>
+    </div>
+  </article>
+</a>

@@ -129,12 +129,19 @@
 }
 
 /* === EDITORIAL POST CARD === */
+.post-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
 .post-card {
   display: flex;
   flex-direction: column;
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  height: 100%;
 }
 
 .post-image-wrapper {
@@ -144,6 +151,7 @@
   overflow: hidden;
   border-bottom: 1px solid var(--glass-border);
   z-index: 0;
+  flex-shrink: 0;
 }
 
 .post-image-wrapper img {
@@ -165,6 +173,9 @@
   padding: 2rem;
   position: relative;
   z-index: 3;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .category-tag {
@@ -173,23 +184,41 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--sl-color-accent);
-  margin-bottom: 0.75rem;
-  display: block;
+  margin-bottom: 1rem;
+  display: inline-block;
+  background: rgba(249, 115, 22, 0.12);
+  border: 1px solid var(--sl-color-accent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  padding: 0.5rem 0.85rem;
+  border-radius: 20px;
+  font-weight: 600;
+  width: fit-content;
+  align-self: flex-start;
+  text-align: center;
+}
+
+:root[data-theme='light'] .category-tag {
+  background: rgba(249, 115, 22, 0.08);
+  border: 1.5px solid var(--sl-color-accent);
 }
 
 .post-title {
   font-family: var(--sl-font);
   font-size: 1.75rem;
-  line-height: 1.1;
+  line-height: 1.25;
   margin-bottom: 1rem;
   font-weight: 700;
+  color: var(--sl-color-text);
+  letter-spacing: -0.01em;
 }
 
 .post-excerpt {
-  font-size: 0.9rem;
-  line-height: 1.6;
+  font-size: 0.95rem;
+  line-height: 1.7;
   color: var(--sl-color-gray-2);
   margin-bottom: 1.5rem;
+  flex: 1;
 }
 
 .read-more {
@@ -200,6 +229,7 @@
   padding-bottom: 2px;
   transition: color 0.3s;
   display: inline-block;
+  margin-top: auto;
 }
 
 .read-more:hover {
@@ -207,12 +237,16 @@
 }
 
 .post-card:hover {
-  transform: translateY(-2px);
+  transform: translateY(-4px);
   box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
 }
 
 .post-card:hover .post-image-wrapper img {
   transform: scale(1.04);
+}
+
+:root[data-theme='light'] .post-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
 }
 
 /* === GLASS BLOCKQUOTE === */

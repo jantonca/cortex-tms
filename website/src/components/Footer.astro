@@ -1,61 +1,107 @@
 ---
 // Custom footer for Cortex TMS website
-import type { Props } from '@astrojs/starlight/props';
+import type { Props } from '@astrojs/starlight/props'
 ---
 
-<footer class="cortex-footer">
-  <div class="footer-content">
-    <div class="footer-columns">
+<footer class='cortex-footer'>
+  <div class='footer-content'>
+    <div class='footer-columns'>
       <!-- Column 1: Product -->
-      <div class="footer-column">
+      <div class='footer-column'>
         <h3>Product</h3>
         <ul>
-          <li><a href="/getting-started/introduction/">Getting Started</a></li>
-          <li><a href="/getting-started/quick-start/">Quick Start</a></li>
-          <li><a href="/reference/cli/">CLI Reference</a></li>
-          <li><a href="https://www.npmjs.com/package/cortex-tms" target="_blank" rel="noopener noreferrer">NPM Package</a></li>
+          <li><a href='/getting-started/introduction/'>Getting Started</a></li>
+          <li><a href='/getting-started/quick-start/'>Quick Start</a></li>
+          <li><a href='/reference/cli/'>CLI Reference</a></li>
+          <li>
+            <a
+              href='https://www.npmjs.com/package/cortex-tms'
+              target='_blank'
+              rel='noopener noreferrer'
+              >NPM Package</a>
+          </li>
         </ul>
       </div>
 
       <!-- Column 2: Community -->
-      <div class="footer-column">
+      <div class='footer-column'>
         <h3>Community</h3>
         <ul>
-          <li><a href="/community/about/">About</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/community/contributing/">Contributing</a></li>
-          <li><a href="/community/known-issues/">Known Issues</a></li>
+          <li><a href='/community/about/'>About</a></li>
+          <li><a href='/blog/'>Blog</a></li>
+          <li><a href='/community/contributing/'>Contributing</a></li>
+          <li><a href='/community/known-issues/'>Known Issues</a></li>
         </ul>
       </div>
 
       <!-- Column 3: Resources -->
-      <div class="footer-column">
+      <div class='footer-column'>
         <h3>Resources</h3>
         <ul>
-          <li><a href="https://github.com/cortex-tms/cortex-tms" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-          <li><a href="/community/changelog/">Changelog</a></li>
-          <li><a href="https://github.com/cortex-tms/cortex-tms/issues" target="_blank" rel="noopener noreferrer">Issues</a></li>
-          <li><a href="https://github.com/cortex-tms/cortex-tms/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+          <li>
+            <a
+              href='https://github.com/cortex-tms/cortex-tms'
+              target='_blank'
+              rel='noopener noreferrer'
+              >GitHub</a>
+          </li>
+          <li><a href='/community/changelog/'>Changelog</a></li>
+          <li>
+            <a
+              href='https://github.com/cortex-tms/cortex-tms/issues'
+              target='_blank'
+              rel='noopener noreferrer'
+              >Issues</a>
+          </li>
+          <li>
+            <a
+              href='https://github.com/cortex-tms/cortex-tms/discussions'
+              target='_blank'
+              rel='noopener noreferrer'
+              >Discussions</a>
+          </li>
         </ul>
       </div>
 
       <!-- Column 4: Legal -->
-      <div class="footer-column">
+      <div class='footer-column'>
         <h3>Legal</h3>
         <ul>
-          <li><a href="https://github.com/cortex-tms/cortex-tms/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a></li>
-          <li><a href="/rss.xml" target="_blank" rel="noopener noreferrer">RSS Feed</a></li>
+          <li>
+            <a
+              href='https://github.com/cortex-tms/cortex-tms/blob/main/LICENSE'
+              target='_blank'
+              rel='noopener noreferrer'
+              >MIT License</a>
+          </li>
+          <li>
+            <a
+              href='/rss.xml'
+              target='_blank'
+              rel='noopener noreferrer'
+              >RSS Feed</a>
+          </li>
         </ul>
       </div>
     </div>
 
     <!-- Bottom bar with copyright and dogfooding message -->
-    <div class="footer-bottom">
-      <div class="footer-copyright">
-        <p>© 2026 Cortex TMS Contributors. Open source under <a href="https://github.com/cortex-tms/cortex-tms/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">MIT License</a>.</p>
+    <div class='footer-bottom'>
+      <div class='footer-copyright'>
+        <p>
+          © 2026 Cortex TMS Contributors. Open source under <a
+            href='https://github.com/cortex-tms/cortex-tms/blob/main/LICENSE'
+            target='_blank'
+            rel='noopener noreferrer'
+            >MIT License</a
+          >.
+        </p>
       </div>
-      <div class="footer-tagline">
-        <p>Built using our own standard – <a href="/community/about/">see how we build</a></p>
+      <div class='footer-tagline'>
+        <p>
+          Built using our own standard – <a href='/community/about/'
+            >see how we build</a>
+        </p>
       </div>
     </div>
   </div>
@@ -65,7 +111,7 @@ import type { Props } from '@astrojs/starlight/props';
   .cortex-footer {
     /* Footer is now outside main element - naturally full width */
     width: 100%;
-    border-top: 1px solid var(--sl-color-gray-5);
+    border-top: 1px solid var(--sl-color-hairline);
     margin-top: 4rem;
     padding: 3rem 1rem 2rem;
     background: var(--sl-color-bg);
@@ -90,7 +136,7 @@ import type { Props } from '@astrojs/starlight/props';
     text-transform: uppercase;
     letter-spacing: 0.05em;
     margin-bottom: 1rem;
-    color: var(--sl-color-white);
+    color: var(--sl-color-text);
   }
 
   .footer-column ul {
@@ -111,7 +157,7 @@ import type { Props } from '@astrojs/starlight/props';
   }
 
   .footer-column a:hover {
-    color: var(--sl-color-white);
+    color: var(--sl-color-accent);
   }
 
   .footer-bottom {
@@ -121,9 +167,9 @@ import type { Props } from '@astrojs/starlight/props';
     align-items: center;
     gap: 1rem;
     padding-top: 2rem;
-    border-top: 1px solid var(--sl-color-gray-6);
+    border-top: 1px solid var(--sl-color-hairline);
     font-size: 0.875rem;
-    color: var(--sl-color-gray-3);
+    color: var(--sl-color-gray-2);
   }
 
   .footer-copyright p,
@@ -138,7 +184,12 @@ import type { Props } from '@astrojs/starlight/props';
   }
 
   .footer-bottom a:hover {
-    color: var(--sl-color-white);
+    color: var(--sl-color-accent);
+  }
+
+  /* Light mode adjustments */
+  :root[data-theme='light'] .footer-bottom {
+    border-top: 1px solid var(--sl-color-hairline);
   }
 
   @media (max-width: 768px) {
