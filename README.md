@@ -4,7 +4,13 @@
 
 Cortex TMS is a **CLI tool for AI-assisted development** that provides **project scaffolding**, **task management**, and **workflow automation**. It's an **interactive documentation system** optimized for **Claude Code**, **GitHub Copilot**, and **LLM-assisted development**—transforming your repository into a machine-legible project structure with intelligent tooling for version management and AI collaboration.
 
-**Current Status**: ✅ **Stable / Production Ready** | [NPM Package](https://www.npmjs.com/package/cortex-tms) | [GitHub Repository](https://github.com/cortex-tms/cortex-tms) | [Documentation](https://cortex-tms.org) (coming soon)
+[![npm version](https://img.shields.io/npm/v/cortex-tms.svg?style=flat-square)](https://www.npmjs.com/package/cortex-tms)
+[![npm downloads](https://img.shields.io/npm/dm/cortex-tms.svg?style=flat-square)](https://www.npmjs.com/package/cortex-tms)
+[![license](https://img.shields.io/npm/l/cortex-tms.svg?style=flat-square)](https://github.com/cortex-tms/cortex-tms/blob/main/LICENSE)
+[![node version](https://img.shields.io/node/v/cortex-tms.svg?style=flat-square)](https://nodejs.org)
+[![GitHub stars](https://img.shields.io/github/stars/cortex-tms/cortex-tms.svg?style=flat-square)](https://github.com/cortex-tms/cortex-tms/stargazers)
+
+**Current Status**: ✅ **Stable / Production Ready** | [NPM Package](https://www.npmjs.com/package/cortex-tms) | [GitHub Repository](https://github.com/cortex-tms/cortex-tms) | [Documentation](https://cortex-tms.org)
 
 ---
 
