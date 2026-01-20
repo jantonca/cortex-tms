@@ -379,7 +379,146 @@ AI Agent: [can't find pattern, implements incorrectly]
 | No Meta-Docs | All templates | `templates/*.md` |
 | Archive Triggers | Sprint management | `NEXT-TASKS.md` |
 | AI Validation | Before shipping | All templates |
+| Website Design System | Website components | `website/src/` |
 
 **For Git & PM Standards**: See `docs/core/GIT-STANDARDS.md`
+
+---
+
+## Pattern 11: Website Design System
+
+**Rule**: The Cortex TMS website uses a modular liquid glass design system with clear separation between marketing and documentation layouts.
+
+### ✅ Structure
+
+**Location**: `website/src/styles/`, `website/src/components/`, `website/public/`
+
+**Design System Files**:
+- **glass-system.css**: Design tokens and base classes (colors, blur, borders, animations)
+- **glass-components.css**: Component-specific styles (buttons, cards, panels, quotes)
+- **glass-effects.js**: Interactive JavaScript effects (3D tilt, sheen tracking, parallax)
+- **Astro Components**: GlassPanel, GlassButton, GlassQuote, BlogPostCard
+
+**Layout Architecture**:
+- **SimpleLayout**: For marketing pages (homepage, blog)
+  - Structure: `<body>` → `<SimpleHeader>` → `<main>` → `<Footer>`
+  - Clean 3-element structure with full-width footer
+  - No sidebar, optimized for visual storytelling
+- **Starlight Layout**: For documentation pages
+  - Preserves Starlight's sidebar and navigation
+  - Enhanced with glass effects on header/footer
+- **Rule**: Never mix layout systems in the same page type
+
+### ✅ Theme Support Requirements
+
+**All components MUST support light/dark modes**:
+
+```css
+/* Use CSS custom properties, not hard-coded colors */
+:root {
+  --glass-surface: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+}
+
+:root[data-theme='light'] {
+  --glass-surface: rgba(0, 0, 0, 0.03);
+  --glass-border: rgba(0, 0, 0, 0.08);
+}
+```
+
+**Checklist Before Committing**:
+- [ ] Test component in light mode
+- [ ] Test component in dark mode
+- [ ] Test component in auto mode (system preference)
+- [ ] Verify all text has sufficient contrast
+- [ ] Verify glass effects work in both modes
+
+### ✅ Typography Hierarchy
+
+**Font Usage**:
+- **Noto Sans**: Body text, UI elements, navigation
+- **Noto Serif**: Headings, hero titles, quotes
+- **Noto Sans Mono**: Code blocks, technical references
+
+```css
+/* Hierarchy */
+.hero-title { font-family: 'Noto Serif', serif; }
+.body-text { font-family: 'Noto Sans', sans-serif; }
+.code-block { font-family: 'Noto Sans Mono', monospace; }
+```
+
+### ❌ Anti-Patterns
+
+```astro
+<!-- Bad: Hard-coded colors -->
+<div style="background: #111111;">
+
+<!-- Bad: Importing from node_modules with relative paths -->
+<style>
+  @import '../../../node_modules/@astrojs/starlight/style/props.css';
+</style>
+
+<!-- Bad: Public assets without is:inline -->
+<script src="/glass-effects.js"></script>
+
+<!-- Bad: Mixing layouts -->
+<SimpleLayout>
+  <StarlightSidebar /> <!-- Don't do this -->
+</SimpleLayout>
+
+<!-- Bad: Reusing framework components outside context -->
+<SimpleHeader>
+  <StarlightHeader /> <!-- Missing required Starlight props -->
+</SimpleHeader>
+```
+
+**Why they fail**:
+- Hard-coded colors break theme switching
+- Node_modules imports fail in Astro SSR
+- Public scripts get bundled incorrectly without `is:inline`
+- Layout mixing creates visual inconsistency
+- Framework components need their specific context
+
+### ✅ Component Development Pattern
+
+**When creating new glass components**:
+
+1. **Start with CSS tokens** in `glass-system.css`
+2. **Create component styles** in `glass-components.css`
+3. **Add interactivity** in `glass-effects.js` (if needed)
+4. **Build Astro component** using existing tokens
+5. **Test both themes** before committing
+
+**Example**:
+
+```astro
+---
+// src/components/GlassCard.astro
+interface Props {
+  variant?: 'default' | 'bordered' | 'elevated';
+  tilt?: 'none' | 'subtle' | 'full';
+}
+
+const { variant = 'default', tilt = 'subtle' } = Astro.props;
+---
+
+<div
+  class={`glass-panel glass-${variant}`}
+  data-tilt={tilt}
+>
+  <slot />
+</div>
+
+<style>
+  /* Use existing tokens, don't create new ones */
+  .glass-panel {
+    background: var(--glass-surface);
+    border: 1px solid var(--glass-border);
+  }
+</style>
+```
+
+**References**:
+- **Learning**: `docs/learning/2026-01-21-liquid-glass-design-retrospective.md`
 
 <!-- @cortex-tms-version 2.6.0 -->
