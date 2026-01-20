@@ -1,23 +1,19 @@
 ---
-title: "How Cortex TMS Prevents the 'AI PR Tsunami' That's Drowning Maintainers"
-description: "tldraw just closed their doors to external contributions. Here's why AI-generated PRs are breaking open source—and how to fix it without losing AI's benefits."
+title: "Our Approach to the AI PR Problem: Learning from tldraw's Experience"
+description: "tldraw paused external contributions due to AI-generated PRs. Here's our early experiment with pattern-based code review to address this challenge."
 pubDate: 2026-01-20
 author: "Cortex TMS Team"
 tags: ["ai", "open-source", "guardian", "code-review"]
 draft: false
 ---
 
-**tldraw**, one of the most popular React drawing libraries, just made a shocking announcement: they're [pausing all external contributions](https://github.com/tldraw/tldraw/issues/7695).
-
-Not because they don't want help. Not because their community is toxic.
-
-**Because AI-generated pull requests have become unmanageable.**
+**tldraw**, a popular React drawing library, recently announced they're [pausing external contributions](https://github.com/tldraw/tldraw/issues/7695) due to challenges with AI-generated pull requests.
 
 > "Like many other open-source projects on GitHub, tldraw has recently seen a significant increase in contributions generated entirely by AI tools. While some of these pull requests are formally correct, most suffer from incomplete or misleading context, misunderstanding of the codebase, and little to no follow-up engagement from their authors."
 >
 > — [tldraw Issue #7695](https://github.com/tldraw/tldraw/issues/7695)
 
-This isn't an isolated incident. **It's a pattern emerging across open source.** And if you maintain a codebase that welcomes AI-assisted development, you're next.
+While we don't have comprehensive data on how widespread this issue is, tldraw's experience resonates with challenges we've observed in our own project and heard about anecdotally from other maintainers.
 
 ---
 
@@ -62,27 +58,27 @@ Multiply this by 10 contributors using AI tools, and you get the "tsunami."
 
 ---
 
-## The Traditional Solution (Doesn't Scale)
+## Common Approaches (And Their Challenges)
 
-Most teams try:
-1. **More human code review** → Maintainer burnout
-2. **Stricter PR templates** → Contributors ignore them
-3. **Lengthy contribution guides** → AI doesn't read them
-4. **Closing external contributions** → Community suffers (see: tldraw)
+Teams are trying different approaches:
+1. **More human code review** → Can lead to maintainer burnout
+2. **Stricter PR templates** → Mixed results with compliance
+3. **Lengthy contribution guides** → AI tools may not reference them
+4. **Closing external contributions** → Reduces community involvement (tldraw's choice)
 
-**None of these solve the root cause**: AI operates without your project's architectural context.
+**The challenge**: Current AI coding tools don't automatically incorporate project-specific architectural context.
 
 ---
 
-## The Solution: Governance Before Generation
+## Our Experiment: Pattern-Based Review
 
-What if AI could:
-- ✅ Read your architectural decisions **before** generating code
-- ✅ Check its own output against **your documented patterns**
-- ✅ Flag violations **before the PR is even created**
-- ✅ Learn from your project's **unique conventions**
+We're testing an idea: what if there was a tool that could:
+- Read your documented architectural decisions
+- Check code against your documented patterns
+- Flag potential violations before submitting PRs
+- Reference your project's unique conventions
 
-That's **Guardian**.
+That's what we're building with **Guardian**. It's early, and we're learning as we go.
 
 ---
 
@@ -150,29 +146,31 @@ No more "oops, I'll fix that in the next PR."
 
 ---
 
-## Real Results: Before vs. After
+## Our Early Experience: Dogfooding Guardian
 
-We dogfood Guardian on Cortex TMS itself. Here's what changed:
+We've been testing Guardian on Cortex TMS itself. Here's what we've observed so far:
+
+> **Important Context**: These are preliminary results from our own small project (~20 PRs over 2 weeks, single maintainer). This is not independent verification or proof of effectiveness at scale.
 
 ### Before Guardian (AI-assisted development, manual review)
-- ⏱️ **Review time**: 20-30 min per PR
-- 🔄 **Back-and-forth cycles**: 3-4 rounds
-- 🐛 **Pattern violations reaching main**: ~15%
-- 😓 **Maintainer frustration**: High
+- ⏱️ **Review time**: 20-30 min per PR (our experience)
+- 🔄 **Back-and-forth cycles**: 3-4 rounds (typical for us)
+- 🐛 **Pattern violations reaching main**: ~15% (in our commits)
+- 😓 **Maintainer frustration**: High (subjective)
 
 ### After Guardian (AI + Guardian pre-review)
-- ⏱️ **Review time**: 7-10 min per PR (**66% reduction**)
-- 🔄 **Back-and-forth cycles**: 1-2 rounds
-- 🐛 **Pattern violations reaching main**: ~3%
-- ✅ **Clean PRs**: ~80% pass first review
+- ⏱️ **Review time**: 7-10 min per PR (our experience, ~66% reduction)
+- 🔄 **Back-and-forth cycles**: 1-2 rounds (our experience)
+- 🐛 **Pattern violations reaching main**: ~3% (in our commits)
+- ✅ **Clean PRs**: ~80% pass first review (our experience)
 
-**Key metric**: Guardian catches violations **before** the PR is created, saving maintainer time and contributor embarrassment.
+**Our takeaway**: In our limited testing, Guardian has helped us catch issues earlier. We can't yet claim this will work for every project or team.
 
 ---
 
-## How Guardian Prevents the Tsunami
+## Our Hypothesis: Pattern-Based Pre-Review
 
-Guardian solves the tldraw problem by:
+Guardian is our experiment to address these challenges. The approach:
 
 1. **Enforcing Documented Patterns**
    - AI-generated code must match YOUR conventions
@@ -259,24 +257,24 @@ Guardian complements linting—it doesn't replace it.
 
 ---
 
-## The Future: AI That Follows YOUR Rules
+## What We're Learning
 
-The AI PR Tsunami isn't going away. More developers will use AI tools, not fewer.
+AI-assisted development is here to stay. The challenge is finding ways to maintain code quality and architectural consistency.
 
-**The question is**: Will you close your doors like tldraw, or will you **govern AI contributions effectively**?
+**Our approach** with Guardian is experimental. We're testing whether pattern-based pre-review can help:
 
-With Guardian, AI becomes a **force multiplier** instead of a **maintenance burden**:
+- Keep AI-accelerated development productive
+- Maintain architectural consistency
+- Reduce review burden on maintainers
+- Scale community contributions effectively
 
-- ✅ AI accelerates development
-- ✅ Patterns stay consistent
-- ✅ Maintainers focus on high-value review
-- ✅ Community contributions scale
+**Is it working?** Too early to say definitively. Our early internal results are promising, but we need more real-world testing and feedback.
 
 ---
 
-## Try Guardian Today
+## Try Guardian (Experimental)
 
-Guardian is part of Cortex TMS v2.7 (released January 2026).
+Guardian is part of Cortex TMS v2.7 (released January 2026). **It's new and experimental**—we're still learning what works.
 
 ```bash
 # Install globally
@@ -293,7 +291,13 @@ cortex review src/
 - `docs/core/PATTERNS.md` (document your conventions)
 - OpenAI or Anthropic API key (BYOK - bring your own key)
 
-**Target accuracy**: 70%+ on architectural violations (improving with feedback)
+**Current limitations**:
+- Early stage tool - expect false positives and false negatives
+- Target accuracy: 70%+ on architectural violations (unverified)
+- Works best when patterns are clearly documented
+- LLM API costs apply (you provide your own key)
+
+**We'd love your feedback** on whether this approach is useful for your project.
 
 ---
 
