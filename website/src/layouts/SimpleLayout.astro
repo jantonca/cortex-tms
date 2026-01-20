@@ -5,7 +5,7 @@
  * Three-element structure: header - main - footer
  * No sidebar, no complex Starlight PageFrame structure
  */
-import Header from '../components/Header.astro';
+import SimpleHeader from '../components/SimpleHeader.astro';
 import Footer from '../components/Footer.astro';
 
 // Import custom styles
@@ -179,9 +179,7 @@ const componentProps = {
     </style>
   </head>
   <body>
-    <div class="simple-header">
-      <Header {...componentProps} />
-    </div>
+    <SimpleHeader />
 
     <main class="simple-main">
       <slot />
@@ -192,13 +190,6 @@ const componentProps = {
     </div>
 
     <style>
-      .simple-header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        width: 100%;
-      }
-
       .simple-main {
         flex: 1;
         width: 100%;
