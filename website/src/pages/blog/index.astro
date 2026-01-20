@@ -1,6 +1,7 @@
 ---
 import { getCollection } from 'astro:content';
 import StarlightPage from '@astrojs/starlight/components/StarlightPage.astro';
+import BlogPostCard from '../../components/BlogPostCard.astro';
 
 // Get all blog posts, filter out drafts, and sort by date
 const allPosts = await getCollection('blog', ({ data }) => {
@@ -8,14 +9,6 @@ const allPosts = await getCollection('blog', ({ data }) => {
 });
 
 const posts = allPosts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
-
-const formatDate = (date: Date) => {
-  return new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  }).format(date);
-};
 ---
 
 <StarlightPage
@@ -24,38 +17,34 @@ const formatDate = (date: Date) => {
     description: 'Latest updates, insights, and stories from the Cortex TMS team',
   }}
 >
+  {/* Ambient background gradients */}
+  <div class="liquid-ambient-bg"></div>
+
   <div class="blog-container">
     <p class="blog-intro">
       Insights on AI-powered development, documentation patterns, and building maintainable software.
     </p>
 
-    <div class="posts-grid">
+    <div class="posts-grid glass-grid">
       {posts.length === 0 ? (
         <p class="no-posts">No blog posts yet. Check back soon!</p>
       ) : (
-        posts.map((post) => (
-          <article class="post-card">
-            <a href={`/blog/${post.slug}/`} class="post-link">
-              <h2>{post.data.title}</h2>
-              <p class="post-meta">
-                <time datetime={post.data.pubDate.toISOString()}>
-                  {formatDate(post.data.pubDate)}
-                </time>
-                {post.data.author && (
-                  <span class="author"> · {post.data.author}</span>
-                )}
-              </p>
-              <p class="post-description">{post.data.description}</p>
-              {post.data.tags && post.data.tags.length > 0 && (
-                <div class="post-tags">
-                  {post.data.tags.map((tag) => (
-                    <span class="tag">{tag}</span>
-                  ))}
-                </div>
-              )}
-            </a>
-          </article>
-        ))
+        posts.map((post) => {
+          // Get first tag as category
+          const category = post.data.tags && post.data.tags.length > 0
+            ? post.data.tags[0]
+            : undefined;
+
+          return (
+            <BlogPostCard
+              title={post.data.title}
+              excerpt={post.data.description}
+              heroImage={post.data.heroImage}
+              category={category}
+              slug={post.slug}
+            />
+          );
+        })
       )}
     </div>
   </div>
@@ -63,77 +52,25 @@ const formatDate = (date: Date) => {
   <style>
     .blog-container {
       max-width: 100%;
+      position: relative;
+      z-index: 1;
     }
 
     .blog-intro {
       font-size: 1.125rem;
       color: var(--sl-color-gray-2);
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
+      text-align: center;
+      font-weight: 300;
+      line-height: 1.6;
     }
 
     .posts-grid {
-      display: grid;
-      gap: 2rem;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    }
-
-    .post-card {
-      background: var(--sl-color-bg-sidebar);
-      border: 1px solid var(--sl-color-hairline);
-      border-radius: 0.5rem;
-      padding: 1.5rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-
-    .post-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    }
-
-    .post-link {
-      text-decoration: none;
-      color: inherit;
-      display: block;
-    }
-
-    .post-card h2 {
-      font-size: 1.5rem;
-      margin: 0 0 0.5rem 0;
-      color: var(--sl-color-white);
-    }
-
-    .post-meta {
-      font-size: 0.875rem;
-      color: var(--sl-color-gray-3);
-      margin-bottom: 1rem;
-    }
-
-    .author {
-      font-style: italic;
-    }
-
-    .post-description {
-      color: var(--sl-color-gray-2);
-      line-height: 1.6;
-      margin-bottom: 1rem;
-    }
-
-    .post-tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .tag {
-      background: var(--sl-color-accent-low);
-      color: var(--sl-color-accent-high);
-      padding: 0.25rem 0.75rem;
-      border-radius: 0.25rem;
-      font-size: 0.75rem;
-      font-weight: 500;
+      gap: 2.5rem;
     }
 
     .no-posts {
+      grid-column: 1 / -1;
       text-align: center;
       color: var(--sl-color-gray-3);
       padding: 3rem;
