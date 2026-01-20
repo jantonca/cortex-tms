@@ -1,0 +1,198 @@
+/**
+ * Cortex TMS - Liquid Glass Design System
+ *
+ * Base glass panel system with glassmorphism effects
+ * Extracted from branding/designs for production use
+ */
+
+/* === GLASS DESIGN TOKENS === */
+:root {
+  /* Glass surface variables */
+  --glass-surface: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-blur: 16px;
+
+  /* Sheen effect */
+  --sheen-intensity: rgba(255, 255, 255, 0.06);
+
+  /* Noise texture for depth */
+  --noise-opacity: 0.5;
+
+  /* Animation easing */
+  --ease-smooth: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* === AMBIENT BACKGROUND GRADIENTS === */
+.liquid-ambient-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  background-image:
+    radial-gradient(
+      circle at 15% 50%,
+      rgba(249, 115, 22, 0.15), /* Pumpkin Spice */
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 85% 30%,
+      rgba(255, 165, 0, 0.1), /* Amber */
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 90%,
+      rgba(255, 255, 255, 0.03), /* White glow */
+      transparent 50%
+    );
+}
+
+/* === MASTER GLASS PANEL CLASS === */
+.glass-panel {
+  position: relative;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 24px;
+  overflow: hidden;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.4s var(--ease-smooth),
+    box-shadow 0.4s var(--ease-smooth);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+/* Noise texture overlay for depth */
+.glass-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+/* Sheen layer (cursor-following highlight) */
+.sheen {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle 600px at var(--x, 50%) var(--y, 50%),
+    var(--sheen-intensity),
+    transparent 50%
+  );
+  z-index: 2;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.glass-panel:hover .sheen {
+  opacity: 1;
+}
+
+/* === GLASS PANEL VARIANTS === */
+
+/* Tilt effect on hover (3D rotation) */
+.glass-panel[data-tilt] {
+  cursor: pointer;
+}
+
+.glass-panel[data-tilt]:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+}
+
+/* Light tilt (sheen only, no rotation) */
+.glass-panel[data-tilt-light]:hover {
+  transform: translateY(-2px);
+}
+
+/* Bordered variant (stronger border) */
+.glass-panel--bordered {
+  border-color: var(--sl-color-accent-low);
+  border-width: 1px;
+}
+
+/* Elevated variant (higher shadow) */
+.glass-panel--elevated {
+  box-shadow: 0 30px 70px rgba(0, 0, 0, 0.6);
+}
+
+/* === LIQUID BLOB ANIMATION === */
+.liquid-bg {
+  position: absolute;
+  width: 150px;
+  height: 150px;
+  background: var(--sl-color-accent);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.15;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 0;
+  animation: liquid-pulse 8s infinite ease-in-out;
+  pointer-events: none;
+}
+
+@keyframes liquid-pulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.2);
+    opacity: 0.25;
+  }
+}
+
+/* === UTILITY CLASSES === */
+
+/* Z-index layering for glass panel content */
+.glass-content {
+  position: relative;
+  z-index: 3;
+}
+
+/* Full-width grid item */
+.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Responsive grid container */
+.glass-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2.5rem;
+  padding: 2rem 0;
+}
+
+/* === ACCESSIBILITY === */
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .glass-panel {
+    transition: none;
+  }
+
+  .liquid-bg {
+    animation: none;
+  }
+
+  .sheen {
+    display: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass-panel {
+    border-width: 2px;
+    border-color: var(--sl-color-white);
+    background: rgba(0, 0, 0, 0.8);
+  }
+}

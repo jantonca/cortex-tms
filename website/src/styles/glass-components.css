@@ -1,0 +1,394 @@
+/**
+ * Cortex TMS - Glass Component Library
+ *
+ * Specific component styles built on glass-system.css
+ * Buttons, cards, quotes, forms, etc.
+ */
+
+/* === BUTTONS === */
+
+/* Glass Prism Button (subtle, rounded) */
+.btn-prism {
+  padding: 1rem 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 50px;
+  color: white;
+  font-family: var(--sl-font);
+  font-weight: 500;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s var(--ease-smooth);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-prism:hover {
+  background: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  letter-spacing: 1px;
+  transform: translateY(-2px);
+}
+
+/* Neon Flux Button (pumpkin orange accent) */
+.btn-neon {
+  padding: 1rem 2.5rem;
+  background: transparent;
+  border: 1px solid var(--sl-color-accent);
+  border-radius: 8px;
+  color: var(--sl-color-accent);
+  font-family: var(--sl-font);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s var(--ease-smooth);
+  box-shadow: 0 0 10px var(--sl-color-accent-low);
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--sl-color-accent),
+    transparent
+  );
+  transition: left 0.5s var(--ease-smooth);
+  z-index: -1;
+}
+
+.btn-neon:hover {
+  color: var(--sl-color-black);
+  box-shadow: 0 0 20px var(--sl-color-accent);
+  transform: translateY(-2px);
+}
+
+.btn-neon:hover::before {
+  left: 0;
+  background: var(--sl-color-accent);
+}
+
+/* Circular Orb Button (icon buttons) */
+.btn-orb {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: all 0.3s var(--ease-elastic);
+  font-size: 1.2rem;
+}
+
+.btn-orb:hover {
+  transform: scale(1.15) rotate(10deg);
+  background: var(--sl-color-accent);
+  border-color: var(--sl-color-accent);
+  color: var(--sl-color-black);
+  box-shadow: 0 0 20px var(--sl-color-accent-low);
+}
+
+/* === EDITORIAL POST CARD === */
+.post-card {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+}
+
+.post-image-wrapper {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 0;
+}
+
+.post-image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.8s var(--ease-smooth);
+}
+
+.post-image-wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, var(--sl-color-black), transparent);
+  opacity: 0.3;
+}
+
+.post-content {
+  padding: 2rem;
+  position: relative;
+  z-index: 3;
+}
+
+.category-tag {
+  font-family: var(--sl-font-mono);
+  font-size: 0.7rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sl-color-accent);
+  margin-bottom: 0.75rem;
+  display: block;
+}
+
+.post-title {
+  font-family: var(--sl-font);
+  font-size: 1.75rem;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.post-excerpt {
+  font-size: 0.9rem;
+  line-height: 1.6;
+  color: var(--sl-color-gray-2);
+  margin-bottom: 1.5rem;
+}
+
+.read-more {
+  font-size: 0.8rem;
+  text-decoration: none;
+  color: white;
+  border-bottom: 1px solid var(--sl-color-accent);
+  padding-bottom: 2px;
+  transition: color 0.3s;
+  display: inline-block;
+}
+
+.read-more:hover {
+  color: var(--sl-color-accent);
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
+}
+
+.post-card:hover .post-image-wrapper img {
+  transform: scale(1.08);
+}
+
+/* === GLASS BLOCKQUOTE === */
+.quote-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.quote-content {
+  position: relative;
+  z-index: 3;
+}
+
+.quote-icon {
+  font-size: 4rem;
+  color: rgba(255, 255, 255, 0.05);
+  font-family: var(--sl-font);
+  font-weight: 700;
+  position: absolute;
+  top: -2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: -1;
+}
+
+.quote-text {
+  font-family: var(--sl-font);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.5rem;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+  color: #e2e8f0;
+}
+
+.quote-author {
+  font-family: var(--sl-font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--sl-color-accent);
+}
+
+.quote-author::before {
+  content: '— ';
+}
+
+/* === GLASS FORM INPUTS === */
+.glass-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1rem;
+  color: white;
+  font-family: var(--sl-font);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.glass-input:focus {
+  background: rgba(0, 0, 0, 0.5);
+  border-color: var(--sl-color-accent);
+  box-shadow: 0 0 20px var(--sl-color-accent-low);
+}
+
+.glass-input::placeholder {
+  color: var(--sl-color-gray-3);
+}
+
+/* === PROFILE CARD === */
+.profile-card {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.avatar-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(
+    135deg,
+    var(--sl-color-accent),
+    var(--sl-color-accent-high)
+  );
+  margin-bottom: 1rem;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--sl-color-black);
+  object-fit: cover;
+}
+
+.profile-name {
+  font-family: var(--sl-font);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.profile-role {
+  color: var(--sl-color-accent);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  font-family: var(--sl-font-mono);
+}
+
+/* === NEWS/FEATURE CARD (Horizontal) === */
+.news-card {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .news-card {
+    flex-direction: row;
+    height: 220px;
+  }
+
+  .news-img {
+    width: 40%;
+    height: 100% !important;
+  }
+
+  .news-content {
+    width: 60%;
+  }
+}
+
+.news-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-right: 1px solid var(--glass-border);
+}
+
+.news-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.news-meta {
+  font-size: 0.75rem;
+  color: var(--sl-color-accent);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--sl-font-mono);
+}
+
+.news-title {
+  font-family: var(--sl-font);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.news-link {
+  color: var(--sl-color-gray-2);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.news-link:hover {
+  color: white;
+  transform: translateX(5px);
+}
+
+/* === RESPONSIVE ADJUSTMENTS === */
+@media (max-width: 768px) {
+  .post-title {
+    font-size: 1.4rem;
+  }
+
+  .quote-text {
+    font-size: 1.2rem;
+  }
+
+  .btn-prism,
+  .btn-neon {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.9rem;
+  }
+}
