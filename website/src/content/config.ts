@@ -1,5 +1,5 @@
-import { defineCollection, z } from 'astro:content';
-import { docsSchema } from '@astrojs/starlight/schema';
+import { defineCollection, z } from 'astro:content'
+import { docsSchema } from '@astrojs/starlight/schema'
 
 export const collections = {
   docs: defineCollection({ schema: docsSchema() }),
@@ -12,6 +12,7 @@ export const collections = {
       author: z.string().default('Cortex TMS Team'),
       tags: z.array(z.string()).default([]),
       draft: z.boolean().default(false),
+      heroImage: z.string().optional(),
     }),
   }),
-};
+}
