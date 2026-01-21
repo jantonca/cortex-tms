@@ -8,9 +8,15 @@ const allPosts = await getCollection('blog', ({ data }) => {
   return import.meta.env.PROD ? data.draft !== true : true
 })
 
-const posts = allPosts.sort(
-  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-)
+const posts = allPosts.sort((a, b) => {
+  // Sort by date (newest first)
+  const dateCompare = b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+  // If dates are equal, sort alphabetically by title
+  if (dateCompare === 0) {
+    return a.data.title.localeCompare(b.data.title)
+  }
+  return dateCompare
+})
 ---
 
 <SimpleLayout
@@ -46,6 +52,7 @@ const posts = allPosts.sort(
                 excerpt={post.data.description}
                 heroImage={post.data.heroImage}
                 category={category}
+                pubDate={post.data.pubDate}
                 slug={post.slug}
               />
             )

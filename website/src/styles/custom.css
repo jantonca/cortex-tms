@@ -14,6 +14,7 @@
   --sl-font: 'Noto Sans Variable', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --sl-font-system: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
   --sl-font-mono: 'Noto Sans Mono', 'Fira Code', 'Consolas', 'Monaco', 'Courier New', ui-monospace, monospace;
+  --sl-font-heading: 'Noto Serif Variable', Georgia, serif;
 
   /* Fix: Readable text on accent-colored backgrounds (both modes) */
   --sl-color-text-invert: var(--sl-color-white);  /* #ffffff - white text on orange works for both themes */
@@ -26,10 +27,10 @@ article {
   letter-spacing: -0.01em;
 }
 
-/* Typography Hierarchy - Noto Sans Family */
+/* Typography Hierarchy - Noto Serif for Headings */
 /* Major headings - Bold weight for impact */
 h1, h2, .hero-title {
-  font-family: var(--sl-font);
+  font-family: var(--sl-font-heading);
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1.1;
@@ -37,7 +38,7 @@ h1, h2, .hero-title {
 
 /* Sub-headings - Semi-bold for structure */
 h3, h4 {
-  font-family: var(--sl-font);
+  font-family: var(--sl-font-heading);
   font-weight: 600;
   letter-spacing: -0.015em;
   line-height: 1.3;
@@ -45,7 +46,7 @@ h3, h4 {
 
 /* Minor headings - Medium weight */
 h5, h6 {
-  font-family: var(--sl-font);
+  font-family: var(--sl-font-heading);
   font-weight: 500;
   letter-spacing: -0.01em;
   line-height: 1.4;

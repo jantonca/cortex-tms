@@ -140,6 +140,9 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
     href={canonicalURL}
   />
 
+  {/* Ambient background gradients */}
+  <div class='liquid-ambient-bg'></div>
+
   <article class='blog-post'>
     {
       entry.data.heroImage && (
@@ -200,27 +203,32 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
 
   <style>
     .blog-post {
-      max-width: min(82ch, 100%);
-      margin: 0 auto;
-      padding: 0 1.5rem;
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 2rem 3rem;
+      position: relative;
+      z-index: 1;
     }
 
     .hero-image {
-      margin: 0 0 2rem;
+      margin: 0 0 2rem 0;
+      border-radius: 1rem;
+      overflow: hidden;
     }
 
     .hero-image img {
       display: block;
       width: 100%;
       height: auto;
-      border-radius: 1rem;
       object-fit: cover;
     }
 
     .post-header {
       margin-bottom: 2rem;
       padding-bottom: 2rem;
-      border-bottom: 1px solid var(--sl-color-hairline);
+      border-bottom: 1px solid var(--sl-color-gray-5);
+      position: relative;
+      z-index: 3;
     }
 
     .post-header h1 {
@@ -252,18 +260,32 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
     }
 
     .tag {
-      background: var(--sl-color-accent-low);
-      color: var(--sl-color-accent-high);
-      padding: 0.25rem 0.75rem;
-      border-radius: 0.25rem;
-      font-size: 0.875rem;
-      font-weight: 500;
+      font-family: var(--sl-font-mono);
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--sl-color-accent);
+      background: rgba(249, 115, 22, 0.12);
+      border: 1px solid var(--sl-color-accent);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 0.5rem 0.85rem;
+      border-radius: 20px;
+      font-weight: 600;
+    }
+
+    :root[data-theme='light'] .tag {
+      background: rgba(249, 115, 22, 0.08);
+      border: 1.5px solid var(--sl-color-accent);
     }
 
     .post-content {
       font-size: 1.125rem;
       line-height: 1.75;
       color: var(--sl-color-gray-2);
+      position: relative;
+      z-index: 3;
+      padding: 0;
     }
 
     .post-content :global(h2) {
@@ -281,7 +303,7 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
     }
 
     .post-content :global(p) {
-      margin-bottom: 1.5rem;
+      margin-bottom: 0;
     }
 
     .post-content :global(ul),
@@ -328,10 +350,18 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
       margin: 2rem 0;
     }
 
+    .post-content :global(hr) {
+      border: none;
+      border-top: 1px solid var(--sl-color-gray-5);
+      margin: 2rem 0;
+    }
+
     .post-footer {
       margin-top: 3rem;
       padding-top: 2rem;
-      border-top: 1px solid var(--sl-color-hairline);
+      border-top: 1px solid var(--sl-color-gray-5);
+      position: relative;
+      z-index: 3;
     }
 
     .back-link {
@@ -348,6 +378,15 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
     }
 
     @media (max-width: 768px) {
+      .blog-post {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+      }
+
+      .hero-image {
+        margin: -2rem -1.5rem 2rem -1.5rem;
+      }
+
       .post-header h1 {
         font-size: 2rem;
       }

@@ -26,8 +26,10 @@ interface Props {
   excerpt: string
   /** Featured image URL */
   heroImage?: string
-  /** Category/tag */
+  /** Primary category/tag */
   category?: string
+  /** Publication date */
+  pubDate?: Date
   /** Post slug for link */
   slug: string
   /** Additional CSS classes */
@@ -39,12 +41,22 @@ const {
   excerpt,
   heroImage,
   category,
+  pubDate,
   slug,
   class: className = '',
 } = Astro.props
 
 // Default image if none provided
 const imageSrc = heroImage || '/images/blog/default-hero.webp'
+
+// Format date
+const formattedDate = pubDate
+  ? new Intl.DateTimeFormat('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    }).format(pubDate)
+  : undefined
 ---
 
 <a
@@ -69,6 +81,8 @@ const imageSrc = heroImage || '/images/blog/default-hero.webp'
     {/* Content */}
     <div class='post-content'>
       {category && <span class='category-tag'>{category}</span>}
+      
+      {formattedDate && <time class='post-date'>{formattedDate}</time>}
 
       <h2 class='post-title'>{title}</h2>
 

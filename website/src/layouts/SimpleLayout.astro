@@ -192,6 +192,7 @@ const componentProps: Partial<StarlightProps> = {
         --sl-font: 'Noto Sans Variable', system-ui, -apple-system, sans-serif;
         --sl-font-system: system-ui, -apple-system, sans-serif;
         --sl-font-mono: 'Noto Sans Mono', 'Consolas', monospace;
+        --sl-font-heading: 'Noto Serif Variable', Georgia, serif;
 
         /* Spacing */
         --sl-nav-height: 4rem;
@@ -273,6 +274,7 @@ const componentProps: Partial<StarlightProps> = {
       h5,
       h6 {
         margin: 0;
+        font-family: var(--sl-font-heading);
         font-weight: 600;
         line-height: 1.2;
         color: var(--sl-color-white);
