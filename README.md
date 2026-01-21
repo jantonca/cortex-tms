@@ -374,8 +374,8 @@ MIT
 ## Status
 
 **Version**: 2.6.1 (Stable / Production Ready)
-**Last Updated**: 2026-01-15
-**Current Sprint**: v2.6 Planning - "Custom Extensibility"
-**Completed Sprints**: v2.1, v2.2, v2.3, v2.4, v2.5 (see `docs/archive/`)
+**Last Updated**: 2026-01-21
+**Current Sprint**: v2.7 - "Guardian MVP"
+**Completed Sprints**: v2.1, v2.2, v2.3, v2.4, v2.5, v2.6 (see `docs/archive/`)
 
 <!-- @cortex-tms-version 2.6.1 -->
