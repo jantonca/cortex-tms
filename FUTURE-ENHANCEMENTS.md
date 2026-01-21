@@ -2,9 +2,25 @@
 
 This is the **living backlog** for Cortex TMS. Tasks move from here to `NEXT-TASKS.md` when they become active.
 
+**Last Updated**: 2026-01-21 (Post-Audit Review)
+**Source**: 4 comprehensive audits + internal analysis
+**See Also**: [Audit Remediation Plan](docs/AUDIT-REMEDIATION-PLAN.md)
+
 ---
 
-## 🔥 Known Issues (To Fix)
+## 🚨 CRITICAL BUGS (Moved to NEXT-TASKS.md v2.6.1)
+
+The following critical issues have been **moved to active development** in `NEXT-TASKS.md`:
+
+✅ **CRITICAL-1**: Nano scope validation mismatch (BLOCKER)
+✅ **CRITICAL-2**: Migration path handling breaks nested files (BLOCKER)
+✅ **CRITICAL-3**: Prerelease version parsing errors (BLOCKER)
+
+**Status**: These are being addressed in v2.6.1 emergency patch (Jan 21-24, 2026)
+
+---
+
+## 🔥 Known Issues (Lower Priority)
 
 ### Release Script: Prerelease Version Support (TMS-272)
 **Issue**: The Atomic Release Engine cannot promote prerelease versions (e.g., `2.6.0-beta.1` → `2.6.0`) automatically.
@@ -31,7 +47,72 @@ const [major, minor, patch] = currentVersion.split('.').map(Number);
 
 ---
 
-## 🔴 High Priority (Next 1-2 Months)
+## 🔴 High Priority (Audit-Driven - v2.9+)
+
+### Benchmark Suite (Viability Report Recommendation)
+
+- **AI Agent Performance Benchmarks**: Prove "3-5x faster collaboration" claim
+  - **Why**: Current claim is "plausible but unverified" (all audits agree)
+  - **Approach**:
+    1. Create standardized tasks (e.g., "add new API endpoint")
+    2. Measure with TMS: token count, agent turns, time to completion
+    3. Measure without TMS: same metrics
+    4. Repeat across 10-20 tasks, report statistical results
+  - **Business Value**: Converts "plausible" to "proven" claims
+  - **Effort**: 16-20h (research-heavy)
+  - **Source**: Analysis Report + Viability Report
+
+---
+
+### GitHub Action (High ROI Feature)
+
+- **Zero-Friction Enforcement**: Teams validate TMS without local install
+  - **Why**: "Real opportunity" per Viability Report
+  - **Implementation**:
+    ```yaml
+    - uses: cortex-tms/validate@v1
+      with:
+        strict: true
+    ```
+  - **Revenue Potential**: Freemium model ($0 OSS, $29/mo Pro)
+  - **Effort**: 12-16h
+  - **Source**: Viability Report Section 7.1
+
+---
+
+### Migration Assistant (Biggest Adoption Barrier)
+
+- **Automated Brownfield Migration**: Analyze existing repos and populate TMS templates
+  - **Why**: "Biggest barrier to adoption" per Analysis Report
+  - **Implementation**:
+    ```bash
+    cortex-tms migrate --from conventional-docs
+    # Uses LLM to analyze README, extract patterns, populate templates
+    ```
+  - **Business Value**: Reduces migration from hours to minutes
+  - **Effort**: 16-20h
+  - **Trigger**: Validate demand first (wait for 10+ migration requests)
+  - **Source**: Analysis Report Section 7.4
+
+---
+
+### Pattern Library Marketplace
+
+- **Community Templates**: Share/import patterns for specific frameworks
+  - **Why**: Reduces onboarding time, creates community engagement
+  - **Implementation**:
+    ```bash
+    cortex-tms patterns add @cortex-tms/react-patterns
+    cortex-tms patterns add @mycompany/internal-patterns
+    ```
+  - **Technical**: Requires pattern versioning and conflict resolution
+  - **Effort**: 20-24h (platform development)
+  - **Trigger**: Validate demand first (wait for 20+ custom patterns shared)
+  - **Source**: Analysis Report Section 7.2
+
+---
+
+## 🟡 Medium Priority (Next 1-2 Months)
 
 ### CLI Tool Enhancements
 
@@ -201,6 +282,51 @@ const [major, minor, patch] = currentVersion.split('.').map(Number);
 
 ---
 
+## 📊 Audit Findings Summary (2026-01-21)
+
+Four comprehensive audits provided the following strategic insights:
+
+### Consensus Findings (All Audits Agree)
+
+✅ **Core Concept is Sound**: Tiered Memory System solves a real problem in AI development
+✅ **Token/Cost Savings**: 40-60% context reduction is achievable and valuable
+✅ **Sustainability Angle**: "Green Governance" positioning is unique and defensible
+✅ **Continue Development**: All audits recommend continuing with strategic focus
+✅ **Marketing Needs Refinement**: Shift from "boilerplate" to "AI governance platform"
+
+### Critical Gaps Identified
+
+❌ **Trust-Breaking Bugs**: 3 critical bugs undermine reliability (moved to v2.6.1)
+❌ **Unverified Claims**: "3-5x faster" needs benchmarks to prove
+❌ **Missing Proof**: Token counter feature needed to show ROI
+⚠️ **Testing Gap**: Need integration tests for command interactions
+⚠️ **Error Handling**: process.exit() calls prevent proper cleanup
+
+### Strategic Opportunities
+
+🎯 **"Green Governance" Positioning**: Market as cost + quality + sustainability platform
+🎯 **Token Counter**: Makes value visible and measurable (QCS strongest recommendation)
+🎯 **Guardian Semantic Validation**: Move from structural to semantic quality checks
+🎯 **GitHub Action**: Zero-friction adoption for teams
+🎯 **Benchmark Suite**: Convert "plausible" claims to "proven" claims
+
+### Revised Viability Score
+
+**Before Audits**: 8.2/10 (internal assessment)
+**After Audits**: 7.2/10 (accounting for critical bugs)
+**After v2.6.1 Fix**: Expected 8.5/10 (bugs fixed + strategic features)
+
+### Source Documents
+
+- **QCS Analysis**: Quality, Cost, Sustainability framework
+- **Viability Report**: Evidence-based code audit (found critical bugs)
+- **Analysis Report**: Architecture and market assessment
+- **Comparison Report**: Synthesis of all findings
+
+All audit documents available in `/tmp/` directory.
+
+---
+
 ## Migration Checklist
 
 **When a task becomes active**:
@@ -210,6 +336,6 @@ const [major, minor, patch] = currentVersion.split('.').map(Number);
 4. Assign effort estimate
 5. Mark status as "Todo"
 
-**Archive Trigger**: When this file exceeds 300 lines, move completed sections to `docs/archive/backlog-YYYY-MM.md`.
+**Archive Trigger**: When this file exceeds 400 lines, move completed sections to `docs/archive/backlog-YYYY-MM.md`.
 
 <!-- @cortex-tms-version 2.6.0 -->

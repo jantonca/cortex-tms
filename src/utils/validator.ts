@@ -20,6 +20,7 @@ import {
   getEffectiveLineLimits,
   saveConfig,
   createConfigFromScope,
+  getScopePreset,
 } from './config.js';
 import { getTemplatesDir, processTemplate } from './templates.js';
 
@@ -180,12 +181,37 @@ export async function validateFileSizes(
 }
 
 /**
- * Validate mandatory files exist
+ * Get mandatory files for a specific scope
  */
-export function validateMandatoryFiles(cwd: string): ValidationCheck[] {
-  const checks: ValidationCheck[] = [];
+function getMandatoryFilesForScope(scope?: string): MandatoryFile[] {
+  // If no scope specified, use hardcoded defaults (backwards compatibility)
+  if (!scope) {
+    return MANDATORY_FILES;
+  }
 
-  for (const file of MANDATORY_FILES) {
+  // Get scope preset
+  const preset = getScopePreset(scope);
+
+  if (!preset) {
+    // Unknown scope - use defaults
+    return MANDATORY_FILES;
+  }
+
+  // Return mandatory files from scope preset
+  return preset.mandatoryFiles;
+}
+
+/**
+ * Validate mandatory files exist (scope-aware)
+ */
+export function validateMandatoryFiles(
+  cwd: string,
+  scope?: string
+): ValidationCheck[] {
+  const checks: ValidationCheck[] = [];
+  const mandatoryFiles = getMandatoryFilesForScope(scope);
+
+  for (const file of mandatoryFiles) {
     const filePath = join(cwd, file);
     const exists = existsSync(filePath);
 
@@ -389,7 +415,7 @@ export async function validateProject(
   const [fileSizeChecks, mandatoryChecks, configChecks, placeholderChecks, archiveChecks] =
     await Promise.all([
       validateFileSizes(cwd, limits),
-      Promise.resolve(validateMandatoryFiles(cwd)),
+      Promise.resolve(validateMandatoryFiles(cwd, config.scope)),
       Promise.resolve(validateConfig(cwd)),
       validatePlaceholders(cwd, ignoreFiles),
       validateArchiveStatus(cwd),

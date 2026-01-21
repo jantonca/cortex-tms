@@ -60,6 +60,68 @@ async function createFileWithLines(
   await writeFile(filePath, content);
 }
 
+describe('Validate Command - Nano Scope Integration (CRITICAL-1 Fix)', () => {
+  let tempDir: string;
+
+  beforeEach(async () => {
+    tempDir = await createTempDir();
+  });
+
+  afterEach(async () => {
+    await cleanupTempDir(tempDir);
+  });
+
+  it('should PASS validation after nano scope init', async () => {
+    // Simulate what nano init does: creates 2 files + .cortexrc
+    await writeFile(join(tempDir, 'NEXT-TASKS.md'), '# NEXT: Upcoming Tasks\n');
+    await writeFile(join(tempDir, 'CLAUDE.md'), '# Agent Workflow\n');
+
+    // Create nano config
+    const config = createConfigFromScope('nano', 'test-project');
+    await saveConfig(tempDir, config);
+
+    // Run full validation
+    const result = await validateProject(tempDir, { strict: false });
+
+    // Should PASS (this was the bug - it used to FAIL)
+    expect(result.passed).toBe(true);
+    expect(result.summary.errors).toBe(0);
+
+    // Verify only 2 mandatory files were checked
+    const mandatoryChecks = result.checks.filter((c) =>
+      c.name.startsWith('Mandatory File:')
+    );
+    expect(mandatoryChecks.length).toBe(2);
+
+    // Verify copilot-instructions.md is NOT required
+    const copilotCheck = result.checks.find(
+      (c) => c.file === '.github/copilot-instructions.md'
+    );
+    expect(copilotCheck).toBeUndefined();
+  });
+
+  it('should FAIL validation if nano scope is missing CLAUDE.md', async () => {
+    // Create only NEXT-TASKS.md (missing CLAUDE.md)
+    await writeFile(join(tempDir, 'NEXT-TASKS.md'), '# NEXT: Upcoming Tasks\n');
+
+    // Create nano config
+    const config = createConfigFromScope('nano', 'test-project');
+    await saveConfig(tempDir, config);
+
+    // Run validation
+    const result = await validateProject(tempDir, { strict: false });
+
+    // Should FAIL
+    expect(result.passed).toBe(false);
+    expect(result.summary.errors).toBeGreaterThan(0);
+
+    // Find the CLAUDE.md check
+    const claudeCheck = result.checks.find((c) => c.file === 'CLAUDE.md');
+    expect(claudeCheck?.passed).toBe(false);
+    expect(claudeCheck?.level).toBe('error');
+  });
+});
+
 describe('Validate Command - .cortexrc Integration', () => {
   let tempDir: string;
 
@@ -261,6 +323,47 @@ describe('Validate Command - Mandatory Files', () => {
 
     const checks = validateMandatoryFiles(tempDir);
 
+    const allPassed = checks.every((c) => c.passed);
+    expect(allPassed).toBe(true);
+  });
+
+  it('should only require 2 files for nano scope', async () => {
+    // Create only NEXT-TASKS.md and CLAUDE.md (nano scope)
+    await writeFile(join(tempDir, 'NEXT-TASKS.md'), '# NEXT: Upcoming Tasks\n');
+    await writeFile(join(tempDir, 'CLAUDE.md'), '# Agent Workflow\n');
+
+    // Validate with nano scope
+    const checks = validateMandatoryFiles(tempDir, 'nano');
+
+    // Should only check 2 files for nano scope
+    expect(checks.length).toBe(2);
+
+    // Both should pass
+    const allPassed = checks.every((c) => c.passed);
+    expect(allPassed).toBe(true);
+
+    // Should not check for copilot-instructions.md
+    const copilotCheck = checks.find((c) => c.file === '.github/copilot-instructions.md');
+    expect(copilotCheck).toBeUndefined();
+  });
+
+  it('should require 3 files for standard scope', async () => {
+    // Create all 3 standard files
+    await writeFile(join(tempDir, 'NEXT-TASKS.md'), '# NEXT: Upcoming Tasks\n');
+    await writeFile(join(tempDir, 'CLAUDE.md'), '# Agent Workflow\n');
+    await mkdir(join(tempDir, '.github'), { recursive: true });
+    await writeFile(
+      join(tempDir, '.github/copilot-instructions.md'),
+      '# Instructions\n'
+    );
+
+    // Validate with standard scope
+    const checks = validateMandatoryFiles(tempDir, 'standard');
+
+    // Should check 3 files for standard scope
+    expect(checks.length).toBe(3);
+
+    // All should pass
     const allPassed = checks.every((c) => c.passed);
     expect(allPassed).toBe(true);
   });
