@@ -222,6 +222,28 @@ class AtomicRelease {
   }
 
   /**
+   * Parse a semver version string (supports prerelease tags)
+   * @param {string} versionString - Version to parse (e.g., "2.6.0" or "2.6.0-beta.1")
+   * @returns {Object} Parsed version components
+   */
+  parseVersion(versionString) {
+    // Match: major.minor.patch or major.minor.patch-prerelease
+    const match = versionString.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+
+    if (!match) {
+      throw new Error(`Invalid version format: ${versionString}`);
+    }
+
+    return {
+      major: parseInt(match[1], 10),
+      minor: parseInt(match[2], 10),
+      patch: parseInt(match[3], 10),
+      prerelease: match[4] || null,
+      isPrerelease: !!match[4],
+    };
+  }
+
+  /**
    * Phase 3a: Bump version in package.json
    */
   async bumpVersion() {
@@ -230,8 +252,15 @@ class AtomicRelease {
     const pkg = JSON.parse(fs.readFileSync(this.packageJsonPath, 'utf-8'));
     const currentVersion = pkg.version;
 
-    // Calculate new version
-    const [major, minor, patch] = currentVersion.split('.').map(Number);
+    // Parse current version (supports prerelease tags)
+    const { major, minor, patch, prerelease } = this.parseVersion(currentVersion);
+
+    // Note: If current version is prerelease (e.g., 2.6.0-beta.1),
+    // bumping will strip the prerelease tag and produce a stable version
+    // (e.g., patch bump: 2.6.0-beta.1 → 2.6.1)
+    if (prerelease) {
+      log.detail(`Promoting from prerelease: ${currentVersion}`);
+    }
 
     switch (this.bumpType) {
       case 'major':

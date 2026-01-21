@@ -48,14 +48,17 @@ export function injectVersionMetadata(content: string, version: string): string 
  *
  * Parses the @cortex-tms-version comment to determine the template version.
  * Returns null if no version metadata is found (pre-versioned files).
+ * Supports semver prerelease versions (e.g., "2.6.0-beta.1").
  *
  * @param filePath - Absolute path to file to check
- * @returns Version string (e.g., "2.3.0") or null if not found
+ * @returns Version string (e.g., "2.3.0" or "2.6.0-beta.1") or null if not found
  */
 export async function extractVersion(filePath: string): Promise<string | null> {
   try {
     const content = await fs.readFile(filePath, 'utf-8');
-    const match = content.match(/<!-- @cortex-tms-version ([\d.]+) -->/);
+    // Support full semver including prerelease tags (beta, alpha, rc, etc.)
+    // Matches: 2.6.0, 2.6.0-beta.1, 2.6.0-alpha.3, 2.6.0-rc.2
+    const match = content.match(/<!-- @cortex-tms-version (\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?) -->/);
     return match?.[1] ?? null;
   } catch (error) {
     // File doesn't exist or can't be read

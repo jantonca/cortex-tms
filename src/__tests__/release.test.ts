@@ -22,6 +22,7 @@ import {
   fileExists,
   readFile,
 } from './utils/temp-dir.js';
+import { extractVersion, injectVersionMetadata } from '../utils/templates.js';
 
 // Mock child_process
 vi.mock('child_process', () => ({
@@ -633,6 +634,80 @@ describe('Atomic Release Engine - Edge Cases', () => {
     validVersions.forEach(version => {
       expect(semverRegex.test(version)).toBe(true);
     });
+  });
+
+  it('should validate prerelease version format (CRITICAL-3 fix)', () => {
+    // Test the regex that supports prerelease tags
+    const semverPrereleaseRegex = /^\d+\.\d+\.\d+(?:-[a-zA-Z0-9.]+)?$/;
+
+    const validStableVersions = ['2.5.0', '0.0.1', '10.20.30'];
+    const validPrereleaseVersions = [
+      '2.6.0-beta.1',
+      '2.6.0-alpha.3',
+      '2.6.0-rc.2',
+      '3.0.0-beta',
+      '1.0.0-alpha.1.2',
+    ];
+    const invalidVersions = [
+      '2.5',
+      '2.5.0.1',
+      'v2.5.0',
+      '2.x.0',
+      '2.5.a',
+      '2.5.0-',
+      '2.5.0-beta-',
+    ];
+
+    validStableVersions.forEach(version => {
+      expect(semverPrereleaseRegex.test(version)).toBe(true);
+    });
+
+    validPrereleaseVersions.forEach(version => {
+      expect(semverPrereleaseRegex.test(version)).toBe(true);
+    });
+
+    invalidVersions.forEach(version => {
+      expect(semverPrereleaseRegex.test(version)).toBe(false);
+    });
+  });
+
+  it('should extract prerelease versions from files (CRITICAL-3 fix)', async () => {
+    const tempDir = await createTempDir();
+
+    try {
+      // Test stable version
+      const stableFile = join(tempDir, 'stable.md');
+      const stableContent = '# Test\n\n<!-- @cortex-tms-version 2.6.0 -->\n';
+      await writeFile(stableFile, stableContent);
+
+      const stableVersion = await extractVersion(stableFile);
+      expect(stableVersion).toBe('2.6.0');
+
+      // Test prerelease versions
+      const testCases = [
+        { file: 'beta.md', version: '2.6.0-beta.1' },
+        { file: 'alpha.md', version: '2.6.0-alpha.3' },
+        { file: 'rc.md', version: '3.0.0-rc.2' },
+        { file: 'complex.md', version: '1.0.0-alpha.1.2.3' },
+      ];
+
+      for (const { file, version } of testCases) {
+        const filePath = join(tempDir, file);
+        const content = `# Test\n\n<!-- @cortex-tms-version ${version} -->\n`;
+        await writeFile(filePath, content);
+
+        const extracted = await extractVersion(filePath);
+        expect(extracted).toBe(version);
+      }
+
+      // Test file without version tag
+      const noVersionFile = join(tempDir, 'no-version.md');
+      await writeFile(noVersionFile, '# Test\nNo version here\n');
+      const noVersion = await extractVersion(noVersionFile);
+      expect(noVersion).toBeNull();
+    } finally {
+      await cleanupTempDir(tempDir);
+    }
   });
 });
 
