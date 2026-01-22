@@ -27,8 +27,8 @@ const DEFAULT_LINE_LIMITS: LineLimits = {
   'NEXT-TASKS.md': 200,
   'FUTURE-ENHANCEMENTS.md': 500,
   'ARCHITECTURE.md': 500,
-  'PATTERNS.md': 500,
-  'DOMAIN-LOGIC.md': 300,
+  'PATTERNS.md': 650, // Updated to match DOMAIN-LOGIC.md Rule 4
+  'DOMAIN-LOGIC.md': 400, // Updated to match DOMAIN-LOGIC.md Rule 4
   'DECISIONS.md': 400,
   'GLOSSARY.md': 200,
   'SCHEMA.md': 600,

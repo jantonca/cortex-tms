@@ -33,8 +33,8 @@ export const DEFAULT_LINE_LIMITS: LineLimits = {
   'NEXT-TASKS.md': 200, // HOT - Current sprint only
   'FUTURE-ENHANCEMENTS.md': 500, // PLANNING - Backlog
   'ARCHITECTURE.md': 500, // WARM - System design
-  'PATTERNS.md': 500, // WARM - Code patterns
-  'DOMAIN-LOGIC.md': 300, // WARM - Business rules
+  'PATTERNS.md': 650, // WARM - Code patterns (reference manual with index)
+  'DOMAIN-LOGIC.md': 400, // WARM - Business rules (includes Maintenance Protocol)
   'DECISIONS.md': 400, // WARM - ADRs
   'GLOSSARY.md': 200, // WARM - Terminology
   'SCHEMA.md': 600, // WARM - Data models
@@ -51,15 +51,10 @@ export const MANDATORY_FILES: MandatoryFile[] = [
 ];
 
 /**
- * Placeholder patterns to detect in files
+ * Placeholder pattern to detect in files (Rule 3)
+ * Matches any content in bracket syntax: [...]
  */
-const PLACEHOLDER_PATTERNS = [
-  /\[Project Name\]/g,
-  /\[project-name\]/g,
-  /\[Description\]/g,
-  /\[Your Name\]/g,
-  /\[Repository URL\]/g,
-];
+const PLACEHOLDER_PATTERN = /\[([^\]]+)\]/g;
 
 /**
  * Count lines in a file
@@ -81,19 +76,16 @@ async function scanForPlaceholders(
 ): Promise<{ found: boolean; placeholders: string[] }> {
   try {
     const content = await readFile(filePath, 'utf-8');
-    const found: string[] = [];
+    const matches = content.match(PLACEHOLDER_PATTERN);
 
-    for (const pattern of PLACEHOLDER_PATTERNS) {
-      const matches = content.match(pattern);
-      if (matches) {
-        found.push(...matches);
-      }
+    if (matches) {
+      return {
+        found: true,
+        placeholders: [...new Set(matches)], // Remove duplicates
+      };
     }
 
-    return {
-      found: found.length > 0,
-      placeholders: [...new Set(found)], // Remove duplicates
-    };
+    return { found: false, placeholders: [] };
   } catch {
     return { found: false, placeholders: [] };
   }
