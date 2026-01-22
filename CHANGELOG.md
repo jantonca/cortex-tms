@@ -5,6 +5,39 @@ All notable changes to Cortex TMS will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+#### Token Counter Feature (HIGH-1)
+- **Feature**: `cortex status --tokens` command for token usage analysis
+- **Why**: Makes cost/sustainability value visible (QCS Analysis strongest recommendation)
+- **Capabilities**:
+  - HOT/WARM/COLD tier breakdown with token counts
+  - Context reduction percentage (e.g., 94.5% for cortex-tms)
+  - Cost estimates per session/day/month
+  - Multi-model support: Claude 4.x series (Sonnet 4.5, Opus 4.5, Haiku 4.5), GPT-4 series
+  - Model validation with helpful error messages
+  - Cross-platform path handling (Windows/Mac/Linux)
+- **Results on cortex-tms**:
+  - 94.5% context reduction (3,647 HOT vs 66,834 total tokens)
+  - Claude Sonnet 4.5: $0.01/session
+  - GPT-4: $0.11/session (10x cost comparison)
+- **Implementation**:
+  - New utility: `src/utils/token-counter.ts` (309 lines)
+  - Token estimation: 4 chars/token heuristic (validated by Anthropic docs)
+  - Pricing data: Updated to Claude 4.x models (January 2026)
+  - PROMPTS.md added to WARM tier tracking
+- **Code Quality**:
+  - Applied Opus 4.5 external code review feedback
+  - Cross-platform path handling with `path.relative()`
+  - Graceful model validation with available options list
+- **Files**: `src/utils/token-counter.ts`, `src/commands/status.ts`
+- **Commits**: c2608ed (initial), a308167 (Opus 4.5 feedback)
+- **Effort**: 6 hours
+
+---
+
 ## [2.6.1] - 2026-01-21
 
 ### 🐛 Emergency Patch - Critical Bug Fixes

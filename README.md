@@ -98,11 +98,20 @@ cortex-tms validate --strict # Strict mode with no warnings
 ```
 
 ### `cortex-tms status`
-Project cockpit with health dashboard, sprint progress, and quick actions.
+Project cockpit with health dashboard, sprint progress, and token analysis.
 
 ```bash
-cortex-tms status  # Visual dashboard with progress bars
+cortex-tms status                    # Visual dashboard with progress bars
+cortex-tms status --tokens           # Token usage analysis (HOT/WARM/COLD)
+cortex-tms status --tokens -m gpt-4  # Cost comparison across models
 ```
+
+**Token Analysis Features**:
+- HOT/WARM/COLD tier breakdown with token counts
+- Context reduction percentage (e.g., 94.5% reduction)
+- Cost estimates per session/day/month
+- Model comparison (Claude Sonnet 4.5, Opus 4.5, GPT-4, etc.)
+- Sustainability impact tracking
 
 ### `cortex-tms migrate`
 Intelligent version management—detect outdated templates and automatically upgrade with safety backups.
