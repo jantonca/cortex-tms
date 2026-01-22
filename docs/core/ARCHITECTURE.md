@@ -35,7 +35,7 @@ templates/
 ```
 
 **Design Principles**:
-- Templates use `[Placeholder]` syntax for user customization
+- Templates use bracket syntax for user customization (see DOMAIN-LOGIC.md Rule 3)
 - No hardcoded tech stacks (framework-agnostic)
 - Each file includes inline documentation
 

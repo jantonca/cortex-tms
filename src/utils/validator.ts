@@ -52,9 +52,14 @@ export const MANDATORY_FILES: MandatoryFile[] = [
 
 /**
  * Placeholder pattern to detect in files (Rule 3)
- * Matches any content in bracket syntax: [...] but excludes markdown links [text](url)
+ * Matches placeholder syntax like [Project Name], [Description], etc.
+ * Excludes:
+ * - Markdown links: [text](url)
+ * - Checkboxes: [x], [ ]
+ * - Single chars: [a], [1]
+ * - Code arrays: [major, minor, patch]
  */
-const PLACEHOLDER_PATTERN = /\[([^\]]+)\](?!\()/g;
+const PLACEHOLDER_PATTERN = /\[([A-Z][a-zA-Z\s]+)\](?!\()/g;
 
 /**
  * Count lines in a file

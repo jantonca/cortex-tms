@@ -210,7 +210,7 @@ const [major, minor, patch] = currentVersion.split('.').map(Number);
 - **Snippet Library**: Quick insert for patterns, ADRs, tasks
   - **Effort**: 4h
 
-- **Placeholder Detection**: Highlight `[Placeholders]` in templates
+- **Placeholder Detection**: Highlight bracket-syntax placeholders in templates
   - **Effort**: 3h
 
 ---
