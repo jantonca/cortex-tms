@@ -90,7 +90,7 @@ Traditional repos drown AI agents in thousands of lines of historical tasks and 
 
 ## 🛠️ CLI Commands
 
-Cortex TMS provides 7 production-ready commands (v2.7.0):
+Cortex TMS provides 7 production-ready commands (v2.6.1):
 
 ### `cortex-tms tutorial`
 Interactive walkthrough teaching the "Cortex Way" - perfect for first-time users.
@@ -249,7 +249,7 @@ cortex-tms review src/index.ts --model gpt-4      # Specify model
 
 ---
 
-## 🚀 What's New in v2.7.0
+## 🚀 What's New in v2.6.1
 
 ### Token Counter - Prove Your Savings (GREEN GOVERNANCE)
 - **Real-Time Token Analysis**: `cortex status --tokens` shows HOT/WARM/COLD breakdown
@@ -324,7 +324,7 @@ cortex-tms status  # Visual dashboard with current tasks
 - [x] **Phase 5**: Documentation & Guides - Status dashboard, snippets, validation
 - [x] **Phase 6**: Publish & Scale - npm package + GitHub releases
 
-**Current Version**: v2.7.0 "Guardian & Green Governance" ✅
+**Current Version**: v2.6.1 "Guardian & Green Governance" ✅
 - ✅ Token Counter with real-time cost analysis
 - ✅ Guardian semantic validation (Pattern + Domain Logic enforcement)
 - ✅ 111 passing tests (96 unit + 15 integration)
@@ -454,7 +454,7 @@ cortex-tms/
 ### 🚀 Developer Experience
 - **Instant AI Activation**: Essential 7 prompts in `PROMPTS.md` (no manual prompt writing)
 - **Signal over Noise**: HOT/WARM/COLD system keeps AI focused
-- **Production-Ready**: 111 passing tests, stable 2.7.0 release
+- **Production-Ready**: 111 passing tests, stable 2.6.1 release
 
 ---
 
@@ -475,9 +475,9 @@ MIT
 
 ## Status
 
-**Version**: 2.7.0 (Stable / Production Ready)
+**Version**: 2.6.1 (Stable / Production Ready)
 **Last Updated**: 2026-01-23
 **Current Sprint**: v2.8 - "Marketing Pivot & Community Launch"
 **Completed Sprints**: v2.1, v2.2, v2.3, v2.4, v2.5, v2.6, v2.7 (see `docs/archive/`)
 
-<!-- @cortex-tms-version 2.7.0 -->
+<!-- @cortex-tms-version 2.6.1 -->
