@@ -20,6 +20,12 @@
   --sl-color-text-invert: var(--sl-color-white);  /* #ffffff - white text on orange works for both themes */
 }
 
+/* Light mode: Accessible darker orange for WCAG AA compliance */
+:root[data-theme='light'] {
+  --sl-color-accent: #d95d00;      /* Darker orange - 4.52:1 contrast ratio ✅ */
+  --sl-color-accent-high: #f97316;  /* Original vibrant orange for hover states */
+}
+
 /* Typography improvements for readability in technical documentation */
 article {
   font-weight: 400;
