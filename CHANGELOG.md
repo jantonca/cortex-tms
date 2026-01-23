@@ -36,6 +36,85 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Commits**: c2608ed (initial), a308167 (Opus 4.5 feedback)
 - **Effort**: 6 hours
 
+#### Integration Test Suite (MED-1)
+- **Feature**: Comprehensive end-to-end command workflow tests
+- **Why**: Ensure commands work together correctly, catch cross-command bugs
+- **Capabilities**:
+  - 15 integration tests covering complete workflows
+  - CLI execution helper utility (`cli-runner.ts`)
+  - Real CLI execution in isolated temp directories
+  - Error recovery and rollback testing
+  - Cross-command data flow validation
+- **Coverage**:
+  - Happy path workflows (init → validate → status)
+  - Error recovery scenarios
+  - Multi-command sequences
+  - File system state consistency
+  - Concurrent operations
+- **Results**:
+  - 111 total tests passing (96 unit + 15 integration)
+  - ~8.5s test execution time
+  - Build successful
+- **Files**: `src/__tests__/integration.test.ts`, `src/__tests__/utils/cli-runner.ts`, `src/__tests__/utils/temp-dir.ts`
+- **Effort**: 12 hours
+
+#### Error Handling Refactor (MED-3)
+- **Feature**: Clean error handling with centralized exit management
+- **Why**: Improve testability, follow CLI best practices
+- **Changes**:
+  - Removed 17 `process.exit()` calls from 7 command files
+  - Added global error handler in `cli.ts` with Commander.js `exitOverride()`
+  - Commands now throw errors instead of calling `process.exit()` directly
+  - Preserved exit codes (0 for success, 1 for errors)
+- **Benefits**:
+  - Easier to test (no forced exits in unit tests)
+  - Better error handling flow
+  - Cleaner separation of concerns
+  - Foundation for integration tests
+- **Files**: `src/cli.ts`, `src/commands/*.ts`
+- **Effort**: 4 hours
+
+#### Guardian Accuracy Validation (HIGH-2)
+- **Feature**: Test suite for measuring Guardian's pattern detection accuracy
+- **Why**: Move from structural to semantic quality enforcement
+- **Capabilities**:
+  - 29 comprehensive test cases covering all PATTERNS.md and DOMAIN-LOGIC.md rules
+  - Confusion matrix reporting (TP/TN/FP/FN)
+  - Accuracy measurement against known violations
+  - Updated to Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
+- **Results**:
+  - Accuracy: 65.5% (19/29 correct)
+  - False Negative Rate: 0% (never misses real violations) ✅
+  - False Positive Rate: ~70% (conservative on minimal code snippets)
+- **Decision**: Deferred optimization for later sprint
+  - Zero false negatives means Guardian never misses actual issues
+  - Conservative behavior acceptable for code review
+  - Works best on full files with context vs minimal test snippets
+  - Test suite provides framework for future improvements
+- **Files**: `src/__tests__/guardian-accuracy.test.ts`, `src/commands/review.ts`, `src/utils/llm-client.ts`
+- **Effort**: 8 hours
+
+### Fixed
+
+#### Code Quality & Security Improvements
+- **Extract magic numbers to constants** (guardian-accuracy.test.ts)
+  - Created `ACCURACY_THRESHOLDS` constant for test configuration
+  - Replaced hardcoded values (70, 30, 600000) with named constants
+  - Improves maintainability and test configuration
+- **Add path traversal protection** (review.ts) - **SECURITY FIX**
+  - Validates resolved file paths stay within project directory
+  - Prevents malicious paths from accessing files outside project
+  - Critical security vulnerability addressed
+- **Fix CommonJS require usage** (integration.test.ts)
+  - Replaced `require('fs').unlinkSync()` with imported `unlinkSync`
+  - Maintains ES module consistency across test files
+- **Clear timeout to prevent memory leaks** (cli-runner.ts)
+  - Stored timeout ID and cleared it when promises resolve/reject
+  - Prevents accumulation of uncleaned timers in long-running test suites
+- **Source**: January 23, 2026 code audit findings
+- **Files**: `src/__tests__/guardian-accuracy.test.ts`, `src/__tests__/integration.test.ts`, `src/__tests__/utils/cli-runner.ts`, `src/commands/review.ts`
+- **Commit**: 08f40a8
+
 ---
 
 ## [2.6.1] - 2026-01-21

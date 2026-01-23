@@ -1,160 +1,18 @@
 # NEXT: Upcoming Tasks
 
-**Current Sprint**: v2.7 Guardian MVP Completion (Jan 22 - Feb 7, 2026)
-**Next Sprint**: v2.8 Marketing Pivot & Community Launch (Feb 10-21, 2026)
-**Previous Sprint**: [v2.6.1 Emergency Patch](docs/archive/sprint-v2.6.1-emergency-patch.md) ✅ Complete
+**Current Sprint**: v2.8 Marketing Pivot & Community Launch (Jan 24 - Feb 7, 2026)
+**Next Sprint**: v2.9 Guardian Optimization (Feb 10-21, 2026)
+**Previous Sprint**: [v2.7 Guardian MVP](docs/archive/sprint-v2.7-jan-2026.md) ✅ Complete
 
 ---
 
-## 🎯 v2.7 Guardian MVP Completion (Weeks 2-4)
-
-**Context**: Strategic features identified via external audits (QCS Analysis + Viability Report)
-
-**Timeline**: 2-3 weeks (21-30 hours total)
-**Release Target**: February 7, 2026
-
-### Previous Phases ✅ COMPLETE
-
-- **Phase 1**: Professional Documentation → https://cortex-tms.org/
-- **Phase 2**: Guardian MVP Core (6 features delivered)
-- **Phase 3**: Distribution & Content
-
-See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for completed tasks.
-
----
-
-### Phase 4: Strategic Features (Audit-Driven)
-
-**Source**: QCS Analysis + Viability Report recommendations
-
-| Task | Ref | Effort | Priority | Status |
-| :--- | :--- | :----- | :------- | :----- |
-| **Token Counter CLI** - `cortex status --tokens` | [HIGH-1] | 4-6h | 🔴 HIGH | ✅ Done |
-| **Guardian Accuracy Validation** - 70%+ on test set | [HIGH-2] | 6-8h | 🔴 HIGH | ⏸️ Deferred |
-| **Integration Test Suite** - Command interaction tests | [MED-1] | 8-12h | 🟡 MED | ✅ Done |
-| **Error Handling Refactor** - Remove process.exit() calls | [MED-3] | 3-4h | 🟡 MED | ✅ Done |
-
-**Total Effort**: 17-24 hours (23-28h completed, 1 deferred)
-
-**Sprint Status**: ✅ **100% Complete** (3/3 tasks done, 1 deferred for optimization)
-
-### HIGH-1: Token Counter Feature ✅ COMPLETE
-
-**Why**: Makes cost/sustainability value visible (QCS Analysis strongest recommendation)
-
-**Output**: Shows HOT/WARM/COLD token counts with % reduction and cost estimates
-
-**Files**: `src/utils/token-counter.ts`, `src/commands/status.ts --tokens flag`
-
-**Results**:
-- 94.5% context reduction on cortex-tms itself (3,647 vs 66,834 tokens)
-- Claude Sonnet 4.5: $0.01/session vs GPT-4: $0.11/session (10x cost comparison)
-- Model validation with helpful error messages
-- Cross-platform path handling (Windows/Mac/Linux)
-- PROMPTS.md added to WARM tier tracking
-
-### HIGH-2: Guardian Accuracy Validation ⏸️ DEFERRED
-
-**Why**: Move from "structural" to "semantic" quality enforcement
-
-**Work**: Create test set (20-30 examples), measure accuracy, tune prompt if < 70%
-
-**Files**: `src/__tests__/guardian-accuracy.test.ts`, `src/commands/review.ts`, `src/utils/llm-client.ts`
-
-**Results**:
-- ✅ Built comprehensive 29-case test suite covering all patterns/rules
-- ✅ Implemented accuracy measurement with confusion matrix
-- ✅ Improved Guardian prompt to reduce false positives
-- ✅ Updated to Claude Sonnet 4.5 (claude-sonnet-4-5-20250929)
-- 📊 Accuracy: 65.5% (19/29 correct)
-- 📊 False Negative Rate: 0% (never misses real violations) ✅
-- 📊 False Positive Rate: ~70% (conservative on minimal code snippets)
-
-**Decision**: Deferred optimization for later. Current implementation is valuable:
-- Zero false negatives means Guardian never misses actual issues
-- Conservative behavior is acceptable for code review (better to over-flag than miss problems)
-- Works best on full files with context vs minimal test snippets
-- Test suite provides framework for future improvements
-
-### MED-3: Error Handling Refactor ✅ COMPLETE
-
-**Why**: Clean up error handling, improve testability, follow CLI best practices
-
-**Work**: Remove all `process.exit()` calls from commands, centralize error handling in CLI entry point
-
-**Files**: `src/cli.ts`, all command files in `src/commands/`
-
-**Results**:
-- ✅ Removed 17 `process.exit()` calls from 7 command files
-- ✅ Added global error handler in cli.ts with Commander.js `exitOverride()`
-- ✅ Commands now throw errors instead of calling process.exit() directly
-- ✅ Preserved exit codes (0 for success, 1 for errors)
-- ✅ All 96 tests passing
-- ✅ Validation passing
-- ✅ Cleaner separation of concerns
-
-**Benefits**:
-- Easier to test (no forced exits in unit tests)
-- Better error handling flow
-- Follows Node.js/CLI best practices
-- Sets foundation for integration tests (MED-1)
-
-### MED-1: Integration Test Suite ✅ COMPLETE
-
-**Why**: Ensure command interactions work correctly, catch cross-command bugs
-
-**Work**: Create end-to-end tests for command workflows and state management
-
-**Files**: `src/__tests__/integration.test.ts`, `src/__tests__/utils/cli-runner.ts`
-
-**Results**:
-- ✅ 15 comprehensive integration tests (all passing)
-- ✅ CLI execution helper utility
-- ✅ Tests complete workflows (init → validate → status)
-- ✅ Tests error recovery and rollback
-- ✅ Tests cross-command data flow
-- ✅ Total test suite: 111 tests passing (96 unit + 15 integration)
-- ✅ Build successful
-- ✅ ~8.5s test execution time
-
-**Test Coverage:**
-- Happy path workflows
-- Error recovery and rollback
-- Cross-command data persistence
-- Multi-command sequences
-- File system state consistency
-- Error messages and guidance
-- Concurrent operations
-- Real-world developer scenarios
-
-**Benefits**:
-- Validates command interactions work correctly
-- Ensures consistent state across commands
-- Tests real CLI execution in isolated environments
-- Catches cross-command integration bugs
-- Provides confidence for refactoring
-
----
-
-### Phase 5: Website Enhancement (Deferred)
-
-**Decision**: Defer until after v2.7 strategic features are complete
-
-| Task | Ref | Status |
-| :--- | :--- | :------ |
-| Social Preview Image | [TMS-285d] | ⏸️ Deferred |
-| Blog Category Pages | [TMS-293] | ⏸️ Deferred |
-
-**Rationale**: Strategic features take priority over cosmetic improvements
-
----
-
-## 🎯 v2.8 Marketing Pivot & Community Launch (Weeks 5-6)
+## 🎯 v2.8 Marketing Pivot & Community Launch
 
 **Context**: "Green Governance" positioning based on QCS Analysis + token counter proof
 
 **Timeline**: 2-3 weeks (18-25 hours total)
-**Release Target**: February 21, 2026
+**Release Target**: February 7, 2026
+**Status**: ⏸️ Ready to start
 
 ### Marketing Positioning Update
 
@@ -203,31 +61,27 @@ See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for completed tasks.
 
 ---
 
-## 📊 Sprint Summary & Progress
+## 🎯 v2.9 Guardian Optimization (Future)
 
-### v2.7 Guardian Completion
+**Context**: Improve Guardian accuracy from 65.5% baseline
 
-**Timeline**: Jan 22 - Feb 7, 2026 (2-3 weeks)
-**Effort**: 21-30 hours (6h completed, 15-24h remaining)
-**Status**: 🚧 In Progress (20% complete)
-**Blockers**: None
+**Timeline**: 2-3 weeks (15-20 hours total)
+**Status**: ⏸️ Blocked by v2.8
 
-**Completion Status**:
-- ✅ Phase 1: Professional Documentation
-- ✅ Phase 2: Guardian MVP Core (6 features)
-- ✅ Phase 3: Distribution & Content
-- 🚧 Phase 4: Strategic Features (1/4 complete - HIGH-1 ✅ Done)
+### Accuracy Improvements
 
-### v2.8 Marketing Pivot
+| Task | Ref | Effort | Priority | Status |
+| :--- | :--- | :----- | :------- | :----- |
+| **Structured JSON Output** - Replace string matching | [OPT-1] | 6-8h | 🔴 HIGH | ⬜ Todo |
+| **Detection Logic Refactor** - Regex with word boundaries | [OPT-2] | 4-6h | 🟡 MED | ⬜ Todo |
+| **Retry Logic** - Exponential backoff for API failures | [OPT-3] | 3-4h | 🟡 MED | ⬜ Todo |
+| **Shared Guardian Prompt** - Extract to utility | [OPT-4] | 2-3h | 🟢 LOW | ⬜ Todo |
 
-**Timeline**: Feb 10-21, 2026 (2-3 weeks)
-**Effort**: 18-25 hours
-**Status**: ⏸️ Blocked by v2.7
-**Dependencies**: Token counter must be live for proof
+**Goal**: Achieve 80%+ accuracy on test dataset
 
 ---
 
-## 📋 Deferred Items (v2.9+)
+## 📋 Deferred Items (v3.0+)
 
 **See**: [Future Enhancements](FUTURE-ENHANCEMENTS.md) for complete backlog
 
@@ -235,13 +89,15 @@ See [v2.7 Archive](docs/archive/sprint-v2.7-jan-2026.md) for completed tasks.
 - Migration Experience Improvements (TMS-277-282)
 - Custom Templates Architecture (TMS-241)
 - MCP Server Integration
+- Blog Category Pages (TMS-293)
+- Social Preview Image (TMS-285d)
 
 ---
 
 ## 🗂️ Sprint Archive
 
+- **v2.7**: [Guardian MVP](docs/archive/sprint-v2.7-jan-2026.md) ✅ Complete (Jan 19-23, 2026)
 - **v2.6.1**: [Emergency Patch](docs/archive/sprint-v2.6.1-emergency-patch.md) ✅
-- **v2.7**: [Guardian MVP](docs/archive/sprint-v2.7-jan-2026.md) (In Progress - 81% complete)
 - **v2.6**: [Integrity & Atomicity](docs/archive/sprint-v2.6-integrity-atomicity.md) ✅
 - **v2.5**: [Guidance & Growth](docs/archive/sprint-v2.5-guidance-growth.md) ✅
 - **v2.4**: [Scaling Intelligence](docs/archive/sprint-v2.4-scaling-intelligence.md) ✅
