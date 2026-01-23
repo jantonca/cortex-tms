@@ -21,7 +21,7 @@
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Landing Page Redesign** - "Green Governance" hero | [HIGH-3a] | 4-6h | 🔴 HIGH | ⬜ Todo |
+| **Landing Page Redesign** - "Green Governance" hero | [HIGH-3a] | 4-6h | 🔴 HIGH | ✅ Done |
 | **Cost Calculator Widget** - Estimate token savings | [HIGH-3b] | 4-6h | 🟡 MED | ⬜ Todo |
 | **Sustainability Badge** - "Green AI Development" claims | [HIGH-3c] | 2-3h | 🟡 MED | ⬜ Todo |
 | **README.md Update** - New value propositions | [HIGH-3d] | 1-2h | 🔴 HIGH | ✅ Done |
@@ -31,7 +31,7 @@
 ### New Messaging Pillars
 
 1. **Cost Efficiency** (strongest pillar per QCS)
-   - "Reduce AI API costs by 40-60%"
+   - "Reduce AI API costs by up to 10x"
    - "Pay less, get more from Claude/Copilot/Cursor"
 
 2. **Quality** (second pillar)
