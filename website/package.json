@@ -14,6 +14,7 @@
     "@fontsource-variable/noto-sans": "5.1.1",
     "@fontsource-variable/noto-serif": "5.1.1",
     "@fontsource/noto-sans-mono": "5.1.0",
+    "@lucide/astro": "^0.562.0",
     "astro": "5.1.5",
     "sharp": "0.33.5"
   }

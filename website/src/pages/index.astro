@@ -8,6 +8,7 @@ import SimpleLayout from '../layouts/SimpleLayout.astro'
 import GlassPanel from '../components/GlassPanel.astro'
 import GlassButton from '../components/GlassButton.astro'
 import GlassQuote from '../components/GlassQuote.astro'
+import { Coins, ShieldCheck, Leaf, Flame, Shield, BarChart3, FileText, Key, Zap } from '@lucide/astro'
 ---
 
 <SimpleLayout
@@ -53,8 +54,8 @@ import GlassQuote from '../components/GlassQuote.astro'
       <div class='pillars-grid'>
         <GlassPanel variant='bordered' tilt='full'>
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>💰</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <Coins size={32} strokeWidth={1.5} />
               Cost Efficiency
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'>
@@ -71,8 +72,8 @@ import GlassQuote from '../components/GlassQuote.astro'
 
         <GlassPanel variant='bordered' tilt='full'>
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>✅</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <ShieldCheck size={32} strokeWidth={1.5} />
               Quality
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'>
@@ -89,8 +90,8 @@ import GlassQuote from '../components/GlassQuote.astro'
 
         <GlassPanel variant='bordered' tilt='full'>
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>🌱</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <Leaf size={32} strokeWidth={1.5} />
               Sustainability
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'>
@@ -210,8 +211,8 @@ import GlassQuote from '../components/GlassQuote.astro'
           tilt='full'
         >
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>🔥</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <Flame size={32} strokeWidth={1.5} />
               HOT/WARM/COLD Tiering
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
@@ -228,8 +229,8 @@ import GlassQuote from '../components/GlassQuote.astro'
           tilt='full'
         >
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>🛡️</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <Shield size={32} strokeWidth={1.5} />
               Guardian Validation
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
@@ -245,8 +246,8 @@ import GlassQuote from '../components/GlassQuote.astro'
           tilt='full'
         >
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>📊</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <BarChart3 size={32} strokeWidth={1.5} />
               Token Counter
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
@@ -262,8 +263,8 @@ import GlassQuote from '../components/GlassQuote.astro'
           tilt='full'
         >
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>📝</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <FileText size={32} strokeWidth={1.5} />
               Essential 7 Prompts
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
@@ -279,8 +280,8 @@ import GlassQuote from '../components/GlassQuote.astro'
           tilt='full'
         >
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>🔑</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <Key size={32} strokeWidth={1.5} />
               BYOK (Bring Your Own Key)
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
@@ -296,8 +297,8 @@ import GlassQuote from '../components/GlassQuote.astro'
           tilt='full'
         >
           <div style='padding: 2rem;'>
-            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent);'>
-              <span style='font-size: 2rem; margin-right: 0.5rem;'>⚡</span>
+            <h3 style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'>
+              <Zap size={32} strokeWidth={1.5} />
               &lt; 3 File Reads
             </h3>
             <p style='line-height: 1.6; color: var(--sl-color-gray-2);'>
