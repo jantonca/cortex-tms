@@ -75,6 +75,9 @@ importers:
       '@fontsource/noto-sans-mono':
         specifier: 5.1.0
         version: 5.1.0
+      '@lucide/astro':
+        specifier: ^0.562.0
+        version: 0.562.0(astro@5.1.5(@types/node@22.19.5)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
       astro:
         specifier: 5.1.5
         version: 5.1.5(@types/node@22.19.5)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
@@ -860,6 +863,11 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.5.5':
     resolution: {integrity: sha512-cYQ9310grqxueWbl+WuIUIaiUaDcj7WOq5fVhEljNVgRfOUhY9fy2zTvfoqWsnebh8Sl70VScFbICvJnLKB0Og==}
+
+  '@lucide/astro@0.562.0':
+    resolution: {integrity: sha512-Rdtykh/VmH3M7n4ckBWY2X7wTMyJX/At5MuJDZ+5M+QZNebxAa75TU7xmM0OVmQj60UsHvdmqRIRNTqEYIieKg==}
+    peerDependencies:
+      astro: ^4 || ^5
 
   '@mdx-js/mdx@3.1.1':
     resolution: {integrity: sha512-f6ZO2ifpwAQIpzGWaBQT2TXxPv6z3RBzQKpVftEWN78Vl/YweF1uwussDx8ECAXVtr3Rs89fKyG9YlzUs9DyGQ==}
@@ -3729,6 +3737,10 @@ snapshots:
       wrap-ansi-cjs: wrap-ansi@7.0.0
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
+
+  '@lucide/astro@0.562.0(astro@5.1.5(@types/node@22.19.5)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))':
+    dependencies:
+      astro: 5.1.5(@types/node@22.19.5)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
 
   '@mdx-js/mdx@3.1.1':
     dependencies:
