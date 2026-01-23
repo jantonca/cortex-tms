@@ -1,0 +1,322 @@
+/**
+ * Cortex TMS - Glass Starlight Components
+ *
+ * Glass liquid design for Starlight theme components:
+ * - Expressive Code (code blocks)
+ * - Starlight Aside (callouts/alerts)
+ * 
+ * Static design (no hover animations) for content display
+ */
+
+/* === CODE BLOCK GLASS STYLING === */
+
+/* Target Expressive Code frames */
+.expressive-code,
+.expressive-code .frame {
+  position: relative;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  margin: 1.5rem 0;
+}
+
+/* Noise texture overlay for depth */
+.expressive-code .frame::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+/* Code content should be above the noise overlay */
+.expressive-code pre,
+.expressive-code code {
+  position: relative;
+  z-index: 3;
+}
+
+/* Header styling (for code blocks with titles) */
+.expressive-code .header {
+  position: relative;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* Copy button styling */
+.expressive-code .copy button {
+  position: relative;
+  z-index: 3;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--glass-border);
+  border-radius: 8px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: background 0.2s var(--ease-smooth);
+}
+
+.expressive-code .copy button:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* Line numbers styling */
+.expressive-code .line-number {
+  position: relative;
+  z-index: 3;
+  opacity: 0.5;
+}
+
+/* Highlighted lines */
+.expressive-code .highlight {
+  position: relative;
+  background: rgba(249, 115, 22, 0.1);
+  border-left: 2px solid var(--sl-color-accent);
+}
+
+/* Terminal/Shell styling variant */
+.expressive-code[data-language="bash"] .frame,
+.expressive-code[data-language="sh"] .frame,
+.expressive-code[data-language="shell"] .frame {
+  background: rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Light theme adjustments */
+:root[data-theme='light'] .expressive-code .frame {
+  background: rgba(255, 255, 255, 0.6);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .expressive-code .header {
+  background: rgba(0, 0, 0, 0.02);
+  border-bottom-color: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .expressive-code .copy button {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .expressive-code .copy button:hover {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+/* Accessibility: Reduce motion */
+@media (prefers-reduced-motion: reduce) {
+  .expressive-code .copy button {
+    transition: none;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .expressive-code .frame {
+    border-width: 2px;
+    border-color: var(--sl-color-white);
+    background: rgba(0, 0, 0, 0.9);
+  }
+}
+
+/* === ASIDE/CALLOUT GLASS STYLING === */
+
+/* Target Starlight aside components - using Starlight's actual classes */
+.sl-markdown-content aside,
+.starlight-aside,
+aside[class*="starlight-aside"] {
+  position: relative;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  overflow: visible;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  margin: 1.5rem 0;
+  padding: 1.5rem;
+}
+
+/* Noise texture overlay for depth */
+.sl-markdown-content aside::before,
+.starlight-aside::before,
+aside[class*="starlight-aside"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  opacity: var(--noise-opacity);
+  pointer-events: none;
+  z-index: 1;
+  mix-blend-mode: overlay;
+}
+
+/* Content should be above the noise overlay */
+.sl-markdown-content aside > *,
+.starlight-aside > *,
+aside[class*="starlight-aside"] > * {
+  position: relative;
+  z-index: 3;
+}
+
+/* Aside title/header */
+.starlight-aside__title,
+.starlight-aside .title {
+  position: relative;
+  z-index: 3;
+  font-family: var(--sl-font-heading);
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Aside icon */
+.starlight-aside__icon,
+.starlight-aside .icon {
+  position: relative;
+  z-index: 3;
+}
+
+/* Variant: Note (default - blue) */
+aside.note,
+.starlight-aside--note,
+aside[aria-label*="Note"],
+aside[data-type="note"] {
+  border-left: 3px solid #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.05) !important;
+}
+
+/* Variant: Tip (green) */
+aside.tip,
+.starlight-aside--tip,
+aside[aria-label*="Tip"],
+aside[data-type="tip"] {
+  border-left: 3px solid #10b981 !important;
+  background: rgba(16, 185, 129, 0.05) !important;
+}
+
+/* Variant: Caution (yellow) */
+aside.caution,
+.starlight-aside--caution,
+aside[aria-label*="Caution"],
+aside[data-type="caution"] {
+  border-left: 3px solid #f59e0b !important;
+  background: rgba(245, 158, 11, 0.05) !important;
+}
+
+/* Variant: Danger (red) */
+aside.danger,
+.starlight-aside--danger,
+aside[aria-label*="Danger"],
+aside[data-type="danger"] {
+  border-left: 3px solid #ef4444 !important;
+  background: rgba(239, 68, 68, 0.05) !important;
+}
+
+/* Light theme adjustments for asides */
+:root[data-theme='light'] .sl-markdown-content aside,
+:root[data-theme='light'] .starlight-aside {
+  border-color: rgba(0, 0, 0, 0.15);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme='light'] aside.note,
+:root[data-theme='light'] .starlight-aside--note {
+  background: rgba(59, 130, 246, 0.15) !important;
+}
+
+:root[data-theme='light'] aside.tip,
+:root[data-theme='light'] .starlight-aside--tip {
+  background: rgba(16, 185, 129, 0.15) !important;
+}
+
+:root[data-theme='light'] aside.caution,
+:root[data-theme='light'] .starlight-aside--caution {
+  background: rgba(245, 158, 11, 0.15) !important;
+}
+
+:root[data-theme='light'] aside.danger,
+:root[data-theme='light'] .starlight-aside--danger {
+  background: rgba(239, 68, 68, 0.15) !important;
+}
+
+/* High contrast mode support for asides */
+@media (prefers-contrast: high) {
+  .sl-markdown-content aside,
+  .starlight-aside {
+    border-width: 2px;
+    background: rgba(0, 0, 0, 0.9) !important;
+  }
+
+  aside.note,
+  aside.tip,
+  aside.caution,
+  aside.danger {
+    border-left-width: 4px !important;
+  }
+}
+
+/* === CARD GRID LAYOUT FIX === */
+
+/* Single column layout ONLY for CardGrids containing code blocks */
+.card-grid:has(.expressive-code) {
+  grid-template-columns: 1fr !important;
+  gap: 1.5rem;
+}
+
+/* Override Starlight's default 2-column layout at larger screens - only for grids with code */
+@media (min-width: 50rem) {
+  .card-grid:has(.expressive-code) {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* Prevent stagger animation from causing overlap - only for grids with code */
+.card-grid.stagger:has(.expressive-code) .card {
+  transform: none !important;
+  animation: none !important;
+}
+
+/* Ensure cards don't overflow their container */
+.card-grid .card {
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+/* Code blocks inside cards should not cause horizontal scroll */
+.card-grid .card .expressive-code {
+  max-width: 100%;
+  width: 100%;
+}
+
+.card-grid .card .expressive-code .frame {
+  max-width: 100%;
+  width: 100%;
+}
+
+.card-grid .card .expressive-code pre {
+  overflow-x: auto;
+  max-width: 100%;
+}
+
+/* Fix copy button positioning to prevent overflow */
+.card-grid .card .expressive-code .copy {
+  position: absolute;
+  right: 0.5rem;
+  top: 0.5rem;
+  z-index: 10;
+}
+
+.card-grid .card .expressive-code .copy button {
+  max-width: 2.5rem;
+  min-width: 2.5rem;
+}

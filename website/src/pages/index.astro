@@ -71,11 +71,30 @@ import GlassQuote from '../components/GlassQuote.astro'
     {/* Quick Installation */}
     <section class='content-section'>
       <h2>Quick Installation</h2>
-      <pre><code># Install globally
-npm install -g cortex-tms@2.7.0
-
-# Or use with npx (no installation required)
-npx cortex-tms@2.7.0 init</code></pre>
+      <p style='margin-bottom: 1rem; color: var(--sl-color-gray-2);'>Install globally:</p>
+      <div class='code-block-wrapper'>
+        <div class='code-block'>
+          <button class='copy-code-btn' title='Copy to clipboard'>
+            <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
+              <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
+              <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
+            </svg>
+          </button>
+          <pre><code>npm install -g cortex-tms@2.7.0</code></pre>
+        </div>
+      </div>
+      <p style='margin: 1.5rem 0 1rem; color: var(--sl-color-gray-2);'>Or use with npx (no installation required):</p>
+      <div class='code-block-wrapper'>
+        <div class='code-block'>
+          <button class='copy-code-btn' title='Copy to clipboard'>
+            <svg width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2'>
+              <rect x='9' y='9' width='13' height='13' rx='2' ry='2'></rect>
+              <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'></path>
+            </svg>
+          </button>
+          <pre><code>npx cortex-tms@2.7.0 init</code></pre>
+        </div>
+      </div>
     </section>
 
     {/* Key Features */}
@@ -288,25 +307,75 @@ npx cortex-tms@2.7.0 init</code></pre>
       margin-bottom: 1.5rem;
     }
 
-    .content-section pre {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 12px;
+    /* Code block with glass styling */
+    .code-block-wrapper {
+      margin: 2rem 0;
+    }
+
+    .code-block {
+      position: relative;
+      background: var(--glass-surface);
+      backdrop-filter: blur(var(--glass-blur));
+      -webkit-backdrop-filter: blur(var(--glass-blur));
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    .code-block pre {
+      background: transparent;
+      border: none;
+      border-radius: 0;
       padding: 1.5rem;
       overflow-x: auto;
-      margin: 2rem 0;
+      margin: 0;
       color: var(--sl-color-text);
     }
 
-    .content-section code {
+    .code-block code {
       font-family: var(--sl-font-mono);
       font-size: 0.9em;
       color: var(--sl-color-accent-high);
     }
 
-    :root[data-theme='light'] .content-section pre {
-      background: rgba(0, 0, 0, 0.03);
-      border: 1px solid rgba(0, 0, 0, 0.08);
+    .copy-code-btn {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      padding: 0.5rem;
+      cursor: pointer;
+      color: var(--sl-color-text);
+      transition: all 0.2s var(--ease-smooth);
+      z-index: 10;
+    }
+
+    .copy-code-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--sl-color-accent);
+    }
+
+    .copy-code-btn.copied {
+      background: rgba(16, 185, 129, 0.2);
+      border-color: #10b981;
+      color: #10b981;
+    }
+
+    :root[data-theme='light'] .code-block {
+      background: rgba(255, 255, 255, 0.6);
+      border-color: rgba(0, 0, 0, 0.1);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+    }
+
+    :root[data-theme='light'] .copy-code-btn {
+      background: rgba(0, 0, 0, 0.05);
+    }
+
+    :root[data-theme='light'] .copy-code-btn:hover {
+      background: rgba(0, 0, 0, 0.1);
     }
 
     /* CTA Section */
@@ -346,4 +415,36 @@ npx cortex-tms@2.7.0 init</code></pre>
       }
     }
   </style>
+
+  <script>
+    // Copy to clipboard functionality for all code blocks
+    document.addEventListener('DOMContentLoaded', () => {
+      const codeBlocks = document.querySelectorAll('.code-block');
+
+      codeBlocks.forEach((block) => {
+        const copyBtn = block.querySelector('.copy-code-btn');
+        const code = block.querySelector('pre code');
+
+        if (copyBtn && code) {
+          copyBtn.addEventListener('click', async () => {
+            try {
+              await navigator.clipboard.writeText(code.textContent || '');
+              
+              // Visual feedback
+              copyBtn.classList.add('copied');
+              copyBtn.title = 'Copied!';
+              
+              // Reset after 2 seconds
+              setTimeout(() => {
+                copyBtn.classList.remove('copied');
+                copyBtn.title = 'Copy to clipboard';
+              }, 2000);
+            } catch (err) {
+              console.error('Failed to copy:', err);
+            }
+          });
+        }
+      });
+    });
+  </script>
 </SimpleLayout>

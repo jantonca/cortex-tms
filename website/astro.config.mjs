@@ -30,6 +30,7 @@ export default defineConfig({
         './src/styles/custom.css',
         './src/styles/glass-system.css',
         './src/styles/glass-components.css',
+        './src/styles/glass-starlight-components.css',
       ],
       components: {
         Header: './src/components/Header.astro',
