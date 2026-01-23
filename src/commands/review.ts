@@ -128,6 +128,7 @@ async function runReviewCommand(
       provider,
       apiKey,
       ...(options.model && { model: options.model }),
+      timeoutMs: 60000, // 60 seconds for code review (longer than default)
     };
 
     const response = await callLLM(config, messages);

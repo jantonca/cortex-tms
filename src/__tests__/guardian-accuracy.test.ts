@@ -629,6 +629,7 @@ async function runGuardianOnTestCase(testCase: TestCase): Promise<string> {
     provider: 'anthropic',
     apiKey: process.env.ANTHROPIC_API_KEY!,
     model: 'claude-sonnet-4-5-20250929', // Claude Sonnet 4.5
+    timeoutMs: 60000, // 60 seconds for code review (longer than default)
   };
 
   const response = await callLLM(config, messages);
