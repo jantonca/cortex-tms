@@ -12,7 +12,7 @@
 
 **Timeline**: 2-3 weeks (18-25 hours total)
 **Release Target**: February 7, 2026
-**Status**: ⏸️ Ready to start
+**Status**: 🚀 In Progress (Jan 24+)
 
 ### Marketing Positioning Update
 
@@ -22,9 +22,11 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **Landing Page Redesign** - "Green Governance" hero | [HIGH-3a] | 4-6h | 🔴 HIGH | ✅ Done |
-| **Cost Calculator Widget** - Estimate token savings | [HIGH-3b] | 4-6h | 🟡 MED | ⬜ Todo |
+| **Cost Calculator Widget** - Estimate token savings | [HIGH-3b] | 4-6h | 🟡 MED | ⏸️ Deferred |
 | **Sustainability Badge** - "Green AI Development" claims | [HIGH-3c] | 2-3h | 🟡 MED | ✅ Done |
 | **README.md Update** - New value propositions | [HIGH-3d] | 1-2h | 🔴 HIGH | ✅ Done |
+
+**Note**: Cost Calculator deferred until after Reddit/X feedback - will inform which metrics to display (tokens, cost, compute % only - no carbon claims).
 
 **Total Effort**: 11-17 hours
 
@@ -42,16 +44,23 @@
    - "Green Governance for AI development"
    - "Less compute = lower carbon footprint"
 
-### Community Launch (After Positioning Update)
+### Community Launch (In Progress)
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Blog Post: Green AI Development** | [TMS-294] | 3-4h | 🔴 HIGH | ⬜ Todo |
-| **Reddit Post** - r/opensource + r/MachineLearning | [TMS-286a] | 2h | 🔴 HIGH | ⬜ Todo |
-| **X (Twitter) Thread** - Build-in-public with metrics | [TMS-286b] | 1h | 🟡 MED | ⬜ Todo |
-| **HN Launch** - "Show HN: Green Governance for AI Dev" | [TMS-295] | 1h | 🟡 MED | ⬜ Todo |
+| **HN Launch** - "Why AI Agents Need More Than a README" | [TMS-295] | 1h | 🟡 MED | ✅ Done |
+| **Reddit Post** - r/ClaudeAI + r/programming (link to blog) | [TMS-286a] | 2h | 🔴 HIGH | ⬜ Todo |
+| **X (Twitter) Thread** - Build-in-public with metrics | [TMS-286b] | 1h | 🔴 HIGH | ⬜ Todo |
+| **Blog Post: Green AI Development** | [TMS-294] | 3-4h | 🟡 MED | ⏸️ Deferred |
 
 **Total Effort**: 7-8 hours
+
+**Learnings from HN Launch (Jan 24)**:
+- Posted: "Why AI Agents Need More Than a README" (existing blog post)
+- Strategy: Data-first title, Sydney → US evening timing
+- Result: Limited initial traction (new account visibility issue)
+- Next: Focus Reddit/X, let HN post sit for organic discovery
+- Decision: Build Cost Calculator AFTER Reddit/X feedback on metrics
 
 **Success Metrics**:
 - 100+ GitHub stars (from 50 current)
