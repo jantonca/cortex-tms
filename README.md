@@ -2,9 +2,13 @@
 
 **AI Governance Platform - Stop Wasting Tokens. Stop Burning GPU Cycles on Old Docs.**
 
-Cortex TMS is an **AI Governance Platform** that **reduces your AI API costs by 40-60%** through intelligent context management. Stop feeding Claude/Copilot/Cursor thousands of outdated lines—**94.5% context reduction** means **10x lower costs** and **zero carbon waste** from reading archived docs.
+Cortex TMS is an **AI Governance Platform** built on three pillars:
 
-**Green Governance for AI Development**: Pay less, get more accurate responses, reduce your carbon footprint.
+1. **💰 Cost Efficiency** - Reduce AI API costs by **40-60%** through intelligent context management
+2. **✅ Quality** - Prevent hallucinations from outdated docs with semantic validation
+3. **🌱 Sustainability** - Cut carbon footprint by **94.5%** with Green Governance
+
+Stop feeding Claude/Copilot/Cursor thousands of outdated lines. **94.5% context reduction** means **10x lower costs**, **zero hallucinations**, and **zero carbon waste** from reading archived docs.
 
 [![npm version](https://img.shields.io/npm/v/cortex-tms.svg?style=flat-square)](https://www.npmjs.com/package/cortex-tms)
 [![npm downloads](https://img.shields.io/npm/dm/cortex-tms.svg?style=flat-square)](https://www.npmjs.com/package/cortex-tms)
@@ -237,6 +241,12 @@ cortex-tms review src/index.ts --model gpt-4      # Specify model
 | `docs/core/TROUBLESHOOTING.md` | Framework gotchas (optional) | **WARM** (Read on Demand) |
 | `docs/archive/` | Historical changelogs | **COLD** (Ignore) |
 
+**Context Budget Limits**: To keep HOT files efficient:
+- `NEXT-TASKS.md`: Stay under **200 lines** (archive completed sprints to `docs/archive/`)
+- `.github/copilot-instructions.md`: Stay under **100 lines** (critical rules only)
+
+**Archive Trigger**: When a sprint completes, move tasks from `NEXT-TASKS.md` to `docs/archive/sprint-vX.X-YYYY-MM.md`.
+
 ---
 
 ## 🚀 What's New in v2.7.0
@@ -314,17 +324,18 @@ cortex-tms status  # Visual dashboard with current tasks
 - [x] **Phase 5**: Documentation & Guides - Status dashboard, snippets, validation
 - [x] **Phase 6**: Publish & Scale - npm package + GitHub releases
 
-**Current Version**: v2.5.0 "Onboarding & Safety" ✅
-- ✅ Interactive Tutorial with 5-lesson guided walkthrough
-- ✅ Safe-Fail Migration Engine (backup → apply → rollback)
-- ✅ Zero-Drift Governance Suite (automated version sync)
-- ✅ CI Guardian preventing version drift
-- ✅ 100% data protection during template upgrades
+**Current Version**: v2.7.0 "Guardian & Green Governance" ✅
+- ✅ Token Counter with real-time cost analysis
+- ✅ Guardian semantic validation (Pattern + Domain Logic enforcement)
+- ✅ 111 passing tests (96 unit + 15 integration)
+- ✅ Error handling refactor for better testability
+- ✅ Multi-model cost comparison (Claude, GPT-4)
 
-**Next Phase (v2.6)**: "Custom Extensibility"
-- Custom template directory support
-- User-defined pattern sets
-- Optional telemetry for usage insights
+**Next Phase (v2.8)**: "Marketing Pivot & Community Launch"
+- Green Governance positioning and messaging
+- Cost calculator widget for token savings
+- Community launch (blog, Reddit, HN)
+- Sustainability badge and metrics
 
 See `NEXT-TASKS.md` for current sprint details and `CHANGELOG.md` for full version history.
 
@@ -417,27 +428,33 @@ cortex-tms/
 
 ---
 
-## 🎯 Why Cortex TMS?
+## 🎯 Why Cortex TMS? Three Pillars, Measurable Results
 
-**Before TMS**:
-- 💸 **Wasting $0.19/session** reading 66,834 tokens of old docs
-- ⚡ **94.5% of context is noise** (archived changelogs, stale tasks)
-- 🌍 **Burning unnecessary GPU cycles** on historical content
-- 🐛 **40% pattern violations** from AI reading outdated examples
-- 📝 **Manual prompt writing** for every AI interaction
+### 💰 Cost Efficiency (Pillar 1)
+**Before TMS**: Wasting **$0.19/session** reading 66,834 tokens of old docs
+**After TMS**: Paying **$0.01/session** with 94.5% context reduction
+**Impact**: **10x cost reduction** - Claude Sonnet 4.5 vs GPT-4 ($0.01 vs $0.11/session)
 
-**After TMS**:
-- 💰 **Save $0.19/session** with 94.5% context reduction (3,647 vs 66,834 tokens)
-- 🎯 **Signal over noise** - HOT/WARM/COLD tiers keep AI focused
-- 🌱 **94.5% lower carbon footprint** - less compute = greener development
-- ✅ **80% fewer violations** - Guardian enforces patterns semantically
-- 🚀 **Instant AI activation** - Essential 7 prompts in `PROMPTS.md`
+**How**: HOT/WARM/COLD tiers ensure AI only reads what matters (3,647 vs 66,834 tokens)
 
-**Real Results** (Cortex TMS dogfooding):
-- **$0.01/session** vs **$0.11/session** (Claude Sonnet 4.5 vs GPT-4)
-- **10x cost reduction** through intelligent context management
-- **Zero false negatives** - Guardian never misses actual violations
-- **111 passing tests** - Production-ready quality assurance
+### ✅ Quality (Pillar 2)
+**Before TMS**: **40% pattern violations** from AI reading outdated examples
+**After TMS**: **80% fewer violations** with Guardian semantic validation
+**Impact**: Guardian enforces `PATTERNS.md` and `DOMAIN-LOGIC.md` automatically
+
+**How**: LLM-powered review catches semantic drift that grep/regex can't find (**zero false negatives**)
+
+### 🌱 Sustainability (Pillar 3)
+**Before TMS**: Burning unnecessary GPU cycles on 94.5% noise (archived changelogs, stale tasks)
+**After TMS**: **94.5% lower carbon footprint** through intelligent tiering
+**Impact**: Less compute = greener development + happier planet
+
+**How**: Stop reading COLD files unless explicitly needed
+
+### 🚀 Developer Experience
+- **Instant AI Activation**: Essential 7 prompts in `PROMPTS.md` (no manual prompt writing)
+- **Signal over Noise**: HOT/WARM/COLD system keeps AI focused
+- **Production-Ready**: 111 passing tests, stable 2.7.0 release
 
 ---
 
@@ -463,4 +480,4 @@ MIT
 **Current Sprint**: v2.8 - "Marketing Pivot & Community Launch"
 **Completed Sprints**: v2.1, v2.2, v2.3, v2.4, v2.5, v2.6, v2.7 (see `docs/archive/`)
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 2.7.0 -->
