@@ -89,7 +89,7 @@ Before we share the framework, here's what we actually measured vs. what we thin
 **Calculated reduction**:
 - Token reduction: ~60-70% (varies by task complexity)
 - File read reduction: ~70-75%
-- Estimated cost reduction: ~60% (illustrative, using $0.03/1K tokens for Claude Sonnet; actual rates vary by provider/model)
+- Estimated cost reduction: ~60% (illustrative, using $0.03/1K tokens as a round number; actual rates vary widely by provider/model)
 
 ### What We Think Caused It (Interpretation)
 
