@@ -2,9 +2,8 @@
 
 This is the **living backlog** for Cortex TMS. Tasks move from here to `NEXT-TASKS.md` when they become active.
 
-**Last Updated**: 2026-01-21 (Post-Audit Review)
-**Source**: 4 comprehensive audits + internal analysis
-**See Also**: [Audit Remediation Plan](docs/AUDIT-REMEDIATION-PLAN.md)
+**Last Updated**: 2026-01-24 (Post-Sprint v2.7)
+**Source**: Sprint retrospectives + community feedback
 
 ---
 

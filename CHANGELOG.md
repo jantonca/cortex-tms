@@ -166,8 +166,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Documentation
 
-- Added `docs/AUDIT-REMEDIATION-PLAN.md` - Comprehensive bug analysis (900 lines)
-- Added `docs/AUDIT-RESPONSE-SUMMARY.md` - Executive summary (600 lines)
 - Added `docs/ROADMAP-2026-Q1.md` - Strategic roadmap (500 lines)
 - Added `docs/V2.6.1-CHECKLIST.md` - Implementation guide (800 lines)
 - Added `AUDIT-EXECUTIVE-SUMMARY.md` - Quick reference for decision-making
