@@ -26,7 +26,7 @@
 | **Sustainability Badge** - "Green AI Development" claims | [HIGH-3c] | 2-3h | 🟡 MED | ✅ Done |
 | **README.md Update** - New value propositions | [HIGH-3d] | 1-2h | 🔴 HIGH | ✅ Done |
 | **Measurement Methodology Doc** - Defensible 40-60% claims | [HIGH-3e] | 2-3h | 🔴 HIGH | ✅ Done |
-| **Cortex Dogfooding Case Study** - "How Cortex Uses TMS" | [HIGH-3f] | 3-4h | 🔴 HIGH | ⬜ Todo |
+| **Cortex Dogfooding Case Study** - "How Cortex Uses TMS" | [HIGH-3f] | 3-4h | 🔴 HIGH | ✅ Done |
 
 **Note**: Cost Calculator deferred until after Reddit/X feedback - will inform which metrics to display (tokens, cost, compute % only - no carbon claims).
 **External Review**: GPT-5 analysis recommends proof artifacts before social launch to avoid "vaporware" perception.
@@ -52,8 +52,8 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **HN Launch** - "Why AI Agents Need More Than a README" | [TMS-295] | 1h | 🟡 MED | ✅ Done |
-| **Reddit Post** - r/ClaudeAI + r/programming (link to blog) | [TMS-286a] | 2h | 🔴 HIGH | ⬜ Blocked by HIGH-3e, HIGH-3f |
-| **X (Twitter) Thread** - Build-in-public with metrics | [TMS-286b] | 1h | 🔴 HIGH | ⬜ Blocked by HIGH-3e, HIGH-3f |
+| **Reddit Post** - r/ClaudeAI + r/programming (link to blog) | [TMS-286a] | 2h | 🔴 HIGH | ⬜ Todo (unblocked) |
+| **X (Twitter) Thread** - Build-in-public with metrics | [TMS-286b] | 1h | 🔴 HIGH | ⬜ Todo (unblocked) |
 | **Blog Post: Green AI Development** | [TMS-294] | 3-4h | 🟡 MED | ⏸️ Deferred |
 
 **Total Effort**: 7-8 hours
