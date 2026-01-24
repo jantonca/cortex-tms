@@ -115,7 +115,7 @@ GitHub Organization: cortex-tms
     └── Templates
 ```
 
-**Transferred**: 2026-01-18 from `jantonca/cortex-tms` → `cortex-tms/cortex-tms`
+**Transferred**: 2026-01-18 to GitHub organization `cortex-tms`
 
 **Planned** (v2.7+):
 ```

@@ -238,7 +238,7 @@ For complete details, see [sprint-v2.6-integrity-atomicity.md](docs/archive/spri
 ## [2.6.0-beta.1] - 2026-01-16
 
 ### Fixed
-- **Repository URL**: Corrected package.json URLs from `cortex-tms/cortex-tms` to `jantonca/cortex-tms`
+- **Repository URL**: Updated package.json repository URLs
 - **Documentation Audit**: Verified all file references and line counts in BEST-PRACTICES.md
 
 ---
