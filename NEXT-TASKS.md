@@ -25,7 +25,7 @@
 | **Cost Calculator Widget** - Estimate token savings | [HIGH-3b] | 4-6h | 🟡 MED | ⏸️ Deferred |
 | **Sustainability Badge** - "Green AI Development" claims | [HIGH-3c] | 2-3h | 🟡 MED | ✅ Done |
 | **README.md Update** - New value propositions | [HIGH-3d] | 1-2h | 🔴 HIGH | ✅ Done |
-| **Measurement Methodology Doc** - Defensible 40-60% claims | [HIGH-3e] | 2-3h | 🔴 HIGH | ⬜ Todo |
+| **Measurement Methodology Doc** - Defensible 40-60% claims | [HIGH-3e] | 2-3h | 🔴 HIGH | ✅ Done |
 | **Cortex Dogfooding Case Study** - "How Cortex Uses TMS" | [HIGH-3f] | 3-4h | 🔴 HIGH | ⬜ Todo |
 
 **Note**: Cost Calculator deferred until after Reddit/X feedback - will inform which metrics to display (tokens, cost, compute % only - no carbon claims).
