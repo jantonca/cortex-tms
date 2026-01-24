@@ -74,7 +74,6 @@ const [major, minor, patch] = currentVersion.split('.').map(Number);
       with:
         strict: true
     ```
-  - **Revenue Potential**: Freemium model ($0 OSS, $29/mo Pro)
   - **Effort**: 12-16h
   - **Source**: Viability Report Section 7.1
 
