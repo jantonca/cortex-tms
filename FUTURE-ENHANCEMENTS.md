@@ -148,6 +148,47 @@ const [major, minor, patch] = currentVersion.split('.').map(Number);
 
 ---
 
+## 🟡 Medium Priority: Community & Adoption (v3.0+)
+
+### Lower Adoption Friction (GPT-5 Report Recommendations)
+
+- **Minimalist Preset** [GPT5-REC-1]
+  - **Feature**: New scope `cortex-tms init --scope minimal`
+  - **Why**: Reduces cognitive load for first-time users (current HOT+WARM docs are overwhelming)
+  - **Implementation**: Only sets up:
+    - `NEXT-TASKS.md` (task management)
+    - `.github/copilot-instructions.md` (AI collaboration)
+    - `docs/core/ARCHITECTURE.md` (system overview)
+  - **Effort**: 4-6h
+  - **Priority**: 🟡 Medium
+  - **Source**: External GPT-5 repository analysis (Jan 24, 2026)
+
+- **One-Click Try Path** [GPT5-REC-2]
+  - **Feature**: Screencast/GIF showing typical dev session with Claude/Copilot using TMS
+  - **Why**: "Show, don't tell" - demonstrates value in 30 seconds
+  - **Implementation**:
+    - Record 2-3 minute demo of AI agent using TMS docs
+    - Add to website landing page hero section
+    - Include in README.md above fold
+  - **Effort**: 2-3h
+  - **Priority**: 🟡 Medium
+  - **Source**: External GPT-5 repository analysis (Jan 24, 2026)
+
+- **Reusable GitHub Action** [GPT5-REC-3]
+  - **Feature**: Package existing workflow as reusable action
+  - **Why**: High leverage - teams can validate TMS without local setup
+  - **Implementation**:
+    ```yaml
+    - uses: cortex-tms/validate-action@v1
+      with:
+        strict: true
+    ```
+  - **Effort**: 3-4h (lower than GitHub Action feature below - just packaging)
+  - **Priority**: 🟡 Medium (consider moving to v2.9)
+  - **Source**: External GPT-5 repository analysis (Jan 24, 2026)
+
+---
+
 ## 🟡 Medium Priority (2-4 Months)
 
 ### Example Projects
@@ -320,6 +361,7 @@ Four comprehensive audits provided the following strategic insights:
 - **Viability Report**: Evidence-based code audit (found critical bugs)
 - **Analysis Report**: Architecture and market assessment
 - **Comparison Report**: Synthesis of all findings
+- **GPT-5 Repository Analysis** (Jan 24, 2026): External review of concept, implementation, plans, and viability
 
 All audit documents available in `/tmp/` directory.
 

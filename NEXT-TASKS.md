@@ -25,10 +25,13 @@
 | **Cost Calculator Widget** - Estimate token savings | [HIGH-3b] | 4-6h | 🟡 MED | ⏸️ Deferred |
 | **Sustainability Badge** - "Green AI Development" claims | [HIGH-3c] | 2-3h | 🟡 MED | ✅ Done |
 | **README.md Update** - New value propositions | [HIGH-3d] | 1-2h | 🔴 HIGH | ✅ Done |
+| **Measurement Methodology Doc** - Defensible 40-60% claims | [HIGH-3e] | 2-3h | 🔴 HIGH | ⬜ Todo |
+| **Cortex Dogfooding Case Study** - "How Cortex Uses TMS" | [HIGH-3f] | 3-4h | 🔴 HIGH | ⬜ Todo |
 
 **Note**: Cost Calculator deferred until after Reddit/X feedback - will inform which metrics to display (tokens, cost, compute % only - no carbon claims).
+**External Review**: GPT-5 analysis recommends proof artifacts before social launch to avoid "vaporware" perception.
 
-**Total Effort**: 11-17 hours
+**Total Effort**: 16-24 hours (updated to include proof tasks)
 
 ### New Messaging Pillars
 
@@ -49,8 +52,8 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **HN Launch** - "Why AI Agents Need More Than a README" | [TMS-295] | 1h | 🟡 MED | ✅ Done |
-| **Reddit Post** - r/ClaudeAI + r/programming (link to blog) | [TMS-286a] | 2h | 🔴 HIGH | ⬜ Todo |
-| **X (Twitter) Thread** - Build-in-public with metrics | [TMS-286b] | 1h | 🔴 HIGH | ⬜ Todo |
+| **Reddit Post** - r/ClaudeAI + r/programming (link to blog) | [TMS-286a] | 2h | 🔴 HIGH | ⬜ Blocked by HIGH-3e, HIGH-3f |
+| **X (Twitter) Thread** - Build-in-public with metrics | [TMS-286b] | 1h | 🔴 HIGH | ⬜ Blocked by HIGH-3e, HIGH-3f |
 | **Blog Post: Green AI Development** | [TMS-294] | 3-4h | 🟡 MED | ⏸️ Deferred |
 
 **Total Effort**: 7-8 hours
@@ -61,6 +64,13 @@
 - Result: Limited initial traction (new account visibility issue)
 - Next: Focus Reddit/X, let HN post sit for organic discovery
 - Decision: Build Cost Calculator AFTER Reddit/X feedback on metrics
+
+**Strategic Adjustment (Jan 24 - GPT-5 Report Analysis)**:
+- Reddit/X posts now blocked until proof artifacts published
+- Rationale: Claims of "40-60% cost reduction" need defensible methodology
+- Risk: Without proof, community may dismiss as vaporware
+- Approach: Publish measurement methodology + Cortex dogfooding case study FIRST
+- Timeline: +1 day of work for 10x stronger credibility
 
 **Success Metrics**:
 - 100+ GitHub stars (from 50 current)
@@ -82,11 +92,13 @@
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
 | **Structured JSON Output** - Replace string matching | [OPT-1] | 6-8h | 🔴 HIGH | ⬜ Todo |
+| **Guardian Safe Mode** - High-confidence violations only | [OPT-1b] | 3-4h | 🟡 MED | ⬜ Todo |
 | **Detection Logic Refactor** - Regex with word boundaries | [OPT-2] | 4-6h | 🟡 MED | ⬜ Todo |
 | **Retry Logic** - Exponential backoff for API failures | [OPT-3] | 3-4h | 🟡 MED | ⬜ Todo |
 | **Shared Guardian Prompt** - Extract to utility | [OPT-4] | 2-3h | 🟢 LOW | ⬜ Todo |
 
 **Goal**: Achieve 80%+ accuracy on test dataset
+**Note**: Safe Mode reduces false positive noise and builds trust in Guardian accuracy (GPT-5 recommendation)
 
 ---
 

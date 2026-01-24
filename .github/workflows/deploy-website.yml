@@ -1,17 +1,9 @@
 name: Deploy Website
 
+# Manual deployment only until Cloudflare secrets are configured
+# To enable auto-deploy, add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID secrets
+# See: https://github.com/cortex-tms/cortex-tms/settings/secrets/actions
 on:
-  push:
-    branches: [main]
-    paths:
-      - 'website/**'
-      - 'pnpm-workspace.yaml'
-      - '.github/workflows/deploy-website.yml'
-  pull_request:
-    paths:
-      - 'website/**'
-      - 'pnpm-workspace.yaml'
-      - '.github/workflows/deploy-website.yml'
   workflow_dispatch:
 
 jobs:
