@@ -1,0 +1,119 @@
+/* Cortex TMS - Glass Tables (theme palette) */
+
+/* Apply to Markdown-rendered tables in posts (Starlight + SimpleLayout) */
+.sl-markdown-content table,
+.post-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95em;
+  min-width: 360px;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+}
+
+/* Header styling: use brand accent with glass tint */
+.sl-markdown-content thead tr,
+.post-content thead tr {
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--sl-color-accent) 35%, transparent),
+    color-mix(in oklab, var(--sl-color-accent-high) 35%, transparent)
+  );
+  color: var(--sl-color-white);
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.sl-markdown-content th,
+.sl-markdown-content td,
+.post-content th,
+.post-content td {
+  padding: 12px 15px;
+}
+
+/* Body rows: subtle zebra with neutral glass tones */
+.sl-markdown-content tbody tr,
+.post-content tbody tr {
+  border-bottom: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.sl-markdown-content tbody tr:nth-of-type(even),
+.post-content tbody tr:nth-of-type(even) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sl-markdown-content tbody tr:last-of-type,
+.post-content tbody tr:last-of-type {
+  border-bottom: 0px solid var(--sl-color-accent);
+}
+
+/* Hover effect: soft lift with accent glow */
+.sl-markdown-content tbody tr:hover,
+.post-content tbody tr:hover {
+  background: color-mix(in oklab, var(--sl-color-accent-low) 60%, transparent);
+  transition: background 0.2s var(--ease-smooth);
+}
+
+/* Caption styling (optional) */
+.sl-markdown-content table caption,
+.post-content table caption {
+  caption-side: top;
+  font-family: var(--sl-font-mono);
+  font-size: 0.85em;
+  letter-spacing: 0.02em;
+  color: var(--sl-color-text);
+  padding: 0.75rem 1rem;
+}
+
+/* Responsive: horizontal scroll on small screens */
+@media (max-width: 600px) {
+  .sl-markdown-content table,
+  .post-content table {
+    display: block;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Light theme adjustments for contrast & softness */
+:root[data-theme='light'] .sl-markdown-content table,
+:root[data-theme='light'] .post-content table {
+  background: rgba(255, 255, 255, 0.65);
+  border-color: rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-theme='light'] .sl-markdown-content thead tr,
+:root[data-theme='light'] .post-content thead tr {
+  background: linear-gradient(
+    to right,
+    color-mix(in oklab, var(--sl-color-accent) 25%, white),
+    color-mix(in oklab, var(--sl-color-accent-high) 25%, white)
+  );
+}
+
+:root[data-theme='light'] .sl-markdown-content tbody tr,
+:root[data-theme='light'] .post-content tbody tr {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+:root[data-theme='light'] .sl-markdown-content tbody tr:nth-of-type(even),
+:root[data-theme='light'] .post-content tbody tr:nth-of-type(even) {
+  background: rgba(0, 0, 0, 0.04);
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+  .sl-markdown-content table {
+    border-width: 2px;
+    background: rgba(0, 0, 0, 0.85);
+  }
+}
