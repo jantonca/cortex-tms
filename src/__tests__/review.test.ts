@@ -464,3 +464,176 @@ describe('Review Command - Safe Mode', () => {
     expect(result.output).toContain('Confidence: 70%');
   });
 });
+
+describe('Review Command - JSON Output', () => {
+  let tempDir: string;
+
+  beforeEach(async () => {
+    tempDir = await createTempDir();
+
+    // Create minimal TMS structure
+    const docsDir = join(tempDir, 'docs/core');
+    mkdirSync(docsDir, { recursive: true });
+    writeFileSync(join(docsDir, 'PATTERNS.md'), '# Patterns');
+    writeFileSync(join(tempDir, 'test.ts'), 'code');
+  });
+
+  afterEach(async () => {
+    await cleanupTempDir(tempDir);
+    vi.clearAllMocks();
+  });
+
+  it('should output raw JSON when --output-json flag is used', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'compliant',
+          message: 'All good',
+        },
+        violations: [],
+        positiveObservations: ['Good structure'],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      outputJson: true,
+    });
+
+    expect(result.success).toBe(true);
+
+    // Output should be valid JSON
+    const parsed = JSON.parse(result.output);
+    expect(parsed).toHaveProperty('summary');
+    expect(parsed).toHaveProperty('violations');
+    expect(parsed).toHaveProperty('positiveObservations');
+    expect(parsed.summary.status).toBe('compliant');
+  });
+
+  it('should output JSON with violations', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'major_violations',
+          message: 'Found issues',
+        },
+        violations: [
+          {
+            pattern: 'Pattern 1',
+            line: 10,
+            issue: 'Test issue',
+            recommendation: 'Fix it',
+            severity: 'major',
+            confidence: 0.95,
+          },
+        ],
+        positiveObservations: [],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      outputJson: true,
+    });
+
+    expect(result.success).toBe(true);
+
+    const parsed = JSON.parse(result.output);
+    expect(parsed.summary.status).toBe('major_violations');
+    expect(parsed.violations).toHaveLength(1);
+    expect(parsed.violations[0].pattern).toBe('Pattern 1');
+    expect(parsed.violations[0].confidence).toBe(0.95);
+  });
+
+  it('should apply Safe Mode filtering in JSON output', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'minor_issues',
+          message: 'Found 2 issues',
+        },
+        violations: [
+          {
+            pattern: 'Pattern 1',
+            issue: 'High confidence',
+            recommendation: 'Fix',
+            severity: 'major',
+            confidence: 0.9,
+          },
+          {
+            pattern: 'Pattern 2',
+            issue: 'Low confidence',
+            recommendation: 'Maybe fix',
+            severity: 'minor',
+            confidence: 0.5,
+          },
+        ],
+        positiveObservations: [],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      outputJson: true,
+      safe: true,
+    });
+
+    expect(result.success).toBe(true);
+
+    const parsed = JSON.parse(result.output);
+    // Should only have high-confidence violation
+    expect(parsed.violations).toHaveLength(1);
+    expect(parsed.violations[0].pattern).toBe('Pattern 1');
+    expect(parsed.violations[0].confidence).toBe(0.9);
+  });
+
+  it('should not include UI text in JSON mode', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: { status: 'compliant', message: 'Good' },
+        violations: [],
+        positiveObservations: [],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      outputJson: true,
+    });
+
+    expect(result.success).toBe(true);
+
+    // Should not contain UI elements
+    expect(result.output).not.toContain('🛡️');
+    expect(result.output).not.toContain('Guardian Code Review');
+    expect(result.output).not.toContain('Analysis Complete');
+    expect(result.output).not.toContain('Tokens:');
+
+    // Should be valid JSON
+    expect(() => JSON.parse(result.output)).not.toThrow();
+  });
+});

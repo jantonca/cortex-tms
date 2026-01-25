@@ -14,6 +14,7 @@ interface ReviewOptions {
   model?: string;
   apiKey?: string;
   safe?: boolean;
+  outputJson?: boolean;
 }
 
 interface ReviewResult {
@@ -110,10 +111,21 @@ export async function runReviewForTest(
       }
     }
 
-    // Format output
-    let output = response.content;
-    if (parsedResult) {
-      output = formatGuardianResult(parsedResult);
+    // Format output based on mode
+    let output: string;
+    if (options.outputJson) {
+      // JSON mode: output raw JSON
+      if (parsedResult) {
+        output = JSON.stringify(parsedResult, null, 2);
+      } else {
+        output = JSON.stringify({
+          error: 'Failed to parse Guardian response',
+          rawContent: response.content
+        }, null, 2);
+      }
+    } else {
+      // Default mode: formatted output
+      output = parsedResult ? formatGuardianResult(parsedResult) : response.content;
     }
 
     return {
