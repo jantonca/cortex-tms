@@ -1,0 +1,54 @@
+---
+/**
+ * CTABox Component
+ *
+ * Call-to-action box with gradient background
+ * Extracted from branding/designs/library
+ */
+import '../styles/glass-library.css';
+import '../styles/cta-box.css';
+
+interface Props {
+  title: string
+  description: string
+  primaryButtonText: string
+  primaryButtonHref: string
+  secondaryButtonText?: string
+  secondaryButtonHref?: string
+}
+
+const {
+  title,
+  description,
+  primaryButtonText,
+  primaryButtonHref,
+  secondaryButtonText,
+  secondaryButtonHref,
+} = Astro.props
+---
+
+<div class='glass-liquid-panel cta-box'>
+  <div class='bloom'></div>
+  <div class='panel-content'>
+    <h2>{title}</h2>
+    <p>{description}</p>
+    <div class='btn-group'>
+      <a
+        href={primaryButtonHref}
+        class='btn btn-primary'
+      >
+        {primaryButtonText}
+      </a>
+      {
+        secondaryButtonText && secondaryButtonHref && (
+          <a
+            href={secondaryButtonHref}
+            class='btn btn-outline'
+          >
+            {secondaryButtonText}
+          </a>
+        )
+      }
+    </div>
+  </div>
+</div>

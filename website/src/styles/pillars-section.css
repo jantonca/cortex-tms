@@ -1,0 +1,208 @@
+/**
+ * Pillars Section Component Styles
+ * Extracted from branding/designs/library
+ */
+
+/* === PILLAR CARDS === */
+.pillars-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 4rem;
+}
+
+.pillar-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  padding: 1.5rem;
+  transition: all 0.3s var(--ease-smooth);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.pillar-card h3 {
+  color: var(--sl-color-text);
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+}
+
+.pillar-icon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(249, 115, 22, 0.15);
+  border-radius: 10px;
+  margin-bottom: 1rem;
+}
+
+.pillar-icon svg {
+  width: 24px;
+  height: 24px;
+  color: var(--sl-color-accent);
+}
+
+.pillar-description {
+  color: var(--sl-color-gray-3);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.pillar-viz {
+  margin-bottom: 1.5rem;
+}
+
+.viz-bar {
+  height: 24px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  position: relative;
+}
+
+.viz-bar-fill {
+  height: 100%;
+  border-radius: 12px;
+  transition: width 1s var(--ease-smooth);
+}
+
+.viz-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: var(--sl-color-gray-2);
+  font-family: var(--sl-font-mono);
+}
+
+.pillar-label {
+  color: var(--sl-color-gray-4);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.progress-bar {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.75rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff7043, var(--sl-color-accent));
+  border-radius: 4px;
+  transition: width 0.6s var(--ease-smooth);
+}
+
+.progress-fill.success {
+  background: linear-gradient(90deg, #20b2aa, #2fccc4);
+}
+
+.pillar-stat {
+  color: var(--sl-color-gray-2);
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.pillar-impact {
+  color: var(--sl-color-accent);
+  font-weight: 700;
+  font-size: 0.95rem;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.pillar-link {
+  color: var(--sl-color-accent);
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: gap 0.3s var(--ease-smooth);
+  margin-top: auto;
+  padding-top: 1rem;
+}
+
+.pillar-link svg {
+  width: 16px;
+  height: 16px;
+}
+
+.pillar-link:hover {
+  gap: 0.75rem;
+}
+
+.pillar-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(249, 115, 22, 0.2);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.2);
+}
+
+.pillar-card:hover::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sl-color-accent), transparent);
+  z-index: 10;
+}
+
+/* Light theme adjustments for pillars */
+:root[data-theme='light'] .pillar-card {
+  background: rgba(255, 255, 255, 0.3);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+:root[data-theme='light'] .pillar-card:hover {
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+:root[data-theme='light'] .pillar-icon {
+  background: rgba(249, 115, 22, 0.15);
+}
+
+:root[data-theme='light'] .viz-bar {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme='light'] .viz-label {
+  color: rgba(0, 0, 0, 0.7);
+  font-weight: 600;
+}
+
+:root[data-theme='light'] .progress-bar {
+  background: rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme='light'] .pillar-description {
+  color: rgba(0, 0, 0, 0.65);
+}
+
+:root[data-theme='light'] .pillar-stat {
+  color: rgba(0, 0, 0, 0.7);
+}

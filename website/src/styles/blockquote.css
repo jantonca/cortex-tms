@@ -1,0 +1,30 @@
+/**
+ * Blockquote Component Styles
+ * Adapted from branding/designs/library liquid glass design
+ */
+
+.blockquote {
+  font-family: var(--sl-font-heading);
+  font-style: italic;
+  font-size: 1.5rem;
+  color: white;
+  border-left: 2px solid var(--glass-border);
+  padding-left: 2rem;
+  margin: 3rem 0;
+}
+
+.blockquote cite {
+  display: block;
+  margin-top: 1rem;
+  font-family: var(--sl-font);
+  font-style: normal;
+  font-size: 0.8rem;
+  color: var(--sl-color-accent);
+  text-transform: uppercase;
+}
+
+/* Light theme adjustments */
+:root[data-theme='light'] .blockquote {
+  color: var(--sl-color-gray-1);
+  border-left-color: rgba(0, 0, 0, 0.1);
+}

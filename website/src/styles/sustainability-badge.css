@@ -1,0 +1,157 @@
+/**
+ * Sustainability Badge Component Styles
+ * Extracted from branding/designs/library
+ */
+
+.sustainability-badge .panel-content {
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.sustainability-badge .badge-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.sustainability-badge .badge-header svg {
+  color: var(--sl-color-accent);
+}
+
+.sustainability-badge .badge-header h2 {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--sl-color-accent);
+  font-family: var(--sl-font-heading);
+  font-weight: 600;
+}
+
+.sustainability-badge .badge-description {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--sl-color-gray-2);
+  max-width: 700px;
+  margin: 0 auto 2rem;
+}
+
+.sustainability-badge .badge-description strong {
+  color: var(--sl-color-accent-high);
+}
+
+.sustainability-badge .stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0;
+  margin: 2.5rem auto;
+}
+
+.sustainability-badge .stat-card {
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.sustainability-badge .stat-card:hover {
+  transform: translateY(-4px);
+}
+
+/* Separator lines between stat cards */
+.sustainability-badge .stat-card:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 60%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+.sustainability-badge .stat-value {
+  font-size: 4rem;
+  font-family: var(--sl-font);
+  font-weight: 600;
+  color: var(--sl-color-accent);
+  line-height: 1;
+  margin: 0 0 0.5rem 0;
+}
+
+.sustainability-badge .stat-label {
+  font-family: var(--sl-font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  opacity: 0.5;
+  letter-spacing: 1px;
+  margin: 0 0 0.5rem 0;
+  color: var(--sl-color-text);
+}
+
+.sustainability-badge .stat-detail {
+  font-size: 0.875rem;
+  color: var(--sl-color-gray-3);
+  margin: 0;
+}
+
+.sustainability-badge .badge-footer {
+  margin-top: 3rem;
+  padding-top: 3rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.sustainability-badge .badge-footer p {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--sl-color-gray-3);
+}
+
+.sustainability-badge .badge-footer strong {
+  color: var(--sl-color-accent);
+}
+
+/* Light theme adjustments */
+:root[data-theme='light']
+  .sustainability-badge
+  .stat-card:not(:last-child)::after {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 0, 0, 0.1),
+    transparent
+  );
+}
+
+:root[data-theme='light'] .sustainability-badge .badge-footer {
+  background: rgba(var(--sl-color-accent-rgb), 0.08);
+  border-color: rgba(var(--sl-color-accent-rgb), 0.3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sustainability-badge .stats-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .sustainability-badge .stat-card:not(:last-child)::after {
+    display: none;
+  }
+
+  .sustainability-badge .stat-value {
+    font-size: 2rem;
+  }
+
+  .sustainability-badge .badge-header h2 {
+    font-size: 1.5rem;
+  }
+
+  .sustainability-badge .badge-description {
+    font-size: 1rem;
+  }
+}

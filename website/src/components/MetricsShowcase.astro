@@ -1,0 +1,45 @@
+---
+/**
+ * MetricsShowcase Component
+ *
+ * Displays key performance metrics in a glass panel with gradient text
+ * Adapted from branding/designs/library liquid glass design
+ */
+import '../styles/glass-library.css';
+import '../styles/metrics-showcase.css';
+---
+
+<div class="glass-liquid-panel">
+  <div class="bloom"></div>
+  <div class="panel-content">
+    <h3 class="metrics-title">
+      From Cortex TMS itself (we dogfood everything):
+    </h3>
+
+    <div class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-value">94.5%</div>
+        <div class="metric-label">Context Reduction</div>
+        <div class="metric-detail">3,647 tokens vs 66,834</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">10x</div>
+        <div class="metric-label">Cost Reduction</div>
+        <div class="metric-detail">$0.01 vs $0.11/session</div>
+      </div>
+
+      <div class="metric-card">
+        <div class="metric-value">80%</div>
+        <div class="metric-label">Fewer Violations</div>
+        <div class="metric-detail">Guardian catches drift</div>
+      </div>
+    </div>
+
+    <div class="metrics-footer">
+      <p class="metrics-explanation">
+        <strong>How?</strong> HOT/WARM/COLD tier system ensures AI agents only read what matters.
+      </p>
+    </div>
+  </div>
+</div>

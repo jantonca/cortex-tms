@@ -1,0 +1,102 @@
+/**
+ * Glass Library Extracted Styles
+ * Styles extracted directly from branding/designs/library
+ */
+
+/* Glass Liquid Panel (from design library) */
+.glass-liquid-panel {
+  position: relative;
+  background: var(--glass-surface);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: all 0.6s var(--ease-smooth);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.glass-liquid-panel:hover {
+  transform: translateY(-4px);
+  border-color: rgba(249, 115, 22, 0.3);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Bloom Sheen Effect (from design library) */
+.bloom {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle 400px at var(--x, 50%) var(--y, 50%),
+    rgba(255, 255, 255, 0.04),
+    transparent 80%
+  );
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-smooth);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.glass-liquid-panel:hover .bloom {
+  opacity: 1;
+}
+
+/* Panel Content (from design library) */
+.panel-content {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+}
+
+/* Buttons (from design library) */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.8rem 1.8rem;
+  border-radius: 10px;
+  font-family: var(--sl-font);
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border: 1px solid transparent;
+  font-size: 0.85rem;
+}
+
+.btn-primary {
+  background: var(--sl-color-accent);
+  color: var(--sl-color-black);
+}
+
+.btn-primary:hover {
+  background: #fb923c;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(249, 115, 22, 0.2);
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--glass-border);
+  color: white;
+  backdrop-filter: blur(5px);
+}
+
+.btn-outline:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: var(--sl-color-accent);
+  color: var(--sl-color-accent);
+}
+
+/* Light theme button adjustments */
+:root[data-theme='light'] .btn-outline {
+  color: var(--sl-color-gray-1);
+  border-color: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .btn-outline:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-color: var(--sl-color-accent);
+  color: var(--sl-color-accent);
+}

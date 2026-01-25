@@ -1,0 +1,124 @@
+/**
+ * Metrics Showcase Component Styles
+ * Extracted from branding/designs/library
+ */
+
+/* === METRICS SHOWCASE === */
+.metrics-title {
+  text-align: center;
+  font-size: 1.5rem;
+  margin-bottom: 3rem;
+  color: var(--sl-color-gray-2);
+}
+
+.metric-label {
+  color: #8b8b8b;
+  font-family: var(--sl-font-mono);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.75rem;
+}
+
+.metric-detail {
+  font-size: 0.9rem;
+  color: #999;
+  font-family: var(--sl-font-mono);
+  font-weight: 400;
+}
+
+.metrics-footer {
+  text-align: center;
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.metrics-explanation {
+  color: var(--sl-color-gray-3);
+  font-size: 1rem;
+}
+
+.metrics-explanation strong {
+  color: var(--sl-color-gray-2);
+}
+
+:root[data-theme='light'] .metrics-footer {
+  border-top-color: rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .metric-label {
+  color: #4a4a4a;
+}
+
+/* === METRICS GRID === */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin: 2rem 0;
+}
+
+.metric-card {
+  text-align: center;
+  padding: 2.5rem 1.5rem;
+  position: relative;
+  transition: transform 0.3s var(--ease-smooth);
+}
+
+.metric-card:hover {
+  transform: translateY(-4px);
+}
+
+.metric-card:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 1px;
+  height: 60%;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(255, 255, 255, 0.1),
+    transparent
+  );
+}
+
+.metric-value {
+  font-family: var(--sl-font);
+  font-size: 4.5rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #ff9f5a, var(--sl-color-accent), #ff7033);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  line-height: 1;
+  margin-bottom: 1rem;
+}
+
+/* Light theme adjustments for metrics */
+:root[data-theme='light'] .metric-card:not(:last-child)::after {
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(0, 0, 0, 0.1),
+    transparent
+  );
+}
+
+@media (max-width: 768px) {
+  .metrics-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+
+  .metric-card:not(:last-child)::after {
+    display: none;
+  }
+
+  .metric-value {
+    font-size: 3.5rem;
+  }
+}
