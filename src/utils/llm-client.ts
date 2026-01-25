@@ -9,12 +9,24 @@ import type { GuardianResult } from '../types/guardian.js';
 // Default timeout for API requests (30 seconds)
 const DEFAULT_API_TIMEOUT_MS = 30000;
 
+// Default retry configuration
+const DEFAULT_MAX_RETRIES = 3;
+const DEFAULT_INITIAL_DELAY_MS = 1000; // 1 second
+const DEFAULT_MAX_DELAY_MS = 10000; // 10 seconds
+const DEFAULT_BACKOFF_MULTIPLIER = 2;
+
 export interface LLMConfig {
   provider: 'openai' | 'anthropic';
   apiKey: string;
   model?: string;
   timeoutMs?: number;
   responseFormat?: 'text' | 'json';
+  retryConfig?: {
+    maxRetries?: number;
+    initialDelayMs?: number;
+    maxDelayMs?: number;
+    backoffMultiplier?: number;
+  };
 }
 
 export interface LLMMessage {
@@ -32,19 +44,108 @@ export interface LLMResponse {
 }
 
 /**
- * Call LLM API with messages
+ * Sleep for specified milliseconds (for retry delays)
+ */
+function sleep(ms: number): Promise<void> {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Check if an error is retryable
+ *
+ * Retryable errors:
+ * - Network errors (fetch failures, timeouts)
+ * - Rate limit errors (429)
+ * - Server errors (500, 502, 503, 504)
+ *
+ * Non-retryable errors:
+ * - Authentication errors (401, 403)
+ * - Invalid request errors (400, 404)
+ * - Other client errors (4xx except 429)
+ */
+function isRetryableError(error: Error): boolean {
+  const errorMessage = error.message.toLowerCase();
+
+  // Network errors (timeout, connection issues)
+  if (errorMessage.includes('timeout') ||
+      errorMessage.includes('network') ||
+      errorMessage.includes('econnrefused') ||
+      errorMessage.includes('enotfound')) {
+    return true;
+  }
+
+  // Rate limit errors (429)
+  if (errorMessage.includes('429') || errorMessage.includes('rate limit')) {
+    return true;
+  }
+
+  // Server errors (5xx)
+  if (errorMessage.includes('500') ||
+      errorMessage.includes('502') ||
+      errorMessage.includes('503') ||
+      errorMessage.includes('504')) {
+    return true;
+  }
+
+  // Authentication and client errors are not retryable
+  if (errorMessage.includes('401') ||
+      errorMessage.includes('403') ||
+      errorMessage.includes('400') ||
+      errorMessage.includes('404')) {
+    return false;
+  }
+
+  // Default to not retrying for unknown errors
+  return false;
+}
+
+/**
+ * Call LLM API with messages (with automatic retry on transient failures)
  */
 export async function callLLM(
   config: LLMConfig,
   messages: LLMMessage[]
 ): Promise<LLMResponse> {
-  if (config.provider === 'openai') {
-    return await callOpenAI(config, messages);
-  } else if (config.provider === 'anthropic') {
-    return await callAnthropic(config, messages);
+  const maxRetries = config.retryConfig?.maxRetries ?? DEFAULT_MAX_RETRIES;
+  const initialDelayMs = config.retryConfig?.initialDelayMs ?? DEFAULT_INITIAL_DELAY_MS;
+  const maxDelayMs = config.retryConfig?.maxDelayMs ?? DEFAULT_MAX_DELAY_MS;
+  const backoffMultiplier = config.retryConfig?.backoffMultiplier ?? DEFAULT_BACKOFF_MULTIPLIER;
+
+  let lastError: Error | null = null;
+
+  for (let attempt = 0; attempt <= maxRetries; attempt++) {
+    try {
+      // Make the actual API call
+      if (config.provider === 'openai') {
+        return await callOpenAI(config, messages);
+      } else if (config.provider === 'anthropic') {
+        return await callAnthropic(config, messages);
+      }
+
+      throw new Error(`Unsupported provider: ${config.provider}`);
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+
+      // If this is the last attempt or error is not retryable, throw immediately
+      if (attempt === maxRetries || !isRetryableError(lastError)) {
+        throw lastError;
+      }
+
+      // Calculate delay with exponential backoff
+      const delay = Math.min(
+        initialDelayMs * Math.pow(backoffMultiplier, attempt),
+        maxDelayMs
+      );
+
+      // Log retry attempt (can be useful for debugging)
+      // console.warn(`LLM API call failed (attempt ${attempt + 1}/${maxRetries + 1}): ${lastError.message}. Retrying in ${delay}ms...`);
+
+      await sleep(delay);
+    }
   }
 
-  throw new Error(`Unsupported provider: ${config.provider}`);
+  // This should never be reached due to throw in loop, but TypeScript needs it
+  throw lastError || new Error('Unknown error in LLM API call');
 }
 
 interface OpenAIResponse {

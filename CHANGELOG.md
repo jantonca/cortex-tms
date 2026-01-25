@@ -59,6 +59,46 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Files**: `docs/archive/plans/agent-skills-integration.md`, `docs/core/ARCHITECTURE.md`, `tmp/guardian-skill/SKILL.md`
 - **Effort**: 2-3 hours
 
+#### LLM Client Retry Logic with Exponential Backoff (OPT-3)
+- **Feature**: Automatic retry with exponential backoff for transient API failures
+- **Why**: Improve reliability when calling OpenAI/Anthropic APIs, handle rate limits and server errors gracefully
+- **Capabilities**:
+  - Automatic retry on retryable errors (429 rate limits, 5xx server errors, network timeouts)
+  - No retry on permanent errors (401/403 auth errors, 400/404 client errors)
+  - Exponential backoff with configurable parameters
+  - Configurable max retries, initial delay, max delay, and backoff multiplier
+  - Default configuration: 3 retries, 1s initial delay, 10s max delay, 2x backoff
+- **Retryable Errors**:
+  - Network errors (timeouts, connection failures)
+  - Rate limit errors (429)
+  - Server errors (500, 502, 503, 504)
+- **Configuration**:
+  ```typescript
+  const config: LLMConfig = {
+    provider: 'anthropic',
+    apiKey: 'key',
+    retryConfig: {
+      maxRetries: 3,           // Max retry attempts (default: 3)
+      initialDelayMs: 1000,    // Initial delay (default: 1000ms)
+      maxDelayMs: 10000,       // Max delay cap (default: 10000ms)
+      backoffMultiplier: 2,    // Backoff multiplier (default: 2)
+    },
+  };
+  ```
+- **Example Flow**:
+  - Attempt 1: Fails with 429 → wait 1s
+  - Attempt 2: Fails with 429 → wait 2s
+  - Attempt 3: Fails with 429 → wait 4s
+  - Attempt 4: Succeeds → return result
+- **Impact**:
+  - More reliable Guardian operation during API rate limits
+  - Better user experience (no immediate failures on transient errors)
+  - Automatic recovery from temporary service disruptions
+- **Tests**: 8 new tests covering retry scenarios, exponential backoff, max retries, auth errors (non-retryable)
+- **Files**: `src/utils/llm-client.ts`, `src/__tests__/llm-client.test.ts`
+- **Total Tests**: 134 passing (126 → 134)
+- **Effort**: 3-4 hours
+
 #### Guardian Detection Logic Refactor (OPT-2)
 - **Feature**: Improved regex-based pattern matching in legacy detection fallback
 - **Why**: Reduce false positives from substring matches when JSON parsing unavailable

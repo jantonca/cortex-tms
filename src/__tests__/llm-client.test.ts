@@ -283,3 +283,243 @@ describe('LLM Client - Unsupported Provider', () => {
     ).rejects.toThrow('Unsupported provider');
   });
 });
+
+describe('LLM Client - Retry Logic', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('should retry on rate limit error (429) and succeed', async () => {
+    const mockSuccessResponse = {
+      choices: [{ message: { content: 'Success after retry' } }],
+      usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+    };
+
+    // First call fails with 429, second succeeds
+    (global.fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        text: async () => 'Rate limit exceeded',
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockSuccessResponse,
+      });
+
+    const config: LLMConfig = {
+      provider: 'openai',
+      apiKey: 'test-key',
+      retryConfig: {
+        maxRetries: 3,
+        initialDelayMs: 10, // Very short delay for tests
+      },
+    };
+
+    const response = await callLLM(config, [{ role: 'user', content: 'Test' }]);
+
+    expect(response.content).toBe('Success after retry');
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('should retry on server error (503) and succeed', async () => {
+    const mockSuccessResponse = {
+      content: [{ text: 'Success after retry' }],
+      usage: { input_tokens: 10, output_tokens: 5 },
+    };
+
+    // First call fails with 503, second succeeds
+    (global.fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 503,
+        text: async () => 'Service temporarily unavailable',
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockSuccessResponse,
+      });
+
+    const config: LLMConfig = {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      retryConfig: {
+        maxRetries: 3,
+        initialDelayMs: 10, // Very short delay for tests
+      },
+    };
+
+    const response = await callLLM(config, [{ role: 'user', content: 'Test' }]);
+
+    expect(response.content).toBe('Success after retry');
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+
+  it('should NOT retry on authentication error (401)', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      ok: false,
+      status: 401,
+      text: async () => 'Invalid API key',
+    });
+
+    const config: LLMConfig = {
+      provider: 'openai',
+      apiKey: 'invalid-key',
+      retryConfig: {
+        maxRetries: 3,
+      },
+    };
+
+    await expect(
+      callLLM(config, [{ role: 'user', content: 'Test' }])
+    ).rejects.toThrow('OpenAI API error: 401');
+
+    // Should only be called once (no retry)
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should NOT retry on client error (400)', async () => {
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      ok: false,
+      status: 400,
+      text: async () => 'Bad request',
+    });
+
+    const config: LLMConfig = {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      retryConfig: {
+        maxRetries: 3,
+      },
+    };
+
+    await expect(
+      callLLM(config, [{ role: 'user', content: 'Test' }])
+    ).rejects.toThrow('Anthropic API error: 400');
+
+    // Should only be called once (no retry)
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+  });
+
+  it('should exhaust retries and throw final error', async () => {
+    // All attempts fail with 503
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 503,
+      text: async () => 'Service unavailable',
+    });
+
+    const config: LLMConfig = {
+      provider: 'openai',
+      apiKey: 'test-key',
+      retryConfig: {
+        maxRetries: 2, // Will try 3 times total (initial + 2 retries)
+        initialDelayMs: 10, // Very short delay for tests
+      },
+    };
+
+    await expect(
+      callLLM(config, [{ role: 'user', content: 'Test' }])
+    ).rejects.toThrow('OpenAI API error: 503');
+
+    // Should be called 3 times (initial + 2 retries)
+    expect(global.fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('should use exponential backoff for delays', async () => {
+    const mockSuccessResponse = {
+      choices: [{ message: { content: 'Success' } }],
+      usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+    };
+
+    // Fail twice, then succeed on third attempt
+    (global.fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        text: async () => 'Rate limit',
+      })
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        text: async () => 'Rate limit',
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockSuccessResponse,
+      });
+
+    const config: LLMConfig = {
+      provider: 'openai',
+      apiKey: 'test-key',
+      retryConfig: {
+        maxRetries: 3,
+        initialDelayMs: 10, // Very short for tests
+        backoffMultiplier: 2,
+        maxDelayMs: 10000,
+      },
+    };
+
+    const response = await callLLM(config, [{ role: 'user', content: 'Test' }]);
+
+    expect(response.content).toBe('Success');
+    expect(global.fetch).toHaveBeenCalledTimes(3);
+  });
+
+  it('should respect maxDelayMs cap', async () => {
+    // All attempts fail
+    (global.fetch as ReturnType<typeof vi.fn>).mockResolvedValue({
+      ok: false,
+      status: 503,
+      text: async () => 'Server error',
+    });
+
+    const config: LLMConfig = {
+      provider: 'openai',
+      apiKey: 'test-key',
+      retryConfig: {
+        maxRetries: 3,
+        initialDelayMs: 10,
+        backoffMultiplier: 10, // Very high multiplier
+        maxDelayMs: 50, // Cap at 50ms for tests
+      },
+    };
+
+    await expect(
+      callLLM(config, [{ role: 'user', content: 'Test' }])
+    ).rejects.toThrow();
+
+    // Should retry maxRetries times
+    expect(global.fetch).toHaveBeenCalledTimes(4); // initial + 3 retries
+  });
+
+  it('should use default retry config when not provided', async () => {
+    const mockSuccessResponse = {
+      choices: [{ message: { content: 'Success' } }],
+      usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+    };
+
+    // Fail once, then succeed
+    (global.fetch as ReturnType<typeof vi.fn>)
+      .mockResolvedValueOnce({
+        ok: false,
+        status: 429,
+        text: async () => 'Rate limit',
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => mockSuccessResponse,
+      });
+
+    const config: LLMConfig = {
+      provider: 'openai',
+      apiKey: 'test-key',
+      // No retryConfig provided - should use defaults
+    };
+
+    const response = await callLLM(config, [{ role: 'user', content: 'Test' }]);
+
+    expect(response.content).toBe('Success');
+    expect(global.fetch).toHaveBeenCalledTimes(2);
+  });
+});

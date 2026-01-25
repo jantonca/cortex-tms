@@ -107,7 +107,7 @@
 | **Structured JSON Output** - Replace string matching | [OPT-1] | 6-8h | 🔴 HIGH | ✅ Done |
 | **Guardian Safe Mode** - High-confidence violations only | [OPT-1b] | 3-4h | 🟡 MED | ✅ Done |
 | **Detection Logic Refactor** - Regex with word boundaries | [OPT-2] | 4-6h | 🟡 MED | ✅ Done |
-| **Retry Logic** - Exponential backoff for API failures | [OPT-3] | 3-4h | 🟡 MED | ⬜ Todo |
+| **Retry Logic** - Exponential backoff for API failures | [OPT-3] | 3-4h | 🟡 MED | ✅ Done |
 | **Shared Guardian Prompt** - Extract to utility | [OPT-4] | 2-3h | 🟢 LOW | ⬜ Todo |
 
 **Goal**: Achieve 80%+ accuracy on test dataset
