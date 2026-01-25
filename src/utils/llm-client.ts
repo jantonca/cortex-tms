@@ -4,6 +4,8 @@
  * Supports OpenAI and Anthropic APIs for Guardian code review
  */
 
+import type { GuardianResult } from '../types/guardian.js';
+
 // Default timeout for API requests (30 seconds)
 const DEFAULT_API_TIMEOUT_MS = 30000;
 
@@ -211,25 +213,26 @@ async function callAnthropic(
 /**
  * Parse and validate Guardian JSON response
  *
+ * Handles edge cases where LLMs wrap JSON in markdown code blocks.
+ *
  * @param content - Raw LLM response content
  * @returns Parsed GuardianResult or null if invalid
  */
-export function parseGuardianJSON(content: string): {
-  summary: {
-    status: 'compliant' | 'minor_issues' | 'major_violations';
-    message: string;
-  };
-  violations: Array<{
-    pattern: string;
-    line?: number;
-    issue: string;
-    recommendation: string;
-    severity: 'minor' | 'major';
-  }>;
-  positiveObservations: string[];
-} | null {
+export function parseGuardianJSON(content: string): GuardianResult | null {
   try {
-    const parsed = JSON.parse(content);
+    // Strip markdown code blocks if present (some LLMs wrap JSON even when instructed not to)
+    let jsonStr = content.trim();
+    if (jsonStr.startsWith('```json')) {
+      jsonStr = jsonStr.slice(7);
+    } else if (jsonStr.startsWith('```')) {
+      jsonStr = jsonStr.slice(3);
+    }
+    if (jsonStr.endsWith('```')) {
+      jsonStr = jsonStr.slice(0, -3);
+    }
+    jsonStr = jsonStr.trim();
+
+    const parsed = JSON.parse(jsonStr);
 
     // Validate required fields
     if (!parsed.summary?.status || typeof parsed.summary.message !== 'string') {
