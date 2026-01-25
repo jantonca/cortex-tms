@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Guardian Structured JSON Output (OPT-1)
+- **Feature**: Guardian now outputs structured JSON for reliable violation detection
+- **Why**: Replace brittle string matching with deterministic parsing, improve accuracy from 65.5% baseline
+- **Capabilities**:
+  - Structured JSON schema with `summary`, `violations`, and `positiveObservations`
+  - Native JSON mode for OpenAI (GPT-4 models)
+  - Prompt engineering for Anthropic (Claude models)
+  - Graceful fallback to text mode if JSON parsing fails
+  - Pretty-formatted display with emojis and severity indicators
+- **Implementation**:
+  - New types: `src/types/guardian.ts` (GuardianResult, Violation interfaces)
+  - LLM client: Added `responseFormat: 'json'` config option
+  - OpenAI: Uses `response_format: { type: "json_object" }`
+  - Anthropic: Appends JSON format instruction to system prompt
+  - Review command: JSON parsing + formatting with legacy fallback
+  - Test suite: JSON-based violation detection with legacy fallback
+- **Accuracy Improvements**:
+  - Target: 80%+ accuracy (from 65.5% baseline)
+  - Deterministic parsing eliminates keyword collision false positives
+  - Structured violations with pattern, line number, severity
+- **Files**: `src/types/guardian.ts`, `src/utils/llm-client.ts`, `src/commands/review.ts`, `src/__tests__/guardian-accuracy.test.ts`
+- **Effort**: 6-8 hours
+
 #### Token Counter Feature (HIGH-1)
 - **Feature**: `cortex status --tokens` command for token usage analysis
 - **Why**: Makes cost/sustainability value visible (QCS Analysis strongest recommendation)

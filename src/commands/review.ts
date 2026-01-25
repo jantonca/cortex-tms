@@ -13,9 +13,11 @@ import inquirer from 'inquirer';
 import {
   callLLM,
   getApiKey,
+  parseGuardianJSON,
   type LLMConfig,
   type LLMMessage,
 } from '../utils/llm-client.js';
+import type { GuardianResult } from '../types/guardian.js';
 
 /**
  * Create and configure the review command
@@ -40,6 +42,48 @@ export function createReviewCommand(): Command {
  * Export command instance for registration in CLI
  */
 export const reviewCommand = createReviewCommand();
+
+/**
+ * Format Guardian JSON result for display
+ */
+function formatGuardianResult(result: GuardianResult): string {
+  let output = '';
+
+  // Summary section with status emoji
+  const statusConfig = {
+    compliant: { emoji: '✅', label: 'Compliant' },
+    minor_issues: { emoji: '⚠️ ', label: 'Minor Issues' },
+    major_violations: { emoji: '❌', label: 'Major Violations' },
+  };
+
+  const { emoji, label } = statusConfig[result.summary.status];
+  output += `${emoji} **${label}**\n\n`;
+  output += `${result.summary.message}\n\n`;
+
+  // Violations section
+  if (result.violations.length > 0) {
+    output += '## Violations\n\n';
+    result.violations.forEach((v, index) => {
+      const severityIcon = v.severity === 'major' ? '❌' : '⚠️ ';
+      output += `${index + 1}. ${severityIcon} **${v.pattern}**\n`;
+      if (v.line) {
+        output += `   📍 Line: ${v.line}\n`;
+      }
+      output += `   ❗ Issue: ${v.issue}\n`;
+      output += `   💡 Fix: ${v.recommendation}\n\n`;
+    });
+  }
+
+  // Positive observations section
+  if (result.positiveObservations.length > 0) {
+    output += '## Positive Observations\n\n';
+    result.positiveObservations.forEach((obs) => {
+      output += `✅ ${obs}\n`;
+    });
+  }
+
+  return output;
+}
 
 /**
  * Main review command logic
@@ -123,19 +167,31 @@ async function runReviewCommand(
       { role: 'user', content: userPrompt },
     ];
 
-    // Step 6: Call LLM
+    // Step 6: Call LLM with JSON mode
     const config: LLMConfig = {
       provider,
       apiKey,
       ...(options.model && { model: options.model }),
       timeoutMs: 60000, // 60 seconds for code review (longer than default)
+      responseFormat: 'json',
     };
 
     const response = await callLLM(config, messages);
 
-    // Step 7: Display results
+    // Step 7: Parse and display results
     console.log(chalk.bold.green('\n✅ Analysis Complete\n'));
-    console.log(chalk.white(response.content));
+
+    const parsedResult = parseGuardianJSON(response.content);
+
+    if (parsedResult) {
+      // Display formatted JSON result
+      const formatted = formatGuardianResult(parsedResult);
+      console.log(chalk.white(formatted));
+    } else {
+      // Fallback to raw text if JSON parsing fails
+      console.log(chalk.yellow('⚠️  Warning: Could not parse JSON response, displaying raw output:\n'));
+      console.log(chalk.white(response.content));
+    }
 
     if (response.usage) {
       console.log(
@@ -188,19 +244,39 @@ ${domainLogic}
 - References to actual files are GOOD per Pattern 3
 
 # Output Format
-Provide a structured report with:
+You MUST respond with valid JSON matching this exact schema:
 
-1. **Summary**: Overall assessment (✅ Compliant, ⚠️  Minor Issues, ❌ Major Violations)
-2. **Violations**: List each violation with:
-   - **Pattern**: Which pattern/rule was violated
-   - **Line**: Approximate line number (if identifiable)
-   - **Issue**: What's wrong
-   - **Recommendation**: How to fix it
-3. **Positive Observations**: What the code does well
+\`\`\`json
+{
+  "summary": {
+    "status": "compliant" | "minor_issues" | "major_violations",
+    "message": "Brief overall assessment of the code"
+  },
+  "violations": [
+    {
+      "pattern": "Pattern name (e.g., 'Pattern 1: Placeholder Syntax')",
+      "line": 42,  // Optional line number where violation occurs
+      "issue": "What's wrong with the code",
+      "recommendation": "How to fix it",
+      "severity": "minor" | "major"
+    }
+  ],
+  "positiveObservations": [
+    "Good practice 1",
+    "Good practice 2"
+  ]
+}
+\`\`\`
 
-If no violations found, provide positive feedback and highlight good practices.
+**Field Definitions**:
+- \`status\`: "compliant" (no violations), "minor_issues" (style/minor issues), or "major_violations" (serious pattern breaks)
+- \`violations\`: Array of violations found (empty array if compliant)
+- \`severity\`: "minor" for style/preference issues, "major" for pattern violations
+- \`positiveObservations\`: Array of strings highlighting good practices
 
-Be concise but specific. Reference exact line numbers when possible.`;
+If no violations found, set status to "compliant", violations to empty array [], and include positive observations.
+
+Be concise but specific. Reference exact line numbers in violations when possible.`;
 
   return prompt;
 }

@@ -93,18 +93,18 @@
 
 ---
 
-## 🎯 v2.9 Guardian Optimization (Future)
+## 🎯 v2.9 Guardian Optimization (In Progress)
 
 **Context**: Improve Guardian accuracy from 65.5% baseline
 
 **Timeline**: 2-3 weeks (15-20 hours total)
-**Status**: ⏸️ Blocked by v2.8
+**Status**: 🚀 In Progress (Jan 25+)
 
 ### Accuracy Improvements
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Structured JSON Output** - Replace string matching | [OPT-1] | 6-8h | 🔴 HIGH | ⬜ Todo |
+| **Structured JSON Output** - Replace string matching | [OPT-1] | 6-8h | 🔴 HIGH | ✅ Done |
 | **Guardian Safe Mode** - High-confidence violations only | [OPT-1b] | 3-4h | 🟡 MED | ⬜ Todo |
 | **Detection Logic Refactor** - Regex with word boundaries | [OPT-2] | 4-6h | 🟡 MED | ⬜ Todo |
 | **Retry Logic** - Exponential backoff for API failures | [OPT-3] | 3-4h | 🟡 MED | ⬜ Todo |
@@ -112,6 +112,14 @@
 
 **Goal**: Achieve 80%+ accuracy on test dataset
 **Note**: Safe Mode reduces false positive noise and builds trust in Guardian accuracy (GPT-5 recommendation)
+
+**Progress Update (Jan 25)**:
+- ✅ Structured JSON Output complete
+- Implementation: Native JSON mode (OpenAI), prompt engineering (Anthropic)
+- New types: `GuardianResult`, `Violation` interfaces
+- Graceful fallback to text parsing if JSON fails
+- Tests passing, validation clean
+- Next: Guardian Safe Mode for high-confidence filtering
 
 ---
 

@@ -12,6 +12,7 @@ export interface LLMConfig {
   apiKey: string;
   model?: string;
   timeoutMs?: number;
+  responseFormat?: 'text' | 'json';
 }
 
 export interface LLMMessage {
@@ -72,17 +73,24 @@ async function callOpenAI(
   const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
   try {
+    const requestBody: Record<string, unknown> = {
+      model,
+      messages,
+      temperature: 0.1, // Low temperature for consistent code analysis
+    };
+
+    // Add JSON mode for OpenAI if requested
+    if (config.responseFormat === 'json') {
+      requestBody.response_format = { type: 'json_object' };
+    }
+
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${config.apiKey}`,
       },
-      body: JSON.stringify({
-        model,
-        messages,
-        temperature: 0.1, // Low temperature for consistent code analysis
-      }),
+      body: JSON.stringify(requestBody),
       signal: controller.signal,
     });
 
@@ -137,7 +145,13 @@ async function callAnthropic(
   const timeoutMs = config.timeoutMs || DEFAULT_API_TIMEOUT_MS;
 
   // Convert messages to Anthropic format (system message separate)
-  const systemMessage = messages.find(m => m.role === 'system')?.content || '';
+  let systemMessage = messages.find(m => m.role === 'system')?.content || '';
+
+  // For JSON mode, append JSON format instruction to system message
+  if (config.responseFormat === 'json') {
+    systemMessage += '\n\nIMPORTANT: You MUST respond with valid JSON only. Do not include any text before or after the JSON. The response must be parseable by JSON.parse().';
+  }
+
   const conversationMessages = messages
     .filter(m => m.role !== 'system')
     .map(m => ({ role: m.role, content: m.content }));
@@ -191,6 +205,66 @@ async function callAnthropic(
       throw new Error(`Anthropic API request timeout after ${timeoutMs}ms`);
     }
     throw error;
+  }
+}
+
+/**
+ * Parse and validate Guardian JSON response
+ *
+ * @param content - Raw LLM response content
+ * @returns Parsed GuardianResult or null if invalid
+ */
+export function parseGuardianJSON(content: string): {
+  summary: {
+    status: 'compliant' | 'minor_issues' | 'major_violations';
+    message: string;
+  };
+  violations: Array<{
+    pattern: string;
+    line?: number;
+    issue: string;
+    recommendation: string;
+    severity: 'minor' | 'major';
+  }>;
+  positiveObservations: string[];
+} | null {
+  try {
+    const parsed = JSON.parse(content);
+
+    // Validate required fields
+    if (!parsed.summary?.status || typeof parsed.summary.message !== 'string') {
+      return null;
+    }
+
+    if (!Array.isArray(parsed.violations)) {
+      return null;
+    }
+
+    if (!Array.isArray(parsed.positiveObservations)) {
+      return null;
+    }
+
+    // Validate status enum
+    const validStatuses = ['compliant', 'minor_issues', 'major_violations'];
+    if (!validStatuses.includes(parsed.summary.status)) {
+      return null;
+    }
+
+    // Validate violations structure
+    for (const v of parsed.violations) {
+      if (
+        typeof v.pattern !== 'string' ||
+        typeof v.issue !== 'string' ||
+        typeof v.recommendation !== 'string' ||
+        (v.severity !== 'minor' && v.severity !== 'major')
+      ) {
+        return null;
+      }
+    }
+
+    return parsed;
+  } catch {
+    return null;
   }
 }
 

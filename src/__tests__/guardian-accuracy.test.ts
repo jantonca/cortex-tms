@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect, beforeAll, vi } from 'vitest';
-import { callLLM, type LLMConfig, type LLMMessage } from '../utils/llm-client.js';
+import { callLLM, parseGuardianJSON, type LLMConfig, type LLMMessage } from '../utils/llm-client.js';
 
 // Test configuration constants
 const ACCURACY_THRESHOLDS = {
@@ -630,6 +630,7 @@ async function runGuardianOnTestCase(testCase: TestCase): Promise<string> {
     apiKey: process.env.ANTHROPIC_API_KEY!,
     model: 'claude-sonnet-4-5-20250929', // Claude Sonnet 4.5
     timeoutMs: 60000, // 60 seconds for code review (longer than default)
+    responseFormat: 'json', // Request structured JSON output
   };
 
   const response = await callLLM(config, messages);
@@ -671,19 +672,39 @@ ${domainLogic}
 - References to actual files are GOOD per Pattern 3
 
 # Output Format
-Provide a structured report with:
+You MUST respond with valid JSON matching this exact schema:
 
-1. **Summary**: Overall assessment (✅ Compliant, ⚠️  Minor Issues, ❌ Major Violations)
-2. **Violations**: List each violation with:
-   - **Pattern**: Which pattern/rule was violated
-   - **Line**: Approximate line number (if identifiable)
-   - **Issue**: What's wrong
-   - **Recommendation**: How to fix it
-3. **Positive Observations**: What the code does well
+\`\`\`json
+{
+  "summary": {
+    "status": "compliant" | "minor_issues" | "major_violations",
+    "message": "Brief overall assessment of the code"
+  },
+  "violations": [
+    {
+      "pattern": "Pattern name (e.g., 'Pattern 1: Placeholder Syntax')",
+      "line": 42,  // Optional line number where violation occurs
+      "issue": "What's wrong with the code",
+      "recommendation": "How to fix it",
+      "severity": "minor" | "major"
+    }
+  ],
+  "positiveObservations": [
+    "Good practice 1",
+    "Good practice 2"
+  ]
+}
+\`\`\`
 
-If no violations found, provide positive feedback and highlight good practices.
+**Field Definitions**:
+- \`status\`: "compliant" (no violations), "minor_issues" (style/minor issues), or "major_violations" (serious pattern breaks)
+- \`violations\`: Array of violations found (empty array if compliant)
+- \`severity\`: "minor" for style/preference issues, "major" for pattern violations
+- \`positiveObservations\`: Array of strings highlighting good practices
 
-Be concise but specific. Reference exact line numbers when possible.`;
+If no violations found, set status to "compliant", violations to empty array [], and include positive observations.
+
+Be concise but specific. Reference exact line numbers in violations when possible.`;
 }
 
 /**
@@ -702,9 +723,23 @@ Please analyze this code against the project patterns and provide your assessmen
 }
 
 /**
- * Detect if Guardian found violations in the response
+ * Detect if Guardian found violations in the response (JSON parsing with legacy fallback)
  */
 function detectViolationInResponse(response: string): boolean {
+  // Try JSON parsing first
+  const parsed = parseGuardianJSON(response);
+  if (parsed) {
+    return parsed.summary.status !== 'compliant' || parsed.violations.length > 0;
+  }
+
+  // Fallback to legacy string matching
+  return detectViolationInResponseLegacy(response);
+}
+
+/**
+ * Legacy string-based violation detection (fallback for non-JSON responses)
+ */
+function detectViolationInResponseLegacy(response: string): boolean {
   const lowerResponse = response.toLowerCase();
 
   // Check for violation indicators
