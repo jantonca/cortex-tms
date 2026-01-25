@@ -1,0 +1,57 @@
+/**
+ * CTABox Component Styles
+ * Extracted from branding/designs/library
+ */
+
+.cta-box .panel-content {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.cta-box h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--sl-color-white);
+  font-family: var(--sl-font-heading);
+  font-weight: 600;
+}
+
+.cta-box p {
+  font-size: 1.1rem;
+  color: #888;
+  margin-bottom: 2.5rem;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.cta-box .btn-group {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Light theme adjustments */
+:root[data-theme='light'] .cta-box h2 {
+  color: var(--sl-color-gray-1);
+}
+
+:root[data-theme='light'] .cta-box p {
+  color: var(--sl-color-gray-3);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .cta-box .panel-content {
+    padding: 3rem 1.5rem;
+  }
+
+  .cta-box h2 {
+    font-size: 2rem;
+  }
+
+  .cta-box p {
+    font-size: 1rem;
+  }
+}

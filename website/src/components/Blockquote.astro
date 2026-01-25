@@ -1,0 +1,27 @@
+---
+/**
+ * Blockquote Component
+ *
+ * Styled blockquote with optional author citation
+ * Adapted from branding/designs/library liquid glass design
+ */
+import '../styles/glass-library.css';
+import '../styles/blockquote.css';
+
+interface Props {
+  author?: string;
+  cite?: string;
+}
+
+const { author, cite } = Astro.props;
+---
+
+<div class="glass-liquid-panel">
+  <div class="bloom"></div>
+  <div class="panel-content">
+    <blockquote class="blockquote">
+      <slot />
+      {author && <cite>◢ {author}</cite>}
+    </blockquote>
+  </div>
+</div>

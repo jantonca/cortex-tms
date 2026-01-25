@@ -75,6 +75,30 @@
   }
 
   /**
+   * Initialize bloom effect for glass-liquid-panel
+   * Tracks cursor position for radial gradient bloom
+   */
+  function initBloomEffect() {
+    const liquidPanels = document.querySelectorAll('.glass-liquid-panel');
+
+    liquidPanels.forEach((element) => {
+      const bloom = element.querySelector('.bloom');
+
+      if (!bloom) return;
+
+      element.addEventListener('mousemove', (e) => {
+        const rect = element.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+
+        // Update bloom position
+        element.style.setProperty('--x', `${x}px`);
+        element.style.setProperty('--y', `${y}px`);
+      });
+    });
+  }
+
+  /**
    * Initialize parallax scroll effect for liquid blobs
    * Makes blob elements move slower than scroll for depth
    */
@@ -164,6 +188,7 @@
     // Initialize effects
     initGlassTilt();
     initLightTilt();
+    initBloomEffect();
     initParallaxBlobs();
     initFadeIn();
 

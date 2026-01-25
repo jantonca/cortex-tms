@@ -7,11 +7,12 @@
 import SimpleLayout from '../layouts/SimpleLayout.astro'
 import GlassPanel from '../components/GlassPanel.astro'
 import GlassButton from '../components/GlassButton.astro'
-import GlassQuote from '../components/GlassQuote.astro'
+import Blockquote from '../components/Blockquote.astro'
+import MetricsShowcase from '../components/MetricsShowcase.astro'
+import PillarsSection from '../components/PillarsSection.astro'
+import SustainabilityBadge from '../components/SustainabilityBadge.astro'
+import CTABox from '../components/CTABox.astro'
 import {
-  Coins,
-  ShieldCheck,
-  Leaf,
   Flame,
   Shield,
   BarChart3,
@@ -62,290 +63,24 @@ import {
     {/* Three Pillars */}
     <section class='content-section'>
       <h2 class='section-label'>Three Pillars, Measurable Results</h2>
-      <div class='pillars-grid'>
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div style='padding: 2rem;'>
-            <h3
-              style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'
-            >
-              <Coins
-                size={32}
-                stroke-width='1.5'
-              />
-              Cost Efficiency
-            </h3>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'
-            >
-              <strong>Before TMS:</strong> Wasting $0.19/session reading 66,834 tokens
-              of old docs
-            </p>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'
-            >
-              <strong>After TMS:</strong> Paying $0.01/session with 94.5% context
-              reduction
-            </p>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-accent-high); font-weight: 600;'
-            >
-              Impact: 10x cost reduction
-            </p>
-          </div>
-        </GlassPanel>
+      <PillarsSection />
 
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div style='padding: 2rem;'>
-            <h3
-              style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'
-            >
-              <ShieldCheck
-                size={32}
-                stroke-width='1.5'
-              />
-              Quality
-            </h3>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'
-            >
-              <strong>Before TMS:</strong> 40% pattern violations from AI reading
-              outdated examples
-            </p>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'
-            >
-              <strong>After TMS:</strong> 80% fewer violations with Guardian semantic
-              validation
-            </p>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-accent-high); font-weight: 600;'
-            >
-              Impact: Zero false negatives
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div style='padding: 2rem;'>
-            <h3
-              style='margin-bottom: 1rem; color: var(--sl-color-accent); display: flex; align-items: center; gap: 0.75rem;'
-            >
-              <Leaf
-                size={32}
-                stroke-width='1.5'
-              />
-              Sustainability
-            </h3>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'
-            >
-              <strong>Before TMS:</strong> Burning unnecessary GPU cycles on 94.5%
-              noise
-            </p>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-gray-2); margin-bottom: 1rem;'
-            >
-              <strong>After TMS:</strong> 94.5% lower compute requirements through
-              intelligent tiering
-            </p>
-            <p
-              style='line-height: 1.6; color: var(--sl-color-accent-high); font-weight: 600;'
-            >
-              Impact: Greener development
-            </p>
-          </div>
-        </GlassPanel>
-      </div>
-
-      <GlassQuote
-        author='Cortex TMS Team'
-        liquidBlob={true}
-      >
+      <Blockquote author='Cortex TMS Team'>
         We dogfood everything. This project uses Cortex TMS to build itself—our
         NEXT-TASKS.md tracks development, our PATTERNS.md guides AI
         collaboration, and our Guardian CLI reviews every commit.
-      </GlassQuote>
+      </Blockquote>
     </section>
 
     {/* Token Savings Proof */}
-    <section class='content-section proof-section'>
+    <section class='content-section'>
       <h2 class='section-label'>Real Numbers, Real Savings</h2>
-      <p
-        style='text-align: center; font-size: 1.125rem; color: var(--sl-color-gray-2); margin-bottom: 2rem;'
-      >
-        From Cortex TMS itself (we dogfood everything):
-      </p>
-
-      <GlassPanel variant='bordered'>
-        <div style='padding: 2rem;'>
-          <div
-            style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; text-align: center;'
-          >
-            <div>
-              <div
-                style='font-size: 2.5rem; font-weight: 700; color: var(--sl-color-accent-high); margin-bottom: 0.5rem;'
-              >
-                94.5%
-              </div>
-              <div style='color: var(--sl-color-gray-2);'>
-                Context Reduction
-              </div>
-              <div
-                style='font-size: 0.875rem; color: var(--sl-color-gray-3); margin-top: 0.5rem;'
-              >
-                3,647 tokens vs 66,834
-              </div>
-            </div>
-
-            <div>
-              <div
-                style='font-size: 2.5rem; font-weight: 700; color: var(--sl-color-accent-high); margin-bottom: 0.5rem;'
-              >
-                10x
-              </div>
-              <div style='color: var(--sl-color-gray-2);'>Cost Reduction</div>
-              <div
-                style='font-size: 0.875rem; color: var(--sl-color-gray-3); margin-top: 0.5rem;'
-              >
-                $0.01 vs $0.11/session
-              </div>
-            </div>
-
-            <div>
-              <div
-                style='font-size: 2.5rem; font-weight: 700; color: var(--sl-color-accent-high); margin-bottom: 0.5rem;'
-              >
-                80%
-              </div>
-              <div style='color: var(--sl-color-gray-2);'>Fewer Violations</div>
-              <div
-                style='font-size: 0.875rem; color: var(--sl-color-gray-3); margin-top: 0.5rem;'
-              >
-                Guardian catches drift
-              </div>
-            </div>
-          </div>
-
-          <div
-            style='margin-top: 2rem; padding-top: 2rem; border-top: 1px solid var(--glass-border);'
-          >
-            <p
-              style='text-align: center; color: var(--sl-color-gray-3); font-size: 0.875rem;'
-            >
-              <strong>How?</strong> HOT/WARM/COLD tier system ensures AI agents only
-              read what matters.
-            </p>
-          </div>
-        </div>
-      </GlassPanel>
+      <MetricsShowcase />
     </section>
 
     {/* Green AI Development Badge */}
-    <section class='content-section sustainability-badge-section'>
-      <GlassPanel variant='bordered'>
-        <div style='padding: 3rem 2rem; text-align: center;'>
-          <div
-            style='display: flex; align-items: center; justify-content: center; gap: 1rem; margin-bottom: 1.5rem;'
-          >
-            <Leaf
-              size={48}
-              stroke-width='1.5'
-              style='color: var(--sl-color-accent);'
-            />
-            <h2
-              style='margin: 0; font-size: 2rem; color: var(--sl-color-accent);'
-            >
-              Green AI Development
-            </h2>
-          </div>
-
-          <p
-            style='font-size: 1.25rem; line-height: 1.6; color: var(--sl-color-gray-2); max-width: 700px; margin: 0 auto 2rem;'
-          >
-            Every AI query you run wastes energy reading outdated documentation.
-            Cortex TMS reduces your compute requirements by <strong
-              style='color: var(--sl-color-accent-high);'>94.5%</strong
-            >
-            through intelligent context management.
-          </p>
-
-          <div
-            style='display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; max-width: 800px; margin: 0 auto;'
-          >
-            <div>
-              <div
-                style='font-size: 3rem; font-weight: 700; color: var(--sl-color-accent-high); margin-bottom: 0.5rem;'
-              >
-                94.5%
-              </div>
-              <div style='color: var(--sl-color-gray-2); font-weight: 500;'>
-                Less Context
-              </div>
-              <div
-                style='font-size: 0.875rem; color: var(--sl-color-gray-3); margin-top: 0.5rem;'
-              >
-                Lower compute requirements
-              </div>
-            </div>
-
-            <div>
-              <div
-                style='font-size: 3rem; font-weight: 700; color: var(--sl-color-accent-high); margin-bottom: 0.5rem;'
-              >
-                63K
-              </div>
-              <div style='color: var(--sl-color-gray-2); font-weight: 500;'>
-                Tokens Saved
-              </div>
-              <div
-                style='font-size: 0.875rem; color: var(--sl-color-gray-3); margin-top: 0.5rem;'
-              >
-                Per session average
-              </div>
-            </div>
-
-            <div>
-              <div
-                style='font-size: 3rem; font-weight: 700; color: var(--sl-color-accent-high); margin-bottom: 0.5rem;'
-              >
-                10x
-              </div>
-              <div style='color: var(--sl-color-gray-2); font-weight: 500;'>
-                Efficiency Gain
-              </div>
-              <div
-                style='font-size: 0.875rem; color: var(--sl-color-gray-3); margin-top: 0.5rem;'
-              >
-                Signal over noise
-              </div>
-            </div>
-          </div>
-
-          <div
-            style='margin-top: 2.5rem; padding: 1.5rem; background: rgba(var(--sl-color-accent-rgb), 0.05); border-radius: 12px; border: 1px solid rgba(var(--sl-color-accent-rgb), 0.2);'
-          >
-            <p
-              style='margin: 0; font-size: 0.9rem; color: var(--sl-color-gray-3);'
-            >
-              <strong style='color: var(--sl-color-accent);'
-                >Why this matters:</strong
-              >
-              AI models consume significant energy. By reading only what's needed
-              (HOT/WARM/COLD tiers), Cortex TMS dramatically reduces compute requirements—saving
-              costs and energy.
-            </p>
-          </div>
-        </div>
-      </GlassPanel>
+    <section class='content-section'>
+      <SustainabilityBadge />
     </section>
 
     {/* Quick Installation */}
@@ -606,26 +341,15 @@ import {
     </section>
 
     {/* Ready to Get Started */}
-    <section class='content-section cta-section'>
-      <h2 class='section-label'>Ready to Get Started?</h2>
-      <p>
-        Install Cortex TMS and scaffold your first project in under 5 minutes.
-        Join the growing community of teams using AI-optimized documentation.
-      </p>
-      <div class='cta-actions'>
-        <GlassButton
-          variant='neon'
-          href='/getting-started/quick-start/'
-        >
-          Quick Start Guide →
-        </GlassButton>
-        <GlassButton
-          variant='prism'
-          href='/getting-started/installation/'
-        >
-          Installation Guide
-        </GlassButton>
-      </div>
+    <section class='content-section'>
+      <CTABox
+        title='Ready to Get Started?'
+        description='Install Cortex TMS and scaffold your first project in under 5 minutes. Join the growing community of teams using AI-optimized documentation.'
+        primaryButtonText='Quick Start Guide →'
+        primaryButtonHref='/getting-started/quick-start/'
+        secondaryButtonText='Installation Guide'
+        secondaryButtonHref='/getting-started/installation/'
+      />
     </section>
   </div>
 
@@ -697,7 +421,7 @@ import {
     .content-section h2 {
       font-size: 2.5rem;
       font-weight: 700;
-      margin-bottom: 2rem;
+      margin-bottom: 3rem;
       color: var(--sl-color-text);
     }
 
@@ -714,18 +438,6 @@ import {
       grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 2rem;
       margin-bottom: 3rem;
-    }
-
-    /* Proof Section */
-    .proof-section {
-      background: linear-gradient(
-        135deg,
-        rgba(var(--sl-color-accent-rgb), 0.05),
-        rgba(var(--sl-color-accent-rgb), 0.02)
-      );
-      padding: 3rem 2rem;
-      border-radius: 24px;
-      border: 1px solid var(--glass-border);
     }
 
     /* Sustainability Badge Section */
@@ -815,20 +527,6 @@ import {
       background: rgba(0, 0, 0, 0.1);
     }
 
-    /* CTA Section */
-    .cta-section {
-      text-align: center;
-      padding: 3rem 0;
-    }
-
-    .cta-actions {
-      display: flex;
-      gap: 1rem;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 2rem;
-    }
-
     /* Responsive */
     @media (max-width: 768px) {
       .hero-section {
@@ -861,10 +559,6 @@ import {
 
       .pillars-grid {
         grid-template-columns: 1fr;
-      }
-
-      .proof-section {
-        padding: 2rem 1rem;
       }
     }
   </style>

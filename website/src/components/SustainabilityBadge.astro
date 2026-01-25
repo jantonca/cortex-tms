@@ -1,0 +1,55 @@
+---
+/**
+ * SustainabilityBadge Component
+ *
+ * Displays Green AI Development badge with sustainability metrics
+ */
+import { Leaf } from '@lucide/astro';
+import '../styles/glass-library.css';
+import '../styles/sustainability-badge.css';
+---
+
+<div class="glass-liquid-panel sustainability-badge">
+  <div class="bloom"></div>
+  <div class="panel-content">
+    <div class="badge-header">
+      <Leaf size={48} stroke-width="1.5" />
+      <h2>Green AI Development</h2>
+    </div>
+
+    <p class="badge-description">
+      Every AI query you run wastes energy reading outdated documentation.
+      Cortex TMS reduces your compute requirements by <strong>94.5%</strong>
+      through intelligent context management.
+    </p>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <p class="stat-value">94.5%</p>
+        <p class="stat-label">LESS CONTEXT</p>
+        <p class="stat-detail">Lower compute requirements</p>
+      </div>
+
+      <div class="stat-card">
+        <p class="stat-value">63K</p>
+        <p class="stat-label">TOKENS SAVED</p>
+        <p class="stat-detail">Per session average</p>
+      </div>
+
+      <div class="stat-card">
+        <p class="stat-value">10x</p>
+        <p class="stat-label">EFFICIENCY GAIN</p>
+        <p class="stat-detail">Signal over noise</p>
+      </div>
+    </div>
+
+    <div class="badge-footer">
+      <p>
+        <strong>Why this matters:</strong>
+        AI models consume significant energy. By reading only what's needed
+        (HOT/WARM/COLD tiers), Cortex TMS dramatically reduces compute requirements—saving
+        costs and energy.
+      </p>
+    </div>
+  </div>
+</div>
