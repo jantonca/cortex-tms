@@ -203,6 +203,7 @@ cortex-tms prompt --list       # Browse all prompts
 
 ```bash
 cortex-tms review src/index.ts              # Validate file against PATTERNS.md
+cortex-tms review src/index.ts --safe       # Safe Mode: only high-confidence violations (≥70%)
 cortex-tms review src/index.ts --provider openai  # Use OpenAI instead of Anthropic
 cortex-tms review src/index.ts --model gpt-4      # Specify model
 ```
@@ -217,6 +218,7 @@ cortex-tms review src/index.ts --model gpt-4      # Specify model
 **Why Guardian?**
 
 - **Structured Output**: JSON-based violation detection (80%+ accuracy target, from 65.5% baseline)
+- **Safe Mode**: `--safe` flag filters to high-confidence violations only (≥70%), reducing false positive noise
 - **Semantic Understanding**: Catches violations grep/regex can't find
 - **Pattern Enforcement**: Stops drift from architectural decisions
 - **BYOK (Bring Your Own Key)**: Uses your OpenAI or Anthropic API key

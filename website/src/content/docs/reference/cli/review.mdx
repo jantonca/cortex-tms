@@ -27,6 +27,9 @@ cortex-tms review <file> [options]
 # Review a TypeScript file
 cortex-tms review src/components/Button.tsx
 
+# Safe Mode: only high-confidence violations
+cortex-tms review src/components/Button.tsx --safe
+
 # Output:
 # 🛡️  Guardian Code Review
 #
@@ -44,6 +47,7 @@ cortex-tms review src/components/Button.tsx
 # **Line**: 15
 # **Issue**: Component uses PascalCase for internal helper function
 # **Recommendation**: Use camelCase for non-exported functions per PATTERNS.md
+# **Confidence**: 85%
 #
 # [...]
 ```
@@ -158,6 +162,64 @@ cortex-tms review src/file.ts
 
 ---
 
+### `--safe`
+
+**Safe Mode**: Filter violations to only show high-confidence issues (≥70%).
+
+**Purpose**: Reduce false positive noise and increase trust in Guardian's recommendations.
+
+**How it works**:
+- Guardian assigns confidence scores (0-1) to each violation
+- Safe Mode filters to only show violations with ≥70% confidence
+- Lower confidence violations are hidden but counted in summary
+- Backwards compatible (works with older responses without confidence scores)
+
+**Confidence Scale**:
+- **0.9-1.0**: Very high - Clear, unambiguous violation
+- **0.7-0.9**: High - Likely violation, context strongly supports it
+- **0.5-0.7**: Medium - Possible violation, some ambiguity (filtered in Safe Mode)
+- **0.0-0.5**: Low - Uncertain, may be false positive (filtered in Safe Mode)
+
+**Examples**:
+```bash
+# Normal mode (shows all violations)
+cortex-tms review src/complex.ts
+
+# Safe Mode (only high-confidence violations)
+cortex-tms review src/complex.ts --safe
+```
+
+**Example Output (Safe Mode)**:
+```
+🛡️  Guardian Code Review
+
+✅ Analysis Complete
+
+## Summary
+✅ Compliant - No high-confidence violations found
+(Safe Mode filtered 2 low-confidence issues)
+
+## Positive Observations
+✅ Good error handling patterns
+```
+
+**When to use**:
+- **New projects**: Start with Safe Mode to build trust in Guardian
+- **Code reviews**: Focus on clear violations, ignore ambiguous cases
+- **CI/CD**: Fail builds only on high-confidence violations
+- **Learning**: Understand what Guardian considers "certain" vs "possible"
+
+**When NOT to use**:
+- **Comprehensive audits**: Want to see all potential issues
+- **Pattern documentation**: Testing if patterns are clear enough
+- **Debugging Guardian**: Investigating false positives
+
+<Aside type="tip" title="Recommendation">
+Use `--safe` for daily development and PR reviews. Run without `--safe` periodically for comprehensive audits.
+</Aside>
+
+---
+
 ## Setup
 
 ### API Key Configuration
@@ -248,6 +310,9 @@ cortex-tms init --scope standard
 ```bash
 # Review a single file
 cortex-tms review src/services/auth.ts
+
+# Safe Mode: only high-confidence violations
+cortex-tms review src/services/auth.ts --safe
 ```
 
 **Output**:
@@ -474,6 +539,12 @@ Recommendation: Catch specific exceptions (ValidationError, NetworkError)
 per PATTERNS.md Section 8
 ```
 How to fix it with reference to documentation
+
+**5. Confidence Score** (when available)
+```
+Confidence: 85%
+```
+How certain Guardian is about this violation (0-100%). Use `--safe` to filter to ≥70%.
 
 ---
 
