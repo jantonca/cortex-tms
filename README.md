@@ -204,6 +204,7 @@ cortex-tms prompt --list       # Browse all prompts
 ```bash
 cortex-tms review src/index.ts              # Validate file against PATTERNS.md
 cortex-tms review src/index.ts --safe       # Safe Mode: only high-confidence violations (≥70%)
+cortex-tms review src/index.ts --output-json  # Raw JSON output (for Agent Skills/CI/CD)
 cortex-tms review src/index.ts --provider openai  # Use OpenAI instead of Anthropic
 cortex-tms review src/index.ts --model gpt-4      # Specify model
 ```

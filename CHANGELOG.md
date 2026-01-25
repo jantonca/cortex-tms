@@ -9,6 +9,35 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Guardian JSON Output Mode
+- **Feature**: `cortex review --output-json` flag for programmatic consumption
+- **Why**: Enable Agent Skills, CI/CD pipelines, and automation tools to parse Guardian results
+- **Capabilities**:
+  - Outputs raw `GuardianResult` JSON to stdout (no formatting, emojis, or UI text)
+  - Suppresses all console.log() progress messages in JSON mode
+  - Works with `--safe` flag for filtered JSON output
+  - Returns error JSON if parsing fails
+  - Machine-readable, pipe-friendly output
+- **Use Cases**:
+  - Anthropic Agent Skills integration (Claude Code, Agent SDK)
+  - CI/CD pipelines parsing violation counts
+  - Custom tooling built on Guardian
+  - Automated policy enforcement
+- **Examples**:
+  ```bash
+  # Get raw JSON
+  cortex-tms review src/file.ts --output-json
+
+  # Pipe to jq
+  cortex-tms review src/file.ts --output-json | jq '.violations | length'
+
+  # Safe Mode + JSON
+  cortex-tms review src/file.ts --output-json --safe
+  ```
+- **Files**: `src/commands/review.ts`, `src/__tests__/review.test.ts`, `src/__tests__/utils/review-runner.ts`
+- **Tests**: 4 new tests covering JSON output, Safe Mode filtering, and UI suppression
+- **Effort**: 1-2 hours
+
 #### Guardian Safe Mode (OPT-1b)
 - **Feature**: `cortex review --safe` flag to filter low-confidence violations
 - **Why**: Reduce false positive noise, increase trust in Guardian recommendations

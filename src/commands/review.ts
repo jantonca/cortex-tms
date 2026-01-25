@@ -33,6 +33,7 @@ export function createReviewCommand(): Command {
     .option('-m, --model <model>', 'Model name (default: gpt-4-turbo-preview or claude-3-5-sonnet-20241022)')
     .option('--api-key <key>', 'API key (alternative to environment variable)')
     .option('--safe', `Safe Mode: only show high-confidence violations (>= ${SAFE_MODE_THRESHOLD * 100}%)`)
+    .option('--output-json', 'Output raw JSON instead of formatted text (for programmatic use)')
     .action(async (filePath, options) => {
       await runReviewCommand(filePath, options);
     });
@@ -101,23 +102,29 @@ async function runReviewCommand(
     model?: string;
     apiKey?: string;
     safe?: boolean;
+    outputJson?: boolean;
   }
 ): Promise<void> {
   const cwd = process.cwd();
 
-  console.log(chalk.bold.cyan('\n🛡️  Guardian Code Review\n'));
+  // Suppress UI output in JSON mode
+  if (!options.outputJson) {
+    console.log(chalk.bold.cyan('\n🛡️  Guardian Code Review\n'));
+  }
 
   // Step 1: Validate TMS files exist
   const patternsPath = join(cwd, 'docs/core/PATTERNS.md');
   const domainLogicPath = join(cwd, 'docs/core/DOMAIN-LOGIC.md');
 
   if (!existsSync(patternsPath)) {
-    console.log(chalk.gray('\nGuardian requires a Cortex TMS project with pattern documentation.'));
-    console.log(chalk.gray('Run'), chalk.cyan('cortex-tms init'), chalk.gray('to set up TMS files.\n'));
+    if (!options.outputJson) {
+      console.log(chalk.gray('\nGuardian requires a Cortex TMS project with pattern documentation.'));
+      console.log(chalk.gray('Run'), chalk.cyan('cortex-tms init'), chalk.gray('to set up TMS files.\n'));
+    }
     throw new Error('PATTERNS.md not found at docs/core/PATTERNS.md');
   }
 
-  if (!existsSync(domainLogicPath)) {
+  if (!existsSync(domainLogicPath) && !options.outputJson) {
     console.log(chalk.yellow('⚠️  Warning:'), 'DOMAIN-LOGIC.md not found (optional)');
   }
 
@@ -136,7 +143,9 @@ async function runReviewCommand(
   try {
 
     // Step 3: Read files
-    console.log(chalk.gray('📖 Reading project patterns...'));
+    if (!options.outputJson) {
+      console.log(chalk.gray('📖 Reading project patterns...'));
+    }
     const patterns = readFileSync(patternsPath, 'utf-8');
     const domainLogic = existsSync(domainLogicPath)
       ? readFileSync(domainLogicPath, 'utf-8')
@@ -148,6 +157,11 @@ async function runReviewCommand(
     let apiKey = options.apiKey || getApiKey(provider);
 
     if (!apiKey) {
+      // In JSON mode, cannot prompt for API key - must be provided
+      if (options.outputJson) {
+        throw new Error('API key is required (use --api-key or set environment variable)');
+      }
+
       const answer = await inquirer.prompt<{ apiKey: string }>([
         {
           type: 'password',
@@ -164,7 +178,9 @@ async function runReviewCommand(
     }
 
     // Step 5: Build LLM prompt
-    console.log(chalk.gray('🤖 Analyzing code with', provider, '...'));
+    if (!options.outputJson) {
+      console.log(chalk.gray('🤖 Analyzing code with', provider, '...'));
+    }
 
     const systemPrompt = buildSystemPrompt(patterns, domainLogic);
     const userPrompt = buildUserPrompt(filePath, codeToReview);
@@ -186,8 +202,6 @@ async function runReviewCommand(
     const response = await callLLM(config, messages);
 
     // Step 7: Parse and display results
-    console.log(chalk.bold.green('\n✅ Analysis Complete\n'));
-
     let parsedResult = parseGuardianJSON(response.content);
 
     // Apply Safe Mode filtering if enabled
@@ -205,22 +219,39 @@ async function runReviewCommand(
       }
     }
 
-    if (parsedResult) {
-      // Display formatted JSON result
-      const formatted = formatGuardianResult(parsedResult);
-      console.log(chalk.white(formatted));
+    // Output in requested format
+    if (options.outputJson) {
+      // JSON mode: output raw JSON to stdout only
+      if (parsedResult) {
+        console.log(JSON.stringify(parsedResult, null, 2));
+      } else {
+        // If JSON parsing failed, output error as JSON
+        console.log(JSON.stringify({
+          error: 'Failed to parse Guardian response',
+          rawContent: response.content
+        }, null, 2));
+      }
     } else {
-      // Fallback to raw text if JSON parsing fails
-      console.log(chalk.yellow('⚠️  Warning: Could not parse JSON response, displaying raw output:\n'));
-      console.log(chalk.white(response.content));
-    }
+      // Default mode: formatted output
+      console.log(chalk.bold.green('\n✅ Analysis Complete\n'));
 
-    if (response.usage) {
-      console.log(
-        chalk.gray(
-          `\n📊 Tokens: ${response.usage.totalTokens} total (${response.usage.promptTokens} prompt + ${response.usage.completionTokens} completion)\n`
-        )
-      );
+      if (parsedResult) {
+        // Display formatted JSON result
+        const formatted = formatGuardianResult(parsedResult);
+        console.log(chalk.white(formatted));
+      } else {
+        // Fallback to raw text if JSON parsing fails
+        console.log(chalk.yellow('⚠️  Warning: Could not parse JSON response, displaying raw output:\n'));
+        console.log(chalk.white(response.content));
+      }
+
+      if (response.usage) {
+        console.log(
+          chalk.gray(
+            `\n📊 Tokens: ${response.usage.totalTokens} total (${response.usage.promptTokens} prompt + ${response.usage.completionTokens} completion)\n`
+          )
+        );
+      }
     }
   } catch (error) {
     // Re-throw to let CLI handle it
