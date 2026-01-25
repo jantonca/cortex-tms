@@ -13,17 +13,28 @@ import {
 } from './utils/temp-dir.js';
 
 // Mock the LLM client
-vi.mock('../utils/llm-client.js', () => ({
-  callLLM: vi.fn(async () => ({
-    content: '# Analysis Result\n\n✅ Code is compliant with all patterns.',
-    usage: {
-      promptTokens: 1000,
-      completionTokens: 100,
-      totalTokens: 1100,
-    },
-  })),
-  getApiKey: vi.fn(() => 'mock-api-key'),
-}));
+vi.mock('../utils/llm-client.js', async () => {
+  const actual = await vi.importActual('../utils/llm-client.js');
+  return {
+    ...actual,
+    callLLM: vi.fn(async () => ({
+      content: JSON.stringify({
+        summary: {
+          status: 'compliant',
+          message: 'Code is compliant with all patterns',
+        },
+        violations: [],
+        positiveObservations: ['Good code structure'],
+      }),
+      usage: {
+        promptTokens: 1000,
+        completionTokens: 100,
+        totalTokens: 1100,
+      },
+    })),
+    getApiKey: vi.fn(() => 'mock-api-key'),
+  };
+});
 
 describe('Review Command - File Validation', () => {
   let tempDir: string;
@@ -97,7 +108,8 @@ describe('Review Command - File Validation', () => {
     });
 
     expect(result.success).toBe(true);
-    expect(result.output).toContain('Analysis Result');
+    expect(result.output).toContain('Compliant');
+    expect(result.output).toContain('Good code structure');
     expect(callLLM).toHaveBeenCalledOnce();
   });
 
@@ -221,5 +233,194 @@ describe('Review Command - Error Handling', () => {
 
     expect(result.success).toBe(false);
     expect(result.error).toContain('rate limit');
+  });
+});
+
+describe('Review Command - Safe Mode', () => {
+  let tempDir: string;
+
+  beforeEach(async () => {
+    tempDir = await createTempDir();
+
+    // Create minimal TMS structure
+    const docsDir = join(tempDir, 'docs/core');
+    mkdirSync(docsDir, { recursive: true });
+    writeFileSync(join(docsDir, 'PATTERNS.md'), '# Patterns');
+    writeFileSync(join(tempDir, 'test.ts'), 'code');
+  });
+
+  afterEach(async () => {
+    await cleanupTempDir(tempDir);
+    vi.clearAllMocks();
+  });
+
+  it('should filter violations below 70% confidence in safe mode', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    // Mock response with mixed confidence violations
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'minor_issues',
+          message: 'Found 3 violations',
+        },
+        violations: [
+          {
+            pattern: 'Pattern 1',
+            issue: 'High confidence issue',
+            recommendation: 'Fix it',
+            severity: 'major',
+            confidence: 0.9,
+          },
+          {
+            pattern: 'Pattern 2',
+            issue: 'Medium confidence issue',
+            recommendation: 'Consider fixing',
+            severity: 'minor',
+            confidence: 0.6,
+          },
+          {
+            pattern: 'Pattern 3',
+            issue: 'Low confidence issue',
+            recommendation: 'Maybe fix',
+            severity: 'minor',
+            confidence: 0.4,
+          },
+        ],
+        positiveObservations: ['Good code structure'],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      safe: true,
+    });
+
+    expect(result.success).toBe(true);
+    // Should only show the high confidence violation
+    expect(result.output).toContain('Pattern 1');
+    expect(result.output).toContain('High confidence issue');
+    // Should not show low/medium confidence violations
+    expect(result.output).not.toContain('Pattern 2');
+    expect(result.output).not.toContain('Pattern 3');
+  });
+
+  it('should display confidence percentages when present', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'minor_issues',
+          message: 'Found 1 violation',
+        },
+        violations: [
+          {
+            pattern: 'Pattern 1',
+            issue: 'Issue',
+            recommendation: 'Fix',
+            severity: 'major',
+            confidence: 0.85,
+          },
+        ],
+        positiveObservations: [],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.output).toContain('Confidence: 85%');
+  });
+
+  it('should update summary when all violations filtered in safe mode', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    // Mock response with only low confidence violations
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'minor_issues',
+          message: 'Found 2 violations',
+        },
+        violations: [
+          {
+            pattern: 'Pattern 1',
+            issue: 'Low confidence issue',
+            recommendation: 'Maybe fix',
+            severity: 'minor',
+            confidence: 0.5,
+          },
+          {
+            pattern: 'Pattern 2',
+            issue: 'Another low confidence',
+            recommendation: 'Consider',
+            severity: 'minor',
+            confidence: 0.6,
+          },
+        ],
+        positiveObservations: ['Good structure'],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      safe: true,
+    });
+
+    expect(result.success).toBe(true);
+    expect(result.output).toContain('Compliant');
+    expect(result.output).toContain('No high-confidence violations found');
+    expect(result.output).toContain('filtered 2 low-confidence issues');
+  });
+
+  it('should work without confidence field (backwards compatibility)', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+
+    // Mock response without confidence field (defaults to 1.0)
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'minor_issues',
+          message: 'Found 1 violation',
+        },
+        violations: [
+          {
+            pattern: 'Pattern 1',
+            issue: 'Issue without confidence',
+            recommendation: 'Fix',
+            severity: 'major',
+          },
+        ],
+        positiveObservations: [],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      safe: true,
+    });
+
+    expect(result.success).toBe(true);
+    // Should still show violation (defaults to 100% confidence)
+    expect(result.output).toContain('Pattern 1');
   });
 });

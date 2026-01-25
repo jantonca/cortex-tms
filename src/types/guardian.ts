@@ -22,6 +22,9 @@ export interface Violation {
 
   /** Severity level */
   severity: 'minor' | 'major';
+
+  /** Confidence score (0-1 scale) indicating certainty about this violation */
+  confidence?: number;
 }
 
 /**

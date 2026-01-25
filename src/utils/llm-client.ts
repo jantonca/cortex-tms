@@ -263,6 +263,13 @@ export function parseGuardianJSON(content: string): GuardianResult | null {
       ) {
         return null;
       }
+
+      // Validate optional confidence field (0-1 range)
+      if (v.confidence !== undefined) {
+        if (typeof v.confidence !== 'number' || v.confidence < 0 || v.confidence > 1) {
+          return null;
+        }
+      }
     }
 
     return parsed;

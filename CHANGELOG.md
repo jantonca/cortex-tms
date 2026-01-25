@@ -9,6 +9,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+#### Guardian Safe Mode (OPT-1b)
+- **Feature**: `cortex review --safe` flag to filter low-confidence violations
+- **Why**: Reduce false positive noise, increase trust in Guardian recommendations
+- **Capabilities**:
+  - Filters violations to only show high-confidence (≥70%) issues
+  - Confidence scores (0-1) included in JSON output
+  - Display confidence percentages in formatted output
+  - Backwards compatible (defaults to 100% confidence if not provided)
+  - Summary updates automatically when all violations filtered
+- **Implementation**:
+  - Added optional `confidence` field to Violation type
+  - LLM client validates confidence range (0-1)
+  - Review command filters violations based on threshold
+  - System prompt requests confidence scores with guidelines
+  - Test suite covers Safe Mode filtering scenarios
+- **Confidence Scale**:
+  - 0.9-1.0: Very high - Clear, unambiguous violation
+  - 0.7-0.9: High - Likely violation, context supports it
+  - 0.5-0.7: Medium - Possible violation, some ambiguity
+  - 0.0-0.5: Low - Uncertain, may be false positive
+- **Files**: `src/types/guardian.ts`, `src/utils/llm-client.ts`, `src/commands/review.ts`, `src/__tests__/review.test.ts`
+- **Effort**: 3-4 hours
+
 #### Guardian Structured JSON Output (OPT-1)
 - **Feature**: Guardian now outputs structured JSON for reliable violation detection
 - **Why**: Replace brittle string matching with deterministic parsing, improve accuracy from 65.5% baseline

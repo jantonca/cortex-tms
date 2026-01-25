@@ -6,12 +6,13 @@
 
 import { resolve, join } from 'path';
 import { existsSync, readFileSync } from 'fs';
-import { callLLM, getApiKey, type LLMConfig, type LLMMessage } from '../../utils/llm-client.js';
+import { callLLM, getApiKey, parseGuardianJSON, type LLMConfig, type LLMMessage } from '../../utils/llm-client.js';
 
 interface ReviewOptions {
   provider: 'openai' | 'anthropic';
   model?: string;
   apiKey?: string;
+  safe?: boolean;
 }
 
 interface ReviewResult {
@@ -90,10 +91,34 @@ export async function runReviewForTest(
 
     const response = await callLLM(config, messages);
 
-    // Step 7: Return results
+    // Step 7: Parse and filter results
+    let parsedResult = parseGuardianJSON(response.content);
+
+    // Apply Safe Mode filtering if enabled
+    if (parsedResult && options.safe) {
+      const SAFE_MODE_THRESHOLD = 0.7;
+      const originalCount = parsedResult.violations.length;
+
+      parsedResult.violations = parsedResult.violations.filter(
+        v => (v.confidence ?? 1.0) >= SAFE_MODE_THRESHOLD
+      );
+
+      // Update summary if all violations filtered out
+      if (originalCount > 0 && parsedResult.violations.length === 0) {
+        parsedResult.summary.status = 'compliant';
+        parsedResult.summary.message = `No high-confidence violations found (Safe Mode filtered ${originalCount} low-confidence issue${originalCount === 1 ? '' : 's'})`;
+      }
+    }
+
+    // Format output
+    let output = response.content;
+    if (parsedResult) {
+      output = formatGuardianResult(parsedResult);
+    }
+
     return {
       success: true,
-      output: response.content,
+      output,
       usage: response.usage,
     };
   } catch (error) {
@@ -155,4 +180,50 @@ ${code}
 \`\`\`
 
 Please analyze this code against the project patterns and provide your assessment.`;
+}
+
+/**
+ * Format Guardian JSON result for display (duplicated from review.ts for testing)
+ */
+function formatGuardianResult(result: import('../../types/guardian.js').GuardianResult): string {
+  let output = '';
+
+  // Summary section with status emoji
+  const statusConfig = {
+    compliant: { emoji: '✅', label: 'Compliant' },
+    minor_issues: { emoji: '⚠️ ', label: 'Minor Issues' },
+    major_violations: { emoji: '❌', label: 'Major Violations' },
+  };
+
+  const { emoji, label } = statusConfig[result.summary.status];
+  output += `${emoji} **${label}**\n\n`;
+  output += `${result.summary.message}\n\n`;
+
+  // Violations section
+  if (result.violations.length > 0) {
+    output += '## Violations\n\n';
+    result.violations.forEach((v, index) => {
+      const severityIcon = v.severity === 'major' ? '❌' : '⚠️ ';
+      output += `${index + 1}. ${severityIcon} **${v.pattern}**\n`;
+      if (v.line) {
+        output += `   📍 Line: ${v.line}\n`;
+      }
+      output += `   ❗ Issue: ${v.issue}\n`;
+      output += `   💡 Fix: ${v.recommendation}\n`;
+      if (v.confidence !== undefined) {
+        output += `   📊 Confidence: ${Math.round(v.confidence * 100)}%\n`;
+      }
+      output += '\n';
+    });
+  }
+
+  // Positive observations section
+  if (result.positiveObservations.length > 0) {
+    output += '## Positive Observations\n\n';
+    result.positiveObservations.forEach((obs) => {
+      output += `✅ ${obs}\n`;
+    });
+  }
+
+  return output;
 }

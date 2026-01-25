@@ -686,7 +686,8 @@ You MUST respond with valid JSON matching this exact schema:
       "line": 42,  // Optional line number where violation occurs
       "issue": "What's wrong with the code",
       "recommendation": "How to fix it",
-      "severity": "minor" | "major"
+      "severity": "minor" | "major",
+      "confidence": 0.85  // 0-1 scale, how certain you are about this violation
     }
   ],
   "positiveObservations": [
@@ -700,6 +701,11 @@ You MUST respond with valid JSON matching this exact schema:
 - \`status\`: "compliant" (no violations), "minor_issues" (style/minor issues), or "major_violations" (serious pattern breaks)
 - \`violations\`: Array of violations found (empty array if compliant)
 - \`severity\`: "minor" for style/preference issues, "major" for pattern violations
+- \`confidence\`: A number from 0 to 1 indicating certainty about the violation
+  - 0.9-1.0: Very high - Clear, unambiguous violation of stated patterns
+  - 0.7-0.9: High - Likely violation, context strongly supports it
+  - 0.5-0.7: Medium - Possible violation, some ambiguity in interpretation
+  - 0.0-0.5: Low - Uncertain, may be false positive or edge case
 - \`positiveObservations\`: Array of strings highlighting good practices
 
 If no violations found, set status to "compliant", violations to empty array [], and include positive observations.
