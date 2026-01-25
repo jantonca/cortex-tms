@@ -38,6 +38,58 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tests**: 4 new tests covering JSON output, Safe Mode filtering, and UI suppression
 - **Effort**: 1-2 hours
 
+#### Guardian Safe Mode (OPT-1b)
+- **Feature**: `cortex review --safe` flag to filter low-confidence violations
+- **Why**: Reduce false positive noise by showing only high-confidence violations (>= 70%)
+- **Problem Solved**:
+  - LLMs can flag ambiguous patterns as violations
+  - Low-confidence violations reduce trust in Guardian
+  - Users may ignore Guardian output due to noise
+  - False positives hurt adoption and credibility
+- **Capabilities**:
+  - LLM provides confidence score (0-1 scale) for each violation
+  - `--safe` flag filters violations to >= 0.7 confidence threshold
+  - Confidence displayed in formatted output (e.g., "📊 Confidence: 85%")
+  - Summary updates when all violations filtered: "No high-confidence violations found (Safe Mode filtered 2 low-confidence issues)"
+  - Works with `--output-json` for programmatic filtering
+  - Backwards compatible (violations without confidence default to 1.0)
+- **Confidence Scale** (documented in system prompt):
+  - 0.9-1.0: Very high - Clear, unambiguous violation
+  - 0.7-0.9: High - Likely violation, context supports it
+  - 0.5-0.7: Medium - Possible violation, some ambiguity
+  - 0.0-0.5: Low - Uncertain, may be false positive
+- **Examples**:
+  ```bash
+  # Default mode (shows all violations with confidence scores)
+  cortex-tms review src/file.ts
+
+  # Safe Mode (only high-confidence violations)
+  cortex-tms review src/file.ts --safe
+
+  # Safe Mode + JSON output
+  cortex-tms review src/file.ts --safe --output-json
+  ```
+- **Files**:
+  - `src/types/guardian.ts` (added `confidence?: number` field, `SAFE_MODE_THRESHOLD` constant)
+  - `src/utils/llm-client.ts` (validates confidence in `parseGuardianJSON()`)
+  - `src/utils/guardian-prompt.ts` (system prompt includes confidence schema and guidelines)
+  - `src/commands/review.ts` (adds `--safe` flag, filtering logic, confidence display)
+  - `src/__tests__/review.test.ts` (6 new tests for Safe Mode)
+- **Tests**: 6 new Safe Mode tests covering:
+  - Filtering violations below 70% confidence
+  - Displaying confidence percentages
+  - Summary updates when all violations filtered
+  - Backwards compatibility (no confidence field)
+  - Boundary cases (exactly 0.7 threshold)
+  - JSON output with Safe Mode
+- **Impact**:
+  - Higher signal-to-noise ratio in Guardian output
+  - Builds trust by showing only confident violations
+  - Users can run full analysis (`cortex review`) then re-run with `--safe` to focus on high-priority issues
+  - Enables progressive disclosure: start with high-confidence, drill down if needed
+- **Effort**: 3-4 hours
+- **Status**: ✅ Complete (all tests passing, build clean)
+
 #### Agent Skills Integration Documentation
 - **Feature**: Comprehensive documentation explaining how Anthropic Agent Skills complement Cortex TMS
 - **Why**: Clarify strategic relationship between Skills (operational layer) and TMS (structural layer)
