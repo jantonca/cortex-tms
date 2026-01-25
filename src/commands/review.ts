@@ -18,6 +18,7 @@ import {
   type LLMMessage,
 } from '../utils/llm-client.js';
 import type { GuardianResult } from '../types/guardian.js';
+import { SAFE_MODE_THRESHOLD } from '../types/guardian.js';
 
 /**
  * Create and configure the review command
@@ -31,7 +32,7 @@ export function createReviewCommand(): Command {
     .option('-p, --provider <provider>', 'LLM provider: openai or anthropic', 'anthropic')
     .option('-m, --model <model>', 'Model name (default: gpt-4-turbo-preview or claude-3-5-sonnet-20241022)')
     .option('--api-key <key>', 'API key (alternative to environment variable)')
-    .option('--safe', 'Safe Mode: only show high-confidence violations (>= 70%)')
+    .option('--safe', `Safe Mode: only show high-confidence violations (>= ${SAFE_MODE_THRESHOLD * 100}%)`)
     .action(async (filePath, options) => {
       await runReviewCommand(filePath, options);
     });
@@ -191,7 +192,6 @@ async function runReviewCommand(
 
     // Apply Safe Mode filtering if enabled
     if (parsedResult && options.safe) {
-      const SAFE_MODE_THRESHOLD = 0.7;
       const originalCount = parsedResult.violations.length;
 
       parsedResult.violations = parsedResult.violations.filter(

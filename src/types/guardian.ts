@@ -5,6 +5,12 @@
  */
 
 /**
+ * Confidence threshold for Safe Mode filtering
+ * Violations with confidence >= this value are shown in --safe mode
+ */
+export const SAFE_MODE_THRESHOLD = 0.7;
+
+/**
  * A single violation found by Guardian
  */
 export interface Violation {

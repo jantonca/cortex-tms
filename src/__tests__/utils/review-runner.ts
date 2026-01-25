@@ -7,6 +7,7 @@
 import { resolve, join } from 'path';
 import { existsSync, readFileSync } from 'fs';
 import { callLLM, getApiKey, parseGuardianJSON, type LLMConfig, type LLMMessage } from '../../utils/llm-client.js';
+import { SAFE_MODE_THRESHOLD } from '../../types/guardian.js';
 
 interface ReviewOptions {
   provider: 'openai' | 'anthropic';
@@ -96,7 +97,6 @@ export async function runReviewForTest(
 
     // Apply Safe Mode filtering if enabled
     if (parsedResult && options.safe) {
-      const SAFE_MODE_THRESHOLD = 0.7;
       const originalCount = parsedResult.violations.length;
 
       parsedResult.violations = parsedResult.violations.filter(
@@ -151,19 +151,45 @@ ${domainLogic}
 
   prompt += `
 # Output Format
-Provide a structured report with:
+You MUST respond with valid JSON matching this exact schema:
 
-1. **Summary**: Overall assessment (✅ Compliant, ⚠️  Minor Issues, ❌ Major Violations)
-2. **Violations**: List each violation with:
-   - **Pattern**: Which pattern/rule was violated
-   - **Line**: Approximate line number (if identifiable)
-   - **Issue**: What's wrong
-   - **Recommendation**: How to fix it
-3. **Positive Observations**: What the code does well
+\`\`\`json
+{
+  "summary": {
+    "status": "compliant" | "minor_issues" | "major_violations",
+    "message": "Brief overall assessment of the code"
+  },
+  "violations": [
+    {
+      "pattern": "Pattern name (e.g., 'Pattern 1: Placeholder Syntax')",
+      "line": 42,  // Optional line number where violation occurs
+      "issue": "What's wrong with the code",
+      "recommendation": "How to fix it",
+      "severity": "minor" | "major",
+      "confidence": 0.85  // 0-1 scale, how certain you are about this violation
+    }
+  ],
+  "positiveObservations": [
+    "Good practice 1",
+    "Good practice 2"
+  ]
+}
+\`\`\`
 
-If no violations found, provide positive feedback and highlight good practices.
+**Field Definitions**:
+- \`status\`: "compliant" (no violations), "minor_issues" (style/minor issues), or "major_violations" (serious pattern breaks)
+- \`violations\`: Array of violations found (empty array if compliant)
+- \`severity\`: "minor" for style/preference issues, "major" for pattern violations
+- \`confidence\`: A number from 0 to 1 indicating certainty about the violation
+  - 0.9-1.0: Very high - Clear, unambiguous violation of stated patterns
+  - 0.7-0.9: High - Likely violation, context strongly supports it
+  - 0.5-0.7: Medium - Possible violation, some ambiguity in interpretation
+  - 0.0-0.5: Low - Uncertain, may be false positive or edge case
+- \`positiveObservations\`: Array of strings highlighting good practices
 
-Be concise but specific. Reference exact line numbers when possible.`;
+If no violations found, set status to "compliant", violations to empty array [], and include positive observations.
+
+Be concise but specific. Reference exact line numbers in violations when possible.`;
 
   return prompt;
 }

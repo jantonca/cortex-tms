@@ -423,4 +423,44 @@ describe('Review Command - Safe Mode', () => {
     // Should still show violation (defaults to 100% confidence)
     expect(result.output).toContain('Pattern 1');
   });
+
+  it('should include violations at exact threshold boundary (0.7)', async () => {
+    const { callLLM } = await import('../utils/llm-client.js');
+    const { SAFE_MODE_THRESHOLD } = await import('../types/guardian.js');
+
+    // Mock response with violation exactly at threshold
+    (callLLM as ReturnType<typeof vi.fn>).mockResolvedValueOnce({
+      content: JSON.stringify({
+        summary: {
+          status: 'minor_issues',
+          message: 'Found 1 violation',
+        },
+        violations: [
+          {
+            pattern: 'Pattern 1',
+            issue: 'Boundary case',
+            recommendation: 'Fix',
+            severity: 'minor',
+            confidence: SAFE_MODE_THRESHOLD, // Exactly 0.7
+          },
+        ],
+        positiveObservations: [],
+      }),
+      usage: { promptTokens: 100, completionTokens: 50, totalTokens: 150 },
+    });
+
+    const { runReviewForTest } = await import('./utils/review-runner.js');
+
+    const result = await runReviewForTest(tempDir, 'test.ts', {
+      provider: 'anthropic',
+      apiKey: 'test-key',
+      safe: true,
+    });
+
+    expect(result.success).toBe(true);
+    // Should include violation at exact threshold (>= not just >)
+    expect(result.output).toContain('Pattern 1');
+    expect(result.output).toContain('Boundary case');
+    expect(result.output).toContain('Confidence: 70%');
+  });
 });
