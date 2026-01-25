@@ -198,6 +198,38 @@ Cortex enforces a **three-tier hierarchy** of documentation:
 
 ---
 
+## Agent Skills Integration
+
+**Status**: Experimental (Phase 1 Complete)
+
+Cortex TMS integrates with [Anthropic Agent Skills](https://www.anthropic.com/agent-skills) as a **complementary system**:
+
+- **TMS**: Structural layer (how to organize docs)
+- **Skills**: Operational layer (how agents consume docs)
+
+### Guardian Skill
+
+The Guardian Skill (`tmp/guardian-skill/SKILL.md`) teaches Claude agents how to invoke Guardian with `--output-json` for programmatic code review.
+
+**Use Cases**:
+- Claude Code / Agent SDK integration
+- CI/CD pipelines (automated pattern enforcement)
+- Custom automation tools (shell scripts, pre-commit hooks)
+
+**Progressive Disclosure Alignment**:
+- TMS HOT tier ↔ Skills metadata (always loaded)
+- TMS WARM tier ↔ SKILL.md content (on-demand)
+- TMS COLD tier ↔ Linked files (rarely)
+
+**Key Features**:
+- `--output-json` flag for machine-readable Guardian output
+- `--safe` flag for high-confidence violations only (≥70%)
+- Structured JSON schema: `summary`, `violations`, `positiveObservations`
+
+**See**: `docs/archive/plans/agent-skills-integration.md` for full strategy and rationale.
+
+---
+
 ## Future Architecture
 
 ### Potential Enhancements

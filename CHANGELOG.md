@@ -38,6 +38,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Tests**: 4 new tests covering JSON output, Safe Mode filtering, and UI suppression
 - **Effort**: 1-2 hours
 
+#### Agent Skills Integration Documentation
+- **Feature**: Comprehensive documentation explaining how Anthropic Agent Skills complement Cortex TMS
+- **Why**: Clarify strategic relationship between Skills (operational layer) and TMS (structural layer)
+- **Deliverables**:
+  - Design document: `docs/archive/plans/agent-skills-integration.md` (470+ lines)
+  - Architecture update: Added "Agent Skills Integration" section to `docs/core/ARCHITECTURE.md`
+  - Guardian Skill: Updated to v0.2.0 (production-ready, located in `tmp/guardian-skill/SKILL.md`)
+- **Key Concepts**:
+  - TMS = Structural layer (how to organize docs)
+  - Skills = Operational layer (how agents consume docs)
+  - Progressive disclosure alignment (HOT/WARM/COLD ↔ metadata/content/linked files)
+  - Guardian Skill teaches agents to use `--output-json` and `--safe` flags
+- **Use Cases Documented**:
+  - Claude Code / Agent SDK integration
+  - CI/CD pipelines with Guardian
+  - Custom automation (shell scripts, pre-commit hooks)
+  - Policy enforcement with Safe Mode
+- **Status**: Phase 1 Complete (foundation built, awaiting manual validation)
+- **Files**: `docs/archive/plans/agent-skills-integration.md`, `docs/core/ARCHITECTURE.md`, `tmp/guardian-skill/SKILL.md`
+- **Effort**: 2-3 hours
+
 #### Guardian Safe Mode (OPT-1b)
 - **Feature**: `cortex review --safe` flag to filter low-confidence violations
 - **Why**: Reduce false positive noise, increase trust in Guardian recommendations
