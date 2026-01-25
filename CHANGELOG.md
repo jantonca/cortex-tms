@@ -59,6 +59,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Files**: `docs/archive/plans/agent-skills-integration.md`, `docs/core/ARCHITECTURE.md`, `tmp/guardian-skill/SKILL.md`
 - **Effort**: 2-3 hours
 
+#### Guardian Detection Logic Refactor (OPT-2)
+- **Feature**: Improved regex-based pattern matching in legacy detection fallback
+- **Why**: Reduce false positives from substring matches when JSON parsing unavailable
+- **Improvements**:
+  - Replaced `.includes()` with regex word boundaries (`\b`)
+  - "violation" now only matches standalone word (not "violationCount", "noViolations")
+  - Multi-word phrases require proper spacing ("should use" not "shoulduse")
+  - Case-insensitive matching with `/i` flag
+  - Prioritization logic uses regex match indices for accuracy
+- **Examples of Improvements**:
+  - Before: "no violations" → false positive (matched "violations")
+  - After: "no violations" → correctly identified as compliant (word boundaries)
+  - Before: "violationCount" → false positive
+  - After: "violationCount" → correctly ignored (not a standalone word)
+- **Impact**:
+  - More accurate fallback when JSON parsing fails
+  - Foundation for improving overall Guardian accuracy
+  - Better handling of edge cases in LLM responses
+- **Tests**: 6 new unit tests covering word boundaries, emoji indicators, multi-word phrases, prioritization, substring avoidance, case-insensitivity
+- **Files**: `src/__tests__/guardian-accuracy.test.ts` (detectViolationInResponseLegacy function)
+- **Total Tests**: 126 passing (120 → 126)
+- **Effort**: 4-6 hours
+
 #### Guardian Safe Mode (OPT-1b)
 - **Feature**: `cortex review --safe` flag to filter low-confidence violations
 - **Why**: Reduce false positive noise, increase trust in Guardian recommendations

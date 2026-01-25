@@ -461,6 +461,81 @@ This is a reference implementation.
 ];
 
 describe('Guardian Accuracy Validation', () => {
+  // Unit tests for legacy detection function (regex improvements)
+  describe('Legacy Detection Logic (Regex Word Boundaries)', () => {
+    it('should correctly identify violations with word boundaries', () => {
+      // Test case: "violation" as standalone word
+      const responseWithViolation = 'This code has a violation of Pattern 1.';
+      expect(detectViolationInResponseLegacy(responseWithViolation)).toBe(true);
+
+      // Test case: "no violations" should be compliant (not false positive from "violations")
+      const responseNoViolations = 'This code has no violations.';
+      expect(detectViolationInResponseLegacy(responseNoViolations)).toBe(false);
+
+      // Test case: documentation mentioning "violation" should not trigger (context matters)
+      const responseDocumentation = 'This follows the pattern. Note: violation examples are shown above.';
+      expect(detectViolationInResponseLegacy(responseDocumentation)).toBe(false);
+    });
+
+    it('should handle emoji indicators correctly', () => {
+      const majorViolations = '❌ major violations detected in this code.';
+      expect(detectViolationInResponseLegacy(majorViolations)).toBe(true);
+
+      const compliant = '✅ compliant with all patterns.';
+      expect(detectViolationInResponseLegacy(compliant)).toBe(false);
+
+      const minorIssues = '⚠️  minor issues found.';
+      expect(detectViolationInResponseLegacy(minorIssues)).toBe(true);
+    });
+
+    it('should handle multi-word phrases with word boundaries', () => {
+      const shouldUse = 'You should use named exports instead.';
+      expect(detectViolationInResponseLegacy(shouldUse)).toBe(true);
+
+      const mustUse = 'You must use bracket syntax.';
+      expect(detectViolationInResponseLegacy(mustUse)).toBe(true);
+
+      // Edge case: "shoulduse" (no space) should not match
+      const noSpace = 'This shoulduse proper spacing.';
+      expect(detectViolationInResponseLegacy(noSpace)).toBe(false);
+    });
+
+    it('should prioritize first indicator when both present', () => {
+      // Violation appears first → has violations
+      const violationFirst = 'This has a violation. However, it complies with other patterns.';
+      expect(detectViolationInResponseLegacy(violationFirst)).toBe(true);
+
+      // Compliance appears first → no violations
+      const complianceFirst = '✅ compliant overall. Note: violation examples in docs.';
+      expect(detectViolationInResponseLegacy(complianceFirst)).toBe(false);
+    });
+
+    it('should avoid false positives from substring matches', () => {
+      // "violationCount" should NOT match "violation" with word boundary
+      const substring1 = 'The violationCount variable tracks issues.';
+      expect(detectViolationInResponseLegacy(substring1)).toBe(false);
+
+      // "noViolations" should NOT match "violations"
+      const substring2 = 'Check the noViolations flag.';
+      expect(detectViolationInResponseLegacy(substring2)).toBe(false);
+
+      // Actual "violations" should match
+      const actualWord = 'This code has violations.';
+      expect(detectViolationInResponseLegacy(actualWord)).toBe(true);
+    });
+
+    it('should be case-insensitive', () => {
+      const uppercase = 'This has a VIOLATION.';
+      expect(detectViolationInResponseLegacy(uppercase)).toBe(true);
+
+      const mixedCase = 'This is COMPLIANT.';
+      expect(detectViolationInResponseLegacy(mixedCase)).toBe(false);
+
+      const titleCase = 'Should Use Bracket Syntax.';
+      expect(detectViolationInResponseLegacy(titleCase)).toBe(true);
+    });
+  });
+
   let results: {
     testCase: TestCase;
     guardianResponse: string;
@@ -744,56 +819,66 @@ function detectViolationInResponse(response: string): boolean {
 
 /**
  * Legacy string-based violation detection (fallback for non-JSON responses)
+ *
+ * Uses regex with word boundaries for more accurate matching.
+ * Reduces false positives from substring matches.
  */
 function detectViolationInResponseLegacy(response: string): boolean {
-  const lowerResponse = response.toLowerCase();
-
-  // Check for violation indicators
-  const violationIndicators = [
-    '❌ major violations',
-    '⚠️  minor issues',
-    'violations:',
-    'violated',
-    'violation',
-    'anti-pattern',
-    'should use',
-    'must use',
-    'incorrect',
-    'wrong',
+  // Violation indicators with regex word boundaries
+  const violationPatterns = [
+    /❌\s*major\s+violations/i,           // "❌ major violations"
+    /⚠️\s*minor\s+issues/i,               // "⚠️  minor issues"
+    /\bviolations?:\s/i,                  // "violations:" or "violation:"
+    /\bviolated\b/i,                      // "violated" (word boundary)
+    /\bviolations?\b/i,                   // "violation" or "violations" (not "violationCount")
+    /\banti-pattern\b/i,                  // "anti-pattern"
+    /\bshould\s+use\b/i,                  // "should use" (not "shoulduse")
+    /\bmust\s+use\b/i,                    // "must use"
+    /\bincorrect\b/i,                     // "incorrect"
+    /\bwrong\b/i,                         // "wrong"
   ];
 
-  // Check for compliance indicators
-  const complianceIndicators = [
-    '✅ compliant',
-    'no violations',
-    'complies with',
-    'follows the pattern',
-    'adheres to',
-    'correctly uses',
+  // Compliance indicators with regex word boundaries
+  const compliancePatterns = [
+    /✅\s*compliant/i,                    // "✅ compliant"
+    /\bno\s+violations\b/i,               // "no violations" (word boundary prevents "violations" alone)
+    /\bcomplies\s+with\b/i,               // "complies with"
+    /\bfollows\s+the\s+pattern\b/i,       // "follows the pattern"
+    /\badheres\s+to\b/i,                  // "adheres to"
+    /\bcorrectly\s+uses\b/i,              // "correctly uses"
   ];
 
-  const hasViolation = violationIndicators.some((indicator) =>
-    lowerResponse.includes(indicator)
-  );
-  const hasCompliance = complianceIndicators.some((indicator) =>
-    lowerResponse.includes(indicator)
+  // Check for violation patterns
+  const hasViolation = violationPatterns.some((pattern) =>
+    pattern.test(response)
   );
 
-  // If both detected, check which appears first/more prominently
+  // Check for compliance patterns
+  const hasCompliance = compliancePatterns.some((pattern) =>
+    pattern.test(response)
+  );
+
+  // If both detected, check which appears first
   if (hasViolation && hasCompliance) {
-    const violationIndex = Math.min(
-      ...violationIndicators
-        .map((ind) => lowerResponse.indexOf(ind))
-        .filter((idx) => idx >= 0)
-    );
-    const complianceIndex = Math.min(
-      ...complianceIndicators
-        .map((ind) => lowerResponse.indexOf(ind))
-        .filter((idx) => idx >= 0)
-    );
+    const violationMatches = violationPatterns
+      .map((pattern) => {
+        const match = response.match(pattern);
+        return match ? match.index! : Infinity;
+      });
+    const complianceMatches = compliancePatterns
+      .map((pattern) => {
+        const match = response.match(pattern);
+        return match ? match.index! : Infinity;
+      });
 
-    return violationIndex < complianceIndex;
+    const firstViolationIndex = Math.min(...violationMatches);
+    const firstComplianceIndex = Math.min(...complianceMatches);
+
+    // If violation indicator appears before compliance, likely has violations
+    return firstViolationIndex < firstComplianceIndex;
   }
 
+  // Only violation indicators → has violations
+  // Only compliance indicators → no violations
   return hasViolation && !hasCompliance;
 }
