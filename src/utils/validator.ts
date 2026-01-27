@@ -97,6 +97,30 @@ async function scanForPlaceholders(
 }
 
 /**
+ * Scan file for AI-DRAFT markers
+ * These indicate content populated by AI that needs human review
+ */
+async function scanForAIDrafts(
+  filePath: string
+): Promise<{ found: boolean; count: number }> {
+  try {
+    const content = await readFile(filePath, 'utf-8');
+    const matches = content.match(/<!--\s*AI-DRAFT.*?-->/gi);
+
+    if (matches) {
+      return {
+        found: true,
+        count: matches.length,
+      };
+    }
+
+    return { found: false, count: 0 };
+  } catch {
+    return { found: false, count: 0 };
+  }
+}
+
+/**
  * Count completed tasks in NEXT-TASKS.md
  */
 async function countCompletedTasks(filePath: string): Promise<number> {
@@ -277,7 +301,7 @@ export function validateConfig(cwd: string): ValidationCheck[] {
 }
 
 /**
- * Validate no unreplaced placeholders
+ * Validate no unreplaced placeholders and check for AI-DRAFT markers
  */
 export async function validatePlaceholders(
   cwd: string,
@@ -285,7 +309,7 @@ export async function validatePlaceholders(
 ): Promise<ValidationCheck[]> {
   const checks: ValidationCheck[] = [];
 
-  // Files to scan for placeholders
+  // Files to scan for placeholders and AI-DRAFT markers
   const filesToScan = [
     'README.md',
     'NEXT-TASKS.md',
@@ -308,23 +332,41 @@ export async function validatePlaceholders(
       continue;
     }
 
-    const { found, placeholders } = await scanForPlaceholders(filePath);
+    // Check for placeholders and AI-DRAFT markers
+    const [placeholderResult, draftResult] = await Promise.all([
+      scanForPlaceholders(filePath),
+      scanForAIDrafts(filePath),
+    ]);
 
-    if (found) {
+    // Priority 1: Incomplete (has placeholders) - highest severity
+    if (placeholderResult.found) {
       checks.push({
-        name: `Placeholders: ${file}`,
+        name: `Completion: ${file}`,
         passed: false,
-        level: 'warning',
-        message: `${file} contains unreplaced placeholders`,
-        details: `Found: ${placeholders.join(', ')}`,
+        level: 'error',
+        message: `${file} is incomplete (contains placeholder text)`,
+        details: `Found: ${placeholderResult.placeholders.join(', ')}\n💡 Run 'cortex-tms prompt bootstrap' with your AI agent to populate this file.`,
         file,
       });
-    } else {
+    }
+    // Priority 2: AI-DRAFT (has draft markers) - needs human review
+    else if (draftResult.found) {
       checks.push({
-        name: `Placeholders: ${file}`,
+        name: `Completion: ${file}`,
+        passed: true, // Not a hard failure - content exists
+        level: 'warning',
+        message: `${file} contains AI-generated drafts (needs human review)`,
+        details: `${draftResult.count} draft section${draftResult.count > 1 ? 's' : ''} marked with <!-- AI-DRAFT -->\n💡 Review the AI-generated content and remove the <!-- AI-DRAFT --> markers once accepted.`,
+        file,
+      });
+    }
+    // Priority 3: Complete (no placeholders, no drafts)
+    else {
+      checks.push({
+        name: `Completion: ${file}`,
         passed: true,
         level: 'info',
-        message: `${file} has no unreplaced placeholders`,
+        message: `${file} is complete and reviewed`,
         file,
       });
     }

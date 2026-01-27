@@ -233,12 +233,12 @@ describe('Validate Command - Ignore Files', () => {
 
     const result = await validateProject(tempDir);
 
-    const placeholderCheck = result.checks.find(
-      (c) => c.name === 'Placeholders: NEXT-TASKS.md'
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: NEXT-TASKS.md'
     );
 
-    expect(placeholderCheck?.passed).toBe(false);
-    expect(placeholderCheck?.message).toContain('unreplaced placeholders');
+    expect(completionCheck?.passed).toBe(false);
+    expect(completionCheck?.message).toContain('incomplete');
   });
 
   it('should ignore files specified in .cortexrc validation.ignoreFiles', async () => {
@@ -259,12 +259,12 @@ describe('Validate Command - Ignore Files', () => {
 
     const result = await validateProject(tempDir);
 
-    // Placeholder check for NEXT-TASKS.md should not exist
-    const placeholderCheck = result.checks.find(
-      (c) => c.name === 'Placeholders: NEXT-TASKS.md'
+    // Completion check for NEXT-TASKS.md should not exist (file is ignored)
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: NEXT-TASKS.md'
     );
 
-    expect(placeholderCheck).toBeUndefined();
+    expect(completionCheck).toBeUndefined();
   });
 
   it('should still check non-ignored files', async () => {
@@ -287,11 +287,11 @@ describe('Validate Command - Ignore Files', () => {
     const result = await validateProject(tempDir);
 
     const claudeCheck = result.checks.find(
-      (c) => c.name === 'Placeholders: CLAUDE.md'
+      (c) => c.name === 'Completion: CLAUDE.md'
     );
 
     expect(claudeCheck?.passed).toBe(false);
-    expect(claudeCheck?.message).toContain('unreplaced placeholders');
+    expect(claudeCheck?.message).toContain('incomplete');
   });
 });
 
@@ -406,6 +406,149 @@ describe('Validate Command - File Size Limits', () => {
 
     // Should return empty array if no files exist
     expect(checks.length).toBe(0);
+  });
+});
+
+describe('Validate Command - AI-DRAFT Detection (Bootstrap Feature)', () => {
+  let tempDir: string;
+
+  beforeEach(async () => {
+    tempDir = await createTempDir();
+    await createMinimalProject(tempDir);
+  });
+
+  afterEach(async () => {
+    await cleanupTempDir(tempDir);
+  });
+
+  it('should detect files with placeholder text as incomplete (error)', async () => {
+    await writeFile(
+      join(tempDir, 'NEXT-TASKS.md'),
+      '# Project: [Project Name]\n\nThis is a [Description] of the project.\n'
+    );
+
+    const result = await validateProject(tempDir);
+
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: NEXT-TASKS.md'
+    );
+
+    expect(completionCheck).toBeDefined();
+    expect(completionCheck?.passed).toBe(false);
+    expect(completionCheck?.level).toBe('error');
+    expect(completionCheck?.message).toContain('incomplete');
+    expect(completionCheck?.details).toContain('[Project Name]');
+    expect(completionCheck?.details).toContain('cortex-tms prompt bootstrap');
+  });
+
+  it('should detect files with AI-DRAFT markers as draft (warning)', async () => {
+    await writeFile(
+      join(tempDir, 'NEXT-TASKS.md'),
+      '# NEXT: Upcoming Tasks\n\n<!-- AI-DRAFT: Review before treating as canonical -->\n\n## Sprint Goals\n\nGoal 1\n\n<!-- AI-DRAFT -->\n\nGoal 2\n'
+    );
+
+    const result = await validateProject(tempDir);
+
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: NEXT-TASKS.md'
+    );
+
+    expect(completionCheck).toBeDefined();
+    expect(completionCheck?.passed).toBe(true); // Not a hard failure
+    expect(completionCheck?.level).toBe('warning');
+    expect(completionCheck?.message).toContain('AI-generated drafts');
+    expect(completionCheck?.details).toContain('2 draft sections');
+    expect(completionCheck?.details).toContain('Review the AI-generated content');
+  });
+
+  it('should mark files without placeholders or drafts as complete', async () => {
+    await writeFile(
+      join(tempDir, 'NEXT-TASKS.md'),
+      '# NEXT: Upcoming Tasks\n\n## Sprint Goals\n\nReal goal 1\nReal goal 2\n'
+    );
+
+    const result = await validateProject(tempDir);
+
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: NEXT-TASKS.md'
+    );
+
+    expect(completionCheck).toBeDefined();
+    expect(completionCheck?.passed).toBe(true);
+    expect(completionCheck?.level).toBe('info');
+    expect(completionCheck?.message).toContain('complete and reviewed');
+  });
+
+  it('should prioritize placeholder detection over AI-DRAFT detection', async () => {
+    // File with both placeholders and AI-DRAFT markers
+    await writeFile(
+      join(tempDir, 'NEXT-TASKS.md'),
+      '# Project: [Project Name]\n\n<!-- AI-DRAFT -->\n\nContent here\n'
+    );
+
+    const result = await validateProject(tempDir);
+
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: NEXT-TASKS.md'
+    );
+
+    expect(completionCheck).toBeDefined();
+    expect(completionCheck?.passed).toBe(false);
+    expect(completionCheck?.level).toBe('error'); // Placeholder is higher priority
+    expect(completionCheck?.message).toContain('incomplete');
+  });
+
+  it('should detect AI-DRAFT markers with various formats', async () => {
+    await writeFile(
+      join(tempDir, 'NEXT-TASKS.md'),
+      '# NEXT: Upcoming Tasks\n\n<!-- AI-DRAFT -->\n<!-- AI-DRAFT: Review this -->\n<!--AI-DRAFT: Another one-->\n'
+    );
+
+    const result = await validateProject(tempDir);
+
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: NEXT-TASKS.md'
+    );
+
+    expect(completionCheck).toBeDefined();
+    expect(completionCheck?.passed).toBe(true);
+    expect(completionCheck?.level).toBe('warning');
+    expect(completionCheck?.details).toContain('3 draft sections');
+  });
+
+  it('should provide helpful messages for incomplete files', async () => {
+    // Ensure directory exists first
+    await mkdir(join(tempDir, 'docs/core'), { recursive: true });
+    await writeFile(
+      join(tempDir, 'docs/core/ARCHITECTURE.md'),
+      '# Architecture\n\n[System Description]\n'
+    );
+
+    const result = await validateProject(tempDir);
+
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: docs/core/ARCHITECTURE.md'
+    );
+
+    expect(completionCheck?.details).toContain('cortex-tms prompt bootstrap');
+    expect(completionCheck?.details).toContain('populate this file');
+  });
+
+  it('should provide helpful messages for draft files', async () => {
+    await mkdir(join(tempDir, 'docs/core'), { recursive: true });
+    await writeFile(
+      join(tempDir, 'docs/core/ARCHITECTURE.md'),
+      '# Architecture\n\n<!-- AI-DRAFT -->\n\nSystem description here\n'
+    );
+
+    const result = await validateProject(tempDir);
+
+    const completionCheck = result.checks.find(
+      (c) => c.name === 'Completion: docs/core/ARCHITECTURE.md'
+    );
+
+    expect(completionCheck?.details).toContain('Review the AI-generated content');
+    expect(completionCheck?.details).toContain('remove the <!-- AI-DRAFT --> markers');
   });
 });
 

@@ -14,6 +14,7 @@
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
+| **AI-Assisted Bootstrap Onboarding** | [BOOT-1] | 14h | 🔴 HIGH | ✅ Complete |
 | **Website Performance Optimization** | [TECH-1] | 4-6h | 🟡 MED | ⏸️ Planned |
 | **Guardian Enhancements** | [TECH-2] | 3-4h | 🟡 MED | ⏸️ Planned |
 | **Migration Experience Improvements** | [TMS-277-282] | 4-5h | 🟡 MED | ⏸️ Planned |
@@ -30,6 +31,57 @@
 - Run performance benchmarks
 
 **Status**: Documented in `tmp/WEBSITE-OPTIMIZATION-TASKS.md`
+
+### AI-Assisted Bootstrap Onboarding [BOOT-1]
+
+**Goal**: Enable AI agents to populate TMS documentation from codebase on first session
+
+**Context**: After `cortex-tms init`, users face empty templates with `[placeholder]` syntax.
+Users work with AI agents (Claude Code, Copilot, Cursor). The agent should do the bootstrapping.
+See: `tmp/AI-BOOTSTRAP-STRATEGY-PLAN-v2.md` for full strategy.
+
+**Architecture**: Prompt-first (Layer 1 + Layer 2). CLI bootstrap deferred to v2.
+
+**Tasks**:
+
+#### Templates & Prompts
+- [x] Add `bootstrap` prompt to `templates/PROMPTS.md` [BOOT-1.1]
+- [x] Add `populate-architecture` prompt to `templates/PROMPTS.md` [BOOT-1.2]
+- [x] Add `discover-patterns` prompt to `templates/PROMPTS.md` [BOOT-1.3]
+- [x] Add `extract-rules` prompt to `templates/PROMPTS.md` [BOOT-1.4]
+- [x] Add "First Session Setup" section to `templates/CLAUDE.md` [BOOT-1.5]
+- [x] Add setup detection note to `templates/.github/copilot-instructions.md` [BOOT-1.6]
+
+#### CLI Changes
+- [x] Update post-init message in `src/commands/init.ts` with AI-agent quick start [BOOT-1.7]
+- [x] Add placeholder detection + AI-DRAFT detection to `src/utils/validator.ts` [BOOT-1.8]
+  - `[placeholder]` → Incomplete (error)
+  - `<!-- AI-DRAFT -->` → Draft (warning)
+  - Contextual messages for each state
+- [x] Add Lesson 6: AI-Powered Bootstrapping to `src/commands/tutorial.ts` [BOOT-1.9]
+
+#### Testing & Validation
+- [x] Write tests for placeholder/draft detection in `src/__tests__/validate.test.ts` [BOOT-1.10]
+- [x] Verify existing prompt parser tests pass with new prompts [BOOT-1.11]
+- [x] Dogfood: test bootstrap prompt on cortex-tms repo [BOOT-1.12]
+- [x] Dogfood: test bootstrap prompt on examples/todo-app [BOOT-1.13]
+  - Note: todo-app already has populated docs, tested on cortex-tms instead
+
+#### Content
+- [x] Write article: "From Zero Docs to AI-Ready in 10 Minutes" [BOOT-1.14]
+  - Location: `website/src/content/blog/ai-powered-bootstrapping.md`
+  - Note: Hero image (ai-powered-bootstrapping.webp) needs to be created
+
+**Key Files**:
+- `templates/PROMPTS.md` — Add 4 new prompts
+- `templates/CLAUDE.md` — Add First Session Setup section
+- `templates/.github/copilot-instructions.md` — Add setup detection note
+- `src/commands/init.ts` — Update post-init message
+- `src/utils/validator.ts` — Add placeholder + AI-DRAFT detection
+- `src/commands/tutorial.ts` — Add Lesson 6
+- `src/__tests__/validate.test.ts` — New tests
+
+**Status**: ✅ Complete - Dogfooding validated. See: `docs/archive/dogfooding-bootstrap-v3.0.md`
 
 ### Guardian Enhancements [TECH-2]
 
