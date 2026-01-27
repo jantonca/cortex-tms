@@ -189,6 +189,71 @@ const [major, minor, patch] = currentVersion.split('.').map(Number);
 
 ---
 
+## 🟢 Bootstrap Enhancements (v3.1+)
+
+**Context**: Bootstrap onboarding feature shipped in v3.0. See implementation feedback: `docs/archive/bootstrap-v3.0-implementation-feedback.md`
+
+### Blog Article Examples
+- **Feature**: Add real AI-generated ARCHITECTURE.md excerpt to blog article
+- **Why**: Makes "90% accurate first draft" claim concrete and helps readers calibrate expectations
+- **Implementation**:
+  - Take actual AI-generated content from dogfooding
+  - Show before/after with refinements
+  - Add to `website/src/content/blog/ai-powered-bootstrapping.md`
+- **Effort**: 30 min - 1h
+- **Priority**: 🟢 Low (nice-to-have)
+- **Source**: Implementation feedback 4.3
+
+### Barebones Sample Repo for Bootstrap Testing
+- **Feature**: Create minimal Node/TS project with unfilled docs for bootstrap testing
+- **Why**: todo-app already populated, need clean slate for realistic testing
+- **Implementation**:
+  - Create `examples/fresh-start/` (basic Express + TypeScript)
+  - Add to CI/CD for automated bootstrap testing
+  - Document in examples README
+- **Effort**: 2-3h
+- **Priority**: 🟢 Low (validation tool, not user-facing)
+- **Source**: Implementation feedback 4.4, dogfooding report
+
+### CLI Bootstrap Command (Layer 3 - Automation)
+- **Feature**: `cortex-tms bootstrap --auto` for fully automated doc generation
+- **Why**: Users who prefer one-command automation vs prompt-first approach
+- **Implementation**:
+  - Reuse `src/utils/llm-client.ts` for LLM calls
+  - Add codebase analyzer with safety exclusions (.env, secrets, node_modules)
+  - Interactive mode + dry-run
+  - Cost estimation (~$0.15-0.25 per run)
+- **Decision gate**: Only build if 60%+ of users successfully use prompt-first approach
+- **Effort**: 16-20h
+- **Priority**: ⏸️ Deferred (validate prompt-first approach first)
+- **Source**: Original v2 strategy, deferred to v3.1+
+
+### Safety Framing for User Communication
+- **Context**: Safety rules are prompt-level (not code-enforced) in v3.0
+- **Remember**: Frame as "high-confidence compliance" not "guaranteed safety"
+- **Rationale**:
+  - AI agents have built-in safety training
+  - Prompt explicitly lists exclusions
+  - But it's best-effort, not cryptographic guarantee
+- **Action**: When discussing with users, emphasize:
+  - "Likely to comply + we reinforce in prompt"
+  - Not "guaranteed" (guarantees require Layer 3 CLI with hardcoded exclusions)
+- **Source**: Implementation feedback 4.1
+
+### Metrics Measurement Strategy
+- **Context**: No telemetry layer in OSS CLI (by design)
+- **Approach**: Measure indirectly via:
+  - User anecdotes and community feedback
+  - Self-reported usage surveys
+  - GitHub discussions and issues
+- **If adding opt-in telemetry later**: Track:
+  - `cortex-tms prompt bootstrap` usage
+  - Validator AI-DRAFT vs clean file counts
+  - Time to remove AI-DRAFT markers (user self-report)
+- **Source**: Implementation feedback 4.2
+
+---
+
 ## 🟡 Medium Priority (2-4 Months)
 
 ### Example Projects
