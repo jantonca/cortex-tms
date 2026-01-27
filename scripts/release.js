@@ -7,10 +7,12 @@
  * Implements the "Atomicity" principle: releases either succeed completely or fail safely.
  *
  * Usage:
- *   node scripts/release.js patch      # Bump patch version (2.5.0 -> 2.5.1)
- *   node scripts/release.js minor      # Bump minor version (2.5.0 -> 2.6.0)
- *   node scripts/release.js major      # Bump major version (2.5.0 -> 3.0.0)
- *   node scripts/release.js --dry-run  # Preview without making changes
+ *   node scripts/release.js patch           # Bump patch version (2.5.0 -> 2.5.1)
+ *   node scripts/release.js minor           # Bump minor version (2.5.0 -> 2.6.0)
+ *   node scripts/release.js major           # Bump major version (2.5.0 -> 3.0.0)
+ *   node scripts/release.js stable          # Promote prerelease to stable (2.6.0-beta.1 -> 2.6.0)
+ *   node scripts/release.js --version 2.7.0 # Explicitly set version to 2.7.0
+ *   node scripts/release.js --dry-run       # Preview without making changes
  *
  * Lifecycle:
  *   1. Pre-flight: Validate credentials and workspace
@@ -50,6 +52,7 @@ class AtomicRelease {
   constructor(options = {}) {
     this.dryRun = options.dryRun || false;
     this.bumpType = options.bumpType || 'patch';
+    this.explicitVersion = options.explicitVersion || null; // New: explicit version flag
     this.projectRoot = ROOT_DIR;
     this.backupPath = null;
     this.originalBranch = null;
@@ -252,38 +255,66 @@ class AtomicRelease {
     const pkg = JSON.parse(fs.readFileSync(this.packageJsonPath, 'utf-8'));
     const currentVersion = pkg.version;
 
-    // Parse current version (supports prerelease tags)
-    const { major, minor, patch, prerelease } = this.parseVersion(currentVersion);
-
-    // Note: If current version is prerelease (e.g., 2.6.0-beta.1),
-    // bumping will strip the prerelease tag and produce a stable version
-    // (e.g., patch bump: 2.6.0-beta.1 → 2.6.1)
-    if (prerelease) {
-      log.detail(`Promoting from prerelease: ${currentVersion}`);
-    }
-
-    switch (this.bumpType) {
-      case 'major':
-        this.newVersion = `${major + 1}.0.0`;
-        break;
-      case 'minor':
-        this.newVersion = `${major}.${minor + 1}.0`;
-        break;
-      case 'patch':
-        this.newVersion = `${major}.${minor}.${patch + 1}`;
-        break;
-      default:
+    // If explicit version provided, use it directly
+    if (this.explicitVersion) {
+      // Validate the explicit version format
+      try {
+        this.parseVersion(this.explicitVersion);
+      } catch (error) {
         throw new Error(
-          `Invalid bump type: ${this.bumpType}\n\n` +
-          `Valid options:\n` +
-          `  patch - Bump patch version (2.5.0 → 2.5.1)\n` +
-          `  minor - Bump minor version (2.5.0 → 2.6.0)\n` +
-          `  major - Bump major version (2.5.0 → 3.0.0)\n\n` +
-          `Usage: node scripts/release.js [patch|minor|major]`
+          `Invalid version format: ${this.explicitVersion}\n\n` +
+          `Version must be in format: major.minor.patch or major.minor.patch-prerelease\n` +
+          `Examples: 2.6.0, 2.6.0-beta.1, 3.0.0-rc.2`
         );
-    }
+      }
 
-    log.detail(`${currentVersion} → ${this.newVersion} (${this.bumpType})`);
+      this.newVersion = this.explicitVersion;
+      log.detail(`${currentVersion} → ${this.newVersion} (explicit version)`);
+    } else {
+      // Parse current version (supports prerelease tags)
+      const { major, minor, patch, prerelease } = this.parseVersion(currentVersion);
+
+      if (prerelease) {
+        log.detail(`Current version is prerelease: ${currentVersion}`);
+      }
+
+      switch (this.bumpType) {
+        case 'stable':
+          // Promote prerelease to stable (strip prerelease tag)
+          // e.g., 2.6.0-beta.1 → 2.6.0
+          if (!prerelease) {
+            throw new Error(
+              `Cannot promote to stable: current version ${currentVersion} is already stable.\n\n` +
+              `The "stable" bump type is only for promoting prerelease versions.\n` +
+              `Use "patch", "minor", or "major" for stable versions.`
+            );
+          }
+          this.newVersion = `${major}.${minor}.${patch}`;
+          log.detail(`Promoting prerelease to stable: ${currentVersion} → ${this.newVersion}`);
+          break;
+        case 'major':
+          this.newVersion = `${major + 1}.0.0`;
+          break;
+        case 'minor':
+          this.newVersion = `${major}.${minor + 1}.0`;
+          break;
+        case 'patch':
+          this.newVersion = `${major}.${minor}.${patch + 1}`;
+          break;
+        default:
+          throw new Error(
+            `Invalid bump type: ${this.bumpType}\n\n` +
+            `Valid options:\n` +
+            `  patch  - Bump patch version (2.5.0 → 2.5.1)\n` +
+            `  minor  - Bump minor version (2.5.0 → 2.6.0)\n` +
+            `  major  - Bump major version (2.5.0 → 3.0.0)\n` +
+            `  stable - Promote prerelease to stable (2.6.0-beta.1 → 2.6.0)\n\n` +
+            `Usage: node scripts/release.js [patch|minor|major|stable]`
+          );
+      }
+
+      log.detail(`${currentVersion} → ${this.newVersion} (${this.bumpType})`);
+    }
 
     if (!this.dryRun) {
       pkg.version = this.newVersion;
@@ -549,7 +580,14 @@ async function main() {
 
   // Parse arguments
   const isDryRun = args.includes('--dry-run');
-  const bumpType = args.find(arg => ['major', 'minor', 'patch'].includes(arg)) || 'patch';
+  const bumpType = args.find(arg => ['major', 'minor', 'patch', 'stable'].includes(arg)) || 'patch';
+
+  // Parse explicit version flag (--version X.Y.Z)
+  let explicitVersion = null;
+  const versionFlagIndex = args.findIndex(arg => arg === '--version' || arg === '-v');
+  if (versionFlagIndex !== -1 && args[versionFlagIndex + 1]) {
+    explicitVersion = args[versionFlagIndex + 1];
+  }
 
   // Show help
   if (args.includes('--help') || args.includes('-h')) {
@@ -563,15 +601,19 @@ Bump Types:
   patch     Bump patch version (default) - 2.5.0 → 2.5.1
   minor     Bump minor version - 2.5.0 → 2.6.0
   major     Bump major version - 2.5.0 → 3.0.0
+  stable    Promote prerelease to stable - 2.6.0-beta.1 → 2.6.0
 
 Options:
-  --dry-run    Preview the release without making changes
-  --help, -h   Show this help message
+  --version <X.Y.Z>  Set explicit version (overrides bump type)
+  --dry-run          Preview the release without making changes
+  --help, -h         Show this help message
 
 Examples:
-  node scripts/release.js patch            # Release v2.5.1
-  node scripts/release.js minor --dry-run  # Preview v2.6.0 release
-  node scripts/release.js major            # Release v3.0.0
+  node scripts/release.js patch               # Release v2.5.1
+  node scripts/release.js minor --dry-run     # Preview v2.6.0 release
+  node scripts/release.js major               # Release v3.0.0
+  node scripts/release.js stable              # Promote 2.6.0-beta.1 → 2.6.0
+  node scripts/release.js --version 2.7.0     # Explicitly set version to 2.7.0
 
 Pre-requisites:
   - Must be on main branch
@@ -583,7 +625,11 @@ Pre-requisites:
   }
 
   // Execute release
-  const release = new AtomicRelease({ dryRun: isDryRun, bumpType });
+  const release = new AtomicRelease({
+    dryRun: isDryRun,
+    bumpType,
+    explicitVersion
+  });
   await release.execute();
 }
 

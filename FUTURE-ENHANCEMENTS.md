@@ -21,28 +21,28 @@ The following critical issues have been **moved to active development** in `NEXT
 
 ## 🔥 Known Issues (Lower Priority)
 
-### Release Script: Prerelease Version Support (TMS-272)
-**Issue**: The Atomic Release Engine cannot promote prerelease versions (e.g., `2.6.0-beta.1` → `2.6.0`) automatically.
+### ~~Release Script: Prerelease Version Support (TMS-272)~~ ✅ RESOLVED
+**Status**: ✅ Fixed in v3.0 (2026-01-27)
 
-**Root Cause**:
-```javascript
-// scripts/release.js line 234
-const [major, minor, patch] = currentVersion.split('.').map(Number);
-// "2.6.0-beta.1".split('.') = ['2', '6', '0-beta', '1']
-// Number('0-beta') = NaN ❌
+**What Was Fixed**:
+- ✅ Prerelease version parsing (`parseVersion()` method already implemented)
+- ✅ Added `--version X.Y.Z` flag to explicitly set version
+- ✅ Added `stable` bump type for beta→stable promotion (e.g., `2.6.0-beta.1` → `2.6.0`)
+- ✅ Updated help documentation with new options
+
+**Usage Examples**:
+```bash
+# Promote prerelease to stable
+node scripts/release.js stable  # 2.6.0-beta.1 → 2.6.0
+
+# Explicitly set version
+node scripts/release.js --version 2.7.0
+
+# Preview changes
+node scripts/release.js stable --dry-run
 ```
 
-**Current Workaround**: Manually update `package.json` version, then run sync script.
-
-**Fix Required**:
-- Add prerelease version parsing (strip `-beta.X`, `-alpha.X`, `-rc.X` suffixes)
-- Add `--version X.Y.Z` flag to explicitly set version
-- Support beta→stable promotion workflow
-- Update tests to cover prerelease scenarios
-
-**Priority**: 🟡 Medium (affects release workflow but has workaround)
-**Effort**: 2-3 hours
-**Discovered**: v2.6.0 stable release (2026-01-18)
+**Resolution**: TMS-272 complete (2026-01-27)
 
 ---
 

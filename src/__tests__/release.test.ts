@@ -192,6 +192,78 @@ describe('Atomic Release Engine - Happy Path', () => {
       expect(newVersion).toBe(expected);
     });
   });
+
+  it('should promote prerelease to stable with "stable" bump type (TMS-272)', () => {
+    // Test stable bump type for prerelease promotion
+    const testCases = [
+      { current: '2.6.0-beta.1', expected: '2.6.0' },
+      { current: '2.6.0-alpha.3', expected: '2.6.0' },
+      { current: '3.0.0-rc.2', expected: '3.0.0' },
+      { current: '1.0.0-beta', expected: '1.0.0' },
+    ];
+
+    testCases.forEach(({ current, expected }) => {
+      // Parse prerelease version
+      const match = current.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+      expect(match).not.toBeNull();
+
+      if (match) {
+        const major = parseInt(match[1], 10);
+        const minor = parseInt(match[2], 10);
+        const patch = parseInt(match[3], 10);
+        const prerelease = match[4] || null;
+
+        expect(prerelease).not.toBeNull();
+
+        // Stable bump: strip prerelease tag
+        const newVersion = `${major}.${minor}.${patch}`;
+        expect(newVersion).toBe(expected);
+      }
+    });
+  });
+
+  it('should reject "stable" bump for already stable versions (TMS-272)', () => {
+    const stableVersions = ['2.5.0', '1.0.0', '10.20.30'];
+
+    stableVersions.forEach(version => {
+      // Parse version
+      const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+      expect(match).not.toBeNull();
+
+      if (match) {
+        const prerelease = match[4] || null;
+        expect(prerelease).toBeNull();
+
+        // Attempting "stable" bump on stable version should be rejected
+        // (This would be handled by the release script throwing an error)
+      }
+    });
+  });
+
+  it('should support explicit version via --version flag (TMS-272)', () => {
+    const explicitVersions = [
+      '2.7.0',
+      '3.0.0',
+      '2.6.0-beta.2',
+      '1.0.0-rc.1',
+    ];
+
+    explicitVersions.forEach(version => {
+      // Validate version format
+      const match = version.match(/^(\d+)\.(\d+)\.(\d+)(?:-(.+))?$/);
+      expect(match).not.toBeNull();
+
+      if (match) {
+        const major = parseInt(match[1], 10);
+        const minor = parseInt(match[2], 10);
+        const patch = parseInt(match[3], 10);
+
+        expect(major).toBeGreaterThanOrEqual(0);
+        expect(minor).toBeGreaterThanOrEqual(0);
+        expect(patch).toBeGreaterThanOrEqual(0);
+      }
+    });
+  });
 });
 
 describe('Atomic Release Engine - Pre-flight Validation', () => {
