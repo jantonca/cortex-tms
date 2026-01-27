@@ -2,6 +2,7 @@
 
 **Current Sprint**: v3.0 Development (Jan 26 - Feb 14, 2026)
 **Previous Sprint**: [v2.9 Guardian Optimization](docs/archive/sprint-v2.9-jan-2026.md) ✅ Complete
+**Last Updated**: 2026-01-27 (Post-BOOT-1 completion, added 3 quick wins)
 
 ---
 
@@ -14,11 +15,14 @@
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
+| **Website Performance Optimization** | [TECH-1] | 4-6h | 🔴 HIGH | ⏸️ Planned |
+| **Guardian Enhancements** | [TECH-2] | 3-4h | 🔴 HIGH | ⏸️ Planned |
+| **Migration Experience Improvements** | [TMS-277-282] | 4-5h | 🔴 HIGH | ⏸️ Planned |
+| **Bootstrap Blog Examples** | [BOOT-EXP] | 30m-1h | 🔴 HIGH | ⏸️ Planned |
+| **Reusable GitHub Action** | [GPT5-REC-3] | 3-4h | 🔴 HIGH | ⏸️ Planned |
+| **Prerelease Version Fix** | [TMS-272] | 2-3h | 🟡 MED | ⏸️ Planned |
 | **AI-Assisted Bootstrap Onboarding** | [BOOT-1] | 14h | 🔴 HIGH | ✅ Complete |
-| **Website Performance Optimization** | [TECH-1] | 4-6h | 🟡 MED | ⏸️ Planned |
-| **Guardian Enhancements** | [TECH-2] | 3-4h | 🟡 MED | ⏸️ Planned |
-| **Migration Experience Improvements** | [TMS-277-282] | 4-5h | 🟡 MED | ⏸️ Planned |
-| **Version Release (v2.7.0)** | [REL-1] | 1-2h | 🟢 LOW | ⏸️ Deferred |
+| **Version Release (v3.0.0)** | [REL-1] | 1-2h | 🟢 LOW | ⏸️ Deferred |
 
 ### Website Performance Optimization [TECH-1]
 
@@ -34,54 +38,82 @@
 
 ### AI-Assisted Bootstrap Onboarding [BOOT-1]
 
-**Goal**: Enable AI agents to populate TMS documentation from codebase on first session
+**Status**: ✅ Complete (13/13 tasks, 14h actual)
+**Merged**: 2026-01-27 (commit 10674f4)
+**Result**: ⭐⭐⭐⭐⭐ Zero-cost onboarding, 3-4x faster than manual
 
-**Context**: After `cortex-tms init`, users face empty templates with `[placeholder]` syntax.
-Users work with AI agents (Claude Code, Copilot, Cursor). The agent should do the bootstrapping.
-See: `tmp/AI-BOOTSTRAP-STRATEGY-PLAN-v2.md` for full strategy.
+**What shipped**:
+- 4 new bootstrap prompts (bootstrap, populate-architecture, discover-patterns, extract-rules)
+- Three-tier validation (Incomplete → Draft → Reviewed)
+- Enhanced templates with first-session awareness
+- Blog article: "From Zero Docs to AI-Ready in 10 Minutes"
+- Comprehensive tests (141/141 passing)
 
-**Architecture**: Prompt-first (Layer 1 + Layer 2). CLI bootstrap deferred to v2.
+**See**: `docs/archive/sprint-v3.0-boot-1.md` for full details
+
+### Bootstrap Blog Examples [BOOT-EXP]
+
+**Goal**: Add real AI-generated content examples to bootstrap blog article
+
+**Why**: Makes "90% accurate first draft" claim concrete. Context is fresh from dogfooding.
 
 **Tasks**:
+- [ ] Extract AI-generated ARCHITECTURE.md from dogfooding simulation
+- [ ] Show before/after with refinements
+- [ ] Add to `website/src/content/blog/ai-powered-bootstrapping.md`
+- [ ] Demonstrate what "good enough to keep" means
 
-#### Templates & Prompts
-- [x] Add `bootstrap` prompt to `templates/PROMPTS.md` [BOOT-1.1]
-- [x] Add `populate-architecture` prompt to `templates/PROMPTS.md` [BOOT-1.2]
-- [x] Add `discover-patterns` prompt to `templates/PROMPTS.md` [BOOT-1.3]
-- [x] Add `extract-rules` prompt to `templates/PROMPTS.md` [BOOT-1.4]
-- [x] Add "First Session Setup" section to `templates/CLAUDE.md` [BOOT-1.5]
-- [x] Add setup detection note to `templates/.github/copilot-instructions.md` [BOOT-1.6]
+**Effort**: 30 min - 1h
+**Priority**: 🔴 HIGH (quick win)
+**Source**: Implementation feedback 4.3
 
-#### CLI Changes
-- [x] Update post-init message in `src/commands/init.ts` with AI-agent quick start [BOOT-1.7]
-- [x] Add placeholder detection + AI-DRAFT detection to `src/utils/validator.ts` [BOOT-1.8]
-  - `[placeholder]` → Incomplete (error)
-  - `<!-- AI-DRAFT -->` → Draft (warning)
-  - Contextual messages for each state
-- [x] Add Lesson 6: AI-Powered Bootstrapping to `src/commands/tutorial.ts` [BOOT-1.9]
+### Reusable GitHub Action [GPT5-REC-3]
 
-#### Testing & Validation
-- [x] Write tests for placeholder/draft detection in `src/__tests__/validate.test.ts` [BOOT-1.10]
-- [x] Verify existing prompt parser tests pass with new prompts [BOOT-1.11]
-- [x] Dogfood: test bootstrap prompt on cortex-tms repo [BOOT-1.12]
-- [x] Dogfood: test bootstrap prompt on examples/todo-app [BOOT-1.13]
-  - Note: todo-app already has populated docs, tested on cortex-tms instead
+**Goal**: Package existing workflow as reusable GitHub Action
 
-#### Content
-- [x] Write article: "From Zero Docs to AI-Ready in 10 Minutes" [BOOT-1.14]
-  - Location: `website/src/content/blog/ai-powered-bootstrapping.md`
-  - Note: Hero image (ai-powered-bootstrapping.webp) needs to be created
+**Why**: High leverage - teams can validate TMS without local setup. GPT5 recommendation.
 
-**Key Files**:
-- `templates/PROMPTS.md` — Add 4 new prompts
-- `templates/CLAUDE.md` — Add First Session Setup section
-- `templates/.github/copilot-instructions.md` — Add setup detection note
-- `src/commands/init.ts` — Update post-init message
-- `src/utils/validator.ts` — Add placeholder + AI-DRAFT detection
-- `src/commands/tutorial.ts` — Add Lesson 6
-- `src/__tests__/validate.test.ts` — New tests
+**Tasks**:
+- [ ] Create `.github/workflows/validate-reusable.yml`
+- [ ] Document inputs (strict, scope, ignore-files)
+- [ ] Add example usage to README
+- [ ] Test with sample repository
+- [ ] Publish to GitHub Marketplace (optional)
 
-**Status**: ✅ Complete - Dogfooding validated. See: `docs/archive/dogfooding-bootstrap-v3.0.md`
+**Implementation**:
+```yaml
+- uses: cortex-tms/validate-action@v1
+  with:
+    strict: true
+```
+
+**Effort**: 3-4h
+**Priority**: 🔴 HIGH (easy packaging, high value)
+**Source**: External GPT-5 repository analysis (Jan 24, 2026)
+
+### Prerelease Version Fix [TMS-272]
+
+**Goal**: Fix release script to handle prerelease versions (e.g., `2.6.0-beta.1` → `2.6.0`)
+
+**Why**: Known bug with workaround. Clean up before v3.0 release.
+
+**Root Cause**:
+```javascript
+// scripts/release.js line 234
+const [major, minor, patch] = currentVersion.split('.').map(Number);
+// "2.6.0-beta.1".split('.') = ['2', '6', '0-beta', '1']
+// Number('0-beta') = NaN ❌
+```
+
+**Tasks**:
+- [ ] Add prerelease version parsing (strip `-beta.X`, `-alpha.X`, `-rc.X` suffixes)
+- [ ] Add `--version X.Y.Z` flag to explicitly set version
+- [ ] Support beta→stable promotion workflow
+- [ ] Update tests to cover prerelease scenarios
+
+**Effort**: 2-3h
+**Priority**: 🟡 MED (has workaround, but nice to fix)
+**Source**: FUTURE-ENHANCEMENTS.md line 24-45
 
 ### Guardian Enhancements [TECH-2]
 
