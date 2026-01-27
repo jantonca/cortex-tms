@@ -2,7 +2,7 @@
 
 **Current Sprint**: v3.0 Development (Jan 26 - Feb 14, 2026)
 **Previous Sprint**: [v2.9 Guardian Optimization](docs/archive/sprint-v2.9-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-27 (Post-BOOT-1 completion, added 3 quick wins)
+**Last Updated**: 2026-01-27 (Post-TECH-1 completion)
 
 ---
 
@@ -15,7 +15,7 @@
 
 | Task | Ref | Effort | Priority | Status |
 | :--- | :--- | :----- | :------- | :----- |
-| **Website Performance Optimization** | [TECH-1] | 4-6h | 🔴 HIGH | ⏸️ Planned |
+| **Website Performance Optimization** | [TECH-1] | 4-6h | 🔴 HIGH | ✅ Complete |
 | **Guardian Enhancements** | [TECH-2] | 3-4h | 🔴 HIGH | ⏸️ Planned |
 | **Migration Experience Improvements** | [TMS-277-282] | 4-5h | 🔴 HIGH | ⏸️ Planned |
 | **Reusable GitHub Action** | [GPT5-REC-3] | 3-4h | 🔴 HIGH | ⏸️ Planned |
@@ -26,15 +26,23 @@
 
 ### Website Performance Optimization [TECH-1]
 
-**Goal**: Reduce CSS bundle size, improve Lighthouse scores
+**Status**: ✅ Complete (2026-01-27)
+**Merged**: Branch `perf/TECH-1-website-optimization`
+**Effort**: 4h (actual)
 
-**Tasks**:
-- Remove unused CSS components (~2.1KB savings)
-- Extract inline styles from homepage
-- Clean up dead code in components
-- Run performance benchmarks
+**What Shipped**:
+- Removed unused CSS components (profile-card, news-card → _future-components.css)
+- Extracted 20+ inline styles from homepage → homepage.css
+- Removed dead code (Font Awesome CDN, GlassQuote.astro)
+- All builds passing, no visual regressions
 
-**Status**: Documented in `tmp/WEBSITE-OPTIMIZATION-TASKS.md`
+**Impact**:
+- -2KB CSS bundle size (news/profile cards removed from main bundle)
+- -26 lines net reduction (234 deletions, 208 additions)
+- Better maintainability (semantic class names)
+- Cleaner HTML structure
+
+**See**: `tmp/WEBSITE-OPTIMIZATION-TASKS.md` for original plan
 
 ### AI-Assisted Bootstrap Onboarding [BOOT-1]
 
