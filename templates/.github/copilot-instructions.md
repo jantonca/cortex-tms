@@ -7,6 +7,9 @@
 - **Types**: ALWAYS use strict TypeScript. No `any`. No `@ts-ignore`.
 - **Logic**: Before implementing business logic, check `docs/core/DOMAIN-LOGIC.md`.
 
+<!-- SETUP NOTE: If you see [placeholder] text above, this project needs
+     bootstrapping. Run: cortex-tms prompt bootstrap -->
+
 ## 🏗️ Technical Map (Read Order)
 
 AI agents MUST follow this order before proposing code:

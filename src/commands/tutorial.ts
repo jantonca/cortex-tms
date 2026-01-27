@@ -141,6 +141,29 @@ async function runTutorial(): Promise<void> {
       command: 'cortex-tms migrate',
       tip: 'Always run migrate (no flags) first to see what needs updating.',
     },
+    {
+      title: '✨ Lesson 6: AI-Powered Bootstrapping',
+      content: [
+        'After running "cortex-tms init", documentation files contain placeholders.',
+        'Instead of manually filling them, let YOUR AI agent do it!',
+        '',
+        'How it works:',
+        '  1. Run: cortex-tms prompt bootstrap',
+        '  2. Paste the prompt into your AI agent (Claude Code, Copilot, Cursor)',
+        '  3. AI analyzes your codebase and populates docs as DRAFTS',
+        '  4. Review and refine the AI-generated content',
+        '  5. Remove <!-- AI-DRAFT --> markers once accepted',
+        '',
+        'The validator detects completion status:',
+        '  • [placeholder] text → Incomplete (error)',
+        '  • <!-- AI-DRAFT --> markers → Draft (warning)',
+        '  • No markers → Complete and reviewed (success)',
+        '',
+        'Zero-cost onboarding in under 10 minutes!',
+      ],
+      command: 'cortex-tms prompt bootstrap',
+      tip: 'Works with any AI agent - Claude Code, GitHub Copilot, Cursor, or Windsurf.',
+    },
   ];
 
   let currentLesson = 0;
@@ -226,11 +249,12 @@ async function runTutorial(): Promise<void> {
   console.log(chalk.blue('  • Version Sync: pnpm run docs:sync'));
   console.log(chalk.blue('  • Health Check: cortex-tms validate'));
   console.log(chalk.blue('  • Migration: cortex-tms migrate'));
+  console.log(chalk.blue('  • Bootstrap: cortex-tms prompt bootstrap'));
   console.log();
   console.log(chalk.gray('💡 Next Steps:'));
   console.log(chalk.cyan('   1. Run "cortex-tms status" to see your project dashboard'));
-  console.log(chalk.cyan('   2. Run "cortex-tms prompt init-session" to start coding'));
-  console.log(chalk.cyan('   3. Read NEXT-TASKS.md to see what to work on next'));
+  console.log(chalk.cyan('   2. Run "cortex-tms prompt bootstrap" to populate docs with AI'));
+  console.log(chalk.cyan('   3. Run "cortex-tms prompt init-session" to start coding'));
   console.log();
   console.log(chalk.gray('📚 For more details, see:'));
   console.log(chalk.gray('   • CLAUDE.md (agent workflow)'));

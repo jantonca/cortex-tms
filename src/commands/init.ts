@@ -277,18 +277,23 @@ async function runInit(options: InitCommandOptions): Promise<void> {
 
     // Show next steps (skip in dry-run mode)
     if (!options.dryRun) {
-      console.log(chalk.bold('Next Steps:'));
-      console.log(chalk.gray('  1. Review'), chalk.cyan('NEXT-TASKS.md'), chalk.gray('for active sprint tasks'));
-      console.log(chalk.gray('  2. Update'), chalk.cyan('docs/core/'), chalk.gray('with your project details'));
-      console.log(
-        chalk.gray('  3. Customize'),
-        chalk.cyan('.github/copilot-instructions.md'),
-        chalk.gray('for AI rules')
-      );
+      console.log(chalk.bold('🚀 Quick Start'), chalk.gray('(choose one):'));
+      console.log();
+      console.log(chalk.cyan('  Option A - With your AI agent'), chalk.gray('(recommended):'));
+      console.log(chalk.gray('    1. Open your AI tool (Claude Code, Copilot, Cursor, etc.)'));
+      console.log(chalk.gray('    2. Run:'), chalk.cyan('cortex-tms prompt bootstrap'));
+      console.log(chalk.gray('    3. Paste the prompt - your AI will analyze the codebase and'));
+      console.log(chalk.gray('       populate your documentation files as drafts for you to review'));
+      console.log();
+      console.log(chalk.cyan('  Option B - Manual setup:'));
+      console.log(chalk.gray('    1. Review'), chalk.cyan('NEXT-TASKS.md'), chalk.gray('for active sprint tasks'));
+      console.log(chalk.gray('    2. Update'), chalk.cyan('docs/core/'), chalk.gray('with your project details'));
+      console.log(chalk.gray('    3. Customize'), chalk.cyan('.github/copilot-instructions.md'));
 
       if (answers.installSnippets) {
+        console.log();
         console.log(
-          chalk.gray('\n  💡 Tip: Use'),
+          chalk.gray('  💡 Tip: Use'),
           chalk.cyan('tms-adr'),
           chalk.gray('or'),
           chalk.cyan('tms-pattern'),
@@ -297,16 +302,18 @@ async function runInit(options: InitCommandOptions): Promise<void> {
       }
 
       if (!context.isGitRepo) {
+        console.log();
         console.log(
-          chalk.gray('\n  💡 Tip: Initialize git with'),
+          chalk.gray('  💡 Tip: Initialize git with'),
           chalk.cyan('git init'),
           chalk.gray('to track changes')
         );
       }
 
+      console.log();
       console.log(
-        chalk.gray('\n📚 Learn more:'),
-        chalk.underline('https://github.com/yourusername/cortex-tms')
+        chalk.gray('📚 Learn more:'),
+        chalk.underline('https://cortex-tms.org')
       );
       console.log();
     }
