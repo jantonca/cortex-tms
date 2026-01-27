@@ -2,7 +2,7 @@
 
 **Current Sprint**: v3.0 Development (Jan 26 - Feb 14, 2026)
 **Previous Sprint**: [v2.9 Guardian Optimization](docs/archive/sprint-v2.9-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-27 (Post-TECH-1 completion)
+**Last Updated**: 2026-01-27 (Post-GPT5-REC-3 completion)
 
 ---
 
@@ -18,7 +18,7 @@
 | **Website Performance Optimization** | [TECH-1] | 4-6h | 🔴 HIGH | ✅ Complete |
 | **Guardian Enhancements** | [TECH-2] | 3-4h | 🔴 HIGH | ⏸️ Planned |
 | **Migration Experience Improvements** | [TMS-277-282] | 4-5h | 🔴 HIGH | ⏸️ Planned |
-| **Reusable GitHub Action** | [GPT5-REC-3] | 3-4h | 🔴 HIGH | ⏸️ Planned |
+| **Reusable GitHub Action** | [GPT5-REC-3] | 3-4h | 🔴 HIGH | ✅ Complete |
 | **Prerelease Version Fix** | [TMS-272] | 2-3h | 🟡 MED | ⏸️ Planned |
 | **Bootstrap Blog Examples** | [BOOT-EXP] | 45m | 🔴 HIGH | ✅ Complete |
 | **AI-Assisted Bootstrap Onboarding** | [BOOT-1] | 14h | 🔴 HIGH | ✅ Complete |
@@ -76,16 +76,28 @@
 
 ### Reusable GitHub Action [GPT5-REC-3]
 
-**Goal**: Package existing workflow as reusable GitHub Action
+**Status**: ✅ Complete (2026-01-27)
+**Merged**: Branch `feat/GPT5-REC-3-reusable-action`
+**Effort**: 3h (actual)
 
-**Why**: High leverage - teams can validate TMS without local setup. GPT5 recommendation.
+**What Shipped**:
+- Created `.github/workflows/validate-reusable.yml` with `workflow_call` trigger
+- 5 customizable inputs (strict, scope, ignore-files, cortex-version, node-version)
+- Automatic Cortex TMS installation (no local dependencies needed)
+- Validation summary in GitHub Actions UI
+- Comprehensive documentation in README and website
 
-**Tasks**:
-- [ ] Create `.github/workflows/validate-reusable.yml`
-- [ ] Document inputs (strict, scope, ignore-files)
-- [ ] Add example usage to README
-- [ ] Test with sample repository
-- [ ] Publish to GitHub Marketplace (optional)
+**Impact**:
+- Zero-friction adoption (teams can validate without installing CLI)
+- Enables CI validation for external projects
+- High leverage feature (GPT5 recommendation)
+
+**Usage**:
+```yaml
+jobs:
+  validate:
+    uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@main
+```
 
 **Implementation**:
 ```yaml
