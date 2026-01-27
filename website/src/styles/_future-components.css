@@ -1,0 +1,121 @@
+/* _future-components.css
+ *
+ * Unused components preserved for future use.
+ * Not imported into main bundle to reduce size.
+ *
+ * To use: Import explicitly in component that needs it.
+ */
+
+/* === PROFILE CARD === */
+.profile-card {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.avatar-ring {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  padding: 4px;
+  background: linear-gradient(
+    135deg,
+    var(--sl-color-accent),
+    var(--sl-color-accent-high)
+  );
+  margin-bottom: 1rem;
+}
+
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid var(--sl-color-black);
+  object-fit: cover;
+}
+
+.profile-name {
+  font-family: var(--sl-font);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.profile-role {
+  color: var(--sl-color-accent);
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+  font-family: var(--sl-font-mono);
+}
+
+/* === NEWS/FEATURE CARD (Horizontal) === */
+.news-card {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (min-width: 768px) {
+  .news-card {
+    flex-direction: row;
+    height: 220px;
+  }
+
+  .news-img {
+    width: 40%;
+    height: 100% !important;
+  }
+
+  .news-content {
+    width: 60%;
+  }
+}
+
+.news-img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-right: 1px solid var(--glass-border);
+}
+
+.news-content {
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.news-meta {
+  font-size: 0.75rem;
+  color: var(--sl-color-accent);
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-family: var(--sl-font-mono);
+}
+
+.news-title {
+  font-family: var(--sl-font);
+  font-weight: 700;
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+}
+
+.news-link {
+  color: var(--sl-color-gray-2);
+  font-size: 0.9rem;
+  text-decoration: none;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.news-link:hover {
+  color: var(--sl-color-accent);
+  transform: translateX(5px);
+}
