@@ -251,6 +251,72 @@ Code violates Pattern 1: Placeholder Syntax
 
 ---
 
+## 🔄 CI/CD Integration
+
+### Reusable GitHub Action
+
+Validate your TMS documentation in GitHub Actions workflows without installing the CLI locally.
+
+**Basic Usage** (in your `.github/workflows/tms-validate.yml`):
+
+```yaml
+name: TMS Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@main
+```
+
+**With Custom Configuration**:
+
+```yaml
+jobs:
+  validate:
+    uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@main
+    with:
+      strict: true                    # Enable strict mode (default: true)
+      scope: 'standard'               # Validation scope (default: auto-detect)
+      ignore-files: 'README.md'       # Comma-separated files to ignore
+      cortex-version: 'latest'        # Cortex TMS version (default: latest)
+      node-version: '20'              # Node.js version (default: 20)
+```
+
+**Available Inputs**:
+
+| Input | Description | Default |
+|:------|:------------|:--------|
+| `strict` | Enable strict validation mode (fails on warnings) | `true` |
+| `scope` | Validation scope (nano/standard/enterprise/auto-detect) | `auto-detect` |
+| `ignore-files` | Comma-separated list of files to ignore | `''` |
+| `cortex-version` | Cortex TMS version to install (e.g., "latest", "2.7.0") | `latest` |
+| `node-version` | Node.js version to use | `20` |
+
+**Example with Multiple Ignored Files**:
+
+```yaml
+jobs:
+  validate:
+    uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@main
+    with:
+      strict: false
+      ignore-files: 'README.md,CHANGELOG.md,docs/archive/*'
+```
+
+**Benefits**:
+
+- ✅ Zero-friction adoption (no local installation required)
+- ✅ Validates PRs automatically
+- ✅ Consistent enforcement across team
+- ✅ Works with any project using Cortex TMS
+
+---
+
 ## 📂 Documentation Structure
 
 | Folder / File                     | Purpose                                | AI Context Tier           |

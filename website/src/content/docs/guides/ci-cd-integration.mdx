@@ -24,7 +24,87 @@ Without CI/CD integration, documentation validation and pattern enforcement rely
 
 GitHub Actions is the easiest platform to integrate with Cortex TMS.
 
-### Step 1: Create Validation Workflow
+### Option A: Reusable Workflow (Recommended)
+
+The fastest way to get started is using Cortex TMS's official reusable workflow. This requires **zero configuration** and works out of the box.
+
+#### Step 1: Create Your Workflow File
+
+Create `.github/workflows/tms-validate.yml`:
+
+```yaml
+name: TMS Validation
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  validate:
+    uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@main
+```
+
+That's it! This workflow will:
+- Run on every push and PR
+- Install Cortex TMS automatically
+- Validate your documentation
+- Display results in GitHub Actions
+
+<Aside type="tip" title="Zero Friction">
+  The reusable workflow installs Cortex TMS globally, so you don't need to add it to your dependencies or build steps.
+</Aside>
+
+#### Step 2: Customize (Optional)
+
+Add custom configuration with inputs:
+
+```yaml
+jobs:
+  validate:
+    uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@main
+    with:
+      strict: true                    # Enable strict mode (default: true)
+      scope: 'standard'               # Validation scope (default: auto-detect)
+      ignore-files: 'README.md'       # Comma-separated files to ignore
+      cortex-version: 'latest'        # Cortex TMS version (default: latest)
+      node-version: '20'              # Node.js version (default: 20)
+```
+
+**Available Inputs**:
+
+| Input | Description | Default |
+|:------|:------------|:--------|
+| `strict` | Enable strict validation mode (fails on warnings) | `true` |
+| `scope` | Validation scope (nano/standard/enterprise/auto-detect) | `auto-detect` |
+| `ignore-files` | Comma-separated list of files to ignore | `''` |
+| `cortex-version` | Cortex TMS version to install (e.g., "latest", "2.7.0") | `latest` |
+| `node-version` | Node.js version to use | `20` |
+
+#### Step 3: Pin to a Specific Version (Production)
+
+For production use, pin to a specific version or tag:
+
+```yaml
+jobs:
+  validate:
+    uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@v2.7.0
+    # Or use a commit SHA for immutability:
+    # uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@abc123
+```
+
+<Aside type="note">
+  Using `@main` gets the latest features but may introduce breaking changes. Pin to a version tag for stability.
+</Aside>
+
+---
+
+### Option B: Custom Workflow (Advanced)
+
+If you need more control or want to integrate Cortex TMS with your existing build process, create a custom workflow.
+
+#### Step 1: Create Validation Workflow
 
 Create `.github/workflows/validate.yml`:
 
