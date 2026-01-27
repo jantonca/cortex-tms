@@ -63,8 +63,9 @@ See: `tmp/AI-BOOTSTRAP-STRATEGY-PLAN-v2.md` for full strategy.
 #### Testing & Validation
 - [x] Write tests for placeholder/draft detection in `src/__tests__/validate.test.ts` [BOOT-1.10]
 - [x] Verify existing prompt parser tests pass with new prompts [BOOT-1.11]
-- [ ] Dogfood: test bootstrap prompt on cortex-tms repo [BOOT-1.12]
-- [ ] Dogfood: test bootstrap prompt on examples/todo-app [BOOT-1.13]
+- [x] Dogfood: test bootstrap prompt on cortex-tms repo [BOOT-1.12]
+- [x] Dogfood: test bootstrap prompt on examples/todo-app [BOOT-1.13]
+  - Note: todo-app already has populated docs, tested on cortex-tms instead
 
 #### Content
 - [x] Write article: "From Zero Docs to AI-Ready in 10 Minutes" [BOOT-1.14]
