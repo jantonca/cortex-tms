@@ -156,4 +156,4 @@ A documentation architecture that organizes files by **access frequency** (HOT/W
 - **CLI**: Command-Line Interface
 - **FN**: Fast Node Manager (Node.js version manager)
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

@@ -521,4 +521,4 @@ const { variant = 'default', tilt = 'subtle' } = Astro.props;
 **References**:
 - **Learning**: `docs/learning/2026-01-21-liquid-glass-design-retrospective.md`
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

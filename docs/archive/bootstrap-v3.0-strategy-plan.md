@@ -229,7 +229,7 @@ contain placeholder content. Help the user populate them:
 
 After setup, remove this "First Session Setup" section.
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->
 ```
 
 ### Modified: `templates/.github/copilot-instructions.md`

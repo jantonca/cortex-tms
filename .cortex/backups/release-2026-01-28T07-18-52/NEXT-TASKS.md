@@ -191,4 +191,4 @@ node scripts/release.js stable --dry-run
 - **v2.2**: [Automation & Precision](docs/archive/sprint-2026-01.md) ✅
 - **v2.1**: [Foundation](docs/archive/sprint-2026-01-dogfooding.md) ✅
 
-<!-- @cortex-tms-version 3.0.0 -->
+<!-- @cortex-tms-version 2.6.1 -->

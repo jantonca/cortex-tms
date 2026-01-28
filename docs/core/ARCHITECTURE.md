@@ -239,4 +239,4 @@ The Guardian Skill (`tmp/guardian-skill/SKILL.md`) teaches Claude agents how to 
 
 See `FUTURE-ENHANCEMENTS.md` for full backlog.
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

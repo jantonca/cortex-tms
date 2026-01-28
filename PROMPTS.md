@@ -150,4 +150,4 @@ Mark all entries with `<!-- AI-DRAFT -->`. Present draft for review before writi
 - Customize these prompts to match your team's vocabulary and workflow
 - Run `cortex-tms prompt --list` to see all available prompts
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

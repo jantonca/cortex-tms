@@ -353,4 +353,4 @@ When you encounter a new issue while developing Cortex:
 
 **Reference**: `docs/core/DOMAIN-LOGIC.md#rule-9-test-templates-with-ai-agents`
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

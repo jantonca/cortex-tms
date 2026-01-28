@@ -286,4 +286,4 @@ Remember lockfiles, version sync, and validation before pushing.
 **Review Status**: To be reviewed by user
 **Next Review**: After v2.7.0 release (Feb 2026)
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

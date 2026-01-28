@@ -71,4 +71,4 @@
 **Previous Sprint**: v2.7 - Guardian MVP
 **Next Sprint**: v3.0 - Development & Refinement
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

@@ -432,4 +432,4 @@ Estimation accuracy was exceptional due to clear milestone breakdown and reuse o
 **Sprint Closed**: 2026-01-15
 **Release**: v2.5.0 - "Onboarding & Safety" ✅
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

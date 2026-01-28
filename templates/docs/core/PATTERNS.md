@@ -54,4 +54,4 @@ AI agents MUST follow this order before proposing or writing code:
 2. Check `docs/core/PATTERNS.md` for existing canonical examples.
 3. Propose -> Justify -> Recommend.
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

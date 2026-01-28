@@ -415,4 +415,4 @@ This document records key architectural decisions made during Cortex TMS develop
 | 2026-01-11 | Maintenance Protocol & Truth Syncing | ✅ Active |
 | 2026-01-11 | Engineering Standards Integration (Git & PM) | ✅ Active |
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

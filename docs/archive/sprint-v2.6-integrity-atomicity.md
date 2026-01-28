@@ -184,4 +184,4 @@ $ cortex-tms validate --strict
 **Sprint Duration**: 2 days (Jan 16-18, 2026)
 **Next Sprint**: v2.7 Platform Evolution
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

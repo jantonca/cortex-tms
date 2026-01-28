@@ -129,7 +129,7 @@ After completing a task, follow the **Maintenance Protocol**:
 
 **In all documentation files**:
 ```markdown
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->
 ```
 
 **When to sync**:

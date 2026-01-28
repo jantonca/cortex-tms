@@ -65,4 +65,4 @@ This file defines project-specific terminology, acronyms, and domain language to
 - **Patterns**: See `docs/core/PATTERNS.md` for code conventions
 - **Decisions**: See `docs/core/DECISIONS.md` for technology choices
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

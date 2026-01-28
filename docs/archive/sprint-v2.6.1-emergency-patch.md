@@ -263,4 +263,4 @@ See: [v2.7 Sprint Plan](sprint-v2.7-jan-2026.md)
 **NPM Version**: cortex-tms@2.6.1
 **Status**: ✅ Shipped to Production
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

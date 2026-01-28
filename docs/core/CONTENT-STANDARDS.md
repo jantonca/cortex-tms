@@ -608,4 +608,4 @@ This is a living document. As we learn what works, we'll update these guidelines
 
 ---
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

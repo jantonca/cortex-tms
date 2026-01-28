@@ -58,4 +58,4 @@
 
 **Next Sprint**: v2.8 - Guardian Optimization & Enhancements
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

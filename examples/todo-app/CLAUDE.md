@@ -47,4 +47,4 @@ After completing a task, follow the **Maintenance Protocol**:
 
 **Exception**: Small tasks (typos, formatting) only require git commit and branch cleanup.
 
-<!-- @cortex-tms-version 2.6.1 -->
+<!-- @cortex-tms-version 3.0.0 -->

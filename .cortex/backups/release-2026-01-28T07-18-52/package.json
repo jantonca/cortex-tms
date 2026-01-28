@@ -1,6 +1,6 @@
 {
   "name": "cortex-tms",
-  "version": "3.0.0",
+  "version": "2.6.1",
   "description": "AI-powered project scaffolding CLI for documentation, task management, and workflow automation. Optimized for Claude Code, GitHub Copilot, and LLM-assisted development.",
   "type": "module",
   "bin": {
