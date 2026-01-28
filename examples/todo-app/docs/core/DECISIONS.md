@@ -81,3 +81,5 @@ This file documents **why** we made key technical decisions. When an AI agent or
 - **Architecture**: See `docs/core/ARCHITECTURE.md` for technology stack
 - **Patterns**: See `docs/core/PATTERNS.md` for implementation patterns
 - **Glossary**: See `docs/core/GLOSSARY.md` for term definitions
+
+<!-- @cortex-tms-version 3.0.0 -->

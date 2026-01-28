@@ -358,5 +358,7 @@ const hasCompleted = todos.some((t) => t.completed);
 
 ---
 
-**Last Updated**: 2026-01-12
+**Last Updated**: 2026-01-28
 **Framework**: Next.js 16, React 19, TypeScript 5
+
+<!-- @cortex-tms-version 3.0.0 -->

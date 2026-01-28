@@ -1,4 +1,4 @@
-# AI Pair Programmer: Collaboration Protocol (TMS v2.0)
+# AI Pair Programmer: Collaboration Protocol (TMS v3.0)
 
 ## ⚡ Critical Rules (Always Apply)
 
@@ -27,3 +27,5 @@ AI agents MUST follow this order before proposing code:
 - [ ] Logic verified against DOMAIN-LOGIC.md.
 - [ ] Tests added/updated and passing.
 - [ ] No `console.log` statements remaining.
+
+<!-- @cortex-tms-version 3.0.0 -->

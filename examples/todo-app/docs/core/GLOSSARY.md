@@ -64,3 +64,5 @@ This file defines project-specific terminology, acronyms, and domain language to
 - **Architecture**: See `docs/core/ARCHITECTURE.md` for system structure
 - **Patterns**: See `docs/core/PATTERNS.md` for code conventions
 - **Decisions**: See `docs/core/DECISIONS.md` for technology choices
+
+<!-- @cortex-tms-version 3.0.0 -->

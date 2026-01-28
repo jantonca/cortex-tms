@@ -416,6 +416,8 @@ if (!trimmed) return; // Guard: reject empty
 
 ---
 
-**Last Updated**: 2026-01-12
+**Last Updated**: 2026-01-28
 **TypeScript Version**: 5.7.3
 **Strict Mode**: Enabled
+
+<!-- @cortex-tms-version 3.0.0 -->

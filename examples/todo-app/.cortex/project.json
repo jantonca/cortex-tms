@@ -1,0 +1,81 @@
+{
+  "name": "todo-app",
+  "type": "reference-implementation",
+  "cortexVersion": "3.0.0",
+  "purpose": "Cortex TMS v3.0 Reference Implementation - Todo App",
+  "description": "A production-ready todo application demonstrating the full power of Cortex TMS v3.0, including HOT/WARM/COLD tier organization, AI-optimized documentation, and measurable cost savings.",
+  "techStack": {
+    "framework": "Next.js 16.1",
+    "runtime": "React 19.2",
+    "language": "TypeScript (Strict)",
+    "styling": "Tailwind CSS 4",
+    "components": "Shadcn UI",
+    "storage": "localStorage",
+    "packageManager": "pnpm"
+  },
+  "metrics": {
+    "contextReduction": "94.5%",
+    "costSavings": "10x",
+    "hotTokens": 3647,
+    "warmTokens": 20109,
+    "coldTokens": 43078
+  },
+  "features": [
+    "Full CRUD operations (Create, Read, Update, Delete)",
+    "Client-side state management with React hooks",
+    "localStorage persistence (zero-setup deployment)",
+    "Filtering (All, Active, Completed)",
+    "Responsive design with Tailwind CSS",
+    "Accessible UI with Shadcn components",
+    "Complete TMS documentation structure",
+    "AI-optimized development workflow"
+  ],
+  "demonstratedPatterns": [
+    "HOT/WARM/COLD tier organization",
+    "Zero-setup deployment (no backend)",
+    "Component-driven architecture",
+    "AI-friendly documentation",
+    "Git-first workflow with branch protection",
+    "Conventional commit format",
+    "Project health validation",
+    "Token cost analysis"
+  ],
+  "learningPaths": {
+    "beginner": [
+      "Run the app with pnpm dev",
+      "Read NEXT-TASKS.md for current sprint",
+      "Explore docs/core/ARCHITECTURE.md",
+      "Ask AI to add a simple feature"
+    ],
+    "intermediate": [
+      "Study PATTERNS.md for code conventions",
+      "Review DOMAIN-LOGIC.md for business rules",
+      "Try Guardian CLI with --watch mode",
+      "Implement a WARM file update"
+    ],
+    "advanced": [
+      "Analyze token costs with status --tokens",
+      "Customize copilot-instructions.md",
+      "Migrate TMS to your own project",
+      "Contribute improvements to cortex-tms"
+    ]
+  },
+  "repository": {
+    "url": "https://github.com/cortex-tms/cortex-tms",
+    "path": "examples/todo-app",
+    "license": "MIT"
+  },
+  "validation": {
+    "lastValidated": "2026-01-28",
+    "status": "healthy",
+    "scope": "standard",
+    "strictMode": true
+  },
+  "metadata": {
+    "createdAt": "2026-01-13",
+    "updatedAt": "2026-01-28",
+    "aiDevelopment": true,
+    "aiAgent": "Claude Sonnet 4.5",
+    "buildMethod": "AI-first workflow using Cortex TMS"
+  }
+}
