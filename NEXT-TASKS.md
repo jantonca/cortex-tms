@@ -1,8 +1,8 @@
 # NEXT: Upcoming Tasks
 
-**Current Sprint**: v3.0 Development (Jan 26 - Feb 14, 2026)
-**Previous Sprint**: [v2.9 Guardian Optimization](docs/archive/sprint-v2.9-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-27 (Post-TMS-272 completion)
+**Current Sprint**: v3.1 Planning (Jan 28 - TBD)
+**Previous Sprint**: [v3.0 AI-Powered Onboarding](docs/archive/sprint-v3.0-jan-2026.md) ✅ Complete
+**Last Updated**: 2026-01-27 (v3.0 Release Preparation)
 
 ---
 

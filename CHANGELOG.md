@@ -358,6 +358,133 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [3.0.0] - 2026-01-27
+
+### 🚀 Major Release - AI-Powered Onboarding & Infrastructure
+
+**Headline Features**: Zero-friction bootstrapping for new users, reusable GitHub Action for external adoption, professional release tooling.
+
+### Added
+
+#### AI-Assisted Bootstrap Onboarding [BOOT-1]
+- **Feature**: Prompt-first onboarding system that enables AI agents to populate TMS documentation from codebase analysis
+- **Why**: After `cortex-tms init`, users faced empty templates with placeholders. Manual filling took 30-45 minutes. Now AI agents do it in 7-10 minutes.
+- **What Shipped**:
+  - 4 new bootstrap prompts (`bootstrap`, `populate-architecture`, `discover-patterns`, `extract-rules`)
+  - Three-tier validation system: Incomplete → Draft → Reviewed
+    - `[placeholder]` text → Error (incomplete)
+    - `<!-- AI-DRAFT -->` markers → Warning (needs human review)
+    - Neither → Success (complete and reviewed)
+  - Enhanced templates with first-session awareness (CLAUDE.md, copilot-instructions.md)
+  - Lesson 6 in interactive tutorial
+  - Blog article: "From Zero Docs to AI-Ready in 10 Minutes"
+- **Impact**:
+  - 3-4x faster onboarding (30-45 min → 7-10 min)
+  - 90% accurate first drafts from AI analysis
+  - Zero cost (uses user's existing AI session)
+  - Works with Claude Code, Copilot, Cursor, Windsurf
+- **Files**: `templates/PROMPTS.md`, `templates/CLAUDE.md`, `templates/.github/copilot-instructions.md`, `src/commands/init.ts`, `src/utils/validator.ts`, `src/commands/tutorial.ts`, `website/src/content/blog/ai-powered-bootstrapping.md`
+- **Tests**: 141/141 passing (added 7 new validation tests)
+- **Effort**: 14 hours
+- **See**: `docs/archive/sprint-v3.0-boot-1.md`, `docs/archive/dogfooding-bootstrap-v3.0.md`
+
+#### Reusable GitHub Action [GPT5-REC-3]
+- **Feature**: Official reusable workflow for validating Cortex TMS in GitHub Actions without local installation
+- **Why**: Zero-friction adoption - teams can validate TMS documentation in CI without installing CLI or adding dependencies
+- **What Shipped**:
+  - `.github/workflows/validate-reusable.yml` with `workflow_call` trigger
+  - 5 customizable inputs: `strict`, `scope`, `ignore-files`, `cortex-version`, `node-version`
+  - Automatic Cortex TMS installation (npm install -g)
+  - Validation summary in GitHub Actions UI
+  - Comprehensive documentation in README and website CI/CD guide
+- **Usage**:
+  ```yaml
+  jobs:
+    validate:
+      uses: cortex-tms/cortex-tms/.github/workflows/validate-reusable.yml@main
+      with:
+        strict: true
+        scope: 'standard'
+  ```
+- **Impact**:
+  - Enables validation for external projects without local setup
+  - High leverage (GPT5 recommendation)
+  - Reduces barrier to TMS adoption
+- **Files**: `.github/workflows/validate-reusable.yml`, `README.md`, `website/src/content/docs/guides/ci-cd-integration.mdx`
+- **Effort**: 3 hours
+
+#### Bootstrap Blog Examples [BOOT-EXP]
+- **Feature**: Real AI-generated ARCHITECTURE.md examples in bootstrap blog article
+- **Why**: Demonstrate what "90% accurate" means with concrete before/after examples
+- **What Shipped**:
+  - Full AI-generated Component Map, Data Flow, System Overview from dogfooding
+  - Concrete "Before/After" refinement example showing 10% refinement process
+  - Real code snippets showing what "good enough to keep" means
+- **Files**: `website/src/content/blog/ai-powered-bootstrapping.md`
+- **Effort**: 45 minutes
+
+### Fixed
+
+#### Prerelease Version Support [TMS-272]
+- **Issue**: Release script couldn't promote prerelease versions (e.g., `2.6.0-beta.1` → `2.6.0`)
+- **What Fixed**:
+  - Added `stable` bump type to promote prerelease → stable
+  - Added `--version X.Y.Z` flag to explicitly set release version
+  - Updated help documentation with new options
+  - Added 11 new tests (28 total passing)
+- **Usage**:
+  ```bash
+  # Promote prerelease to stable
+  node scripts/release.js stable  # 2.6.0-beta.1 → 2.6.0
+
+  # Explicitly set version
+  node scripts/release.js --version 2.7.0
+
+  # Preview changes
+  node scripts/release.js stable --dry-run
+  ```
+- **Impact**:
+  - Eliminates manual workaround for prerelease releases
+  - Professional release workflow for all version types
+  - Flexible version management
+- **Files**: `scripts/release.js`, `src/__tests__/release.test.ts`, `FUTURE-ENHANCEMENTS.md`
+- **Tests**: 28/28 passing (added 11 new tests)
+- **Effort**: 2 hours
+
+### Changed
+
+#### Website Performance Optimization [TECH-1]
+- **Goal**: Reduce CSS bundle size and improve maintainability
+- **What Changed**:
+  - Removed unused CSS components (profile-card, news-card → `_future-components.css`)
+  - Extracted 20+ inline styles from homepage → `homepage.css` with semantic classes
+  - Removed dead code (Font Awesome CDN, unused GlassQuote component)
+- **Impact**:
+  - -2KB CSS bundle size (unused components excluded from main bundle)
+  - -26 net lines (234 deletions, 208 additions)
+  - Better maintainability (semantic class names)
+  - Cleaner HTML structure
+- **Files**: `website/src/styles/_future-components.css` (NEW), `website/src/styles/homepage.css` (NEW), `website/src/styles/glass-components.css`, `website/src/pages/index.astro`, `website/src/components/GlassButton.astro`, `website/src/components/GlassQuote.astro` (DELETED)
+- **Effort**: 4 hours
+
+### Documentation
+
+- Added CI/CD Integration section to README with reusable workflow examples
+- Updated website CI/CD guide with Option A (Reusable Workflow) and Option B (Custom)
+- Created comprehensive sprint archive: `docs/archive/sprint-v3.0-boot-1.md`
+- Preserved implementation feedback: `docs/archive/bootstrap-v3.0-implementation-feedback.md`
+- Dogfooding validation report: `docs/archive/dogfooding-bootstrap-v3.0.md`
+
+### Meta
+
+- **Sprint Duration**: Jan 26-27, 2026 (2 days)
+- **Tasks Completed**: 5/8 planned (deferred 2 to v3.1)
+- **Total Effort**: ~24 hours
+- **Key Contributors**: Claude Sonnet 4.5, Human oversight
+- **Quality**: All 141 tests passing, all validation passing (11/11 checks)
+
+---
+
 ## [2.6.1] - 2026-01-21
 
 ### 🐛 Emergency Patch - Critical Bug Fixes
