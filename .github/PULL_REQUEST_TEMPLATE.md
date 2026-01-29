@@ -1,53 +1,67 @@
 # Pull Request
 
-## 📝 Summary
+## 📝 Description
 
-<!-- Brief description of what this PR does -->
+<!-- Clear description of what this PR does and why -->
 
-## 🔗 Related References
+## 🔗 Related Issue
 
-<!-- Link to related issues, tickets, or discussions -->
-- Fixes #<!-- Issue number -->
-- Related: <!-- Jira/Linear/other ticket ID -->
+<!-- Link to the related issue. For significant changes, discussion in an issue is required BEFORE opening a PR -->
+- Closes #<!-- Issue number -->
 
-## 📊 Changes
+**If no issue exists**: <!-- Explain why this doesn't need an issue (e.g., typo fix, documentation) -->
 
-<!-- List the main changes in this PR -->
-- Added:
-- Changed:
-- Removed:
-- Fixed:
+## 📊 Type of Change
 
-## ✅ TMS Maintenance Checklist
+<!-- Check the type that applies -->
+- [ ] 🐛 Bug fix (non-breaking change that fixes an issue)
+- [ ] ✨ New feature (non-breaking change that adds functionality)
+- [ ] 💥 Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] 📝 Documentation update
+- [ ] 🧪 Test improvement
+- [ ] 🔧 Chore (tooling, dependencies, non-functional changes)
 
-<!-- Complete before merging -->
-- [ ] Task moved from `NEXT-TASKS.md` to `docs/archive/`
-- [ ] `docs/core/` updated (Truth Syncing complete)
-- [ ] Tests passing
-- [ ] Documentation updated
-- [ ] Commit messages follow conventional format
-- [ ] Co-authorship added (if AI-assisted)
+## ✅ Pre-Submission Checklist
+
+<!-- Required before review. Check all that apply -->
+- [ ] **Issue linked** - Related issue exists (or explained why not needed)
+- [ ] **Tests added** - New code has test coverage
+- [ ] **Tests passing** - `npm test` passes locally
+- [ ] **Lint passing** - `npm run lint` passes
+- [ ] **Build works** - `npm run build` succeeds
+- [ ] **Docs updated** - README/docs reflect changes (if applicable)
+- [ ] **Self-reviewed** - I've reviewed my own diff for mistakes
+- [ ] **Conventional commits** - Commit messages follow `type(scope): description` format
 
 ## 🧪 Testing
 
-<!-- How to test these changes -->
-- [ ] Manual testing performed
-- [ ] Automated tests added/updated
-- [ ] Templates validated (if applicable)
+**How did you test this?**
+<!-- Describe your testing approach -->
 
 **Test Steps**:
 1.
 2.
 3.
 
-## 📸 Screenshots (if applicable)
+**Platforms Tested**:
+- [ ] Linux
+- [ ] macOS
+- [ ] Windows
 
-<!-- Add screenshots for UI changes -->
+## 📸 Screenshots / Output
 
-## 🔍 Review Notes
+<!-- Add screenshots for CLI output changes or visual changes -->
 
-<!-- Anything reviewers should pay special attention to -->
+## 💡 Additional Context
 
-## 📚 Additional Context
+<!-- Breaking changes, migration notes, performance impact, etc. -->
 
-<!-- Any other context, dependencies, or breaking changes -->
+---
+
+## 🔧 Maintainer Checklist (Ignore if External Contributor)
+
+<!-- For core maintainers only -->
+- [ ] Truth syncing complete (`NEXT-TASKS.md`, `docs/core/`)
+- [ ] Co-authorship added (if AI-assisted)
+- [ ] CHANGELOG.md updated (if release-worthy)
+- [ ] Version bump needed? (patch/minor/major)

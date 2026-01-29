@@ -1,0 +1,105 @@
+name: PR Quality Checks
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout PR
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Need full history for diff
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Check 1: Require tests for src/ changes
+      - name: Require tests for src/ changes
+        run: |
+          SRC_CHANGES=$(git diff --name-only origin/main...HEAD | grep "^src/" | grep -v "__tests__" | wc -l)
+          TEST_CHANGES=$(git diff --name-only origin/main...HEAD | grep "__tests__" | wc -l)
+
+          echo "Source files changed: $SRC_CHANGES"
+          echo "Test files changed: $TEST_CHANGES"
+
+          if [ "$SRC_CHANGES" -gt 0 ] && [ "$TEST_CHANGES" -eq 0 ]; then
+            echo "❌ Error: Changes to src/ require corresponding test updates"
+            echo "Please add tests in src/__tests__/ for your changes"
+            exit 1
+          fi
+
+          echo "✅ Test requirement satisfied"
+
+      # Check 2: Run tests
+      - name: Run test suite
+        run: npm test
+
+      # Check 3: Run linter
+      - name: Run linter
+        run: npm run lint
+
+      # Check 4: Verify build succeeds
+      - name: Verify build
+        run: npm run build
+
+      # Check 5: Check for dist/ changes (should be auto-generated)
+      - name: Block manual dist/ edits
+        run: |
+          DIST_CHANGES=$(git diff --name-only origin/main...HEAD | grep "^dist/" | wc -l)
+
+          if [ "$DIST_CHANGES" -gt 0 ]; then
+            echo "⚠️  Warning: dist/ files were modified"
+            echo "dist/ is auto-generated. Please only modify src/ files."
+            echo "The build process will regenerate dist/ automatically."
+            exit 1
+          fi
+
+          echo "✅ No manual dist/ changes detected"
+
+      # Check 6: PR size check
+      - name: Check PR size
+        run: |
+          LINES_CHANGED=$(git diff --shortstat origin/main...HEAD | grep -oP '\d+(?= insertion)|\d+(?= deletion)' | awk '{s+=$1} END {print s}')
+
+          echo "Lines changed: $LINES_CHANGED"
+
+          if [ "$LINES_CHANGED" -gt 500 ]; then
+            echo "⚠️  Warning: This PR changes $LINES_CHANGED lines"
+            echo "Consider splitting into smaller PRs (<300 lines preferred)"
+            echo "Large PRs take longer to review and are more likely to have issues"
+            # Don't fail, just warn
+          else
+            echo "✅ PR size is reasonable"
+          fi
+
+      # Check 7: Verify no package.json changes without discussion
+      - name: Check for sensitive file changes
+        run: |
+          SENSITIVE_FILES="package.json package-lock.json tsconfig.json"
+          CHANGED=0
+
+          for file in $SENSITIVE_FILES; do
+            if git diff --name-only origin/main...HEAD | grep -q "^$file$"; then
+              echo "⚠️  Warning: $file was modified"
+              echo "Changes to core configuration files require prior discussion"
+              echo "Please ensure this was discussed in a GitHub issue first"
+              CHANGED=1
+            fi
+          done
+
+          if [ "$CHANGED" -eq 0 ]; then
+            echo "✅ No sensitive configuration files changed"
+          fi
+
+          # Don't fail - just warn (legitimate changes are possible)

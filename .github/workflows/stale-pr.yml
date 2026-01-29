@@ -1,0 +1,61 @@
+name: Close Stale PRs
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight UTC
+  workflow_dispatch:  # Allow manual trigger
+
+permissions:
+  pull-requests: write
+  issues: write
+
+jobs:
+  stale:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Mark stale PRs and issues
+        uses: actions/stale@v9
+        with:
+          # PR settings
+          stale-pr-message: |
+            👋 This PR has been inactive for 30 days and will be closed in 7 days if no further activity occurs.
+
+            If you're still working on this, please comment to keep it open.
+            You can always reopen or create a new PR when you're ready to continue.
+
+            Thank you for your contribution! 🙏
+
+          close-pr-message: |
+            🔒 Closing this PR due to inactivity.
+
+            Feel free to reopen if you'd like to continue working on this.
+            No hard feelings - we just want to keep the PR list manageable. 😊
+
+          days-before-stale: 30
+          days-before-close: 7
+
+          # Exempt certain PRs
+          exempt-pr-labels: 'keep-open,in-progress,blocked'
+
+          # Issue settings (more lenient)
+          stale-issue-message: |
+            👋 This issue has been inactive for 60 days.
+
+            If this is still relevant, please comment to keep it open.
+            Otherwise it will be closed in 7 days.
+
+          close-issue-message: |
+            🔒 Closing due to inactivity. Feel free to reopen if still relevant.
+
+          days-before-issue-stale: 60
+          days-before-issue-close: 7
+
+          # Exempt certain issues
+          exempt-issue-labels: 'keep-open,good-first-issue,help-wanted,bug,enhancement'
+
+          # Limits (prevent API rate limiting)
+          operations-per-run: 30
+
+          # Logging
+          debug-only: false
