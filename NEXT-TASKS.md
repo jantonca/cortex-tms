@@ -1,31 +1,110 @@
 # NEXT: Upcoming Tasks
 
-**Current Sprint**: v3.1 Code Quality & Security (Jan 28 - TBD)
+**Current Sprint**: v3.1 Git-Based Auto-Tiering (Jan 30 - Feb 16)
 **Previous Sprint**: [v3.0 AI-Powered Onboarding](docs/archive/sprint-v3.0-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-28 (Post-Opus Audit Task Extraction)
+**Last Updated**: 2026-01-30 (Post-Community Feedback)
 
 ---
 
 ## 🎯 v3.1 Development Focus
 
 **Timeline**: 2-3 weeks
-**Status**: 🚧 Planning
-**Theme**: Code Quality & Security Hardening
-**Specs**: See [`docs/tasks/v3.1-security-tasks.md`](docs/tasks/v3.1-security-tasks.md) for detailed implementation specs
+**Status**: 🚧 Active Development
+**Theme**: Intelligent Auto-Tiering + Configuration
+**Goal**: Reduce manual tier management through git-based automation
 
-### Code Quality & Security (Audit-Driven)
+### Feature 1: Git-Based Auto-Tiering (P0 - Must Have)
 
-| Task | Ref | Effort | Priority | Status |
-| :--- | :--- | :----- | :------- | :----- |
-| **Centralize Error Handling** | [AUDIT-1] | 2-3h | 🔴 HIGH | ⏸️ Planned |
-| **Add Zod Input Validation** | [AUDIT-2] | 2-3h | 🔴 HIGH | ⏸️ Planned |
-| **Add Integration/E2E Tests** | [AUDIT-3] | 6-8h | 🔴 HIGH | ⏸️ Planned |
-| **Add npm audit to CI** | [AUDIT-4] | 30m | 🔴 HIGH | ⏸️ Planned |
-| **File Path Traversal Protection** | [AUDIT-5] | 1-2h | 🟡 MED | ⏸️ Planned |
-| **Guardian API Key Redaction** | [AUDIT-6] | 1-2h | 🟡 MED | ⏸️ Planned |
+Automatically suggest HOT/WARM/COLD tier assignments based on git commit history.
 
-**Total Effort**: 14-18h across 6 tasks
-**Source**: Opus 4.5 Audit Analysis (Jan 21, 2026)
+| Task | Description | Effort | Priority | Status |
+| :--- | :---------- | :----- | :------- | :----- |
+| **Design CLI Interface** | Define `cortex auto-tier` command with dry-run support | 2h | 🔴 P0 | ⏸️ Planned |
+| **Implement Git History Analysis** | Parse git log to calculate file recency and activity | 4h | 🔴 P0 | ⏸️ Planned |
+| **Build Tier Suggestion Engine** | Algorithm to suggest tiers based on thresholds | 3h | 🔴 P0 | ⏸️ Planned |
+| **Apply Tier Tags** | Add/update `<!-- @cortex-tms-tier -->` comments in files | 3h | 🔴 P0 | ⏸️ Planned |
+| **Edge Case Handling** | Non-git repos, untracked files, submodules | 2h | 🔴 P0 | ⏸️ Planned |
+| **Integration Testing** | Test on cortex-tms repo (dogfooding) | 2h | 🔴 P0 | ⏸️ Planned |
+| **Documentation** | CLI reference + user guide with examples | 3h | 🔴 P0 | ⏸️ Planned |
+
+**Total Effort**: ~19h
+
+**Command Signature**:
+```bash
+cortex auto-tier [options]
+
+Options:
+  --hot <days>      Files modified in last N days → HOT (default: 7)
+  --warm <days>     Files modified in last N days → WARM (default: 30)
+  --cold <days>     Files untouched for N+ days → COLD (default: 90)
+  --dry-run         Show what would change without applying
+  --force           Overwrite existing tier tags
+```
+
+**Acceptance Criteria**:
+- [ ] `cortex auto-tier --dry-run` shows tier suggestions with reasons
+- [ ] `cortex auto-tier` applies tier tags to files
+- [ ] Works on cortex-tms repo itself (dogfooding validation)
+- [ ] Handles non-git repos gracefully (clear error message)
+- [ ] Performance: < 2 seconds for 500-file repository
+- [ ] Respects existing mandatory HOT files (NEXT-TASKS.md, CLAUDE.md)
+- [ ] Documentation includes usage examples and best practices
+
+**Algorithm Overview**:
+```typescript
+// Pseudocode for tier suggestion
+for each file in repository:
+  days_since_change = (now - git_last_commit_date) / (24 * 60 * 60)
+
+  if days_since_change <= hot_threshold (7 days):
+    suggested_tier = 'HOT'
+  else if days_since_change <= warm_threshold (30 days):
+    suggested_tier = 'WARM'
+  else:
+    suggested_tier = 'COLD'
+```
+
+**Edge Cases**:
+- File not in git history (new, untracked) → Suggest HOT (active work)
+- Git repo not initialized → Show error with git setup instructions
+- Binary files (images, etc.) → Skip (only tier documentation files)
+- Submodules → Analyze within submodule context
+- Renamed files → Use `git log --follow` to track across renames
+
+---
+
+### Feature 2: Configuration File Support (P1 - Nice to Have)
+
+**Deferred to v3.2 if time constrained**
+
+Add `.cortexrc.json` for project-level configuration of auto-tiering thresholds.
+
+| Task | Description | Effort | Priority | Status |
+| :--- | :---------- | :----- | :------- | :----- |
+| **Define Config Schema** | Structure for `.cortexrc.json` with auto-tier settings | 2h | 🟡 P1 | ⏸️ Deferred |
+| **Config Loading** | Merge user config with defaults | 2h | 🟡 P1 | ⏸️ Deferred |
+| **Config Validation** | Validate thresholds and patterns | 1h | 🟡 P1 | ⏸️ Deferred |
+| **Documentation** | Config reference guide | 1h | 🟡 P1 | ⏸️ Deferred |
+
+**Total Effort**: ~6h (P1 - Ship if time permits)
+
+**Example Config**:
+```json
+{
+  "version": "1.0.0",
+  "autoTiering": {
+    "thresholds": {
+      "hotDays": 14,
+      "warmDays": 45,
+      "coldDays": 120
+    },
+    "exclusions": {
+      "files": ["CLAUDE.md", "NEXT-TASKS.md"],
+      "patterns": ["docs/archive/**"]
+    }
+  }
+}
+```
 
 ---
 
@@ -44,7 +123,11 @@ All v3.0 sprint details moved to archive. See `docs/archive/sprint-v3.0-jan-2026
 
 **See**: [Future Enhancements](FUTURE-ENHANCEMENTS.md) for complete backlog
 
-### Lower Priority Technical Debt (Audit Findings)
+### Moved to v3.2: Code Quality & Security
+- Security hardening tasks (audit findings) deferred to v3.2
+- See FUTURE-ENHANCEMENTS.md for full list
+
+### Lower Priority Technical Debt
 - Hardcoded Strings / Localization - Premature (no i18n demand)
 - Snapshot Tests for CLI Output - Brittle during active development
 - Monorepo Separation - Working fine at current scale
@@ -52,6 +135,7 @@ All v3.0 sprint details moved to archive. See `docs/archive/sprint-v3.0-jan-2026
 - Cursor-Specific Optimizations - Low priority, IDE-agnostic by design
 
 ### Feature Backlog
+- Config file support (if not completed in v3.1)
 - Guardian GitHub Action & PR Bot (TMS-287)
 - Guardian Enhancements (TECH-2) - watch mode, better errors
 - Migration Experience (TMS-277-282) - dry-run, better progress

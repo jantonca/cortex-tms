@@ -2,7 +2,7 @@
 
 This is the **living backlog** for Cortex TMS. Tasks move from here to `NEXT-TASKS.md` when they become active.
 
-**Last Updated**: 2026-01-28 (Post-Opus Audit Analysis)
+**Last Updated**: 2026-01-30 (Post v3.0 Release)
 **Source**: Sprint retrospectives + audit findings + community feedback
 
 ---
@@ -16,6 +16,40 @@ The following critical issues have been **moved to active development** in `NEXT
 ✅ **CRITICAL-3**: Prerelease version parsing errors (BLOCKER)
 
 **Status**: These are being addressed in v2.6.1 emergency patch (Jan 21-24, 2026)
+
+---
+
+## 🔴 v3.2: Code Quality & Security (Deferred from Audit)
+
+**Theme**: Security Hardening + Code Quality Improvements
+**Timeline**: TBD (after v3.1 Auto-Tiering complete)
+**Source**: Opus 4.5 Audit findings + earlier audit reports
+
+These tasks were originally considered for v3.1 but deferred to focus on git-based auto-tiering feature.
+
+| Task | Description | Effort | Priority | Status |
+| :--- | :---------- | :----- | :------- | :----- |
+| **Centralize Error Handling** [AUDIT-1] | Remove `process.exit()` calls, use consistent error patterns | 2-3h | 🔴 P0 | ⏸️ Deferred |
+| **Add Zod Input Validation** [AUDIT-2] | Validate CLI inputs at command entry points | 2-3h | 🔴 P0 | ⏸️ Deferred |
+| **Add Integration/E2E Tests** [AUDIT-3] | Test full CLI workflows (init, validate, migrate) | 6-8h | 🔴 P0 | ⏸️ Deferred |
+| **Add npm audit to CI** [AUDIT-4] | Automated dependency vulnerability scanning | 30m | 🟡 P1 | ⏸️ Deferred |
+| **File Path Traversal Protection** [AUDIT-5] | Validate template paths prevent directory traversal | 1-2h | 🔴 P0 | ⏸️ Deferred |
+| **Guardian API Key Redaction** [AUDIT-6] | Ensure API keys never logged or exposed | 1-2h | 🔴 P0 | ⏸️ Deferred |
+
+**Total Effort**: ~13-17h
+
+**Acceptance Criteria**:
+- [ ] All CLI commands use centralized error handling (no process.exit)
+- [ ] Zod schemas validate all user inputs before processing
+- [ ] E2E test coverage for init, validate, migrate, review commands
+- [ ] CI pipeline fails on high/critical npm audit findings
+- [ ] Template path validation prevents `../../etc/passwd` attacks
+- [ ] Guardian logs sanitize API keys before output
+
+**Rationale for v3.2 Placement**:
+- v3.1 prioritizes user-facing auto-tiering feature
+- Security issues are important but not blocking current usage
+- Provides dedicated sprint for quality improvements
 
 ---
 
@@ -416,13 +450,15 @@ Five comprehensive audits conducted during v2.6-v3.0 development:
 
 ### Remaining High-Value Opportunities
 
-#### Category A: Technical Debt (Moved to NEXT-TASKS.md v3.1)
-- **Error Handling**: Centralize error handling, remove `process.exit()` [AUDIT-1]
-- **Input Validation**: Add Zod validation for CLI inputs [AUDIT-2]
-- **Integration Tests**: E2E CLI workflow tests [AUDIT-3]
-- **Dependency Scanning**: Add `npm audit` to CI [AUDIT-4]
-- **Path Traversal Protection**: Validate template paths [AUDIT-5]
-- **Guardian Key Redaction**: Ensure API keys never exposed [AUDIT-6]
+#### Category A: Technical Debt (Deferred to v3.2)
+- **Error Handling**: Centralize error handling, remove `process.exit()` [AUDIT-1] → v3.2
+- **Input Validation**: Add Zod validation for CLI inputs [AUDIT-2] → v3.2
+- **Integration Tests**: E2E CLI workflow tests [AUDIT-3] → v3.2
+- **Dependency Scanning**: Add `npm audit` to CI [AUDIT-4] → v3.2
+- **Path Traversal Protection**: Validate template paths [AUDIT-5] → v3.2
+- **Guardian Key Redaction**: Ensure API keys never exposed [AUDIT-6] → v3.2
+
+**Status**: These items moved to dedicated v3.2 sprint (see v3.2 section above for details)
 
 #### Category B: Strategic Features (High Priority Backlog)
 - **Benchmark Suite**: **#1 credibility gap** - prove "3-5x faster" claim (all audits agree)
