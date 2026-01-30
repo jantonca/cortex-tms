@@ -9,17 +9,7 @@ This is the **living backlog** for Cortex TMS. Tasks move from here to `NEXT-TAS
 
 ## 📣 v3.1 Post-Release Polish
 
-### Homepage Auto-Tier Feature Card
-**Priority**: P2 (Marketing)
-**Effort**: ~30min
-
-Add 7th feature card to homepage showcasing auto-tier:
-- Icon: GitBranch or Clock
-- Title: "Auto-Tier (v3.1)"
-- Description: Git-based automatic tier assignment, recency signal
-- Location: `website/src/pages/index.astro` after existing 6 cards
-
-**Why**: Homepage should highlight new v3.1.0 feature for discoverability
+**Homepage Auto-Tier Card** (P2, 30min): Add feature card to `website/src/pages/index.astro`
 
 ---
 
@@ -497,18 +487,5 @@ Five comprehensive audits conducted during v2.6-v3.0 development:
 All audit documents available in `/tmp/` directory:
 - `tmp/cortex-tms-analysis-report-opus-28-01-2026.md` (Opus 4.5 Deep Analysis)
 - Earlier audit reports from Jan 21-24, 2026
-
----
-
-## Migration Checklist
-
-**When a task becomes active**:
-1. Move it to `NEXT-TASKS.md`
-2. Add to current sprint table
-3. Break into smaller tasks if needed
-4. Assign effort estimate
-5. Mark status as "Todo"
-
-**Archive Trigger**: When this file exceeds 400 lines, move completed sections to `docs/archive/backlog-YYYY-MM.md`.
 
 <!-- @cortex-tms-version 3.1.0 -->
