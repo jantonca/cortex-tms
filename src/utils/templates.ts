@@ -12,6 +12,8 @@ import { dirname } from 'path';
 import chalk from 'chalk';
 import type { TemplateFile } from '../types/cli.js';
 import { getScopePreset } from './config.js';
+import { validateSafePath } from './validation.js';
+import { FileSystemError } from './errors.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -259,7 +261,25 @@ export async function copyTemplates(
   const changes: FileChange[] = [];
 
   for (const file of filesToCopy) {
-    const destPath = join(destDir, file.destination);
+    // Validate source path stays within templates directory (defense in depth)
+    const sourceValidation = validateSafePath(file.source, templatesDir);
+    if (!sourceValidation.isValid) {
+      throw new FileSystemError(
+        `Template path validation failed: ${sourceValidation.error}`,
+        { templatePath: file.source }
+      );
+    }
+
+    // Validate destination path stays within target directory (prevent path traversal)
+    const destValidation = validateSafePath(file.destination, destDir);
+    if (!destValidation.isValid) {
+      throw new FileSystemError(
+        `Destination path validation failed: ${destValidation.error}`,
+        { destinationPath: file.destination }
+      );
+    }
+
+    const destPath = destValidation.resolvedPath!;
     const exists = await fs.pathExists(destPath);
 
     if (dryRun) {

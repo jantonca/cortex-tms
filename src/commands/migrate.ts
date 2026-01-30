@@ -13,7 +13,8 @@ import { existsSync } from 'fs';
 import { loadConfig, getScopePreset } from '../utils/config.js';
 import { getPackageVersion, extractVersion, getTemplatesDir, replacePlaceholders, injectVersionMetadata } from '../utils/templates.js';
 import { createBackup, listBackups, restoreBackup, formatBackupSize, getBackupSize } from '../utils/backup.js';
-import { migrateOptionsSchema, validateOptions } from '../utils/validation.js';
+import { migrateOptionsSchema, validateOptions, validateSafePath } from '../utils/validation.js';
+import { FileSystemError } from '../utils/errors.js';
 import fs from 'fs-extra';
 import { relative } from 'path';
 
@@ -123,7 +124,16 @@ async function runMigrate(options: {
   const migrations: FileMigration[] = [];
 
   for (const file of allFiles) {
-    const filePath = join(cwd, file);
+    // Validate file path stays within project directory (prevent path traversal)
+    const fileValidation = validateSafePath(file, cwd);
+    if (!fileValidation.isValid) {
+      throw new FileSystemError(
+        `File path validation failed: ${fileValidation.error}`,
+        { filePath: file }
+      );
+    }
+
+    const filePath = fileValidation.resolvedPath!;
     const status = await analyzeFile(filePath, targetVersion, cwd);
     migrations.push(status);
   }
@@ -254,8 +264,26 @@ async function applyMigration(
   const templatesDir = getTemplatesDir();
 
   for (const migration of filesToUpgrade) {
-    const filePath = join(projectRoot, migration.path);
-    const templatePath = join(templatesDir, migration.path);
+    // Validate file path stays within project directory (prevent path traversal)
+    const fileValidation = validateSafePath(migration.path, projectRoot);
+    if (!fileValidation.isValid) {
+      throw new FileSystemError(
+        `File path validation failed: ${fileValidation.error}`,
+        { filePath: migration.path }
+      );
+    }
+
+    // Validate template path stays within templates directory (defense in depth)
+    const templateValidation = validateSafePath(migration.path, templatesDir);
+    if (!templateValidation.isValid) {
+      throw new FileSystemError(
+        `Template path validation failed: ${templateValidation.error}`,
+        { templatePath: migration.path }
+      );
+    }
+
+    const filePath = fileValidation.resolvedPath!;
+    const templatePath = templateValidation.resolvedPath!;
 
     // Skip if template doesn't exist
     if (!existsSync(templatePath)) {
@@ -546,8 +574,15 @@ async function analyzeFile(
 async function checkIfCustomized(filePath: string, relativePath: string): Promise<boolean> {
   try {
     const templatesDir = getTemplatesDir();
-    // Use relative path to preserve directory structure (e.g., "docs/core/PATTERNS.md")
-    const templatePath = join(templatesDir, relativePath);
+
+    // Validate template path stays within templates directory (defense in depth)
+    const templateValidation = validateSafePath(relativePath, templatesDir);
+    if (!templateValidation.isValid) {
+      // If validation fails, assume customized (safer fallback)
+      return true;
+    }
+
+    const templatePath = templateValidation.resolvedPath!;
 
     // If template doesn't exist at the expected path, assume customized
     if (!existsSync(templatePath)) {

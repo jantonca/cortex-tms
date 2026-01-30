@@ -345,5 +345,112 @@ describe('Zod Input Validation', () => {
       expect(result.isValid).toBe(false);
       expect(result.error).toContain('Path traversal detected');
     });
+
+    it('should prevent sibling directory traversal', () => {
+      // Prevent /home/user/project vs /home/user/project2 edge case
+      const result = validateSafePath(
+        '../project2/malicious.txt',
+        '/home/user/project'
+      );
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('Path traversal detected');
+    });
+
+    it('should accept paths at base directory level', () => {
+      const result = validateSafePath(
+        'README.md',
+        '/home/user/project'
+      );
+      expect(result.isValid).toBe(true);
+    });
+
+    it('should accept nested directory paths', () => {
+      const result = validateSafePath(
+        'docs/core/PATTERNS.md',
+        '/home/user/project'
+      );
+      expect(result.isValid).toBe(true);
+    });
+
+    it('should handle encoded characters safely', () => {
+      // URL-encoded sequences are not decoded by path.resolve()
+      // The OS will reject malformed paths, so we accept them here
+      // and let filesystem operations fail if needed
+      const result = validateSafePath(
+        'docs/file%20name.txt', // URL-encoded space
+        '/home/user/project'
+      );
+      // Path is within project, even if malformed - OS will reject if invalid
+      expect(result.isValid).toBe(true);
+    });
+
+    it('should handle deep nested paths safely', () => {
+      const result = validateSafePath(
+        'a/b/c/d/e/f/g/file.txt',
+        '/home/user/project'
+      );
+      expect(result.isValid).toBe(true);
+    });
+
+    it('should reject traversal in middle of path', () => {
+      const result = validateSafePath(
+        'docs/../../etc/passwd',
+        '/home/user/project'
+      );
+      expect(result.isValid).toBe(false);
+      expect(result.error).toContain('Path traversal detected');
+    });
+  });
+
+  describe('Template Path Security', () => {
+    it('should validate template source paths', () => {
+      // Simulates template files within templates directory
+      const templatesDir = '/home/user/project/templates';
+
+      const validTemplate = validateSafePath(
+        'NEXT-TASKS.md',
+        templatesDir
+      );
+      expect(validTemplate.isValid).toBe(true);
+
+      const maliciousTemplate = validateSafePath(
+        '../../etc/passwd',
+        templatesDir
+      );
+      expect(maliciousTemplate.isValid).toBe(false);
+    });
+
+    it('should validate template destination paths', () => {
+      // Simulates copying to project directory
+      const projectDir = '/home/user/project';
+
+      const validDest = validateSafePath(
+        'docs/core/PATTERNS.md',
+        projectDir
+      );
+      expect(validDest.isValid).toBe(true);
+
+      const maliciousDest = validateSafePath(
+        '../../.ssh/authorized_keys',
+        projectDir
+      );
+      expect(maliciousDest.isValid).toBe(false);
+    });
+
+    it('should handle .github directory paths safely', () => {
+      const result = validateSafePath(
+        '.github/copilot-instructions.md',
+        '/home/user/project'
+      );
+      expect(result.isValid).toBe(true);
+    });
+
+    it('should reject attempts to write to parent .git directory', () => {
+      const result = validateSafePath(
+        '../.git/hooks/pre-commit',
+        '/home/user/project'
+      );
+      expect(result.isValid).toBe(false);
+    });
   });
 });

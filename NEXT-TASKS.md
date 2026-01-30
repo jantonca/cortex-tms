@@ -34,7 +34,7 @@
 | **[AUDIT-2] Zod Input Validation** | Validate CLI inputs at command entry points | 2-3h | 🔴 P0 | ✅ Complete |
 | **[AUDIT-3] E2E Test Suite** | Test full CLI workflows (init, validate, migrate, review) | 6-8h | 🔴 P0 | ⏸️ Pending |
 | **[AUDIT-4] npm audit CI** | Automated dependency vulnerability scanning | 30m | 🟡 P1 | ⏸️ Pending |
-| **[AUDIT-5] Path Traversal Protection** | Validate template paths prevent `../../etc/passwd` attacks | 1-2h | 🔴 P0 | ⏸️ Pending |
+| **[AUDIT-5] Path Traversal Protection** | Validate template paths prevent `../../etc/passwd` attacks | 1-2h | 🔴 P0 | ✅ Complete |
 | **[AUDIT-6] API Key Redaction** | Ensure Guardian API keys never logged or exposed | 1-2h | 🔴 P0 | ⏸️ Pending |
 
 **Total Core Effort**: 13-17h
@@ -48,7 +48,7 @@
 - [x] All CLI commands use Zod for input validation
 - [ ] E2E test coverage ≥ 80% for core workflows
 - [ ] CI pipeline includes `npm audit` check
-- [ ] Template path validation prevents directory traversal
+- [x] Template path validation prevents directory traversal
 - [ ] Guardian sanitizes API keys in all output paths
 
 ### Testing & Validation
