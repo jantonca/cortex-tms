@@ -82,7 +82,8 @@ describe('Review E2E - Prerequisites', () => {
     const result = await runCommand('review', ['sample.ts'], tempDir);
 
     expectFailure(result);
-    expect(result.stdout).toContain('PATTERNS.md') || expect(result.stderr).toContain('PATTERNS.md');
+    const mentionsPatternsFile = result.stdout.includes('PATTERNS.md') || result.stderr.includes('PATTERNS.md');
+    expect(mentionsPatternsFile).toBe(true);
   });
 
   it('should provide helpful message when PATTERNS.md is missing', async () => {
@@ -144,7 +145,7 @@ describe('Review E2E - API Key Requirements', () => {
 
     // May fail on actual API call, but should parse the option
     // (Implementation may vary on how it handles fake keys)
-    expect(result.stdout).toBeTruthy() || expect(result.stderr).toBeTruthy();
+    const hasOutput = result.stdout || result.stderr; expect(hasOutput).toBeTruthy();
   });
 });
 
@@ -169,7 +170,7 @@ describe('Review E2E - Provider Selection', () => {
     );
 
     // Should accept the provider option (may fail on API key)
-    expect(result.stdout).toBeTruthy() || expect(result.stderr).toBeTruthy();
+    const hasOutput = result.stdout || result.stderr; expect(hasOutput).toBeTruthy();
   });
 
   it('should support --provider flag for Anthropic', async () => {
@@ -180,7 +181,7 @@ describe('Review E2E - Provider Selection', () => {
     );
 
     // Should accept the provider option (may fail on API key)
-    expect(result.stdout).toBeTruthy() || expect(result.stderr).toBeTruthy();
+    const hasOutput = result.stdout || result.stderr; expect(hasOutput).toBeTruthy();
   });
 
   it('should reject invalid provider', async () => {
@@ -219,7 +220,7 @@ describe('Review E2E - Output Formats', () => {
 
     // Should accept the option (may fail on API key)
     // If it gets far enough, output should be JSON-parseable or error should be JSON
-    expect(result.stdout).toBeTruthy() || expect(result.stderr).toBeTruthy();
+    const hasOutput = result.stdout || result.stderr; expect(hasOutput).toBeTruthy();
   });
 
   it('should not prompt for API key in JSON mode', async () => {
@@ -256,7 +257,7 @@ describe('Review E2E - Safe Mode', () => {
     );
 
     // Should accept the flag
-    expect(result.stdout).toBeTruthy() || expect(result.stderr).toBeTruthy();
+    const hasOutput = result.stdout || result.stderr; expect(hasOutput).toBeTruthy();
   });
 });
 
@@ -281,7 +282,7 @@ describe('Review E2E - Model Selection', () => {
     );
 
     // Should accept the model option
-    expect(result.stdout).toBeTruthy() || expect(result.stderr).toBeTruthy();
+    const hasOutput = result.stdout || result.stderr; expect(hasOutput).toBeTruthy();
   });
 });
 
@@ -323,6 +324,6 @@ describe('Review E2E - Path Validation', () => {
     );
 
     // Should accept the path (may fail on API key)
-    expect(result.stdout).toBeTruthy() || expect(result.stderr).toBeTruthy();
+    const hasOutput = result.stdout || result.stderr; expect(hasOutput).toBeTruthy();
   });
 });

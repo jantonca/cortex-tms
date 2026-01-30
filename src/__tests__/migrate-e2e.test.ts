@@ -85,7 +85,7 @@ describe('Migrate E2E - Basic Migration', () => {
     expectSuccess(result);
 
     // Check for backup directory or mention in output
-    expect(result.stdout).toContain('backup') || expect(result.stdout).toContain('Backup');
+    expect(result.stdout).toMatch(/[Bb]ackup/);
 
     // Verify backup exists (implementation may vary on location)
     const backupExists = existsSync(join(tempDir, '.cortex-backups')) ||
@@ -124,7 +124,7 @@ describe('Migrate E2E - Dry Run Mode', () => {
     const result = await runCommand('migrate', ['--dry-run'], tempDir);
 
     expectSuccess(result);
-    expect(result.stdout).toContain('dry-run') || expect(result.stdout).toContain('preview');
+    expect(result.stdout).toMatch(/dry-run|preview/);
 
     // Verify no changes were made
     const currentConfig = JSON.parse(
@@ -165,7 +165,7 @@ describe('Migrate E2E - Already Migrated', () => {
 
     if (result.stdout.includes('already') || result.stdout.includes('up-to-date')) {
       // Good - acknowledged already migrated
-      expect(result.stdout).toContain('already') || expect(result.stdout).toContain('up-to-date');
+      expect(result.stdout).toMatch(/already|up-to-date/);
     }
   });
 });
@@ -188,7 +188,8 @@ describe('Migrate E2E - Missing Files', () => {
     const result = await runCommand('migrate', [], tempDir);
 
     // Should either initialize or fail with helpful error
-    expect(result.stderr).toBeTruthy() || expect(result.stdout).toBeTruthy();
+    const hasOutput = result.stderr || result.stdout;
+    expect(hasOutput).toBeTruthy();
   });
 });
 

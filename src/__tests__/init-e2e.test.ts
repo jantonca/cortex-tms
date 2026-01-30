@@ -50,8 +50,7 @@ describe('Init E2E - Basic Workflows', () => {
     const result = await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
 
     expectSuccess(result);
-    expect(result.stdout).toContain('initialization complete') ||
-      expect(result.stdout).toContain('Initialized');
+    expect(result.stdout).toMatch(/initialization complete|Initialized/);
 
     // Verify mandatory files were created
     const mandatoryFiles = [

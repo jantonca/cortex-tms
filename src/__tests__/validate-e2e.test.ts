@@ -32,7 +32,7 @@ describe('Validate E2E - Passing Projects', () => {
 
     expectSuccess(result);
     expect(result.stdout).toContain('Validation passed');
-    expect(result.stdout).toContain('✓') || expect(result.stdout).toContain('✅');
+    expect(result.stdout).toMatch(/[✓✅]/);
   });
 
   it('should show all checks passing in output', async () => {
@@ -45,7 +45,7 @@ describe('Validate E2E - Passing Projects', () => {
     expect(result.stdout).toContain('CLAUDE.md');
 
     // Should show configuration check
-    expect(result.stdout).toContain('configuration') || expect(result.stdout).toContain('config');
+    expect(result.stdout).toMatch(/configuration|config/);
   });
 
   it('should pass strict validation for complete project', async () => {
@@ -96,7 +96,7 @@ describe('Validate E2E - Failing Projects', () => {
     const result = await runCommand('validate', [], tempDir);
 
     expectFailure(result);
-    expect(result.stdout).toContain('.cortexrc') || expect(result.stdout).toContain('configuration');
+    expect(result.stdout).toMatch(/\.cortexrc|configuration/);
   });
 
   it('should detect invalid .cortexrc format', async () => {
@@ -106,7 +106,7 @@ describe('Validate E2E - Failing Projects', () => {
     const result = await runCommand('validate', [], tempDir);
 
     expectFailure(result);
-    expect(result.stdout).toContain('configuration') || expect(result.stdout).toContain('invalid');
+    expect(result.stdout).toMatch(/configuration|invalid/);
   });
 });
 
@@ -160,7 +160,7 @@ describe('Validate E2E - Archive Status', () => {
     const result = await runCommand('validate', [], tempDir);
 
     expectSuccess(result);
-    expect(result.stdout).toContain('archive') || expect(result.stdout).toContain('Archive');
+    expect(result.stdout).toMatch(/[Aa]rchive/);
   });
 
   it('should validate task list health', async () => {
@@ -169,7 +169,7 @@ describe('Validate E2E - Archive Status', () => {
     expectSuccess(result);
 
     // Should check that task list is healthy
-    expect(result.stdout).toContain('task') || expect(result.stdout).toContain('Task');
+    expect(result.stdout).toMatch(/[Tt]ask/);
   });
 });
 
@@ -191,16 +191,14 @@ describe('Validate E2E - Summary Output', () => {
     expectSuccess(result);
 
     // Should show number of checks performed
-    expect(result.stdout).toMatch(/\d+/) || expect(result.stdout).toContain('checks');
-    expect(result.stdout).toContain('Passed') || expect(result.stdout).toContain('passed');
+    expect(result.stdout).toMatch(/\d+|checks/);
+    expect(result.stdout).toMatch(/[Pp]assed/);
   });
 
   it('should provide clear pass/fail indication', async () => {
     const result = await runCommand('validate', [], tempDir);
 
     expectSuccess(result);
-    expect(result.stdout).toContain('✓') ||
-      expect(result.stdout).toContain('✅') ||
-      expect(result.stdout).toContain('passed');
+    expect(result.stdout).toMatch(/[✓✅]|passed/);
   });
 });
