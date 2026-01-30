@@ -6,7 +6,7 @@
  */
 
 import { z } from 'zod';
-import { resolve } from 'path';
+import { resolve, sep } from 'path';
 import { existsSync } from 'fs';
 import { ValidationError } from './errors.js';
 
@@ -99,18 +99,7 @@ export const initOptionsSchema = z.object({
   verbose: verboseFlag,
   scope: z
     .enum(['nano', 'standard', 'enterprise', 'custom'])
-    .optional()
-    .refine(
-      (val) => {
-        if (val && !['nano', 'standard', 'enterprise', 'custom'].includes(val)) {
-          return false;
-        }
-        return true;
-      },
-      {
-        message: 'Invalid scope. Must be one of: nano, standard, enterprise, custom',
-      }
-    ),
+    .optional(),
   dryRun: dryRunFlag,
 });
 
@@ -129,13 +118,7 @@ export const validateOptionsSchema = z.object({
 export const reviewOptionsSchema = z.object({
   provider: z
     .enum(['openai', 'anthropic'])
-    .default('anthropic')
-    .refine(
-      (val) => ['openai', 'anthropic'].includes(val),
-      {
-        message: 'Invalid provider. Must be: openai or anthropic',
-      }
-    ),
+    .default('anthropic'),
   model: z.string().optional(),
   apiKey: z.string().optional(),
   safe: booleanFlag,
@@ -208,7 +191,7 @@ export const statusOptionsSchema = z.object({
  * Parses and validates options using Zod schema
  * Throws ValidationError with clear messages on failure
  */
-export function validateOptions<T extends z.ZodType>(
+export function validateOptions<T extends z.ZodTypeAny>(
   schema: T,
   options: unknown,
   commandName: string
@@ -245,16 +228,27 @@ export function validateOptions<T extends z.ZodType>(
 /**
  * Validates that a file path doesn't traverse outside the project directory
  * Prevents path traversal attacks (e.g., ../../etc/passwd)
+ *
+ * Uses proper path separator boundary checking to prevent edge cases like
+ * /home/user/project vs /home/user/project2
  */
 export function validateSafePath(
   filePath: string,
   baseDir: string
 ): { isValid: boolean; resolvedPath?: string; error?: string } {
-  // Resolve to absolute path
+  // Normalize base directory to absolute path
+  const normalizedBase = resolve(baseDir);
+
+  // Resolve file path against base directory
   const resolvedPath = resolve(baseDir, filePath);
 
   // Check if resolved path is within base directory
-  if (!resolvedPath.startsWith(baseDir)) {
+  // Either equal to base, or starts with base + path separator
+  const isWithinBase =
+    resolvedPath === normalizedBase ||
+    resolvedPath.startsWith(normalizedBase + sep);
+
+  if (!isWithinBase) {
     return {
       isValid: false,
       error: `Path traversal detected: ${filePath} resolves outside project directory`,
