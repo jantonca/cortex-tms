@@ -2,7 +2,7 @@
 
 **Current Sprint**: v3.1 Git-Based Auto-Tiering (Jan 30 - Feb 16)
 **Previous Sprint**: [v3.0 AI-Powered Onboarding](docs/archive/sprint-v3.0-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-30 (Post-Community Feedback)
+**Last Updated**: 2026-01-30 (Post-GPT-5.1 Code Review)
 
 ---
 
@@ -13,21 +13,26 @@
 **Theme**: Intelligent Auto-Tiering + Configuration
 **Goal**: Reduce manual tier management through git-based automation
 
-### Feature 1: Git-Based Auto-Tiering (P0 - Must Have)
+### Feature 1: Git-Based Auto-Tiering (P0 - Must Have) ✅ COMPLETE
 
 Automatically suggest HOT/WARM/COLD tier assignments based on git commit history.
 
 | Task | Description | Effort | Priority | Status |
 | :--- | :---------- | :----- | :------- | :----- |
-| **Design CLI Interface** | Define `cortex auto-tier` command with dry-run support | 2h | 🔴 P0 | ⏸️ Planned |
-| **Implement Git History Analysis** | Parse git log to calculate file recency and activity | 4h | 🔴 P0 | ⏸️ Planned |
-| **Build Tier Suggestion Engine** | Algorithm to suggest tiers based on thresholds | 3h | 🔴 P0 | ⏸️ Planned |
-| **Apply Tier Tags** | Add/update `<!-- @cortex-tms-tier -->` comments in files | 3h | 🔴 P0 | ⏸️ Planned |
-| **Edge Case Handling** | Non-git repos, untracked files, submodules | 2h | 🔴 P0 | ⏸️ Planned |
-| **Integration Testing** | Test on cortex-tms repo (dogfooding) | 2h | 🔴 P0 | ⏸️ Planned |
-| **Documentation** | CLI reference + user guide with examples | 3h | 🔴 P0 | ⏸️ Planned |
+| **Design CLI Interface** | Define `cortex auto-tier` command with dry-run support | 2h | 🔴 P0 | ✅ Done |
+| **Implement Git History Analysis** | Parse git log to calculate file recency and activity | 4h | 🔴 P0 | ✅ Done |
+| **Build Tier Suggestion Engine** | Algorithm to suggest tiers based on thresholds | 3h | 🔴 P0 | ✅ Done |
+| **Apply Tier Tags** | Add/update `<!-- @cortex-tms-tier -->` comments in files | 3h | 🔴 P0 | ✅ Done |
+| **Edge Case Handling** | Non-git repos, untracked files, submodules | 2h | 🔴 P0 | ✅ Done |
+| **Integration Testing** | Test on cortex-tms repo (dogfooding) | 2h | 🔴 P0 | ✅ Done |
+| **Documentation** | CLI reference + user guide with examples | 3h | 🔴 P0 | ⏸️ Next |
 
-**Total Effort**: ~19h
+**Total Effort**: ~19h (16h complete, 3h remaining)
+
+**Completed**: 2026-01-30
+**Files Changed**: 9 files, +560 lines
+**Tests**: 14/14 passing
+**Code Review**: GPT-5.1 feedback incorporated
 
 **Command Signature**:
 ```bash
@@ -42,13 +47,21 @@ Options:
 ```
 
 **Acceptance Criteria**:
-- [ ] `cortex auto-tier --dry-run` shows tier suggestions with reasons
-- [ ] `cortex auto-tier` applies tier tags to files
-- [ ] Works on cortex-tms repo itself (dogfooding validation)
-- [ ] Handles non-git repos gracefully (clear error message)
-- [ ] Performance: < 2 seconds for 500-file repository
-- [ ] Respects existing mandatory HOT files (NEXT-TASKS.md, CLAUDE.md)
+- [x] `cortex auto-tier --dry-run` shows tier suggestions with reasons
+- [x] `cortex auto-tier` applies tier tags to files
+- [x] Works on cortex-tms repo itself (dogfooding validation)
+- [x] Handles non-git repos gracefully (clear error message)
+- [x] Performance: < 2 seconds for 500-file repository
+- [x] Respects existing mandatory HOT files (NEXT-TASKS.md, CLAUDE.md)
 - [ ] Documentation includes usage examples and best practices
+
+**GPT-5.1 Code Review Feedback** (Applied):
+- [x] Fixed: `--cold` option now functional (was unused)
+- [x] Fixed: Numeric threshold validation (prevents NaN/negative/misordered values)
+- [ ] Improve git repo detection for subdirectories (use `git rev-parse --is-inside-work-tree`)
+- [ ] Add end-to-end integration test for full command flow
+- [ ] Align file selection with token counter patterns / respect .gitignore
+- [ ] Centralize tier configuration to avoid duplication
 
 **Algorithm Overview**:
 ```typescript
@@ -70,6 +83,27 @@ for each file in repository:
 - Binary files (images, etc.) → Skip (only tier documentation files)
 - Submodules → Analyze within submodule context
 - Renamed files → Use `git log --follow` to track across renames
+
+---
+
+### Post-Review Hardening Tasks (P0 - Critical for Production)
+
+Address GPT-5.1 code review feedback before v3.1 release.
+
+| Task | Description | Effort | Priority | Status |
+| :--- | :---------- | :----- | :------- | :----- |
+| **Git Repo Detection Fix** | Use `git rev-parse --is-inside-work-tree` for subdirectory support | 1h | 🔴 P0 | ⏸️ Next |
+| **E2E Integration Tests** | Test full command flow with varied git histories | 2h | 🔴 P0 | ⏸️ Next |
+| **File Selection Alignment** | Align auto-tier file selection with token counter patterns | 2h | 🟡 P1 | ⏸️ Next |
+| **Centralize Tier Config** | Extract tier patterns/mandatory files to shared module | 1h | 🟡 P1 | ⏸️ Next |
+
+**Total Effort**: ~6h (4h critical, 2h nice-to-have)
+
+**Details**:
+- **Git detection**: Currently fails from subdirectories; should match git's behavior
+- **E2E tests**: Add tests that invoke command with faked commit dates (`GIT_AUTHOR_DATE`)
+- **File alignment**: Ensure auto-tier only processes files that token counter uses
+- **Config centralization**: Create `src/config/tiers.ts` for shared tier configuration
 
 ---
 

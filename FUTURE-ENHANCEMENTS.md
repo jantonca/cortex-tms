@@ -2,8 +2,39 @@
 
 This is the **living backlog** for Cortex TMS. Tasks move from here to `NEXT-TASKS.md` when they become active.
 
-**Last Updated**: 2026-01-30 (Post v3.0 Release)
-**Source**: Sprint retrospectives + audit findings + community feedback
+**Last Updated**: 2026-01-30 (Post v3.1 Auto-Tier + GPT-5.1 Code Review)
+**Source**: Sprint retrospectives + audit findings + community feedback + code reviews
+
+---
+
+## 🎨 v3.2+: Auto-Tier Polish & Performance
+
+**Theme**: Performance optimization and edge case handling for auto-tier
+**Timeline**: TBD (after v3.1 complete + hardening tasks)
+**Source**: GPT-5.1 code review feedback
+
+| Task | Description | Effort | Priority | Status |
+| :--- | :---------- | :----- | :------- | :----- |
+| **Batched Git Log** [PERF-1] | Replace per-file `git log` with batched approach for large repos | 3-4h | 🟡 P1 | ⏸️ Future |
+| **Parallel File Processing** [PERF-2] | Process file changes in parallel batches in `applyChanges()` | 2h | 🟢 P2 | ⏸️ Future |
+| **Respect .gitignore** [FEAT-1] | Honor `.gitignore` to avoid tagging ignored files | 2-3h | 🟡 P1 | ⏸️ Future |
+| **Error Differentiation** [DX-1] | Distinguish "file not in history" vs "git command failed" errors | 1-2h | 🟡 P1 | ⏸️ Future |
+| **Recency Edge Semantics** [DOC-1] | Document that auto-tier commits update recency (by design) | 30m | 🟢 P2 | ⏸️ Future |
+
+**Total Effort**: ~9-12h
+
+**Context**:
+- **PERF-1**: Current implementation runs `git log` once per file; batched approach would improve large repo performance
+- **PERF-2**: Sequential file writes can be slow; parallel batches would speed up application
+- **FEAT-1**: Currently processes all `.md` files; should respect `.gitignore` for cleaner behavior
+- **DX-1**: All git errors treated as "untracked" → HOT; better error messages would help debugging
+- **DOC-1**: Running auto-tier and committing updates file recency; this is acceptable but worth documenting
+
+**Performance Targets**:
+- Current: ~300ms for 110 files (cortex-tms repo)
+- Target: <1s for 1000-file repositories (with batched git log)
+
+**Not Blocking v3.1 Release**: These are polish improvements, not critical bugs
 
 ---
 
