@@ -6,19 +6,29 @@
  */
 
 /**
+ * Error context type for additional error information
+ * Should contain primitive values or objects that can be JSON-stringified
+ */
+export type ErrorContext = Record<string, unknown>;
+
+/**
  * Base class for all CLI errors
  * Includes exit code and optional error context
  */
 export class CLIError extends Error {
   public readonly exitCode: number;
-  public readonly context: Record<string, unknown> | undefined;
+  public readonly context: ErrorContext | undefined;
 
-  constructor(message: string, exitCode: number = 1, context?: Record<string, unknown>) {
+  constructor(message: string, exitCode: number = 1, context?: ErrorContext) {
     super(message);
     this.name = this.constructor.name;
     this.exitCode = exitCode;
     this.context = context;
-    Error.captureStackTrace(this, this.constructor);
+
+    // Guard for non-Node environments
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
   }
 }
 
@@ -27,7 +37,7 @@ export class CLIError extends Error {
  * Used when CLI arguments, options, or file contents are invalid
  */
 export class ValidationError extends CLIError {
-  constructor(message: string, context?: Record<string, unknown>) {
+  constructor(message: string, context?: ErrorContext) {
     super(message, 1, context);
   }
 }
@@ -36,7 +46,7 @@ export class ValidationError extends CLIError {
  * Git-related errors (not a repo, git command failed, etc.)
  */
 export class GitError extends CLIError {
-  constructor(message: string, context?: Record<string, unknown>) {
+  constructor(message: string, context?: ErrorContext) {
     super(message, 1, context);
   }
 }
@@ -45,7 +55,7 @@ export class GitError extends CLIError {
  * Configuration errors (.cortexrc, missing files, etc.)
  */
 export class ConfigError extends CLIError {
-  constructor(message: string, context?: Record<string, unknown>) {
+  constructor(message: string, context?: ErrorContext) {
     super(message, 1, context);
   }
 }
@@ -54,7 +64,7 @@ export class ConfigError extends CLIError {
  * File system errors (file not found, permission denied, etc.)
  */
 export class FileSystemError extends CLIError {
-  constructor(message: string, context?: Record<string, unknown>) {
+  constructor(message: string, context?: ErrorContext) {
     super(message, 1, context);
   }
 }
@@ -70,7 +80,13 @@ export function formatError(error: Error): string {
     // Add context if available
     if (error.context && Object.keys(error.context).length > 0) {
       const contextLines = Object.entries(error.context)
-        .map(([key, value]) => `   ${key}=${value}`)
+        .map(([key, value]) => {
+          // Stringify objects/arrays for readability
+          const formattedValue = typeof value === 'object' && value !== null
+            ? JSON.stringify(value)
+            : String(value);
+          return `   ${key}=${formattedValue}`;
+        })
         .join('\n');
       message += '\n' + contextLines;
     }

@@ -472,4 +472,14 @@ describe('Auto-Tier E2E - Real-World Scenarios', () => {
     expect(firstTier).toBe(secondTier);
     expect(secondTier).toBe('HOT');
   });
+
+  it('should format ValidationError context in stderr output', async () => {
+    // Test invalid threshold combination (--hot > --warm)
+    const result = await runCommand('auto-tier', ['--hot', '10', '--warm', '5'], tempDir);
+
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('--hot threshold must be ≤ --warm threshold');
+    expect(result.stderr).toContain('hot=10');
+    expect(result.stderr).toContain('warm=5');
+  });
 });

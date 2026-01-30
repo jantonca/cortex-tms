@@ -12,7 +12,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import chalk from 'chalk';
-import { CLIError, formatError } from './utils/errors.js';
+import { CLIError, ValidationError, formatError } from './utils/errors.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -57,12 +57,10 @@ program.addCommand(autoTierCommand);
 
 // Handle unknown commands
 program.on('command:*', () => {
-  console.error(
-    chalk.red('\n❌ Invalid command:'),
-    chalk.bold(program.args.join(' '))
-  );
-  console.log(chalk.gray('\nRun'), chalk.cyan('cortex-tms --help'), chalk.gray('to see available commands.'));
-  process.exit(1);
+  throw new ValidationError('Invalid command', {
+    command: program.args.join(' '),
+    hint: 'Run "cortex-tms --help" to see available commands',
+  });
 });
 
 // Global error handler - catches errors from commands

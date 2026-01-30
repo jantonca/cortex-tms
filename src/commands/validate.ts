@@ -10,6 +10,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { validateProject } from '../utils/validator.js';
 import type { ValidateCommandOptions } from '../types/cli.js';
+import { ValidationError } from '../utils/errors.js';
 
 /**
  * Get emoji for check result
@@ -304,7 +305,11 @@ async function runValidate(options: ValidateCommandOptions): Promise<void> {
 
     // Throw error if validation failed
     if (!result.passed) {
-      throw new Error('Validation failed');
+      throw new ValidationError('Validation failed', {
+        errors: summary.errors,
+        warnings: summary.warnings,
+        strict: options.strict ?? false,
+      });
     }
   } catch (error) {
     spinner.fail('Validation failed');

@@ -127,4 +127,27 @@ describe('formatError', () => {
     const formatted = formatError(error);
     expect(formatted).toBe('Test error');
   });
+
+  it('should format object context values with JSON.stringify', () => {
+    const error = new ValidationError('Complex validation error', {
+      thresholds: { hot: 7, warm: 30, cold: 90 },
+      files: ['file1.md', 'file2.md'],
+    });
+    const formatted = formatError(error);
+    expect(formatted).toContain('Complex validation error');
+    expect(formatted).toContain('thresholds={"hot":7,"warm":30,"cold":90}');
+    expect(formatted).toContain('files=["file1.md","file2.md"]');
+  });
+
+  it('should handle mixed primitive and object context values', () => {
+    const error = new ValidationError('Mixed context error', {
+      count: 42,
+      enabled: true,
+      config: { debug: true, level: 'info' },
+    });
+    const formatted = formatError(error);
+    expect(formatted).toContain('count=42');
+    expect(formatted).toContain('enabled=true');
+    expect(formatted).toContain('config={"debug":true,"level":"info"}');
+  });
 });
