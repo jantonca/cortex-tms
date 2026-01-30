@@ -5,84 +5,79 @@
  * Displays three pillars (Cost, Quality, Sustainability) with viz-bar visualizations
  * Adapted from branding/designs/library liquid glass design
  */
-import { TrendingUp, Shield, Leaf, Target } from '@lucide/astro';
-import '../styles/glass-library.css';
-import '../styles/pillars-section.css';
+import { TrendingUp, Shield, Leaf, Target } from '@lucide/astro'
+import { getCollection } from 'astro:content'
+import '../styles/glass-library.css'
+import '../styles/pillars-section.css'
+
+// Get pillars from collection
+const allHomepageContent = await getCollection('homepage')
+const pillars = allHomepageContent
+  .filter(
+    (entry): entry is typeof entry & {
+      data: {
+        type: 'pillar'
+        icon: 'trending-up' | 'shield' | 'leaf'
+        title: string
+        description: string
+        order: number
+        beforeMetric: { label: string; value: string; barWidth: string }
+        afterMetric: { label: string; value: string; barWidth: string }
+        impactText: string
+      }
+    } => entry.data.type === 'pillar'
+  )
+  .sort((a, b) => a.data.order - b.data.order)
+
+// Icon mapping
+const iconMap = {
+  'trending-up': TrendingUp,
+  shield: Shield,
+  leaf: Leaf,
+}
+
+// Data attribute mapping for pillar types
+const pillarDataAttr = {
+  'trending-up': 'cost',
+  shield: 'quality',
+  leaf: 'sustainability',
+}
 ---
 
 <div class="pillars-grid">
-    <!-- Pillar 1: Cost Efficiency -->
-    <div class="pillar-card" data-pillar="cost">
-      <div class="pillar-icon">
-        <TrendingUp size={24} />
-      </div>
-      <h3>Cost Efficiency</h3>
-      <p class="pillar-description">
-        Reduce AI API costs by up to 10x through intelligent context tiering.
-      </p>
+  {
+    pillars.map((pillar) => {
+      const Icon = iconMap[pillar.data.icon]
+      const dataAttr = pillarDataAttr[pillar.data.icon]
+      return (
+        <div class="pillar-card" data-pillar={dataAttr}>
+          <div class="pillar-icon">
+            <Icon size={24} />
+          </div>
+          <h3>{pillar.data.title}</h3>
+          <p class="pillar-description">{pillar.data.description}</p>
 
-      <div class="pillar-viz">
-        <div class="viz-bar">
-          <div class="viz-bar-fill" style="width: 100%; background: rgba(255, 100, 100, 0.3)"></div>
-          <div class="viz-label">Before: $0.19</div>
+          <div class="pillar-viz">
+            <div class="viz-bar">
+              <div
+                class="viz-bar-fill"
+                style={`width: ${pillar.data.beforeMetric.barWidth}; background: rgba(255, 100, 100, 0.3)`}
+              />
+              <div class="viz-label">{pillar.data.beforeMetric.label}</div>
+            </div>
+            <div class="viz-bar">
+              <div
+                class="viz-bar-fill"
+                style={`width: ${pillar.data.afterMetric.barWidth}; background: rgba(32, 178, 170, 0.5)`}
+              />
+              <div class="viz-label">{pillar.data.afterMetric.label}</div>
+            </div>
+          </div>
+          <p class="pillar-impact">
+            <Target size={16} /> Impact: {pillar.data.impactText}
+          </p>
         </div>
-        <div class="viz-bar">
-          <div class="viz-bar-fill" style="width: 10%; background: rgba(32, 178, 170, 0.5)"></div>
-          <div class="viz-label">After: $0.01</div>
-        </div>
-      </div>
-      <p class="pillar-impact">
-        <Target size={16} /> Impact: 10x cost reduction
-      </p>
-    </div>
-
-    <!-- Pillar 2: Quality -->
-    <div class="pillar-card" data-pillar="quality">
-      <div class="pillar-icon">
-        <Shield size={24} />
-      </div>
-      <h3>Quality</h3>
-      <p class="pillar-description">
-        80% fewer pattern violations with Guardian semantic validation.
-      </p>
-
-      <div class="pillar-viz">
-        <div class="viz-bar">
-          <div class="viz-bar-fill" style="width: 100%; background: rgba(255, 100, 100, 0.3)"></div>
-          <div class="viz-label">Before: 40% violations</div>
-        </div>
-        <div class="viz-bar">
-          <div class="viz-bar-fill" style="width: 20%; background: rgba(32, 178, 170, 0.5)"></div>
-          <div class="viz-label">After: 8% violations</div>
-        </div>
-      </div>
-      <p class="pillar-impact">
-        <Target size={16} /> Impact: Zero false negatives
-      </p>
-    </div>
-
-    <!-- Pillar 3: Sustainability -->
-    <div class="pillar-card" data-pillar="sustainability">
-      <div class="pillar-icon">
-        <Leaf size={24} />
-      </div>
-      <h3>Sustainability</h3>
-      <p class="pillar-description">
-        60-70% lower compute requirements (up to 94% with archives).
-      </p>
-
-      <div class="pillar-viz">
-        <div class="viz-bar">
-          <div class="viz-bar-fill" style="width: 100%; background: rgba(255, 100, 100, 0.3)"></div>
-          <div class="viz-label">Before: 100% compute</div>
-        </div>
-        <div class="viz-bar">
-          <div class="viz-bar-fill" style="width: 35%; background: rgba(32, 178, 170, 0.5)"></div>
-          <div class="viz-label">After: 30-40% compute</div>
-        </div>
-      </div>
-      <p class="pillar-impact">
-        <Target size={16} /> Impact: Greener development
-      </p>
-    </div>
-  </div>
+      )
+    })
+  }
+</div>

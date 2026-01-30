@@ -15,12 +15,69 @@ import CTABox from '../components/CTABox.astro'
 import {
   Flame,
   Shield,
-  BarChart3,
+  ChartColumn,
   FileText,
   Key,
   Zap,
+  Copy,
 } from '@lucide/astro'
+import { getCollection } from 'astro:content'
+import type {
+  HeroEntry,
+  FeatureEntry,
+  StepEntry,
+  InstallationEntry,
+  BlockquoteEntry,
+  CTAEntry,
+  IconType,
+} from '../types/homepage'
 import '../styles/homepage.css'
+
+// Get content from collections
+const allHomepageContent = await getCollection('homepage')
+
+// Get hero content
+const heroEntry = allHomepageContent.find(
+  (entry): entry is HeroEntry => entry.data.type === 'hero'
+)
+const hero = heroEntry?.data
+
+// Get features
+const features = allHomepageContent
+  .filter((entry): entry is FeatureEntry => entry.data.type === 'feature')
+  .sort((a, b) => a.data.order - b.data.order)
+
+// Get steps
+const steps = allHomepageContent
+  .filter((entry): entry is StepEntry => entry.data.type === 'step')
+  .sort((a, b) => a.data.number - b.data.number)
+
+// Get installation
+const installationEntry = allHomepageContent.find(
+  (entry): entry is InstallationEntry => entry.data.type === 'installation'
+)
+const installation = installationEntry?.data
+
+// Get blockquote
+const blockquoteEntry = allHomepageContent.find(
+  (entry): entry is BlockquoteEntry => entry.data.type === 'blockquote'
+)
+
+// Get CTA
+const ctaEntry = allHomepageContent.find(
+  (entry): entry is CTAEntry => entry.data.type === 'cta'
+)
+const cta = ctaEntry?.data
+
+// Icon mapping
+const iconMap: Record<IconType, typeof Flame> = {
+  flame: Flame,
+  shield: Shield,
+  'bar-chart': ChartColumn,
+  'file-text': FileText,
+  key: Key,
+  zap: Zap,
+}
 ---
 
 <SimpleLayout
@@ -34,43 +91,41 @@ import '../styles/homepage.css'
 
   <div class='homepage-container'>
     {/* Hero Section */}
-    <div class='hero-section'>
-      <h1 class='hero-title'>Cortex TMS</h1>
-      <p class='hero-subtitle'>AI Governance Platform</p>
-      <p class='hero-tagline'>
-        Stop wasting tokens. Stop burning GPU cycles on old docs.
-      </p>
-      <p class='hero-description'>
-        Reduce AI API costs by <strong>60-70%</strong> (up to 94% with archives) through intelligent context
-        management. Cut compute requirements with Green
-        Governance.
-      </p>
-      <div class='hero-actions'>
-        <GlassButton
-          variant='neon'
-          href='/getting-started/introduction/'
-        >
-          Get Started →
-        </GlassButton>
-        <GlassButton
-          variant='prism'
-          href='https://github.com/cortex-tms/cortex-tms'
-        >
-          View on GitHub
-        </GlassButton>
+    {hero && (
+      <div class='hero-section'>
+        <h1 class='hero-title'>{hero.title}</h1>
+        <p class='hero-subtitle'>{hero.subtitle}</p>
+        <p class='hero-tagline'>{hero.tagline}</p>
+        <p class='hero-description' set:html={hero.description} />
+        <div class='hero-actions'>
+          <GlassButton
+            variant={hero.primaryButton.variant as 'neon' | 'prism'}
+            href={hero.primaryButton.href}
+          >
+            {hero.primaryButton.text}
+          </GlassButton>
+          {hero.secondaryButton && (
+            <GlassButton
+              variant={hero.secondaryButton.variant as 'neon' | 'prism'}
+              href={hero.secondaryButton.href}
+            >
+              {hero.secondaryButton.text}
+            </GlassButton>
+          )}
+        </div>
       </div>
-    </div>
+    )}
 
     {/* Three Pillars */}
     <section class='content-section'>
       <h2 class='section-label'>Three Pillars, Measurable Results</h2>
       <PillarsSection />
 
-      <Blockquote author='Cortex TMS Team'>
-        We dogfood everything. This project uses Cortex TMS to build itself—our
-        NEXT-TASKS.md tracks development, our PATTERNS.md guides AI
-        collaboration, and our Guardian CLI reviews every commit.
-      </Blockquote>
+      {blockquoteEntry && (
+        <Blockquote author={blockquoteEntry.data.author}>
+          {blockquoteEntry.body}
+        </Blockquote>
+      )}
     </section>
 
     {/* Token Savings Proof */}
@@ -85,200 +140,50 @@ import '../styles/homepage.css'
     </section>
 
     {/* Quick Installation */}
-    <section class='content-section'>
-      <h2 class='section-label'>Quick Installation</h2>
-      <p class='install-label'>
-        Recommended (no installation required):
-      </p>
-      <div class='code-block-wrapper'>
-        <div class='code-block'>
-          <button
-            class='copy-code-btn'
-            title='Copy to clipboard'
-          >
-            <svg
-              width='16'
-              height='16'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              stroke-width='2'
-            >
-              <rect
-                x='9'
-                y='9'
-                width='13'
-                height='13'
-                rx='2'
-                ry='2'
-              ></rect>
-              <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'
-              ></path>
-            </svg>
-          </button>
-          <pre><code>npx cortex-tms@latest init</code></pre>
-        </div>
-      </div>
-      <p class='install-label-npx'>
-        Or install globally (for frequent use):
-      </p>
-      <div class='code-block-wrapper'>
-        <div class='code-block'>
-          <button
-            class='copy-code-btn'
-            title='Copy to clipboard'
-          >
-            <svg
-              width='16'
-              height='16'
-              viewBox='0 0 24 24'
-              fill='none'
-              stroke='currentColor'
-              stroke-width='2'
-            >
-              <rect
-                x='9'
-                y='9'
-                width='13'
-                height='13'
-                rx='2'
-                ry='2'
-              ></rect>
-              <path d='M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1'
-              ></path>
-            </svg>
-          </button>
-          <pre><code>npm install -g cortex-tms@latest</code></pre>
-        </div>
-      </div>
-    </section>
+    {installation && (
+      <section class='content-section'>
+        <h2 class='section-label'>Quick Installation</h2>
+        {installation.commands.map((cmd) => (
+          <>
+            <p class={cmd.recommended ? 'install-label' : 'install-label-npx'}>
+              {cmd.label}
+            </p>
+            <div class='code-block-wrapper'>
+              <div class='code-block'>
+                <button class='copy-code-btn' title='Copy to clipboard'>
+                  <Copy size={16} />
+                </button>
+                <pre><code>{cmd.code}</code></pre>
+              </div>
+            </div>
+          </>
+        ))}
+      </section>
+    )}
 
     {/* Key Features */}
     <section class='content-section'>
       <h2 class='section-label'>How It Works</h2>
       <div class='glass-grid'>
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div class='feature-card-content'>
-            <h3 class='feature-card-title'>
-              <Flame
-                size={32}
-                stroke-width='1.5'
-              />
-              HOT/WARM/COLD Tiering
-            </h3>
-            <p class='feature-card-description'>
-              Intelligent context management ensures AI only reads what matters.
-              <strong>HOT</strong> files (current sprint) are always read,
-              <strong>WARM</strong> files (architecture) are on-demand, and
-              <strong>COLD</strong> files (archives) are ignored—achieving 94.5% context
-              reduction.
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div class='feature-card-content'>
-            <h3 class='feature-card-title'>
-              <Shield
-                size={32}
-                stroke-width='1.5'
-              />
-              Guardian Validation
-            </h3>
-            <p class='feature-card-description'>
-              AI-powered semantic validation against PATTERNS.md and
-              DOMAIN-LOGIC.md. Guardian catches pattern drift that grep and
-              regex miss, achieving 80% fewer violations and zero false
-              negatives.
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div class='feature-card-content'>
-            <h3 class='feature-card-title'>
-              <BarChart3
-                size={32}
-                stroke-width='1.5'
-              />
-              Token Counter
-            </h3>
-            <p class='feature-card-description'>
-              Real-time token analysis shows your exact savings with multi-model
-              cost comparison (Claude, GPT-4, and more). Track your
-              sustainability impact and prove ROI to stakeholders.
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div class='feature-card-content'>
-            <h3 class='feature-card-title'>
-              <FileText
-                size={32}
-                stroke-width='1.5'
-              />
-              Essential 7 Prompts
-            </h3>
-            <p class='feature-card-description'>
-              Project-aware AI prompts guide you through the entire development
-              lifecycle—from init-session to feature implementation to code
-              review. One command copies the right prompt to your clipboard.
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div class='feature-card-content'>
-            <h3 class='feature-card-title'>
-              <Key
-                size={32}
-                stroke-width='1.5'
-              />
-              BYOK (Bring Your Own Key)
-            </h3>
-            <p class='feature-card-description'>
-              Guardian uses your OpenAI or Anthropic API key—full privacy and
-              control. No data leaves your machine except API calls you
-              authorize. Compatible with Claude and GPT-4 models.
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel
-          variant='bordered'
-          tilt='full'
-        >
-          <div class='feature-card-content'>
-            <h3 class='feature-card-title'>
-              <Zap
-                size={32}
-                stroke-width='1.5'
-              />
-              &lt; 3 File Reads
-            </h3>
-            <p class='feature-card-description'>
-              Our validation test: "Can an AI agent find what it needs in under
-              3 file reads?" The answer is yes—HOT files give instant context,
-              WARM files provide architectural truth on-demand.
-            </p>
-          </div>
-        </GlassPanel>
+        {
+          features.map((feature) => {
+            const Icon = iconMap[feature.data.icon]
+            return (
+              <GlassPanel variant='bordered' tilt='full'>
+                <div class='feature-card-content'>
+                  <h3 class='feature-card-title'>
+                    <Icon size={32} stroke-width='1.5' />
+                    {feature.data.title}
+                  </h3>
+                  <p
+                    class='feature-card-description'
+                    set:html={feature.body}
+                  />
+                </div>
+              </GlassPanel>
+            )
+          })
+        }
       </div>
     </section>
 
@@ -286,60 +191,35 @@ import '../styles/homepage.css'
     <section class='content-section'>
       <h2 class='section-label'>Get Started in 3 Steps</h2>
       <div class='glass-grid'>
-        <GlassPanel variant='bordered'>
-          <div class='step-card-content'>
-            <h3 class='step-card-title'>
-              <span class='step-card-number'>1</span>
-              Initialize
-            </h3>
-            <p class='step-card-description'>
-              Run <code>cortex-tms init</code> to scaffold the entire structure—task
-              management, patterns, and AI-optimized documentation. Everything is
-              preconfigured with best practices.
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel variant='bordered'>
-          <div class='step-card-content'>
-            <h3 class='step-card-title'>
-              <span class='step-card-number'>2</span>
-              Work with AI
-            </h3>
-            <p class='step-card-description'>
-              AI agents automatically read your HOT files and follow established
-              patterns. Save 94.5% on tokens while preventing hallucinations and
-              pattern drift.
-            </p>
-          </div>
-        </GlassPanel>
-
-        <GlassPanel variant='bordered'>
-          <div class='step-card-content'>
-            <h3 class='step-card-title'>
-              <span class='step-card-number'>3</span>
-              Track Savings
-            </h3>
-            <p class='step-card-description'>
-              Run <code>cortex-tms status --tokens</code> to see your exact cost savings
-              and sustainability impact. Prove ROI with real numbers.
-            </p>
-          </div>
-        </GlassPanel>
+        {
+          steps.map((step) => (
+            <GlassPanel variant='bordered'>
+              <div class='step-card-content'>
+                <h3 class='step-card-title'>
+                  <span class='step-card-number'>{step.data.number}</span>
+                  {step.data.title}
+                </h3>
+                <p class='step-card-description' set:html={step.body} />
+              </div>
+            </GlassPanel>
+          ))
+        }
       </div>
     </section>
 
     {/* Ready to Get Started */}
-    <section class='content-section'>
-      <CTABox
-        title='Ready to Get Started?'
-        description='Install Cortex TMS and scaffold your first project in under 5 minutes. Join the growing community of teams using AI-optimized documentation.'
-        primaryButtonText='Quick Start Guide →'
-        primaryButtonHref='/getting-started/quick-start/'
-        secondaryButtonText='Installation Guide'
-        secondaryButtonHref='/getting-started/installation/'
-      />
-    </section>
+    {cta && (
+      <section class='content-section'>
+        <CTABox
+          title={cta.title}
+          description={cta.description}
+          primaryButtonText={cta.primaryButton.text}
+          primaryButtonHref={cta.primaryButton.href}
+          secondaryButtonText={cta.secondaryButton?.text}
+          secondaryButtonHref={cta.secondaryButton?.href}
+        />
+      </section>
+    )}
   </div>
 
   <style>
