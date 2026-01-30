@@ -6,43 +6,94 @@
 
 ---
 
-## 🎯 v3.1.1 Patch Release Focus
+## 🎯 v3.1.1 Patch Release Status
 
-**Timeline**: 2-3 days
-**Status**: 🚧 Active Development
-**Theme**: Auto-Tier Production Hardening
-**Goal**: Address critical P0 issues from GPT-5.1 code review before v3.2
+**Timeline**: Jan 30, 2026 (1 day)
+**Status**: ✅ COMPLETE - Ready for Release Decision
+**Theme**: Auto-Tier Production Hardening + Critical Bug Fixes
+**Completed**: 2026-01-30
 
-### Critical Hardening Tasks (P0 - Must Complete)
-
-Address GPT-5.1 code review feedback to improve production readiness.
+### Critical Hardening Tasks (P0) ✅ COMPLETE
 
 | Task | Description | Effort | Priority | Status |
 | :--- | :---------- | :----- | :------- | :----- |
-| **Git Repo Detection Fix** | Use `git rev-parse --is-inside-work-tree` for subdirectory support | 1h | 🔴 P0 | ⏸️ Next |
-| **E2E Integration Tests** | Test full command flow with varied git histories | 2h | 🔴 P0 | ⏸️ Next |
+| **Git Repo Detection Fix** | Use `git rev-parse --is-inside-work-tree` for subdirectory support | 1h | 🔴 P0 | ✅ Done |
+| **E2E Integration Tests** | Test full command flow with varied git histories | 2h | 🔴 P0 | ✅ Done |
 
-**Total Effort**: ~3h (critical for production)
+**Total Effort**: 3h (actual)
 
-**Details**:
-- **Git detection**: Currently fails from subdirectories; should match git's behavior
-  - Problem: `fs.existsSync('.git')` only works from repo root
-  - Solution: Use `git rev-parse --is-inside-work-tree` (works anywhere in repo)
-  - Files: `src/commands/auto-tier.ts`
-- **E2E tests**: Add tests that invoke command with faked commit dates (`GIT_AUTHOR_DATE`)
-  - Add integration tests for full auto-tier workflow
-  - Test scenarios: fresh files, old files, mixed ages, dry-run mode
-  - Files: `src/__tests__/auto-tier.test.ts` or new `src/__tests__/auto-tier-integration.test.ts`
+### Bonus Work Completed ✅
 
-**Acceptance Criteria**:
-- [ ] Auto-tier works when run from any subdirectory within git repo
-- [ ] E2E tests cover complete command workflow
-- [ ] All existing tests continue to pass
-- [ ] Documentation updated if command behavior changes
+| Task | Description | Effort | Status |
+| :--- | :---------- | :----- | :----- |
+| **Validation Display Bug Fix** | Fix placeholder errors not showing in output | 1h | ✅ Done |
+| **Integration Test Updates** | Update 7 tests to expect correct placeholder behavior | 1h | ✅ Done |
+| **GPT-5.1 Feedback** | CLI help text clarification + threshold test | 30m | ✅ Done |
+
+**Total Session Effort**: ~5.5h
+
+### Acceptance Criteria (All Met) ✅
+
+- [x] Auto-tier works when run from any subdirectory within git repo
+- [x] E2E tests cover complete command workflow (16 tests)
+- [x] All existing tests continue to pass (174 tests passing)
+- [x] Validation errors now properly displayed
+- [x] Integration tests reflect correct product behavior
+- [x] GPT-5.1 code review feedback addressed
+
+### Files Changed
+
+**Modified** (6 files):
+- `src/utils/git-history.ts` - Git detection fix
+- `src/commands/validate.ts` - Display bug + help text
+- `src/commands/auto-tier.ts` - Help text clarification
+- `src/__tests__/integration.test.ts` - 7 test updates
+- `NEXT-TASKS.md` - This file
+- `docs/archive/sprint-v3.1-jan-2026.md` - Sprint archive
+
+**Added** (1 file):
+- `src/__tests__/auto-tier-e2e.test.ts` - 16 E2E tests (475 lines)
+
+### Test Results ✅
+
+```
+✓ 174 tests passing | 1 skipped
+✓ Auto-tier: 30 tests (14 unit + 16 E2E)
+✓ Integration: 15 tests (all passing)
+✓ Build: successful
+✓ Duration: ~9.8s
+```
 
 ---
 
-### Nice-to-Have Tasks (P1 - Deferred to v3.2)
+## 📋 Release Decision
+
+**v3.1.1 is complete but NOT yet published to npm.**
+
+**Options:**
+
+1. **Publish v3.1.1 now** - Quick patch release
+   - Just released v3.1.0 3 hours ago (might be too soon)
+   - Changes are quality improvements, not urgent fixes
+   - No user-reported issues requiring immediate patch
+
+2. **Wait and bundle with more changes**
+   - Complete P1 tasks below (~3h more work)
+   - Or wait for user feedback/issues
+   - Publish later as more substantial v3.1.1
+
+3. **Skip v3.1.1, roll into v3.2**
+   - Move to v3.2 planning immediately
+   - Include these fixes in next feature release
+   - Avoid version number churn
+
+**Recommendation**: Option 2 or 3 (wait or skip)
+
+---
+
+## 🎯 Next Steps (If Continuing v3.1.1)
+
+### Nice-to-Have Tasks (P1 - Optional Polish)
 
 These tasks improve code quality but are not blocking for v3.1.1 release.
 
