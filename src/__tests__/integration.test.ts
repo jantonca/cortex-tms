@@ -46,13 +46,14 @@ describe('Integration Tests - Command Workflows', () => {
       expect(existsSync(join(tempDir, 'CLAUDE.md'))).toBe(true);
       expect(existsSync(join(tempDir, '.cortexrc'))).toBe(true);
 
-      // Step 2: Validate the initialized project
+      // Step 2: Validate the initialized project (expect placeholder errors)
       const validateResult = await runCommand('validate', [], tempDir);
 
-      expect(validateResult.exitCode).toBe(0);
-      expect(validateResult.stdout).toContain('Validation passed');
+      expect(validateResult.exitCode).toBe(1); // Fails due to placeholders
+      expect(validateResult.stdout).toContain('Placeholder Completion');
+      expect(validateResult.stdout).toContain('incomplete');
 
-      // Step 3: Check status
+      // Step 3: Check status (should still work even with validation errors)
       const statusResult = await runCommand('status', [], tempDir);
 
       expect(statusResult.exitCode).toBe(0);
@@ -81,9 +82,10 @@ describe('Integration Tests - Command Workflows', () => {
       // After fix, file should exist again
       expect(existsSync(nextTasksPath)).toBe(true);
 
-      // Validate again should pass
+      // Validate again (will still have placeholder errors, but mandatory file check passes)
       const revalidateResult = await runCommand('validate', [], tempDir);
-      expect(revalidateResult.exitCode).toBe(0);
+      expect(revalidateResult.exitCode).toBe(1); // Still fails due to placeholders
+      expect(revalidateResult.stdout).toContain('NEXT-TASKS.md exists');
     });
   });
 
@@ -136,9 +138,10 @@ describe('Integration Tests - Command Workflows', () => {
       const statusResult = await runCommand('status', [], tempDir);
       expect(statusResult.stdout).toContain('Scope: Enterprise');
 
-      // Validate should check enterprise files
+      // Validate should check enterprise files (will fail due to placeholders)
       const validateResult = await runCommand('validate', [], tempDir);
-      expect(validateResult.exitCode).toBe(0);
+      expect(validateResult.exitCode).toBe(1); // Fails due to placeholders
+      expect(validateResult.stdout).toContain('Placeholder Completion');
 
       // Config should persist
       const config = JSON.parse(
@@ -176,9 +179,9 @@ describe('Integration Tests - Command Workflows', () => {
       const status1 = await runCommand('status', [], tempDir);
       expect(status1.stdout).toContain('Project Health');
 
-      // Validate
+      // Validate (will fail due to placeholders)
       const validate1 = await runCommand('validate', [], tempDir);
-      expect(validate1.exitCode).toBe(0);
+      expect(validate1.exitCode).toBe(1);
 
       // Status after validation
       const status2 = await runCommand('status', [], tempDir);
@@ -192,11 +195,11 @@ describe('Integration Tests - Command Workflows', () => {
     it('should handle repeated validation cycles', async () => {
       await runCommand('init', ['--scope', 'nano', '--force'], tempDir);
 
-      // Run validate multiple times
+      // Run validate multiple times (will consistently fail due to placeholders)
       for (let i = 0; i < 3; i++) {
         const result = await runCommand('validate', [], tempDir);
-        expect(result.exitCode).toBe(0);
-        expect(result.stdout).toContain('Validation passed');
+        expect(result.exitCode).toBe(1); // Fails due to placeholders
+        expect(result.stdout).toContain('Placeholder Completion');
       }
     });
   });
@@ -294,10 +297,10 @@ describe('Integration Tests - Command Workflows', () => {
         runCommand('validate', [], tempDir),
       ]);
 
-      // Both should complete successfully
-      results.forEach(result => {
-        expect(result.exitCode).toBe(0);
-      });
+      // Status should succeed, validate will fail due to placeholders
+      const [statusResult, validateResult] = results;
+      expect(statusResult.exitCode).toBe(0); // Status succeeds
+      expect(validateResult.exitCode).toBe(1); // Validate fails (placeholders)
     });
   });
 
@@ -320,17 +323,18 @@ describe('Integration Tests - Command Workflows', () => {
       const content = readFileSync(nextTasksPath, 'utf-8');
       writeFileSync(nextTasksPath, content + '\n## New Sprint\n');
 
-      // Day 2: Validate changes
+      // Day 2: Validate changes (will fail due to placeholders)
       const validate = await runCommand('validate', [], tempDir);
-      expect(validate.exitCode).toBe(0);
+      expect(validate.exitCode).toBe(1); // Fails due to placeholders
+      expect(validate.stdout).toContain('Placeholder Completion');
 
       // Day 3: Check status again
       const status2 = await runCommand('status', [], tempDir);
       expect(status2.exitCode).toBe(0);
 
-      // Day 4: Run full health check
+      // Day 4: Run full health check (also fails due to placeholders)
       const healthCheck = await runCommand('validate', ['--strict'], tempDir);
-      expect([0, 1]).toContain(healthCheck.exitCode); // May pass or fail based on strictness
+      expect(healthCheck.exitCode).toBe(1); // Fails due to placeholders
     });
   });
 });
