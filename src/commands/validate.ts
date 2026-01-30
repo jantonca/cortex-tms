@@ -152,7 +152,7 @@ async function runValidate(options: ValidateCommandOptions): Promise<void> {
       c.name.startsWith('File Size')
     );
     const placeholderChecks = result.checks.filter((c) =>
-      c.name.startsWith('Placeholders')
+      c.name.startsWith('Completion:')
     );
     const archiveChecks = result.checks.filter(
       (c) => c.name === 'Archive Status' || c.name === 'Archive Directory'
