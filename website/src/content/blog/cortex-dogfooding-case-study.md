@@ -1,7 +1,8 @@
 ---
 title: 'Building Cortex TMS with Cortex TMS: A Dogfooding Case Study'
-description: 'How we used our own tiered memory system to build itself. Real metrics from 6 months of AI-assisted development: pattern violations, token usage, and what actually changed.'
+description: 'How we used our own tiered memory system to build itself. Real metrics from 3 weeks of intensive AI-assisted development: pattern violations, token usage, and what actually changed.'
 pubDate: 2026-01-25
+updatedDate: 2026-01-30
 author: 'Cortex TMS Team'
 tags: ['case-study', 'dogfooding', 'ai-development', 'metrics', 'real-world']
 heroImage: '/images/blog/cortex-dogfooding-case-study.webp'
@@ -10,13 +11,13 @@ draft: false
 
 We built a tool for AI-assisted development. Then we used it to build itself.
 
-This is what happened over 6 months and ~380 commits.
+This is what happened over 3 weeks and ~380 commits.
 
 **Spoiler**: We're not claiming this proves anything universal. This is one project, one developer, one AI tool. But the data is real, the experience was instructive, and we learned things worth sharing.
 
 ## Key Results (TL;DR)
 
-Over 6 months of using TMS to build itself:
+Over 3 weeks of intensive development using TMS to build itself:
 
 - **Pattern violations**: 40% → 8% (-80%)
 - **Review cycles**: 3-4 rounds → 1-2 rounds (-50%)
@@ -30,6 +31,8 @@ Over 6 months of using TMS to build itself:
 ---
 
 ## Important: Understanding the 60-70% vs 94.5% Numbers
+
+**Update (January 30, 2026 - v3.1 Auto-Tier Release)**: This case study covers mid to late January 2026 (3 weeks) using **manual tier management**. The `cortex-tms auto-tier` command (v3.1, released Jan 30 2026) was not available during this period. The 60-70% savings reported below were achieved the harder way—with manual discipline and validation. Auto-tier now makes these savings easier to sustain. See [Section 6](#6-outcome-real-results-from-dogfooding) for how auto-tier addresses the pain points we identified.
 
 **Update (January 29, 2026)**: After launching this case study on Reddit ([183K views, 369 upvotes](https://www.reddit.com/r/ClaudeAI/)), the community rightfully called out an important distinction we should have made clearer upfront.
 
@@ -84,7 +87,7 @@ The rest of this case study remains unchanged—the 60-70% reduction is what we 
 ## 1. Context: Building a CLI with Claude Code
 
 **Project**: Cortex TMS (TypeScript CLI + Astro website monorepo)
-**Timeline**: December 2025 - January 2026 (6 months active development)
+**Timeline**: January 11-30, 2026 (3 weeks intensive development)
 **Developer**: Solo maintainer (that's me)
 **AI tool**: Claude Code for ~70% of implementation
 **Codebase**: ~8,000 lines TypeScript, ~15,000 lines total including docs
@@ -140,11 +143,11 @@ Here's what we measured vs what we think it means.
 
 ### What We Measured (Facts)
 
-**Measurement period**: December 2025 - January 2026 (6 months, 380 commits)
+**Measurement period**: January 11-30, 2026 (3 weeks, 380 commits)
 **Measurement method**: Manual tracking, git commit analysis, Claude Code UI token counter
-**Project**: Cortex TMS development (v2.1 → v2.8)
+**Project**: Cortex TMS development (v2.0 → v3.0)
 
-**Before TMS structure (v2.1, ~50 commits, Dec 2025)**:
+**Before TMS structure (early sprints, ~50 commits, mid-Jan 2026)**:
 
 - Pattern violation rate: ~40% of commits needed corrections
 - Back-and-forth cycles: 3-4 rounds per feature
@@ -152,7 +155,7 @@ Here's what we measured vs what we think it means.
 - File reads per session: 15-25 files
 - Repeated questions: AI asked same questions across sessions
 
-**After TMS structure (v2.2-v2.8, ~330 commits, Jan 2026)**:
+**After TMS structure (later sprints, ~330 commits, late Jan 2026)**:
 
 - Pattern violation rate: ~8% of commits needed corrections
 - Back-and-forth cycles: 1-2 rounds per feature
@@ -164,8 +167,10 @@ Here's what we measured vs what we think it means.
 
 - Pattern violations: -80% (40% → 8%)
 - Review cycles: -50% (3-4 → 1-2 rounds)
-- Token usage: -60% to -70% (12-15k → 4-6k)
+- Token usage: -60% to -70% (12-15k → 4-6k)*
 - File reads: -70% to -75% (15-25 → 4-7 files)
+
+_*Achieved with manual tier management. Auto-tier (v3.1+) makes these savings easier to sustain._
 
 ### What We Think Caused It (Interpretation)
 
@@ -207,7 +212,7 @@ These aren't proof our approach works—just signals that context management is 
 
 We didn't implement the full system at once. It evolved over 4 sprints:
 
-### Sprint v2.1 (Dec 2025): Just NEXT-TASKS.md
+### Sprint v2.1 (Mid-Jan 2026): Just NEXT-TASKS.md
 
 **What we added**:
 
@@ -221,7 +226,7 @@ We didn't implement the full system at once. It evolved over 4 sprints:
 - Questions about current priorities reduced
 - But pattern violations still high (no PATTERNS.md yet)
 
-### Sprint v2.2 (Jan 2026): Added PATTERNS.md
+### Sprint v2.2 (Mid-Jan 2026): Added PATTERNS.md
 
 **What we added**:
 
@@ -235,7 +240,7 @@ We didn't implement the full system at once. It evolved over 4 sprints:
 - AI could reference concrete examples when implementing
 - But still no clear archive triggers
 
-### Sprint v2.3 (Jan 2026): Added Archive System
+### Sprint v2.3 (Late Jan 2026): Added Archive System
 
 **What we added**:
 
@@ -249,7 +254,7 @@ We didn't implement the full system at once. It evolved over 4 sprints:
 - Clearer separation between current and historical
 - But still manual enforcement (easy to let NEXT-TASKS bloat)
 
-### Sprint v2.4 (Jan 2026): Added Validation
+### Sprint v2.4 (Late Jan 2026): Added Validation
 
 **What we added**:
 
@@ -266,13 +271,13 @@ We didn't implement the full system at once. It evolved over 4 sprints:
 ### Evolution Timeline
 
 ```
-Dec 2025 (v2.1): HOT tier only
+Week 1 (v2.1): HOT tier only
     ↓ Pattern violations still high
-Jan 2026 (v2.2): Added WARM tier (PATTERNS.md)
+Week 2 (v2.2): Added WARM tier (PATTERNS.md)
     ↓ Pattern adherence improved
-Jan 2026 (v2.3): Added COLD tier (archive)
+Week 2 (v2.3): Added COLD tier (archive)
     ↓ HOT tier stayed focused
-Jan 2026 (v2.4): Added validation
+Week 3 (v2.4): Added validation
     ↓ Mechanical enforcement
 ```
 
@@ -283,7 +288,7 @@ Jan 2026 (v2.4): Added validation
 ## 6. Outcome: Real Results from Dogfooding
 
 **Scope**: Cortex TMS project (1 developer, TypeScript monorepo, ~15K LOC)
-**Timeframe**: 6 months (Dec 2025 - Jan 2026, 380 commits)
+**Timeframe**: 3 weeks (Jan 11-30, 2026, 380 commits)
 **Sample size**: 47 tracked sessions for token measurements, all commits analyzed for pattern violations
 
 ### Metrics
@@ -320,15 +325,31 @@ Jan 2026 (v2.4): Added validation
 
 ⚠️ **Documentation effort unchanged** (still need to write PATTERNS.md, ARCHITECTURE.md, etc.)
 
-### What Still Hurts
+### What Still Hurts (Updated for v3.1)
 
-❌ **Maintaining NEXT-TASKS.md requires discipline** (easy to let it bloat to 250+ lines)
+**During this case study (manual tier management, Jan 11-30 2026)**:
 
-❌ **No automatic pruning** (we manually enforce the 200-line limit via validation)
+❌ **Maintaining NEXT-TASKS.md required discipline** (easy to let it bloat to 250+ lines)
 
-❌ **Validation catches violations but doesn't prevent them** (post-commit check)
+❌ **No automatic pruning** (we manually enforced the 200-line limit via validation)
 
-❌ **Learning curve for new patterns** (takes 1-2 weeks to internalize tier system)
+❌ **Validation caught violations but didn't prevent them** (post-commit check)
+
+**After v3.1 release (`cortex-tms auto-tier`, Jan 30 2026)**:
+
+✅ **Tier assignment now automated** based on git history (recency-based classification)
+
+✅ **Recently-modified files stay in HOT tier automatically** (reduces manual discipline burden)
+
+⚠️ **Still requires running `cortex auto-tier` periodically** (weekly/monthly, not fully automatic)
+
+**Still hurts (v3.1+)**:
+
+❌ **Validation is post-commit, doesn't prevent violations** (catches after the fact)
+
+❌ **Learning curve for tier system** (takes 1-2 weeks to internalize concepts)
+
+❌ **Documentation effort unchanged** (still need to write PATTERNS.md, ARCHITECTURE.md, etc.)
 
 ---
 
@@ -479,13 +500,13 @@ Only expect similar benefits if:
 
 ## 9. What We're Still Learning
 
-After 6 months of dogfooding, here are questions we still don't have good answers for:
+After 3 weeks of intensive dogfooding, here are questions we still don't have good answers for:
 
 ### Optimal HOT Tier Size
 
 We enforce 200 lines for `NEXT-TASKS.md`, but is that right?
 
-**What we've observed**:
+**What we've observed** (during manual tier management):
 
 - At 150 lines: AI references everything consistently
 - At 200 lines: AI starts missing tasks toward the bottom
@@ -493,7 +514,9 @@ We enforce 200 lines for `NEXT-TASKS.md`, but is that right?
 
 **Our guess**: Somewhere between 150-200 lines is optimal for Claude Code, but this likely varies by AI model and task complexity.
 
-**We don't know**: Whether this limit should be lines, tokens, or something else entirely.
+**Update (v3.1)**: With `cortex-tms auto-tier`, HOT tier size is now based on file recency (default: files modified in last 7 days) rather than manual curation. Early testing on cortex-tms repo shows this keeps HOT tier naturally constrained to ~94 files (~3,600 tokens), well within optimal range.
+
+**New question**: Is recency-based sizing better than manual curation? We're tracking this in v3.1+ usage.
 
 ### When to Split WARM Tier Docs
 
@@ -551,11 +574,21 @@ cortex init
 
 ### Start Small
 
-Don't migrate everything at once:
+Don't migrate everything at once. Choose your path:
 
-**Week 1**: Just add NEXT-TASKS.md (HOT tier only)
-**Week 2-3**: Add first WARM tier doc (PATTERNS.md or ARCHITECTURE.md)
-**Week 4+**: Add archive system if HOT tier is getting crowded
+**Option 1: Manual Tier Management** (what we did in this case study)
+
+- **Week 1**: Just add NEXT-TASKS.md (HOT tier only)
+- **Week 2-3**: Add first WARM tier doc (PATTERNS.md or ARCHITECTURE.md)
+- **Week 4+**: Add archive system if HOT tier is getting crowded
+
+**Option 2: Automated Tier Management** (available in v3.1+)
+
+- **Week 1**: Run `cortex init`, then `cortex auto-tier --dry-run` to preview tier suggestions
+- **Week 2**: Apply tier tags with `cortex auto-tier`
+- **Week 3+**: Run `cortex auto-tier --force` monthly to keep tiers aligned with work patterns
+
+**Recommendation**: Start with Option 1 if you want to deeply understand the tier system. Switch to Option 2 once you've internalized the HOT/WARM/COLD concepts. Auto-tier makes maintenance easier but understanding the "why" helps you use it effectively.
 
 ### Track Your Own Metrics
 
@@ -609,6 +642,7 @@ We'd love to hear about your experience and whether TMS structure helps (or does
 - 🎯 [Why AI Agents Need More Than a README](/blog/why-ai-agents-need-more-than-readme/) - Original tiered memory post
 - 🏢 [Preventing the AI PR Tsunami](/blog/preventing-ai-pr-tsunami/) - Guardian pattern-based review
 - 🤝 [Tiered Memory Architecture](/concepts/tiered-memory/) - Technical deep dive
+- 🤖 [Git-Based Auto-Tiering](/reference/cli/auto-tier/) - Automated tier management (v3.1+)
 
 ---
 
