@@ -25,9 +25,9 @@ Automatically suggest HOT/WARM/COLD tier assignments based on git commit history
 | **Apply Tier Tags** | Add/update `<!-- @cortex-tms-tier -->` comments in files | 3h | 🔴 P0 | ✅ Done |
 | **Edge Case Handling** | Non-git repos, untracked files, submodules | 2h | 🔴 P0 | ✅ Done |
 | **Integration Testing** | Test on cortex-tms repo (dogfooding) | 2h | 🔴 P0 | ✅ Done |
-| **Documentation** | CLI reference + user guide with examples | 3h | 🔴 P0 | ⏸️ Next |
+| **Documentation** | CLI reference + user guide with examples | 3h | 🔴 P0 | ✅ Done |
 
-**Total Effort**: ~19h (16h complete, 3h remaining)
+**Total Effort**: ~19h (19h complete) ✅ FEATURE COMPLETE
 
 **Completed**: 2026-01-30
 **Files Changed**: 9 files, +560 lines
@@ -53,7 +53,7 @@ Options:
 - [x] Handles non-git repos gracefully (clear error message)
 - [x] Performance: < 2 seconds for 500-file repository
 - [x] Respects existing mandatory HOT files (NEXT-TASKS.md, CLAUDE.md)
-- [ ] Documentation includes usage examples and best practices
+- [x] Documentation includes usage examples and best practices
 
 **GPT-5.1 Code Review Feedback** (Applied):
 - [x] Fixed: `--cold` option now functional (was unused)
