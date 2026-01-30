@@ -12,6 +12,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import chalk from 'chalk';
+import { CLIError, formatError } from './utils/errors.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -71,19 +72,25 @@ program.exitOverride(); // Prevent Commander from exiting on its own
 try {
   await program.parseAsync(process.argv);
 } catch (error) {
-  // Commander throws errors for invalid usage, unknown options, etc.
+  // Handle CLIError instances with formatted output
+  if (error instanceof CLIError) {
+    console.error(chalk.red('\n❌ Error:'), formatError(error));
+    process.exit(error.exitCode);
+  }
+
+  // Handle Commander errors (invalid usage, unknown options, etc.)
   if (error instanceof Error) {
-    // Check if it's a Commander error (validation, etc.)
     if ('code' in error && typeof error.code === 'string') {
       // Commander errors are already displayed, just exit
       process.exit(1);
     }
 
-    // Application errors from commands - display them
+    // Other unexpected errors - display them
     if (!error.message.includes('(outputHelp)')) {
       console.error(chalk.red('\n❌ Error:'), error.message);
     }
   }
+
   process.exit(1);
 }
 

@@ -16,6 +16,7 @@ This document describes the patterns used when designing and maintaining Cortex 
 | Clean templates | Pattern 8: No Meta-Documentation | 250 |
 | When to archive | Pattern 9: Archive Trigger Events | 283 |
 | Testing templates | Pattern 10: Validation with AI Agents | 313 |
+| Error handling | Pattern 12: Centralized Error Handling | 367 |
 
 ---
 
@@ -365,6 +366,97 @@ AI Agent: [can't find pattern, implements incorrectly]
 
 ---
 
+## Pattern 12: Centralized Error Handling
+
+**Rule**: CLI commands throw errors instead of calling `process.exit()`. Only the CLI entry point handles process termination.
+
+### ✅ Canonical Example
+
+**Location**: `src/commands/auto-tier.ts:55-76`
+
+```typescript
+import { ValidationError, GitError } from '../utils/errors.js';
+
+// Validate input - throw errors instead of process.exit()
+if (isNaN(hotDays) || hotDays < 0) {
+  throw new ValidationError('--hot must be a positive number');
+}
+
+if (hotDays > warmDays) {
+  throw new ValidationError('--hot threshold must be ≤ --warm threshold', {
+    hot: hotDays,
+    warm: warmDays,
+  });
+}
+
+// Check for git repo
+if (!isGitRepo(cwd)) {
+  throw new GitError('Not a git repository. Run this command in a git-initialized project.');
+}
+```
+
+**Location**: `src/cli.ts:71-95` (centralized error handler)
+
+```typescript
+try {
+  await program.parseAsync(process.argv);
+} catch (error) {
+  if (error instanceof CLIError) {
+    console.error(chalk.red('\n❌ Error:'), formatError(error));
+    process.exit(error.exitCode);
+  }
+  // ... handle other errors
+}
+```
+
+### ✅ Error Classes
+
+**Location**: `src/utils/errors.ts`
+
+- **CLIError**: Base class for all CLI errors
+- **ValidationError**: Invalid user input (args, options, file contents)
+- **GitError**: Git-related errors (not a repo, command failed)
+- **ConfigError**: Configuration issues (.cortexrc, missing files)
+- **FileSystemError**: File operations (not found, permission denied)
+
+### ❌ Anti-Pattern
+
+```typescript
+// Bad: Calling process.exit() in command files
+if (isNaN(hotDays)) {
+  console.log(chalk.red('❌ Error: --hot must be a number'));
+  process.exit(1);  // ❌ Don't do this in commands
+}
+
+// Bad: Logging errors without throwing
+if (!isGitRepo(cwd)) {
+  console.error('Not a git repository');
+  return;  // ❌ Silently fails, no exit code
+}
+```
+
+**Why it fails**:
+- Makes testing difficult (can't catch process.exit)
+- Inconsistent error formatting across commands
+- Can't distinguish error types programmatically
+- Harder to refactor commands into library functions
+
+### ✅ Benefits
+
+- **Testable**: Errors can be caught and asserted in tests
+- **Consistent**: All errors formatted the same way
+- **Contextual**: Errors can include additional data (e.g., invalid values)
+- **Type-safe**: Different error classes for different scenarios
+- **Flexible**: Easy to add retry logic or error recovery
+
+**References**:
+- **Error Classes**: `src/utils/errors.ts`
+- **CLI Entry Point**: `src/cli.ts:71-95`
+- **Example Command**: `src/commands/auto-tier.ts`
+- **Tests**: `src/__tests__/errors.test.ts`
+
+---
+
 ## 📋 Pattern Summary
 
 | Pattern | When to Use | Reference File |
@@ -380,6 +472,7 @@ AI Agent: [can't find pattern, implements incorrectly]
 | Archive Triggers | Sprint management | `NEXT-TASKS.md` |
 | AI Validation | Before shipping | All templates |
 | Website Design System | Website components | `website/src/` |
+| Centralized Error Handling | All CLI commands | `src/utils/errors.ts`, `src/cli.ts` |
 
 **For Git & PM Standards**: See `docs/core/GIT-STANDARDS.md`
 

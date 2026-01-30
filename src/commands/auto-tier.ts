@@ -5,6 +5,7 @@ import { glob } from 'glob';
 import { readFile, writeFile } from 'fs/promises';
 import { isGitRepo, analyzeFileHistory } from '../utils/git-history.js';
 import { readTierTag, writeTierTag, Tier } from '../utils/tier-tags.js';
+import { ValidationError, GitError } from '../utils/errors.js';
 
 interface AutoTierOptions {
   hot: string;
@@ -53,35 +54,32 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
 
   // Validate thresholds
   if (isNaN(hotDays) || hotDays < 0) {
-    console.log(chalk.red('❌ Error: --hot must be a positive number'));
-    process.exit(1);
+    throw new ValidationError('--hot must be a positive number');
   }
   if (isNaN(warmDays) || warmDays < 0) {
-    console.log(chalk.red('❌ Error: --warm must be a positive number'));
-    process.exit(1);
+    throw new ValidationError('--warm must be a positive number');
   }
   if (isNaN(coldDays) || coldDays < 0) {
-    console.log(chalk.red('❌ Error: --cold must be a positive number'));
-    process.exit(1);
+    throw new ValidationError('--cold must be a positive number');
   }
   if (hotDays > warmDays) {
-    console.log(chalk.red('❌ Error: --hot threshold must be ≤ --warm threshold'));
-    console.log(chalk.gray(`   Got: hot=${hotDays}, warm=${warmDays}`));
-    process.exit(1);
+    throw new ValidationError('--hot threshold must be ≤ --warm threshold', {
+      hot: hotDays,
+      warm: warmDays,
+    });
   }
   if (warmDays > coldDays) {
-    console.log(chalk.red('❌ Error: --warm threshold must be ≤ --cold threshold'));
-    console.log(chalk.gray(`   Got: warm=${warmDays}, cold=${coldDays}`));
-    process.exit(1);
+    throw new ValidationError('--warm threshold must be ≤ --cold threshold', {
+      warm: warmDays,
+      cold: coldDays,
+    });
   }
 
   console.log(chalk.bold.cyan('\n🔄 Git-Based Auto-Tiering\n'));
 
   // Check for git repo
   if (!isGitRepo(cwd)) {
-    console.log(chalk.red('❌ Error: Not a git repository'));
-    console.log(chalk.gray('   Run this command in a git-initialized project.'));
-    process.exit(1);
+    throw new GitError('Not a git repository. Run this command in a git-initialized project.');
   }
 
   if (options.dryRun) {

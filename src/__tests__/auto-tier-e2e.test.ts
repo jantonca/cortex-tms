@@ -383,7 +383,7 @@ describe('Auto-Tier E2E - Edge Cases', () => {
       const result = await runCommand('auto-tier', [], nonGitDir);
 
       expect(result.exitCode).toBe(1);
-      expect(result.stdout).toContain('Not a git repository');
+      expect(result.stderr).toContain('Not a git repository');
     } finally {
       await cleanupTempDir(nonGitDir);
     }
