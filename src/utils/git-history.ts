@@ -1,6 +1,4 @@
 import { execSync } from 'child_process';
-import { existsSync } from 'fs';
-import { join } from 'path';
 
 export interface FileGitInfo {
   path: string;
@@ -11,10 +9,19 @@ export interface FileGitInfo {
 }
 
 /**
- * Check if directory is a git repository
+ * Check if directory is inside a git repository
+ * Works from any subdirectory within the repo
  */
 export function isGitRepo(cwd: string): boolean {
-  return existsSync(join(cwd, '.git'));
+  try {
+    const result = execSync(
+      'git rev-parse --is-inside-work-tree',
+      { cwd, encoding: 'utf-8', stdio: ['pipe', 'pipe', 'pipe'] }
+    ).trim();
+    return result === 'true';
+  } catch {
+    return false;
+  }
 }
 
 /**
