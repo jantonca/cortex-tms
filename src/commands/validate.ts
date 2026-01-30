@@ -73,7 +73,7 @@ export function createValidateCommand(): Command {
     .description('Validate TMS project health and compliance')
     .option('-s, --strict', 'Treat warnings as errors')
     .option('-v, --verbose', 'Show detailed check information')
-    .option('-f, --fix', 'Auto-fix issues where possible (future feature)')
+    .option('-f, --fix', 'Auto-fix issues where possible (e.g., recreate missing files)')
     .action(async (options: ValidateCommandOptions) => {
       await runValidate(options);
     });
