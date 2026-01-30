@@ -720,7 +720,7 @@ cortex-tms migrate --apply
 ```bash
 # Reinstall Cortex TMS
 npm uninstall -g cortex-tms
-npm install -g cortex-tms@latest
+npx cortex-tms@latest
 
 # Verify templates exist
 ls node_modules/cortex-tms/templates/
@@ -874,7 +874,7 @@ jobs:
           node-version: '20'
 
       - name: Install Cortex TMS
-        run: npm install -g cortex-tms@latest
+        run: npx cortex-tms@latest
 
       - name: Check Migration Status
         id: check

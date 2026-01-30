@@ -386,11 +386,8 @@ $ cortex-tms auto-tier --dry-run --verbose
             with:
               node-version: '20'
 
-          - name: Install Cortex TMS
-            run: npm install -g cortex-tms@3.0.0
-
           - name: Update Tier Tags
-            run: cortex-tms auto-tier --force
+            run: npx cortex-tms@latest auto-tier --force
 
           - name: Commit Changes
             run: |

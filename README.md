@@ -22,22 +22,24 @@ Stop feeding Claude/Copilot/Cursor thousands of outdated lines. **60-70% typical
 
 ## 🚀 Instant Activation
 
-Get started in under 60 seconds:
+Get started in under 60 seconds (no installation required):
 
 ```bash
 # 1. Initialize your project
-npx cortex-tms init
+npx cortex-tms@latest init
 
 # 2. Open the Project Cockpit
-npx cortex-tms status
+npx cortex-tms@latest status
 
 # 3. Activate your AI Agent
-npx cortex-tms prompt init-session
+npx cortex-tms@latest prompt init-session
 # (Copies project-aware prompt to clipboard!)
 
 # 4. Check version health
-npx cortex-tms migrate
+npx cortex-tms@latest migrate
 ```
+
+**Note**: Using `npx` requires no installation. For frequent use, install globally: `npm install -g cortex-tms@latest`
 
 Choose your scope (Nano/Standard/Enterprise) and start building with AI-optimized documentation and intelligent CLI tooling.
 

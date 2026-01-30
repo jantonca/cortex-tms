@@ -557,8 +557,11 @@ We tracked tokens and pattern violations manually (tedious, error-prone).
 The TMS structure is built into Cortex TMS templates:
 
 ```bash
+# Recommended (no installation)
+npx cortex-tms@latest init
+
+# Or install globally for frequent use
 npm install -g cortex-tms@latest
-cortex init
 ```
 
 > **Version pinning**: For production use, pin to a specific version (e.g., `cortex-tms@2.6.1`). See our [installation guide](/guides/first-project/) for version management details.
