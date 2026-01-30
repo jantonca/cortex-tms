@@ -210,6 +210,37 @@ describe('Auto-Tier E2E - Command Options', () => {
     expect(customResult.stdout).toContain('HOT');
   });
 
+  it('should use custom --warm and --cold thresholds correctly', async () => {
+    const today = new Date();
+
+    // Create files at different ages
+    const fiveDaysAgo = new Date(today);
+    fiveDaysAgo.setDate(today.getDate() - 5);
+    const twentyDaysAgo = new Date(today);
+    twentyDaysAgo.setDate(today.getDate() - 20);
+    const fiftyDaysAgo = new Date(today);
+    fiftyDaysAgo.setDate(today.getDate() - 50);
+
+    await createAndCommitFileWithDate(tempDir, 'file-5d.md', '# 5 days', fiveDaysAgo.toISOString());
+    await createAndCommitFileWithDate(tempDir, 'file-20d.md', '# 20 days', twentyDaysAgo.toISOString());
+    await createAndCommitFileWithDate(tempDir, 'file-50d.md', '# 50 days', fiftyDaysAgo.toISOString());
+
+    // Custom thresholds: hot=10, warm=40, cold=60
+    // Expected: 5d→HOT, 20d→WARM, 50d→WARM (aging, not yet cold)
+    const result1 = await runCommand('auto-tier', ['--dry-run', '--hot', '10', '--warm', '40', '--cold', '60'], tempDir);
+
+    expect(result1.stdout).toContain('HOT');
+    expect(result1.stdout).toContain('file-5d.md');
+    expect(result1.stdout).toContain('WARM (2 files)'); // Both 20d and 50d are WARM
+
+    // Different thresholds: hot=10, warm=25, cold=40
+    // Expected: 5d→HOT, 20d→WARM, 50d→COLD
+    const result2 = await runCommand('auto-tier', ['--dry-run', '--hot', '10', '--warm', '25', '--cold', '40'], tempDir);
+
+    expect(result2.stdout).toContain('COLD');
+    expect(result2.stdout).toContain('file-50d.md');
+  });
+
   it('should overwrite existing tags with --force', async () => {
     const today = new Date().toISOString();
     await createAndCommitFileWithDate(

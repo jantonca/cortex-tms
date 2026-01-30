@@ -32,8 +32,8 @@ export function createAutoTierCommand(): Command {
 
   cmd
     .description('Analyze and apply tier tags based on git history (use --dry-run to preview)')
-    .option('--hot <days>', 'Files modified within N days → HOT', '7')
-    .option('--warm <days>', 'Files modified within N days → WARM', '30')
+    .option('--hot <days>', 'Files modified ≤N days ago → HOT', '7')
+    .option('--warm <days>', 'Files modified ≤N days ago → WARM (aging beyond this stays WARM until --cold)', '30')
     .option('--cold <days>', 'Files older than N days → COLD', '90')
     .option('-d, --dry-run', 'Preview changes without applying')
     .option('-f, --force', 'Overwrite existing tier tags')
