@@ -2,8 +2,24 @@
 
 This is the **living backlog** for Cortex TMS. Tasks move from here to `NEXT-TASKS.md` when they become active.
 
-**Last Updated**: 2026-01-30 (Post v3.1 Auto-Tier + GPT-5.1 Code Review)
+**Last Updated**: 2026-01-30 (Post v3.1 Release Prep)
 **Source**: Sprint retrospectives + audit findings + community feedback + code reviews
+
+---
+
+## 📣 v3.1 Post-Release Polish
+
+### Homepage Auto-Tier Feature Card
+**Priority**: P2 (Marketing)
+**Effort**: ~30min
+
+Add 7th feature card to homepage showcasing auto-tier:
+- Icon: GitBranch or Clock
+- Title: "Auto-Tier (v3.1)"
+- Description: Git-based automatic tier assignment, recency signal
+- Location: `website/src/pages/index.astro` after existing 6 cards
+
+**Why**: Homepage should highlight new v3.1.0 feature for discoverability
 
 ---
 
