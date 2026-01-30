@@ -7,7 +7,7 @@
 
 import { z } from 'zod';
 import { resolve, sep } from 'path';
-import { existsSync } from 'fs';
+import { existsSync, statSync } from 'fs';
 import { ValidationError } from './errors.js';
 
 // ============================================================================
@@ -251,7 +251,7 @@ export function validateSafePath(
   if (!isWithinBase) {
     return {
       isValid: false,
-      error: `Path traversal detected: ${filePath} resolves outside project directory`,
+      error: `Path traversal detected: ${filePath} resolves outside allowed directory`,
     };
   }
 
@@ -263,7 +263,7 @@ export function validateSafePath(
 
 /**
  * Validates a file path argument
- * Ensures file exists and is within project bounds
+ * Ensures file exists, is a regular file (not directory), and is within project bounds
  */
 export function validateFilePath(
   filePath: string,
@@ -276,10 +276,25 @@ export function validateFilePath(
     throw new ValidationError(pathValidation.error || 'Invalid file path');
   }
 
+  const resolvedPath = pathValidation.resolvedPath!;
+
   // Check if file exists
-  if (!existsSync(pathValidation.resolvedPath!)) {
+  if (!existsSync(resolvedPath)) {
     throw new ValidationError(`File not found: ${filePath}`);
   }
 
-  return pathValidation.resolvedPath!;
+  // Check if it's a regular file (not a directory)
+  try {
+    const stats = statSync(resolvedPath);
+    if (!stats.isFile()) {
+      throw new ValidationError(`Path is not a regular file: ${filePath}`);
+    }
+  } catch (error) {
+    if (error instanceof ValidationError) {
+      throw error;
+    }
+    throw new ValidationError(`Cannot access file: ${filePath}`);
+  }
+
+  return resolvedPath;
 }

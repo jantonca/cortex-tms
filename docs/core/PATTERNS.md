@@ -560,13 +560,22 @@ export function validateSafePath(
   filePath: string,
   baseDir: string
 ): { isValid: boolean; resolvedPath?: string; error?: string } {
+  // Normalize base directory to absolute path
+  const normalizedBase = resolve(baseDir);
+
+  // Resolve file path against base directory
   const resolvedPath = resolve(baseDir, filePath);
 
-  // Ensure path stays within project directory
-  if (!resolvedPath.startsWith(baseDir)) {
+  // Check if resolved path is within base directory
+  // Either equal to base, or starts with base + path separator
+  const isWithinBase =
+    resolvedPath === normalizedBase ||
+    resolvedPath.startsWith(normalizedBase + sep);
+
+  if (!isWithinBase) {
     return {
       isValid: false,
-      error: `Path traversal detected: ${filePath} resolves outside project directory`,
+      error: `Path traversal detected: ${filePath} resolves outside allowed directory`,
     };
   }
 

@@ -8,7 +8,7 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import ora from 'ora';
 import inquirer from 'inquirer';
-import { join } from 'path';
+import { join, dirname } from 'path';
 import { existsSync } from 'fs';
 import { loadConfig, getScopePreset } from '../utils/config.js';
 import { getPackageVersion, extractVersion, getTemplatesDir, replacePlaceholders, injectVersionMetadata } from '../utils/templates.js';
@@ -310,7 +310,7 @@ async function applyMigration(
       content = injectVersionMetadata(content, targetVersion);
 
       // Ensure parent directory exists
-      await fs.ensureDir(join(projectRoot, migration.path, '..'));
+      await fs.ensureDir(dirname(filePath));
 
       // Write upgraded content to destination
       await fs.writeFile(filePath, content, 'utf-8');
