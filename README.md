@@ -162,6 +162,8 @@ cortex-tms auto-tier --hot 14 --warm 60 # Custom thresholds
 cortex-tms auto-tier --force            # Overwrite existing tags
 ```
 
+**Community-requested feature**: Built in response to feedback from Reddit users [Illustrious-Report96](https://www.reddit.com/user/Illustrious-Report96/), [pbalIII](https://www.reddit.com/user/pbalIII/), and [durable-racoon](https://www.reddit.com/user/durable-racoon/) who identified manual tier management as a scalability bottleneck and suggested using git history to determine file "heat".
+
 **How It Works**:
 
 - Analyzes git commit history to determine file modification recency
