@@ -5,6 +5,8 @@
  * The main CLI entry point (src/cli.ts) catches these errors and handles them appropriately.
  */
 
+import { sanitizeApiKey, sanitizeObject } from './sanitize.js';
+
 /**
  * Error context type for additional error information
  * Should contain primitive values or objects that can be JSON-stringified
@@ -72,14 +74,20 @@ export class FileSystemError extends CLIError {
 /**
  * Format an error for display to the user
  * Returns a formatted error message with optional context
+ *
+ * IMPORTANT: Automatically sanitizes API keys and sensitive data before display
  */
 export function formatError(error: Error): string {
   if (error instanceof CLIError) {
-    let message = error.message;
+    // Sanitize the error message
+    let message = sanitizeApiKey(error.message);
 
-    // Add context if available
+    // Add context if available (with sanitization)
     if (error.context && Object.keys(error.context).length > 0) {
-      const contextLines = Object.entries(error.context)
+      // Sanitize the entire context object to prevent API key leaks
+      const sanitizedContext = sanitizeObject(error.context);
+
+      const contextLines = Object.entries(sanitizedContext)
         .map(([key, value]) => {
           // Stringify objects/arrays for readability
           const formattedValue = typeof value === 'object' && value !== null
@@ -94,6 +102,6 @@ export function formatError(error: Error): string {
     return message;
   }
 
-  // Non-CLI errors (unexpected)
-  return error.message;
+  // Non-CLI errors (unexpected) - also sanitize
+  return sanitizeApiKey(error.message);
 }

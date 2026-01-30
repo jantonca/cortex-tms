@@ -5,6 +5,7 @@
  */
 
 import type { GuardianResult } from '../types/guardian.js';
+import { sanitizeError } from './sanitize.js';
 
 // Default timeout for API requests (30 seconds)
 const DEFAULT_API_TIMEOUT_MS = 30000;
@@ -201,7 +202,8 @@ async function callOpenAI(
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(`OpenAI API error: ${response.status} ${error}`);
+      const sanitizedError = sanitizeError(error);
+      throw new Error(`OpenAI API error: ${response.status} ${sanitizedError}`);
     }
 
     const data = await response.json() as OpenAIResponse;
@@ -285,7 +287,8 @@ async function callAnthropic(
 
     if (!response.ok) {
       const error = await response.text();
-      throw new Error(`Anthropic API error: ${response.status} ${error}`);
+      const sanitizedError = sanitizeError(error);
+      throw new Error(`Anthropic API error: ${response.status} ${sanitizedError}`);
     }
 
     const data = await response.json() as AnthropicResponse;

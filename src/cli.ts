@@ -13,6 +13,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import chalk from 'chalk';
 import { CLIError, ValidationError, formatError } from './utils/errors.js';
+import { sanitizeApiKey } from './utils/sanitize.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -83,9 +84,10 @@ try {
       process.exit(1);
     }
 
-    // Other unexpected errors - display them
+    // Other unexpected errors - display them (with sanitization)
     if (!error.message.includes('(outputHelp)')) {
-      console.error(chalk.red('\n❌ Error:'), error.message);
+      const sanitizedMessage = sanitizeApiKey(error.message);
+      console.error(chalk.red('\n❌ Error:'), sanitizedMessage);
     }
   }
 
