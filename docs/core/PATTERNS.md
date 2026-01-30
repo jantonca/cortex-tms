@@ -17,6 +17,7 @@ This document describes the patterns used when designing and maintaining Cortex 
 | When to archive | Pattern 9: Archive Trigger Events | 283 |
 | Testing templates | Pattern 10: Validation with AI Agents | 313 |
 | Error handling | Pattern 12: Centralized Error Handling | 367 |
+| Input validation | Pattern 13: Zod Input Validation | 460 |
 
 ---
 
@@ -370,6 +371,8 @@ AI Agent: [can't find pattern, implements incorrectly]
 
 **Rule**: CLI commands throw errors instead of calling `process.exit()`. Only the CLI entry point handles process termination.
 
+**See also**: Pattern 13 for input validation that complements error handling.
+
 ### ✅ Canonical Example
 
 **Location**: `src/commands/auto-tier.ts:55-76`
@@ -457,6 +460,180 @@ if (!isGitRepo(cwd)) {
 
 ---
 
+## Pattern 13: Zod Input Validation
+
+**Rule**: All CLI command options are validated using Zod schemas at command entry points. Invalid inputs throw ValidationError with clear, actionable error messages.
+
+### ✅ Canonical Example
+
+**Location**: `src/utils/validation.ts`
+
+```typescript
+import { z } from 'zod';
+import { ValidationError } from './errors.js';
+
+// Define schema with validation rules
+export const autoTierOptionsSchema = z
+  .object({
+    hot: z.string().transform((val, ctx) => {
+      const num = parseInt(val, 10);
+      if (isNaN(num) || num < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: '--hot must be a positive number',
+        });
+        return z.NEVER;
+      }
+      return num;
+    }),
+    warm: z.string().transform((val, ctx) => {
+      const num = parseInt(val, 10);
+      if (isNaN(num) || num < 0) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: '--warm must be a positive number',
+        });
+        return z.NEVER;
+      }
+      return num;
+    }),
+    // ... more fields
+  })
+  .refine((data) => data.hot <= data.warm, {
+    message: '--hot threshold must be ≤ --warm threshold',
+    path: ['hot'],
+  });
+
+// Helper function for consistent validation
+export function validateOptions<T extends z.ZodType>(
+  schema: T,
+  options: unknown,
+  commandName: string
+): z.infer<T> {
+  try {
+    return schema.parse(options);
+  } catch (error) {
+    if (error instanceof z.ZodError) {
+      const messages = (error.errors || []).map((err) => {
+        const path = err.path && err.path.length > 0 ? `--${err.path.join('.')}` : 'options';
+        return `${path}: ${err.message}`;
+      });
+
+      throw new ValidationError(
+        `Invalid ${commandName} command options${messages.length > 0 ? ':\n  ' + messages.join('\n  ') : ''}`,
+        {
+          command: commandName,
+          errors: messages,
+        }
+      );
+    }
+    throw error;
+  }
+}
+```
+
+**Location**: `src/commands/auto-tier.ts`
+
+```typescript
+import { autoTierOptionsSchema, validateOptions } from '../utils/validation.js';
+
+async function runAutoTier(options: AutoTierOptions): Promise<void> {
+  // Validate at entry point
+  const validated = validateOptions(autoTierOptionsSchema, options, 'auto-tier');
+
+  // Use validated (and transformed) values
+  const hotDays = validated.hot;  // Now a number, not string
+  const warmDays = validated.warm;
+  const coldDays = validated.cold;
+
+  // Continue with validated inputs...
+}
+```
+
+### ✅ Security: Path Validation
+
+**Location**: `src/utils/validation.ts:242-272`
+
+```typescript
+// Prevent path traversal attacks
+export function validateSafePath(
+  filePath: string,
+  baseDir: string
+): { isValid: boolean; resolvedPath?: string; error?: string } {
+  const resolvedPath = resolve(baseDir, filePath);
+
+  // Ensure path stays within project directory
+  if (!resolvedPath.startsWith(baseDir)) {
+    return {
+      isValid: false,
+      error: `Path traversal detected: ${filePath} resolves outside project directory`,
+    };
+  }
+
+  return { isValid: true, resolvedPath };
+}
+```
+
+### ❌ Anti-Pattern
+
+```typescript
+// Bad: Manual validation without type safety
+async function runAutoTier(options: AutoTierOptions): Promise<void> {
+  const hotDays = parseInt(String(options.hot), 10);
+
+  if (isNaN(hotDays) || hotDays < 0) {
+    throw new ValidationError('--hot must be a positive number');
+  }
+
+  // Manual checks repeated for each field...
+  // No cross-field validation
+  // Error messages inconsistent
+}
+
+// Bad: No path traversal protection
+const targetPath = resolve(cwd, filePath);
+if (!existsSync(targetPath)) {
+  throw new Error(`File not found: ${filePath}`);
+}
+// ❌ Attacker could use ../../etc/passwd
+```
+
+**Why it fails**:
+- Manual validation is error-prone and repetitive
+- No type transformations (string → number)
+- Cross-field validation (hot ≤ warm ≤ cold) requires complex logic
+- Inconsistent error messages across commands
+- Security vulnerabilities (path traversal not checked)
+
+### ✅ Benefits
+
+- **Type Safety**: Validated options have correct TypeScript types
+- **Type Transformations**: Automatic string → number conversion
+- **Cross-Field Validation**: Complex rules (hot ≤ warm ≤ cold) expressed declaratively
+- **Clear Error Messages**: User-friendly validation errors with context
+- **Reusable Schemas**: Share validation logic across tests and commands
+- **Security**: Built-in path traversal protection
+- **Testable**: Schemas can be tested independently
+
+### ✅ Command Coverage
+
+All CLI commands use Zod validation:
+- `auto-tier`: Numeric thresholds, cross-field validation
+- `init`: Scope enum validation, flag validation
+- `validate`: Boolean flags
+- `review`: Provider enum, model validation, file path security
+- `migrate`: Flag validation with dependencies (--force requires --apply)
+- `prompt`: Boolean flags with defaults
+- `status`: Model enum validation
+
+**References**:
+- **Validation Schemas**: `src/utils/validation.ts`
+- **Example Commands**: `src/commands/auto-tier.ts`, `src/commands/review.ts`
+- **Tests**: `src/__tests__/validation.test.ts`
+- **Security**: Path traversal protection in `validateFilePath()`
+
+---
+
 ## 📋 Pattern Summary
 
 | Pattern | When to Use | Reference File |
@@ -473,6 +650,7 @@ if (!isGitRepo(cwd)) {
 | AI Validation | Before shipping | All templates |
 | Website Design System | Website components | `website/src/` |
 | Centralized Error Handling | All CLI commands | `src/utils/errors.ts`, `src/cli.ts` |
+| Zod Input Validation | All CLI commands | `src/utils/validation.ts` |
 
 **For Git & PM Standards**: See `docs/core/GIT-STANDARDS.md`
 

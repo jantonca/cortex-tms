@@ -11,6 +11,7 @@ import ora from 'ora';
 import { validateProject } from '../utils/validator.js';
 import type { ValidateCommandOptions } from '../types/cli.js';
 import { ValidationError } from '../utils/errors.js';
+import { validateOptionsSchema, validateOptions } from '../utils/validation.js';
 
 /**
  * Get emoji for check result
@@ -87,6 +88,9 @@ export function createValidateCommand(): Command {
  */
 async function runValidate(options: ValidateCommandOptions): Promise<void> {
   const cwd = process.cwd();
+
+  // Validate options using Zod schema
+  validateOptions(validateOptionsSchema, options, 'validate');
 
   console.log(chalk.bold.cyan('\n🔍 Cortex TMS Validation\n'));
 

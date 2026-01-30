@@ -8,7 +8,7 @@
 import { Command } from 'commander';
 import chalk from 'chalk';
 import { readFileSync, existsSync } from 'fs';
-import { resolve, join } from 'path';
+import { join } from 'path';
 import inquirer from 'inquirer';
 import {
   callLLM,
@@ -20,6 +20,8 @@ import {
 import { buildGuardianSystemPrompt, buildGuardianUserPrompt } from '../utils/guardian-prompt.js';
 import type { GuardianResult } from '../types/guardian.js';
 import { SAFE_MODE_THRESHOLD } from '../types/guardian.js';
+import { reviewOptionsSchema, validateOptions, validateFilePath } from '../utils/validation.js';
+import { ValidationError } from '../utils/errors.js';
 
 /**
  * Create and configure the review command
@@ -108,8 +110,11 @@ async function runReviewCommand(
 ): Promise<void> {
   const cwd = process.cwd();
 
+  // Validate options using Zod schema
+  const validated = validateOptions(reviewOptionsSchema, options, 'review');
+
   // Suppress UI output in JSON mode
-  if (!options.outputJson) {
+  if (!validated.outputJson) {
     console.log(chalk.bold.cyan('\n🛡️  Guardian Code Review\n'));
   }
 
@@ -130,21 +135,12 @@ async function runReviewCommand(
   }
 
   // Step 2: Validate file to review exists and prevent path traversal
-  const targetPath = resolve(cwd, filePath);
-
-  // Security: Ensure path stays within project directory
-  if (!targetPath.startsWith(cwd)) {
-    throw new Error(`Path traversal detected: ${filePath} resolves outside project directory`);
-  }
-
-  if (!existsSync(targetPath)) {
-    throw new Error(`File not found: ${filePath}`);
-  }
+  const targetPath = validateFilePath(filePath, cwd);
 
   try {
 
     // Step 3: Read files
-    if (!options.outputJson) {
+    if (!validated.outputJson) {
       console.log(chalk.gray('📖 Reading project patterns...'));
     }
     const patterns = readFileSync(patternsPath, 'utf-8');
@@ -154,13 +150,13 @@ async function runReviewCommand(
     const codeToReview = readFileSync(targetPath, 'utf-8');
 
     // Step 4: Get API key
-    const provider = options.provider as 'openai' | 'anthropic';
-    let apiKey = options.apiKey || getApiKey(provider);
+    const provider = validated.provider as 'openai' | 'anthropic';
+    let apiKey = validated.apiKey || getApiKey(provider);
 
     if (!apiKey) {
       // In JSON mode, cannot prompt for API key - must be provided
-      if (options.outputJson) {
-        throw new Error('API key is required (use --api-key or set environment variable)');
+      if (validated.outputJson) {
+        throw new ValidationError('API key is required (use --api-key or set environment variable)');
       }
 
       const answer = await inquirer.prompt<{ apiKey: string }>([
@@ -175,11 +171,11 @@ async function runReviewCommand(
     }
 
     if (!apiKey) {
-      throw new Error('API key is required');
+      throw new ValidationError('API key is required');
     }
 
     // Step 5: Build LLM prompt
-    if (!options.outputJson) {
+    if (!validated.outputJson) {
       console.log(chalk.gray('🤖 Analyzing code with', provider, '...'));
     }
 
@@ -195,7 +191,7 @@ async function runReviewCommand(
     const config: LLMConfig = {
       provider,
       apiKey,
-      ...(options.model && { model: options.model }),
+      ...(validated.model && { model: validated.model }),
       timeoutMs: 60000, // 60 seconds for code review (longer than default)
       responseFormat: 'json',
     };
@@ -206,7 +202,7 @@ async function runReviewCommand(
     let parsedResult = parseGuardianJSON(response.content);
 
     // Apply Safe Mode filtering if enabled
-    if (parsedResult && options.safe) {
+    if (parsedResult && validated.safe) {
       const originalCount = parsedResult.violations.length;
 
       parsedResult.violations = parsedResult.violations.filter(
@@ -221,7 +217,7 @@ async function runReviewCommand(
     }
 
     // Output in requested format
-    if (options.outputJson) {
+    if (validated.outputJson) {
       // JSON mode: output raw JSON to stdout only
       if (parsedResult) {
         console.log(JSON.stringify(parsedResult, null, 2));

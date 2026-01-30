@@ -5,7 +5,8 @@ import { glob } from 'glob';
 import { readFile, writeFile } from 'fs/promises';
 import { isGitRepo, analyzeFileHistory } from '../utils/git-history.js';
 import { readTierTag, writeTierTag, Tier } from '../utils/tier-tags.js';
-import { ValidationError, GitError } from '../utils/errors.js';
+import { GitError } from '../utils/errors.js';
+import { autoTierOptionsSchema, validateOptions } from '../utils/validation.js';
 
 interface AutoTierOptions {
   hot: string;
@@ -47,33 +48,11 @@ export function createAutoTierCommand(): Command {
 async function runAutoTier(options: AutoTierOptions): Promise<void> {
   const cwd = process.cwd();
 
-  // Parse and validate numeric options
-  const hotDays = parseInt(String(options.hot), 10);
-  const warmDays = parseInt(String(options.warm), 10);
-  const coldDays = parseInt(String(options.cold), 10);
-
-  // Validate thresholds
-  if (isNaN(hotDays) || hotDays < 0) {
-    throw new ValidationError('--hot must be a positive number');
-  }
-  if (isNaN(warmDays) || warmDays < 0) {
-    throw new ValidationError('--warm must be a positive number');
-  }
-  if (isNaN(coldDays) || coldDays < 0) {
-    throw new ValidationError('--cold must be a positive number');
-  }
-  if (hotDays > warmDays) {
-    throw new ValidationError('--hot threshold must be ≤ --warm threshold', {
-      hot: hotDays,
-      warm: warmDays,
-    });
-  }
-  if (warmDays > coldDays) {
-    throw new ValidationError('--warm threshold must be ≤ --cold threshold', {
-      warm: warmDays,
-      cold: coldDays,
-    });
-  }
+  // Validate options using Zod schema
+  const validated = validateOptions(autoTierOptionsSchema, options, 'auto-tier');
+  const hotDays = validated.hot;
+  const warmDays = validated.warm;
+  const coldDays = validated.cold;
 
   console.log(chalk.bold.cyan('\n🔄 Git-Based Auto-Tiering\n'));
 

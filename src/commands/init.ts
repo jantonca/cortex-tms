@@ -20,6 +20,7 @@ import {
   generateReplacements,
 } from '../utils/templates.js';
 import { createConfigFromScope, saveConfig } from '../utils/config.js';
+import { initOptionsSchema, validateOptions } from '../utils/validation.js';
 import type { InitCommandOptions } from '../types/cli.js';
 
 /**
@@ -48,20 +49,13 @@ export function createInitCommand(): Command {
 async function runInit(options: InitCommandOptions): Promise<void> {
   const cwd = process.cwd();
 
+  // Validate options using Zod schema
+  const validated = validateOptions(initOptionsSchema, options, 'init');
+
   console.log(chalk.bold.cyan('\n🧠 Cortex TMS Initialization\n'));
 
-  // Validate --scope flag if provided
-  if (options.scope) {
-    const validScopes = ['nano', 'standard', 'enterprise', 'custom'];
-    if (!validScopes.includes(options.scope)) {
-      throw new Error(
-        `Invalid scope "${options.scope}". Must be one of: ${validScopes.join(', ')}`
-      );
-    }
-  }
-
   // Dry-run mode indicator
-  if (options.dryRun) {
+  if (validated.dryRun) {
     console.log(chalk.yellow('🔍 DRY RUN MODE: No files will be modified.\n'));
   }
 

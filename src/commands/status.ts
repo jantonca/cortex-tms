@@ -19,6 +19,7 @@ import {
   type ModelName,
   MODEL_PRICING,
 } from '../utils/token-counter.js';
+import { statusOptionsSchema, validateOptions } from '../utils/validation.js';
 
 /**
  * Create and configure the status command
@@ -35,8 +36,11 @@ export function createStatusCommand(): Command {
       'claude-sonnet-4.5'
     )
     .action(async (options) => {
-      if (options.tokens) {
-        await runTokenAnalysis(options.model);
+      // Validate options using Zod schema
+      const validated = validateOptions(statusOptionsSchema, options, 'status');
+
+      if (validated.tokens) {
+        await runTokenAnalysis(validated.model);
       } else {
         await runStatus();
       }

@@ -9,6 +9,7 @@ import chalk from 'chalk';
 import inquirer from 'inquirer';
 import clipboard from 'clipboardy';
 import { getProjectPrompts, getPrompt } from '../utils/prompt-parser.js';
+import { promptOptionsSchema, validateOptions } from '../utils/validation.js';
 
 /**
  * Create and configure the prompt command
@@ -41,6 +42,9 @@ async function runPromptCommand(
   options: { list?: boolean; copy: boolean }
 ): Promise<void> {
   const cwd = process.cwd();
+
+  // Validate options using Zod schema
+  validateOptions(promptOptionsSchema, options, 'prompt');
 
   try {
     // Load all prompts from PROMPTS.md

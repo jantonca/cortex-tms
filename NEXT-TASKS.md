@@ -30,8 +30,8 @@
 
 | Task | Description | Effort | Priority | Status |
 | :--- | :---------- | :----- | :------- | :----- |
-| **[AUDIT-1] Centralize Error Handling** | Remove `process.exit()` calls, use consistent error patterns | 2-3h | 🔴 P0 | ⏸️ Pending |
-| **[AUDIT-2] Zod Input Validation** | Validate CLI inputs at command entry points | 2-3h | 🔴 P0 | ⏸️ Pending |
+| **[AUDIT-1] Centralize Error Handling** | Remove `process.exit()` calls, use consistent error patterns | 2-3h | 🔴 P0 | ✅ Complete |
+| **[AUDIT-2] Zod Input Validation** | Validate CLI inputs at command entry points | 2-3h | 🔴 P0 | ✅ Complete |
 | **[AUDIT-3] E2E Test Suite** | Test full CLI workflows (init, validate, migrate, review) | 6-8h | 🔴 P0 | ⏸️ Pending |
 | **[AUDIT-4] npm audit CI** | Automated dependency vulnerability scanning | 30m | 🟡 P1 | ⏸️ Pending |
 | **[AUDIT-5] Path Traversal Protection** | Validate template paths prevent `../../etc/passwd` attacks | 1-2h | 🔴 P0 | ⏸️ Pending |
@@ -44,8 +44,8 @@
 ## ✅ Sprint Success Criteria
 
 ### Security & Code Quality
-- [ ] Zero `process.exit()` calls in src/ (except bin entry point)
-- [ ] All CLI commands use Zod for input validation
+- [x] Zero `process.exit()` calls in src/ (except bin entry point)
+- [x] All CLI commands use Zod for input validation
 - [ ] E2E test coverage ≥ 80% for core workflows
 - [ ] CI pipeline includes `npm audit` check
 - [ ] Template path validation prevents directory traversal

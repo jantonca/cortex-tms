@@ -13,6 +13,7 @@ import { existsSync } from 'fs';
 import { loadConfig, getScopePreset } from '../utils/config.js';
 import { getPackageVersion, extractVersion, getTemplatesDir, replacePlaceholders, injectVersionMetadata } from '../utils/templates.js';
 import { createBackup, listBackups, restoreBackup, formatBackupSize, getBackupSize } from '../utils/backup.js';
+import { migrateOptionsSchema, validateOptions } from '../utils/validation.js';
 import fs from 'fs-extra';
 import { relative } from 'path';
 
@@ -68,7 +69,10 @@ async function runMigrate(options: {
   dryRun?: boolean;
 }): Promise<void> {
   const cwd = process.cwd();
-  const { apply = false, rollback = false, force = false, verbose: _verbose = false, dryRun = false } = options;
+
+  // Validate options using Zod schema
+  const validated = validateOptions(migrateOptionsSchema, options, 'migrate');
+  const { apply = false, rollback = false, force = false, verbose: _verbose = false, dryRun = false } = validated;
 
   // Handle rollback mode
   if (rollback) {
