@@ -41,19 +41,37 @@ jobs:
 
           echo "✅ Test requirement satisfied"
 
-      # Check 2: Run tests
+      # Check 2: Security audit (fail on high/critical vulnerabilities)
+      - name: Run security audit
+        run: |
+          echo "🔒 Running dependency security audit..."
+
+          # Run audit and capture output
+          if pnpm audit --audit-level=high --prod; then
+            echo "✅ No high/critical vulnerabilities found"
+          else
+            echo "❌ High or critical vulnerabilities detected!"
+            echo ""
+            echo "To fix, run locally:"
+            echo "  pnpm audit --prod          # View all vulnerabilities"
+            echo "  pnpm update                # Update dependencies"
+            echo ""
+            exit 1
+          fi
+
+      # Check 3: Run tests
       - name: Run test suite
         run: npm test
 
-      # Check 3: Run linter
+      # Check 4: Run linter
       - name: Run linter
         run: npm run lint
 
-      # Check 4: Verify build succeeds
+      # Check 5: Verify build succeeds
       - name: Verify build
         run: npm run build
 
-      # Check 5: Check for dist/ changes (should be auto-generated)
+      # Check 6: Check for dist/ changes (should be auto-generated)
       - name: Block manual dist/ edits
         run: |
           DIST_CHANGES=$(git diff --name-only origin/main...HEAD | grep "^dist/" | wc -l)
@@ -67,7 +85,7 @@ jobs:
 
           echo "✅ No manual dist/ changes detected"
 
-      # Check 6: PR size check
+      # Check 7: PR size check
       - name: Check PR size
         run: |
           LINES_CHANGED=$(git diff --shortstat origin/main...HEAD | grep -oP '\d+(?= insertion)|\d+(?= deletion)' | awk '{s+=$1} END {print s}')
@@ -83,7 +101,7 @@ jobs:
             echo "✅ PR size is reasonable"
           fi
 
-      # Check 7: Verify no package.json changes without discussion
+      # Check 8: Verify no package.json changes without discussion
       - name: Check for sensitive file changes
         run: |
           SENSITIVE_FILES="package.json package-lock.json tsconfig.json"

@@ -34,6 +34,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "audit": "pnpm audit --prod",
+    "audit:fix": "pnpm audit --fix",
     "lint": "eslint src/**/*.ts",
     "format": "prettier --write \"src/**/*.ts\"",
     "prepare": "husky",
