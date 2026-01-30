@@ -72,11 +72,9 @@ These tasks were originally considered for v3.1 but deferred to focus on git-bas
 
 ---
 
-## 🔥 Completed Items (Condensed)
+## 🔥 Completed Items
 
-- ✅ **TMS-272**: Release script prerelease support (v3.0, 2026-01-27)
-- ✅ **CRITICAL-1/2/3**: Emergency patch bugs (v2.6.1)
-- ✅ **GPT5-REC-3**: GitHub Action reusable workflow (v3.0)
+✅ TMS-272, CRITICAL bugs (v2.6.1), GitHub Action (v3.0) - See git history for details
 
 ---
 
