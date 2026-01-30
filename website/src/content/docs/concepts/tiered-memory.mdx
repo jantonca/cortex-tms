@@ -386,6 +386,46 @@ Move completed tasks, old changelogs, and deprecated patterns to `docs/archive/`
 
 ---
 
+## Automating Tier Management
+
+Manual tier management can be tedious. Which files should be HOT? Which can move to COLD?
+
+**Solution**: [`cortex-tms auto-tier`](/reference/cli/auto-tier/) uses git history to automatically assign tiers based on file recency.
+
+<CardGrid>
+  <Card title="How It Works" icon="rocket">
+    Analyzes git commit history to determine when each file was last modified. Recently changed files → HOT, older files → WARM/COLD.
+  </Card>
+
+  <Card title="Objective Signal" icon="approve-check">
+    Git history provides measurable recency data. No guessing which files are relevant—the commit log shows actual work patterns.
+  </Card>
+
+  <Card title="Reduces Manual Work" icon="star">
+    Run `cortex auto-tier` weekly or monthly to keep tiers aligned with current work. No manual tier decisions needed.
+  </Card>
+</CardGrid>
+
+**Example**:
+```bash
+# Preview tier suggestions
+cortex-tms auto-tier --dry-run
+
+# Apply tier tags
+cortex-tms auto-tier
+
+# See results in token analysis
+cortex-tms status --tokens
+```
+
+**Why this works**: Files you've touched recently are likely relevant to current work (HOT tier). Files untouched for months are historical context (COLD tier). Auto-tier keeps this alignment current automatically.
+
+<Aside type="tip" title="Research-Backed">
+  Auto-tier addresses the ["Lost in the Middle"](https://arxiv.org/abs/2307.03172) research finding: LLMs recall best from the beginning and end of context. By placing recently-modified files in HOT tier (context beginning), auto-tier optimizes AI agent recall.
+</Aside>
+
+---
+
 ## Next Steps
 
 Now that you understand the Tiered Memory System:
@@ -393,6 +433,7 @@ Now that you understand the Tiered Memory System:
 - Learn about [Context Budget](/concepts/context-budget/) to understand size limits
 - Explore [Truth Syncing](/concepts/truth-syncing/) to keep docs synchronized
 - Read about [Zero-Drift Governance](/concepts/zero-drift/) for validation
+- Try [`cortex-tms auto-tier`](/reference/cli/auto-tier/) for automatic tier management
 
 <Aside type="tip" title="Try It Yourself">
   Run `cortex-tms init` in a project and see the tiered structure in action. The file organization makes the pattern immediately obvious.
