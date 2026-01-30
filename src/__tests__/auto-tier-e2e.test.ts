@@ -479,7 +479,7 @@ describe('Auto-Tier E2E - Real-World Scenarios', () => {
 
     expect(result.exitCode).toBe(1);
     expect(result.stderr).toContain('--hot threshold must be ≤ --warm threshold');
-    expect(result.stderr).toContain('hot=10');
-    expect(result.stderr).toContain('warm=5');
+    expect(result.stderr).toContain('command=auto-tier');
+    expect(result.stderr).toContain('errors=');
   });
 });

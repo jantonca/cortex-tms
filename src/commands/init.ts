@@ -65,7 +65,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
   spinner.succeed('Project context detected');
 
   // Show context info if verbose
-  if (options.verbose) {
+  if (validated.verbose) {
     console.log(chalk.gray('\nProject Context:'));
     console.log(chalk.gray(`  Git repository: ${context.isGitRepo ? 'Yes' : 'No'}`));
     console.log(
@@ -85,7 +85,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
   }
 
   // Step 2: Safety check
-  if (!isSafeToInitialize(context) && !options.force) {
+  if (!isSafeToInitialize(context) && !validated.force) {
     console.log(
       chalk.yellow(
         `\n⚠️  Warning: ${context.existingFiles.length} TMS file(s) already exist:`
@@ -102,7 +102,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
   // Step 3: Interactive prompts (or use defaults if --force or --scope)
   let answers;
 
-  const shouldSkipPrompts = options.force || options.scope;
+  const shouldSkipPrompts = validated.force || validated.scope;
 
   if (shouldSkipPrompts) {
     // Use default values when --force or --scope is enabled
@@ -114,9 +114,9 @@ async function runInit(options: InitCommandOptions): Promise<void> {
 
     // Determine scope: explicit flag > minimal flag > default to standard
     let scope: 'nano' | 'standard' | 'enterprise' | 'custom';
-    if (options.scope) {
-      scope = options.scope;
-    } else if (options.minimal) {
+    if (validated.scope) {
+      scope = validated.scope;
+    } else if (validated.minimal) {
       scope = 'nano';
     } else {
       scope = 'standard';
@@ -128,11 +128,11 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     answers = {
       projectName: defaultName,
       scope,
-      overwrite: options.force ?? false,
+      overwrite: validated.force ?? false,
       installSnippets,
     };
 
-    if (options.verbose) {
+    if (validated.verbose) {
       console.log(chalk.gray('\nUsing non-interactive mode:'));
       console.log(chalk.gray(`  Project Name: ${answers.projectName}`));
       console.log(chalk.gray(`  Scope: ${answers.scope}`));
@@ -162,7 +162,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
   }
 
   // Step 4: Show summary and confirm (skip in dry-run or force mode)
-  if (!options.force && !options.dryRun) {
+  if (!validated.force && !validated.dryRun) {
     showInitSummary(answers, context);
 
     const confirmed = await confirmInit();
@@ -178,7 +178,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     answers.description
   );
 
-  if (options.verbose) {
+  if (validated.verbose) {
     console.log(chalk.gray('\nPlaceholder Replacements:'));
     Object.entries(replacements).forEach(([key, value]) => {
       console.log(chalk.gray(`  [${key}] → ${value}`));
@@ -188,28 +188,28 @@ async function runInit(options: InitCommandOptions): Promise<void> {
 
   // Step 6: Copy templates (or analyze in dry-run mode)
   const copySpinner = ora(
-    options.dryRun ? 'Analyzing changes...' : 'Copying templates...'
+    validated.dryRun ? 'Analyzing changes...' : 'Copying templates...'
   ).start();
 
   try {
     const templatesDir = getTemplatesDir();
-    const overwrite = options.force || answers.overwrite;
+    const overwrite = validated.force || answers.overwrite;
 
     const result = await copyTemplates(templatesDir, cwd, replacements, {
       overwrite,
       scope: answers.scope,
-      dryRun: options.dryRun ?? false,
+      dryRun: validated.dryRun ?? false,
       ...(answers.customFiles && { customFiles: answers.customFiles }),
     });
 
     copySpinner.succeed(
-      options.dryRun
+      validated.dryRun
         ? `Analysis complete: ${chalk.bold(result.copied)} files would be affected`
         : `Templates copied: ${chalk.bold(result.copied)} files${result.skipped > 0 ? chalk.gray(` (skipped ${result.skipped})`) : ''}`
     );
 
     // Step 7: Install VS Code snippets if requested (skip in dry-run mode)
-    if (!options.dryRun && answers.installSnippets) {
+    if (!validated.dryRun && answers.installSnippets) {
       const snippetsSpinner = ora('Installing VS Code snippets...').start();
 
       try {
@@ -231,7 +231,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
         }
       } catch (error) {
         snippetsSpinner.fail('Failed to install snippets');
-        if (options.verbose) {
+        if (validated.verbose) {
           console.error(
             chalk.gray('Error details:'),
             error instanceof Error ? error.message : 'Unknown error'
@@ -242,7 +242,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     }
 
     // Step 8: Save .cortexrc configuration (skip in dry-run mode)
-    if (!options.dryRun) {
+    if (!validated.dryRun) {
       const configSpinner = ora('Creating .cortexrc configuration...').start();
 
       try {
@@ -260,7 +260,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     }
 
     // Step 9: Success message
-    if (options.dryRun) {
+    if (validated.dryRun) {
       console.log(
         chalk.green.bold('\n✨ Dry run complete!'),
         chalk.gray('Run without --dry-run to apply changes.\n')
@@ -270,7 +270,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     }
 
     // Show next steps (skip in dry-run mode)
-    if (!options.dryRun) {
+    if (!validated.dryRun) {
       console.log(chalk.bold('🚀 Quick Start'), chalk.gray('(choose one):'));
       console.log();
       console.log(chalk.cyan('  Option A - With your AI agent'), chalk.gray('(recommended):'));
@@ -318,7 +318,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
       error instanceof Error ? error.message : 'Unknown error'
     );
 
-    if (options.verbose && error instanceof Error && error.stack) {
+    if (validated.verbose && error instanceof Error && error.stack) {
       console.error(chalk.gray('\nStack trace:'));
       console.error(chalk.gray(error.stack));
     }
