@@ -31,10 +31,10 @@ export function createAutoTierCommand(): Command {
   const cmd = new Command('auto-tier');
 
   cmd
-    .description('Suggest tier assignments based on git history')
-    .option('--hot <days>', 'Days threshold for HOT tier', '7')
-    .option('--warm <days>', 'Days threshold for WARM tier', '30')
-    .option('--cold <days>', 'Days threshold for COLD tier', '90')
+    .description('Analyze and apply tier tags based on git history (use --dry-run to preview)')
+    .option('--hot <days>', 'Files modified within N days → HOT', '7')
+    .option('--warm <days>', 'Files modified within N days → WARM', '30')
+    .option('--cold <days>', 'Files older than N days → COLD', '90')
     .option('-d, --dry-run', 'Preview changes without applying')
     .option('-f, --force', 'Overwrite existing tier tags')
     .option('-v, --verbose', 'Show detailed output')
@@ -46,9 +46,34 @@ export function createAutoTierCommand(): Command {
 async function runAutoTier(options: AutoTierOptions): Promise<void> {
   const cwd = process.cwd();
 
-  // Parse numeric options
+  // Parse and validate numeric options
   const hotDays = parseInt(String(options.hot), 10);
   const warmDays = parseInt(String(options.warm), 10);
+  const coldDays = parseInt(String(options.cold), 10);
+
+  // Validate thresholds
+  if (isNaN(hotDays) || hotDays < 0) {
+    console.log(chalk.red('❌ Error: --hot must be a positive number'));
+    process.exit(1);
+  }
+  if (isNaN(warmDays) || warmDays < 0) {
+    console.log(chalk.red('❌ Error: --warm must be a positive number'));
+    process.exit(1);
+  }
+  if (isNaN(coldDays) || coldDays < 0) {
+    console.log(chalk.red('❌ Error: --cold must be a positive number'));
+    process.exit(1);
+  }
+  if (hotDays > warmDays) {
+    console.log(chalk.red('❌ Error: --hot threshold must be ≤ --warm threshold'));
+    console.log(chalk.gray(`   Got: hot=${hotDays}, warm=${warmDays}`));
+    process.exit(1);
+  }
+  if (warmDays > coldDays) {
+    console.log(chalk.red('❌ Error: --warm threshold must be ≤ --cold threshold'));
+    console.log(chalk.gray(`   Got: warm=${warmDays}, cold=${coldDays}`));
+    process.exit(1);
+  }
 
   console.log(chalk.bold.cyan('\n🔄 Git-Based Auto-Tiering\n'));
 
@@ -99,6 +124,9 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
     } else if (info.daysSinceChange <= warmDays) {
       suggestedTier = 'WARM';
       reason = `Modified ${Math.round(info.daysSinceChange)} days ago`;
+    } else if (info.daysSinceChange <= coldDays) {
+      suggestedTier = 'WARM';
+      reason = `Modified ${Math.round(info.daysSinceChange)} days ago (aging)`;
     } else {
       suggestedTier = 'COLD';
       reason = `No changes in ${Math.round(info.daysSinceChange)} days`;
