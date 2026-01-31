@@ -242,7 +242,7 @@ touch NEXT-TASKS.md
 **Required fields**:
 ```json
 {
-  "version": "2.6.0",
+  "version": "3.1.0",
   "scope": "standard",
   "projectName": "acme-api",
   "createdAt": "2026-01-19T10:30:00.000Z"
@@ -686,7 +686,7 @@ cortex-tms validate --strict
               node-version: '20'
 
           - name: Install Cortex TMS
-            run: npm install -g cortex-tms@2.6.0
+            run: npm install -g cortex-tms@3.1.0
 
           - name: Validate Documentation
             run: cortex-tms validate --strict
@@ -709,7 +709,7 @@ cortex-tms validate --strict
       stage: test
       image: node:20
       script:
-        - npm install -g cortex-tms@2.6.0
+        - npm install -g cortex-tms@3.1.0
         - cortex-tms validate --strict
       only:
         changes:
@@ -732,7 +732,7 @@ cortex-tms validate --strict
           - checkout
           - run:
               name: Install Cortex TMS
-              command: npm install -g cortex-tms@2.6.0
+              command: npm install -g cortex-tms@3.1.0
           - run:
               name: Validate Documentation
               command: cortex-tms validate --strict

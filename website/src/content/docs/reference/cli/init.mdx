@@ -417,7 +417,7 @@ Select files to install:
               node-version: '20'
 
           - name: Install Cortex TMS
-            run: npm install -g cortex-tms@2.6.0
+            run: npm install -g cortex-tms@3.1.0
 
           - name: Initialize TMS
             run: cortex-tms init --scope standard --force
@@ -439,7 +439,7 @@ Select files to install:
       stage: setup
       image: node:20
       script:
-        - npm install -g cortex-tms@2.6.0
+        - npm install -g cortex-tms@3.1.0
         - cortex-tms init --scope standard --force
         - git config user.name "GitLab CI"
         - git config user.email "ci@gitlab.com"
@@ -759,7 +759,7 @@ The init command creates a `.cortexrc` file with project metadata:
 
 ```json
 {
-  "version": "2.6.0",
+  "version": "3.1.0",
   "scope": "standard",
   "projectName": "acme-api",
   "createdAt": "2026-01-19T10:30:00.000Z",

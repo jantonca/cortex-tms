@@ -13,7 +13,43 @@ All notable changes to Cortex TMS are documented in this file. The format is bas
 
 ---
 
-## Version 2.6.0 (Current) - January 18, 2026
+## Version 3.1.0 (Current) - January 30, 2026
+
+### ⚡ Feature Release - Git-Based Auto-Tiering
+
+This release adds the community-requested **auto-tier** command, enabling automatic HOT/WARM/COLD tier assignment based on git commit history.
+
+#### Added
+
+**Git-Based Auto-Tiering** (`cortex-tms auto-tier`)
+- Automatically assign HOT/WARM/COLD tiers based on git commit history
+- Uses file recency as objective signal for relevance
+- Default thresholds: HOT ≤ 7 days, WARM ≤ 30 days, COLD > 30 days
+- Supports `--dry-run`, `--force`, `--verbose`, and custom thresholds
+- Adds `<!-- @cortex-tms-tier TIER -->` tags to markdown files
+- Performance: ~300ms for 111 files
+- Built in response to Reddit community feedback
+
+#### Changed
+
+- Updated case study timeline to reflect accurate development period (3 weeks)
+- Homepage installation commands now use `@latest` instead of hardcoded versions
+- Enhanced token counter to read tier tags in addition to path patterns
+
+#### Fixed
+
+- Auto-tier `--cold` option now properly used in tier assignment logic
+- Added numeric validation for threshold options (prevents NaN, negative, misordered values)
+
+**Upgrade Recommendation**: All users should upgrade to v3.1.0 for improved tier management automation.
+
+```bash
+npm install -g cortex-tms@3.1.0
+```
+
+---
+
+## Version 2.6.0 - January 18, 2026
 
 ### 🎉 Stable Release - Integrity & Atomicity
 

@@ -118,19 +118,33 @@ async function runReviewCommand(
     console.log(chalk.bold.cyan('\n🛡️  Guardian Code Review\n'));
   }
 
-  // Step 1: Validate TMS files exist
+  // Step 1: Validate API key availability (fail fast before file operations)
+  const provider = validated.provider as 'openai' | 'anthropic';
+  let apiKey = validated.apiKey || getApiKey(provider);
+
+  if (!apiKey) {
+    // In JSON mode or CI mode, cannot prompt for API key - must be provided
+    if (validated.outputJson || process.env.CI === 'true') {
+      const envVar = provider === 'openai' ? 'OPENAI_API_KEY' : 'ANTHROPIC_API_KEY';
+      throw new ValidationError(
+        `API key is required. Set ${envVar} environment variable or use --api-key flag`
+      );
+    }
+  }
+
+  // Step 2: Validate TMS files exist
   const patternsPath = join(cwd, 'docs/core/PATTERNS.md');
   const domainLogicPath = join(cwd, 'docs/core/DOMAIN-LOGIC.md');
 
   if (!existsSync(patternsPath)) {
-    if (!options.outputJson) {
+    if (!validated.outputJson) {
       console.log(chalk.gray('\nGuardian requires a Cortex TMS project with pattern documentation.'));
       console.log(chalk.gray('Run'), chalk.cyan('cortex-tms init'), chalk.gray('to set up TMS files.\n'));
     }
-    throw new Error('PATTERNS.md not found at docs/core/PATTERNS.md');
+    throw new ValidationError('PATTERNS.md not found at docs/core/PATTERNS.md');
   }
 
-  if (!existsSync(domainLogicPath) && !options.outputJson) {
+  if (!existsSync(domainLogicPath) && !validated.outputJson) {
     console.log(chalk.yellow('⚠️  Warning:'), 'DOMAIN-LOGIC.md not found (optional)');
   }
 
@@ -149,16 +163,8 @@ async function runReviewCommand(
       : null;
     const codeToReview = readFileSync(targetPath, 'utf-8');
 
-    // Step 4: Get API key
-    const provider = validated.provider as 'openai' | 'anthropic';
-    let apiKey = validated.apiKey || getApiKey(provider);
-
+    // Step 4: Get API key (prompt if not in CI/JSON mode and not already set)
     if (!apiKey) {
-      // In JSON mode, cannot prompt for API key - must be provided
-      if (validated.outputJson) {
-        throw new ValidationError('API key is required (use --api-key or set environment variable)');
-      }
-
       const answer = await inquirer.prompt<{ apiKey: string }>([
         {
           type: 'password',
@@ -168,10 +174,10 @@ async function runReviewCommand(
         },
       ]);
       apiKey = answer.apiKey;
-    }
 
-    if (!apiKey) {
-      throw new ValidationError('API key is required');
+      if (!apiKey) {
+        throw new ValidationError('API key is required');
+      }
     }
 
     // Step 5: Build LLM prompt

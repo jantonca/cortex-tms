@@ -133,7 +133,7 @@ jobs:
         run: npm ci
 
       - name: Install cortex-tms
-        run: npm install -g cortex-tms@2.6.0
+        run: npm install -g cortex-tms@3.1.0
 
       - name: Validate Cortex TMS
         run: cortex-tms validate --strict
@@ -194,7 +194,7 @@ jobs:
         run: npm ci
 
       - name: Install cortex-tms
-        run: npm install -g cortex-tms@2.6.0
+        run: npm install -g cortex-tms@3.1.0
 
       - name: Check if PATTERNS.md was updated
         run: |
@@ -254,7 +254,7 @@ jobs:
         run: npm ci
 
       - name: Install cortex-tms
-        run: npm install -g cortex-tms@2.6.0
+        run: npm install -g cortex-tms@3.1.0
 
       - name: Check if sprint is complete
         id: sprint-complete
@@ -339,7 +339,7 @@ jobs:
         run: npm ci
 
       - name: Install cortex-tms
-        run: npm install -g cortex-tms@2.6.0
+        run: npm install -g cortex-tms@3.1.0
 
       - name: Validate documentation
         run: cortex-tms validate --strict
@@ -429,7 +429,7 @@ cache:
 
 before_script:
   - npm ci
-  - npm install -g cortex-tms@2.6.0
+  - npm install -g cortex-tms@3.1.0
 
 validate:cortex-tms:
   stage: validate
@@ -571,7 +571,7 @@ jobs:
       - node/install-packages
       - run:
           name: Install cortex-tms
-          command: npm install -g cortex-tms@2.6.0
+          command: npm install -g cortex-tms@3.1.0
       - run:
           name: Validate Cortex TMS
           command: cortex-tms validate --strict
@@ -615,7 +615,7 @@ jobs:
       - node/install-packages
       - run:
           name: Install cortex-tms
-          command: npm install -g cortex-tms@2.6.0
+          command: npm install -g cortex-tms@3.1.0
       - run:
           name: Validate before release
           command: cortex-tms validate --strict
@@ -808,7 +808,7 @@ jobs:
         run: npm ci
 
       - name: Install cortex-tms
-        run: npm install -g cortex-tms@2.6.0
+        run: npm install -g cortex-tms@3.1.0
 
       - name: Validate documentation
         run: cortex-tms validate --strict

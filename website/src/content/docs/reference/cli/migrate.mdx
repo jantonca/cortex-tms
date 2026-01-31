@@ -79,7 +79,7 @@ cortex-tms migrate --apply
    3 file(s) backed up safely
 
 🚀 Applying upgrades...
-✓ Upgraded 3 file(s) to v2.6.0
+✓ Upgraded 3 file(s) to v3.1.0
 
 ✨ Migration complete!
 
@@ -114,7 +114,7 @@ cortex-tms migrate --rollback
 ✓ Found 3 backup(s)
 
 ? Select a backup to restore:
-❯ 2026-01-19T10-30-00-123Z - v2.6.0 - 3 file(s) - 12.5 KB
+❯ 2026-01-19T10-30-00-123Z - v3.1.0 - 3 file(s) - 12.5 KB
   2026-01-15T14-22-15-456Z - v2.5.0 - 5 file(s) - 18.2 KB
   2026-01-10T09-15-30-789Z - v2.4.0 - 4 file(s) - 15.1 KB
   Cancel
@@ -220,7 +220,7 @@ cortex-tms migrate --dry-run
 ✓ Configuration loaded
 ✓ Analyzed 12 files
 
-📊 Migration Report (Target: v2.6.0):
+📊 Migration Report (Target: v3.1.0):
 
 ✅ UP TO DATE (8):
   NEXT-TASKS.md v2.6.0 = v2.6.0
@@ -232,7 +232,7 @@ cortex-tms migrate --dry-run
   .github/copilot-instructions.md v2.5.0 → v2.6.0
 
 ⚠️  CUSTOMIZED (1):
-  FUTURE-ENHANCEMENTS.md v2.4.0 → v2.6.0 - File has custom changes
+  FUTURE-ENHANCEMENTS.md v2.4.0 → v3.1.0 - File has custom changes
 
 ℹ️  NOT INSTALLED (1):
   docs/core/SECURITY.md - File not installed
@@ -292,7 +292,7 @@ cortex-tms migrate --dry-run
 **Example**:
 ```
 ⚠️  CUSTOMIZED (1):
-  docs/core/PATTERNS.md v2.5.0 → v2.6.0 - File has custom changes
+  docs/core/PATTERNS.md v2.5.0 → v3.1.0 - File has custom changes
 ```
 
 **Action**: Manual review required (or `--force` to overwrite)
@@ -312,7 +312,7 @@ diff docs/core/PATTERNS.md node_modules/cortex-tms/templates/docs/core/PATTERNS.
 vim docs/core/PATTERNS.md
 
 # Update version comment
-# <!-- @cortex-tms-version 2.6.0 -->
+# <!-- @cortex-tms-version 3.1.0 -->
 ```
 
 ---
@@ -375,8 +375,8 @@ cortex-tms init --scope enterprise --force
 ```json
 {
   "timestamp": "2026-01-19T10:30:00.123Z",
-  "version": "2.6.0",
-  "reason": "migrate to v2.6.0",
+  "version": "3.1.0",
+  "reason": "migrate to v3.1.0",
   "files": [
     {
       "relativePath": "NEXT-TASKS.md",
@@ -501,7 +501,7 @@ ls -t .cortex/backups | tail -n +6 | xargs -I {} rm -rf .cortex/backups/{}
 
    ```bash
    git add .
-   git commit -m "chore: migrate TMS templates to v2.6.0"
+   git commit -m "chore: migrate TMS templates to v3.1.0"
    ```
 
 9. **(Optional) Rollback If Issues**
@@ -528,7 +528,7 @@ ls -t .cortex/backups | tail -n +6 | xargs -I {} rm -rf .cortex/backups/{}
 
     **Output**:
     ```
-    📊 Migration Report (Target: v2.6.0):
+    📊 Migration Report (Target: v3.1.0):
 
     ✅ UP TO DATE (10):
       NEXT-TASKS.md v2.6.0 = v2.6.0
@@ -557,7 +557,7 @@ ls -t .cortex/backups | tail -n +6 | xargs -I {} rm -rf .cortex/backups/{}
     ✓ Backup created: .cortex/backups/2026-01-19T10-30-00-123Z
 
     🚀 Applying upgrades...
-    ✓ Upgraded 2 file(s) to v2.6.0
+    ✓ Upgraded 2 file(s) to v3.1.0
 
     ✨ Migration complete!
     ```
@@ -572,7 +572,7 @@ ls -t .cortex/backups | tail -n +6 | xargs -I {} rm -rf .cortex/backups/{}
     cortex-tms validate --strict
 
     # Commit
-    git commit -am "chore: migrate TMS templates to v2.6.0"
+    git commit -am "chore: migrate TMS templates to v3.1.0"
     ```
   </TabItem>
 </Tabs>
@@ -587,7 +587,7 @@ cortex-tms migrate
 
 # Output:
 # ⚠️  CUSTOMIZED (1):
-#   docs/core/PATTERNS.md v2.5.0 → v2.6.0 - File has custom changes
+#   docs/core/PATTERNS.md v2.5.0 → v3.1.0 - File has custom changes
 
 # Option 1: Manual merge
 diff docs/core/PATTERNS.md node_modules/cortex-tms/templates/docs/core/PATTERNS.md
@@ -620,7 +620,7 @@ cortex-tms migrate --rollback
 
 # Select most recent backup
 ? Select a backup to restore:
-❯ 2026-01-19T10-30-00-123Z - v2.6.0 - 3 file(s)
+❯ 2026-01-19T10-30-00-123Z - v3.1.0 - 3 file(s)
 
 # Restored successfully
 ✨ Rollback complete!
@@ -779,7 +779,7 @@ grep "@cortex-tms-version" NEXT-TASKS.md
 
 **Expected**:
 ```html
-<!-- @cortex-tms-version 2.6.0 -->
+<!-- @cortex-tms-version 3.1.0 -->
 ```
 
 **Fix missing metadata**:
@@ -932,7 +932,7 @@ cp node_modules/cortex-tms/templates/CLAUDE.md ./CLAUDE.md
 # Step 3: Update version comment
 vim CLAUDE.md
 # Change: <!-- @cortex-tms-version 2.5.0 -->
-# To: <!-- @cortex-tms-version 2.6.0 -->
+# To: <!-- @cortex-tms-version 3.1.0 -->
 
 # Step 4: Validate
 cortex-tms validate
