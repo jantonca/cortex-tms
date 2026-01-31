@@ -1,15 +1,15 @@
 # NEXT: Upcoming Tasks
 
-**Current Sprint**: v3.2 Security & Code Quality (Jan 30 - TBD)
+**Current Sprint**: v3.2 Security & Code Quality (Jan 30 - Feb 1, 2026)
 **Previous Sprint**: [v3.1 Git-Based Auto-Tiering](docs/archive/sprint-v3.1-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-30 (Post v3.1.0 Release)
+**Last Updated**: 2026-01-31 (Phase 2: 2/5 Complete - API.md + README.md Done)
 
 ---
 
 ## 🎯 v3.2 Sprint: Security & Code Quality
 
-**Timeline**: TBD (13-17h total effort)
-**Status**: 🚧 Planning Complete - Ready to Start
+**Timeline**: Jan 30 - Feb 1, 2026 (22-29h total effort)
+**Status**: 🔵 Security Complete - Polish & Documentation Phase
 **Theme**: Security Hardening + Production Readiness
 **Driver**: Address deferred Opus 4.5 audit findings
 **Target**: Viability Score 8.5 → 9.0/10
@@ -38,7 +38,37 @@
 | **[AUDIT-5] Path Traversal Protection** | Validate template paths prevent `../../etc/passwd` attacks   | 1-2h   | 🔴 P0    | ✅ Complete |
 | **[AUDIT-6] API Key Redaction**         | Ensure Guardian API keys never logged or exposed             | 1-2h   | 🔴 P0    | ✅ Complete |
 
-**Total Core Effort**: 13-17h
+**Total Core Effort**: 13-17h ✅ Complete
+
+---
+
+## 📝 Polish & Documentation Tasks (P0-P1)
+
+**Detailed Plan**: [v3.2 Polish & Documentation](docs/tasks/v3.2-polish-docs.md) (with GPT-5.1 feedback)
+
+### Phase 1: Critical (P0) - Required for Release
+
+| Task                                  | Description                                    | Effort | Status       |
+| :------------------------------------ | :--------------------------------------------- | :----- | :----------- |
+| **[POLISH-1] Fix E2E Test Failures**  | Fix systemic assertion patterns (31 failures)  | 2-3h   | 🔵 97% Pass  |
+| **[POLISH-2] CHANGELOG.md (3.2.0)**   | Create "Unreleased" section with AUDIT summary | 1h     | ✅ Complete  |
+| **[POLISH-3] Error Patterns**         | Document patterns in `docs/core/PATTERNS.md`   | 1h     | ✅ Complete  |
+| **[POLISH-4] Security Testing Guide** | Create `docs/guides/SECURITY-TESTING.md`       | 1-2h   | ✅ Complete  |
+| **[POLISH-5] Sync NEXT-TASKS**        | Archive sprint, update task list               | 30m    | ✅ Complete  |
+
+**Phase 1 Total**: 5.5-7.5h (Phase 1 complete, 10 tests remain for pre-release)
+
+### Phase 2: Quality (P1) - Recommended Before Release
+
+| Task                               | Description                         | Effort | Status       |
+| :--------------------------------- | :---------------------------------- | :----- | :----------- |
+| **[POLISH-6] README Polish**       | Add "What's New in 3.2" section     | 30m    | ✅ Complete  |
+| **[POLISH-7] Migration Guide**     | "Upgrading to 3.2.0" section        | 30m    | 🟡 Waiting   |
+| **[POLISH-8] API Documentation**   | Create `docs/guides/API.md`         | 1-2h   | ✅ Complete  |
+| **[POLISH-9] Tutorial Update**     | Add validation/error examples       | 1h     | 🟡 Waiting   |
+| **[POLISH-10] Contributor Guide**  | Quickstart in README/CONTRIBUTING   | 20m    | 🟡 Waiting   |
+
+**Phase 2 Total**: 3.3-4.3h (2h remaining)
 
 ---
 
@@ -48,77 +78,41 @@
 
 - [x] Zero `process.exit()` calls in src/ (except bin entry point)
 - [x] All CLI commands use Zod for input validation
-- [x] E2E test coverage for core workflows (63 E2E tests added)
+- [x] E2E test coverage for core workflows (47 new E2E tests: init, validate, migrate, review)
 - [x] CI pipeline includes `npm audit` check
 - [x] Template path validation prevents directory traversal
 - [x] Guardian sanitizes API keys in all output paths
 
 ### Testing & Validation
 
-- [x] All tests continue to pass (269 + 47 E2E = 316 total passing tests)
+- [x] Test suite expanded (269 → 316 total tests, +47 new)
+- [x] Systemic E2E issues resolved (97% pass rate: 306/316 passing, 10 queued for pre-release)
 - [x] New E2E tests cover: `init`, `validate`, `migrate`, `review` commands
 - [x] `cortex-tms validate --strict` passes
 - [x] Build successful with no warnings
 
-### Documentation
+### Documentation (Phase 1 - Critical)
 
-- [ ] Update CHANGELOG.md with security improvements
-- [ ] Document error handling patterns in `docs/core/PATTERNS.md`
-- [ ] Add security testing guide
+- [x] CHANGELOG.md has 3.2.0 Unreleased section with AUDIT summary
+- [x] Error handling patterns documented in `docs/core/PATTERNS.md`
+- [x] Security testing guide created (`docs/guides/SECURITY-TESTING.md`)
+- [x] NEXT-TASKS.md synced and sprint archived
 
----
+### Documentation (Phase 2 - Quality)
 
-## 🔀 Git Workflow
-
-**Branch Strategy**: Create feature branches for each major task
-
-- `feat/centralized-error-handling` (AUDIT-1)
-- `feat/zod-validation` (AUDIT-2)
-- `feat/e2e-test-suite` (AUDIT-3)
-- `feat/security-hardening` (AUDIT-4, 5, 6 bundled)
-
-**Merge Strategy**: Merge to `main` as tasks complete, or bundle for single v3.2.0 release
-
-**Recommended Starting Point**: AUDIT-1 (Centralized Error Handling) - provides foundation for other security work
+- [x] README highlights v3.2 security features
+- [ ] Migration guide has "Upgrading to 3.2.0" section
+- [x] API documentation published (`docs/guides/API.md`)
+- [ ] Tutorial showcases validation and error handling
+- [ ] Contributor quickstart added to README/CONTRIBUTING
 
 ---
 
-## 📦 Release Strategy
+## 📦 v3.2.0 Release Notes
 
-**Approach**: Single v3.2.0 release bundle (recommended)
-
-**Why Bundle**:
-
-- Avoid version churn (just released v3.1.0 today)
-- Comprehensive testing of all security changes together
-- Single cohesive release narrative
-- Allows v3.1.1 improvements to ship with security fixes
-
-**Alternative**: Incremental releases (v3.1.2, v3.1.3, etc.) - only if critical issues found
-
----
-
-## 🗂️ v3.1.1 Work (Rolled into v3.2)
-
-The following improvements were completed on Jan 30, 2026 but not released as v3.1.1. They remain on `main` and will ship with v3.2.0:
-
-### Completed Improvements ✅
-
-- Git repo detection fix (subdirectory support)
-- E2E integration tests for auto-tier (16 tests)
-- Validation display bug fix (placeholder errors)
-- Integration test updates (7 tests)
-- GPT-5.1 code review feedback
-
-**Files Changed**:
-
-- `src/utils/git-history.ts`
-- `src/commands/validate.ts`
-- `src/commands/auto-tier.ts`
-- `src/__tests__/integration.test.ts`
-- `src/__tests__/auto-tier-e2e.test.ts` (new)
-
-**Test Status**: 174 tests passing, 1 skipped
+**Strategy**: Single bundled release including AUDIT-1 to AUDIT-6 + v3.1.1 improvements
+**Status**: Security complete, documentation in progress
+**See**: [Detailed Plan](docs/tasks/v3.2-polish-docs.md) | [CHANGELOG.md](CHANGELOG.md) (when ready)
 
 ---
 
@@ -159,16 +153,10 @@ The following improvements were completed on Jan 30, 2026 but not released as v3
 
 ## 🗂️ Sprint Archive
 
-- **v3.1**: [Git-Based Auto-Tiering](docs/archive/sprint-v3.1-jan-2026.md) ✅ Complete (Jan 30, 2026)
-- **v3.0**: [AI-Powered Onboarding](docs/archive/sprint-v3.0-boot-1.md) ✅ Complete (Jan 26-27, 2026)
-- **v2.9**: [Guardian Optimization](docs/archive/sprint-v2.9-jan-2026.md) ✅ Complete (Jan 25-26, 2026)
-- **v2.7**: [Guardian MVP](docs/archive/sprint-v2.7-jan-2026.md) ✅ Complete (Jan 19-23, 2026)
-- **v2.6.1**: [Emergency Patch](docs/archive/sprint-v2.6.1-emergency-patch.md) ✅
-- **v2.6**: [Integrity & Atomicity](docs/archive/sprint-v2.6-integrity-atomicity.md) ✅
-- **v2.5**: [Guidance & Growth](docs/archive/sprint-v2.5-guidance-growth.md) ✅
-- **v2.4**: [Scaling Intelligence](docs/archive/sprint-v2.4-scaling-intelligence.md) ✅
-- **v2.3**: [Confidence & Comfort](docs/archive/sprint-v2.3-confidence-comfort.md) ✅
-- **v2.2**: [Automation & Precision](docs/archive/sprint-2026-01.md) ✅
-- **v2.1**: [Foundation](docs/archive/sprint-2026-01-dogfooding.md) ✅
+- **v3.2**: [Security Hardening + Production Readiness](docs/archive/sprint-v3.2-jan-2026.md) 🔵 Phase 1 Complete
+- **v3.1**: [Git-Based Auto-Tiering](docs/archive/sprint-v3.1-jan-2026.md) ✅
+- **v3.0**: [AI-Powered Onboarding](docs/archive/sprint-v3.0-boot-1.md) ✅
+- **v2.9**: [Guardian Optimization](docs/archive/sprint-v2.9-jan-2026.md) ✅
+- **Earlier sprints**: See [docs/archive/](docs/archive/) for v2.1-v2.7
 
 <!-- @cortex-tms-version 3.1.0 -->
