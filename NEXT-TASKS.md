@@ -2,7 +2,7 @@
 
 **Current Sprint**: v3.2 Security & Code Quality (Jan 30 - Feb 1, 2026)
 **Previous Sprint**: [v3.1 Git-Based Auto-Tiering](docs/archive/sprint-v3.1-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-31 (Phase 2: 3/5 Complete - Only Migration Guide + Tutorial Remain)
+**Last Updated**: 2026-01-31 (Phase 2: 4/5 Complete - Only Tutorial Update Remains)
 
 ---
 
@@ -63,12 +63,12 @@
 | Task                               | Description                         | Effort | Status       |
 | :--------------------------------- | :---------------------------------- | :----- | :----------- |
 | **[POLISH-6] README Polish**       | Add "What's New in 3.2" section     | 30m    | ✅ Complete  |
-| **[POLISH-7] Migration Guide**     | "Upgrading to 3.2.0" section        | 30m    | 🟡 Waiting   |
+| **[POLISH-7] Migration Guide**     | "Upgrading to 3.2.0" section        | 30m    | ✅ Complete  |
 | **[POLISH-8] API Documentation**   | Create `docs/guides/API.md`         | 1-2h   | ✅ Complete  |
 | **[POLISH-9] Tutorial Update**     | Add validation/error examples       | 1h     | 🟡 Waiting   |
 | **[POLISH-10] Contributor Guide**  | Quickstart in README/CONTRIBUTING   | 20m    | ✅ Complete  |
 
-**Phase 2 Total**: 3.3-4.3h (1.5h remaining)
+**Phase 2 Total**: 3.3-4.3h (1h remaining - POLISH-9 only)
 
 ---
 
@@ -101,7 +101,7 @@
 ### Documentation (Phase 2 - Quality)
 
 - [x] README highlights v3.2 security features
-- [ ] Migration guide has "Upgrading to 3.2.0" section
+- [x] Migration guide has "Upgrading to 3.2.0" section
 - [x] API documentation published (`docs/guides/API.md`)
 - [ ] Tutorial showcases validation and error handling
 - [x] Contributor quickstart added to README/CONTRIBUTING
