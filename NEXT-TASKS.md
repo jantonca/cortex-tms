@@ -2,7 +2,7 @@
 
 **Current Sprint**: v3.2 Security & Code Quality (Jan 30 - Feb 1, 2026)
 **Previous Sprint**: [v3.1 Git-Based Auto-Tiering](docs/archive/sprint-v3.1-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-31 (Phase 2: 2/5 Complete - API.md + README.md Done)
+**Last Updated**: 2026-01-31 (Phase 2: 3/5 Complete - Only Migration Guide + Tutorial Remain)
 
 ---
 
@@ -66,9 +66,9 @@
 | **[POLISH-7] Migration Guide**     | "Upgrading to 3.2.0" section        | 30m    | 🟡 Waiting   |
 | **[POLISH-8] API Documentation**   | Create `docs/guides/API.md`         | 1-2h   | ✅ Complete  |
 | **[POLISH-9] Tutorial Update**     | Add validation/error examples       | 1h     | 🟡 Waiting   |
-| **[POLISH-10] Contributor Guide**  | Quickstart in README/CONTRIBUTING   | 20m    | 🟡 Waiting   |
+| **[POLISH-10] Contributor Guide**  | Quickstart in README/CONTRIBUTING   | 20m    | ✅ Complete  |
 
-**Phase 2 Total**: 3.3-4.3h (2h remaining)
+**Phase 2 Total**: 3.3-4.3h (1.5h remaining)
 
 ---
 
@@ -104,7 +104,7 @@
 - [ ] Migration guide has "Upgrading to 3.2.0" section
 - [x] API documentation published (`docs/guides/API.md`)
 - [ ] Tutorial showcases validation and error handling
-- [ ] Contributor quickstart added to README/CONTRIBUTING
+- [x] Contributor quickstart added to README/CONTRIBUTING
 
 ---
 
