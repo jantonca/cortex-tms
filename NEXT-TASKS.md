@@ -2,14 +2,14 @@
 
 **Current Sprint**: v3.2 Security & Code Quality (Jan 30 - Feb 1, 2026)
 **Previous Sprint**: [v3.1 Git-Based Auto-Tiering](docs/archive/sprint-v3.1-jan-2026.md) ✅ Complete
-**Last Updated**: 2026-01-31 (Phase 2: 4/5 Complete - Only Tutorial Update Remains)
+**Last Updated**: 2026-01-31 (Phase 1 & 2 Complete ✅ - Ready for Release Preparation)
 
 ---
 
 ## 🎯 v3.2 Sprint: Security & Code Quality
 
 **Timeline**: Jan 30 - Feb 1, 2026 (22-29h total effort)
-**Status**: 🔵 Security Complete - Polish & Documentation Phase
+**Status**: ✅ Phase 1 & 2 Complete - Ready for v3.2.0 Release
 **Theme**: Security Hardening + Production Readiness
 **Driver**: Address deferred Opus 4.5 audit findings
 **Target**: Viability Score 8.5 → 9.0/10
@@ -65,10 +65,10 @@
 | **[POLISH-6] README Polish**       | Add "What's New in 3.2" section     | 30m    | ✅ Complete  |
 | **[POLISH-7] Migration Guide**     | "Upgrading to 3.2.0" section        | 30m    | ✅ Complete  |
 | **[POLISH-8] API Documentation**   | Create `docs/guides/API.md`         | 1-2h   | ✅ Complete  |
-| **[POLISH-9] Tutorial Update**     | Add validation/error examples       | 1h     | 🟡 Waiting   |
+| **[POLISH-9] Tutorial Update**     | Add validation/error examples       | 1h     | ✅ Complete  |
 | **[POLISH-10] Contributor Guide**  | Quickstart in README/CONTRIBUTING   | 20m    | ✅ Complete  |
 
-**Phase 2 Total**: 3.3-4.3h (1h remaining - POLISH-9 only)
+**Phase 2 Total**: 3.3-4.3h ✅ ALL COMPLETE
 
 ---
 
@@ -103,7 +103,7 @@
 - [x] README highlights v3.2 security features
 - [x] Migration guide has "Upgrading to 3.2.0" section
 - [x] API documentation published (`docs/guides/API.md`)
-- [ ] Tutorial showcases validation and error handling
+- [x] Tutorial showcases validation and error handling
 - [x] Contributor quickstart added to README/CONTRIBUTING
 
 ---
