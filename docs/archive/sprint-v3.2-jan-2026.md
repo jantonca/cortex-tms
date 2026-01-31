@@ -321,4 +321,4 @@ Transform Cortex TMS from a functional prototype into a production-ready CLI wit
 **Archived**: 2026-01-31
 **Next Steps**: Fix 10 remaining E2E tests, then v3.2.0 release (when ready - v3.1.0 released 24h ago)
 
-<!-- @cortex-tms-version 3.2.0 -->
+<!-- @cortex-tms-version 3.1.0 -->

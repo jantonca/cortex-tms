@@ -669,7 +669,7 @@ MIT
 
 ## Status
 
-**Version**: 3.2.0 (Upcoming - Phase 1 Complete)
+**Version**: 3.1.0 (Upcoming - Phase 1 Complete)
 **Last Updated**: 2026-01-31
 **Current Sprint**: v3.2 - "Security Hardening + Production Readiness"
 **Recent Sprints**: v3.1 (Git-Based Auto-Tiering), v3.0 (AI-Powered Onboarding) — see [docs/archive/](docs/archive/)
