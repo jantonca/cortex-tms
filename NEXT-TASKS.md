@@ -111,8 +111,27 @@
 ## 📦 v3.2.0 Release Notes
 
 **Strategy**: Single bundled release including AUDIT-1 to AUDIT-6 + v3.1.1 improvements
-**Status**: Security complete, documentation in progress
-**See**: [Detailed Plan](docs/tasks/v3.2-polish-docs.md) | [CHANGELOG.md](CHANGELOG.md) (when ready)
+**Status**: ✅ Phase 1 & 2 Complete - 10 test failures remain before release
+**See**: [Detailed Plan](docs/tasks/v3.2-polish-docs.md) | [Sprint Archive](docs/archive/sprint-v3.2-jan-2026.md) | [CHANGELOG.md](CHANGELOG.md)
+
+---
+
+## ⚠️ Pre-Release Tasks (v3.2.0)
+
+**IMPORTANT**: Fix before v3.2.0 release (when ready - v3.1.0 released 24h ago)
+
+### POLISH-1: Fix Remaining E2E Test Failures (1-2h)
+
+**Status**: 97% pass rate (306/316 tests passing)
+**Issue**: 10 cosmetic test assertion failures (not functional bugs)
+
+**Failures**:
+- 4 failures in `src/__tests__/migrate-e2e.test.ts` (dry-run, backup, version tags)
+- 6 failures in `src/__tests__/review-e2e.test.ts` (timeouts, assertion patterns)
+
+**Root Cause**: Systemic assertion pattern issues (either/or logic)
+
+**Action Required**: Fix assertion patterns before v3.2.0 release
 
 ---
 
@@ -153,7 +172,7 @@
 
 ## 🗂️ Sprint Archive
 
-- **v3.2**: [Security Hardening + Production Readiness](docs/archive/sprint-v3.2-jan-2026.md) 🔵 Phase 1 Complete
+- **v3.2**: [Security Hardening + Production Readiness](docs/archive/sprint-v3.2-jan-2026.md) ✅ Phase 1 & 2 Complete
 - **v3.1**: [Git-Based Auto-Tiering](docs/archive/sprint-v3.1-jan-2026.md) ✅
 - **v3.0**: [AI-Powered Onboarding](docs/archive/sprint-v3.0-boot-1.md) ✅
 - **v2.9**: [Guardian Optimization](docs/archive/sprint-v2.9-jan-2026.md) ✅
