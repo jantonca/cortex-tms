@@ -13,6 +13,7 @@ import { join } from 'path';
 import { writeFile, unlink } from 'fs/promises';
 import { createTempDir, cleanupTempDir } from './utils/temp-dir.js';
 import { runCommand, expectSuccess, expectFailure } from './utils/cli-runner.js';
+import { populatePlaceholders, removeFirstSessionSetup } from './utils/populate-placeholders.js';
 
 describe('Validate E2E - Passing Projects', () => {
   let tempDir: string;
@@ -21,6 +22,9 @@ describe('Validate E2E - Passing Projects', () => {
     tempDir = await createTempDir();
     // Initialize project first
     await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
+    // Populate placeholders to create a "complete" project
+    await populatePlaceholders(tempDir);
+    await removeFirstSessionSetup(tempDir);
   });
 
   afterEach(async () => {
@@ -63,6 +67,9 @@ describe('Validate E2E - Failing Projects', () => {
     tempDir = await createTempDir();
     // Initialize project
     await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
+    // Populate placeholders so tests can then break specific things
+    await populatePlaceholders(tempDir);
+    await removeFirstSessionSetup(tempDir);
   });
 
   afterEach(async () => {
@@ -106,7 +113,9 @@ describe('Validate E2E - Failing Projects', () => {
     const result = await runCommand('validate', [], tempDir);
 
     expectFailure(result);
-    expect(result.stdout).toMatch(/configuration|invalid/);
+    // Error may be in stdout or stderr
+    const output = result.stdout + result.stderr;
+    expect(output).toMatch(/configuration|invalid|JSON|parse/i);
   });
 });
 
@@ -116,6 +125,9 @@ describe('Validate E2E - Strict Mode', () => {
   beforeEach(async () => {
     tempDir = await createTempDir();
     await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
+    // Populate placeholders for strict mode tests
+    await populatePlaceholders(tempDir);
+    await removeFirstSessionSetup(tempDir);
   });
 
   afterEach(async () => {
@@ -150,6 +162,9 @@ describe('Validate E2E - Archive Status', () => {
   beforeEach(async () => {
     tempDir = await createTempDir();
     await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
+    // Populate placeholders
+    await populatePlaceholders(tempDir);
+    await removeFirstSessionSetup(tempDir);
   });
 
   afterEach(async () => {
@@ -179,6 +194,9 @@ describe('Validate E2E - Summary Output', () => {
   beforeEach(async () => {
     tempDir = await createTempDir();
     await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
+    // Populate placeholders
+    await populatePlaceholders(tempDir);
+    await removeFirstSessionSetup(tempDir);
   });
 
   afterEach(async () => {

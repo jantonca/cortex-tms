@@ -205,5 +205,19 @@ pnpm run audit
 
 ---
 
-**Last Updated**: 2026-01-30 (v3.2 Security Sprint)
+## Related Documentation
+
+**Testing Security Features**:
+- **Security Testing Guide**: `docs/guides/SECURITY-TESTING.md` (how to verify security measures)
+- **Security Patterns**: `docs/core/PATTERNS.md#pattern-12` (error handling patterns)
+- **Input Validation**: `docs/core/PATTERNS.md#pattern-13` (Zod validation patterns)
+
+**Implementation Details**:
+- **Error Classes**: `src/utils/errors.ts` (CLIError hierarchy)
+- **Validation**: `src/utils/validation.ts` (Zod schemas, path validation)
+- **Sanitization**: `src/utils/llm-client.ts` (API key redaction)
+
+---
+
+**Last Updated**: 2026-01-31 (v3.2 Security Hardening Complete)
 **Next Review**: v3.3 (or when critical vulnerability reported)

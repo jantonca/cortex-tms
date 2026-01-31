@@ -457,6 +457,8 @@ if (!isGitRepo(cwd)) {
 - **CLI Entry Point**: `src/cli.ts:71-95`
 - **Example Command**: `src/commands/auto-tier.ts`
 - **Tests**: `src/__tests__/errors.test.ts`
+- **Security Overview**: `docs/core/SECURITY.md` (high-level security posture)
+- **Testing Guide**: `docs/guides/SECURITY-TESTING.md` (how to verify error patterns)
 
 ---
 
@@ -640,6 +642,8 @@ All CLI commands use Zod validation:
 - **Example Commands**: `src/commands/auto-tier.ts`, `src/commands/review.ts`
 - **Tests**: `src/__tests__/validation.test.ts`
 - **Security**: Path traversal protection in `validateFilePath()`
+- **Security Overview**: `docs/core/SECURITY.md` (threat model and mitigations)
+- **Testing Guide**: `docs/guides/SECURITY-TESTING.md` (validation testing practices)
 
 ---
 

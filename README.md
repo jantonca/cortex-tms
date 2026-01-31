@@ -1,6 +1,14 @@
-# Cortex TMS 🧠
+<p align="center">
+  <img src="website/public/logo.svg" alt="Cortex TMS Logo" width="200"/>
+</p>
 
-**AI Governance Platform - Stop Wasting Tokens. Stop Burning GPU Cycles on Old Docs.**
+<h1 align="center">Cortex TMS</h1>
+
+<p align="center">
+  <strong>AI Governance Platform - Stop Wasting Tokens. Stop Burning GPU Cycles on Old Docs.</strong>
+</p>
+
+---
 
 Cortex TMS is an **AI Governance Platform** built on three pillars:
 
@@ -88,6 +96,25 @@ Traditional repos drown AI agents in thousands of lines of historical tasks and 
 3. **COLD (History)**: `docs/archive/` — Historical changelogs (Ignore unless asked).
 
 **Why this works**: AI agents have limited context windows. Reading everything is wasteful. The tier system maximizes signal, minimizes noise.
+
+---
+
+## 🆕 What's New in v3.2 (Upcoming)
+
+**Security & Production Readiness** - Making Cortex TMS enterprise-grade:
+
+- 🛡️ **Centralized Error Handling** — No more process crashes. All commands use consistent `CLIError` patterns with proper cleanup
+- ✅ **Zod-Based Input Validation** — Runtime type safety for all CLI commands with clear, actionable error messages
+- 🧪 **Comprehensive E2E Tests** — 61 E2E tests covering full CLI workflows (init, validate, migrate, review, auto-tier)
+- 🔒 **Path Traversal Protection** — Template operations secured against `../../etc/passwd` attacks with `validateSafePath()`
+- 🔐 **API Key Sanitization** — Guardian automatically redacts Anthropic/OpenAI keys in all error messages and logs
+- 📊 **Automated Security Scanning** — CI pipeline runs `pnpm audit` on every PR to catch dependency vulnerabilities
+
+**Test Coverage**: 316 tests (97% pass rate) — up from 269 tests (+17%)
+
+**For Developers**: See [Security Testing Guide](docs/guides/SECURITY-TESTING.md) for how to verify security patterns.
+
+**Full Details**: [CHANGELOG.md](CHANGELOG.md#320---unreleased)
 
 ---
 
@@ -374,7 +401,7 @@ jobs:
 
 ---
 
-## 🚀 What's New in v2.6.1
+## 🚀 What's New in v2.6.1 (Current Published Release)
 
 ### Token Counter - Prove Your Savings (GREEN GOVERNANCE)
 
@@ -604,7 +631,25 @@ We welcome contributions! Please read **[CONTRIBUTING.md](CONTRIBUTING.md)** for
 
 - **Instant AI Activation**: Essential 7 prompts in `PROMPTS.md` (no manual prompt writing)
 - **Signal over Noise**: HOT/WARM/COLD system keeps AI focused
-- **Production-Ready**: 111 passing tests, stable 2.6.1 release
+- **Production-Ready**: 316 tests (97% pass rate), enterprise-grade security (v3.2)
+
+---
+
+## 🔒 Security
+
+Cortex TMS implements enterprise-grade security practices:
+
+- **API Key Protection**: Guardian automatically sanitizes API keys in all output (errors, logs, console)
+- **Input Validation**: All CLI commands use Zod schemas for runtime type safety
+- **Path Security**: Template operations protected against directory traversal attacks
+- **Automated Scanning**: CI pipeline includes `pnpm audit` to catch dependency vulnerabilities
+
+**Documentation**:
+- [Security Overview](docs/core/SECURITY.md) — Threat model, mitigations, and best practices
+- [Security Testing Guide](docs/guides/SECURITY-TESTING.md) — How to verify security patterns
+- [Security Patterns](docs/core/PATTERNS.md) — Implementation patterns (Error Handling, Input Validation)
+
+**Reporting Vulnerabilities**: Use [GitHub Security Advisories](https://github.com/cortex-tms/cortex-tms/security/advisories/new) for responsible disclosure.
 
 ---
 
@@ -613,7 +658,6 @@ We welcome contributions! Please read **[CONTRIBUTING.md](CONTRIBUTING.md)** for
 - **Bug Reports**: [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues/new) - Report bugs or technical issues
 - **Feature Requests**: [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues/new) - Suggest new features or improvements
 - **Questions & Support**: [GitHub Issues](https://github.com/cortex-tms/cortex-tms/issues/new) - Get help and ask questions
-- **Security Issues**: [GitHub Security Advisories](https://github.com/cortex-tms/cortex-tms/security/advisories/new) - Responsible disclosure
 
 ---
 
@@ -625,9 +669,9 @@ MIT
 
 ## Status
 
-**Version**: 3.1.0 (Stable / Production Ready)
-**Last Updated**: 2026-01-23
-**Current Sprint**: v2.8 - "Marketing Pivot & Community Launch"
-**Completed Sprints**: v2.1, v2.2, v2.3, v2.4, v2.5, v2.6, v2.7 (see `docs/archive/`)
+**Version**: 3.2.0 (Upcoming - Phase 1 Complete)
+**Last Updated**: 2026-01-31
+**Current Sprint**: v3.2 - "Security Hardening + Production Readiness"
+**Recent Sprints**: v3.1 (Git-Based Auto-Tiering), v3.0 (AI-Powered Onboarding) — see [docs/archive/](docs/archive/)
 
 <!-- @cortex-tms-version 3.1.0 -->

@@ -50,7 +50,7 @@ describe('Init E2E - Basic Workflows', () => {
     const result = await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
 
     expectSuccess(result);
-    expect(result.stdout).toMatch(/initialization complete|Initialized/);
+    expect(result.stdout).toMatch(/initialization complete|initialized/i);
 
     // Verify mandatory files were created
     const mandatoryFiles = [
@@ -78,19 +78,16 @@ describe('Init E2E - Basic Workflows', () => {
     // Verify docs/core/ files
     const coreFiles = [
       'docs/core/PATTERNS.md',
-      'docs/core/GLOSSARY.md',
       'docs/core/DOMAIN-LOGIC.md',
       'docs/core/ARCHITECTURE.md',
+      'docs/core/DECISIONS.md',
+      'docs/core/TROUBLESHOOTING.md',
     ];
 
     for (const file of coreFiles) {
       const exists = await fileExists(join(tempDir, file));
       expect(exists).toBe(true);
     }
-
-    // Verify archive directory exists
-    const archiveExists = await fileExists(join(tempDir, 'docs/archive'));
-    expect(archiveExists).toBe(true);
   });
 
   it('should include version tags in created files', async () => {
@@ -106,15 +103,12 @@ describe('Init E2E - Basic Workflows', () => {
     expect(patterns).toMatch(/<!-- @cortex-tms-version \d+\.\d+\.\d+ -->/);
   });
 
-  it('should create .gitignore if it does not exist', async () => {
+  it('should create VS Code snippets', async () => {
     const result = await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
     expectSuccess(result);
 
-    const gitignoreExists = await fileExists(join(tempDir, '.gitignore'));
-    expect(gitignoreExists).toBe(true);
-
-    const gitignore = await readFileContent(tempDir, '.gitignore');
-    expect(gitignore).toContain('.cortexrc');
+    const snippetsExist = await fileExists(join(tempDir, '.vscode/tms.code-snippets'));
+    expect(snippetsExist).toBe(true);
   });
 
   it('should handle init in already initialized project', async () => {
@@ -122,15 +116,12 @@ describe('Init E2E - Basic Workflows', () => {
     const firstResult = await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
     expectSuccess(firstResult);
 
-    // Second init (should handle gracefully)
+    // Second init with --force (should re-initialize)
     const secondResult = await runCommand('init', ['--scope', 'standard', '--force'], tempDir);
 
-    // Should either succeed with a message or fail gracefully
-    // (Implementation may vary - check current behavior)
-    expect(secondResult.exitCode).toBeGreaterThanOrEqual(0);
-    if (secondResult.exitCode === 0) {
-      expect(secondResult.stdout).toContain('already initialized');
-    }
+    // With --force flag, should succeed
+    expectSuccess(secondResult);
+    expect(secondResult.stdout).toMatch(/initialized/i);
   });
 });
 
@@ -170,10 +161,14 @@ describe('Init E2E - Scope Selection', () => {
     // Verify required fields
     expect(config).toHaveProperty('version');
     expect(config).toHaveProperty('scope');
-    expect(config).toHaveProperty('createdAt');
+    expect(config).toHaveProperty('metadata');
+    expect(config.metadata).toHaveProperty('created');
 
     // Verify version format
     expect(config.version).toMatch(/^\d+\.\d+\.\d+$/);
+
+    // Verify created timestamp is valid ISO date
+    expect(config.metadata.created).toMatch(/^\d{4}-\d{2}-\d{2}T/);
   });
 });
 

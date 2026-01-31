@@ -116,7 +116,55 @@ async function runTutorial(): Promise<void> {
       tip: 'Run validate before commits to catch issues early.',
     },
     {
-      title: '🚀 Lesson 5: Safe Template Evolution',
+      title: '🛡️ Lesson 5: Error Handling & Validation',
+      content: [
+        'New in v3.2: Cortex TMS provides clear, actionable error messages.',
+        'All commands now use:',
+        '  • Type-safe validation (Zod schemas)',
+        '  • Helpful error messages with suggestions',
+        '  • No process crashes - clean exits with proper cleanup',
+        '',
+        'Try this invalid command to see it in action:',
+        '  cortex-tms init --scope invalid',
+        '',
+        'You\'ll see:',
+        '  ❌ Invalid scope: "invalid"',
+        '     Expected one of: nano, standard, enterprise, custom',
+        '',
+        'Benefits:',
+        '  • Know exactly what went wrong',
+        '  • Clear guidance on how to fix it',
+        '  • No cryptic stack traces in production',
+      ],
+      command: 'cortex-tms init --scope invalid',
+      tip: 'All validation errors now include helpful context - no more guessing what went wrong!',
+    },
+    {
+      title: '🔒 Lesson 6: Guardian Code Review',
+      content: [
+        'Guardian uses AI to enforce your project patterns and rules.',
+        'It validates code against PATTERNS.md and domain logic.',
+        '',
+        'Setup (optional - requires Anthropic API key):',
+        '  export ANTHROPIC_API_KEY="your-key-here"',
+        '',
+        'Usage:',
+        '  cortex-tms review src/file.ts          # Full analysis',
+        '  cortex-tms review src/file.ts --safe   # High-confidence only',
+        '',
+        'What Guardian checks:',
+        '  • Pattern compliance (from PATTERNS.md)',
+        '  • Domain logic consistency',
+        '  • Semantic violations (not just syntax)',
+        '',
+        'New in v3.2: API keys are automatically sanitized in all output!',
+        'Your credentials are safe in logs, errors, and console output.',
+      ],
+      command: 'cortex-tms review --help',
+      tip: 'Use --safe mode for production CI/CD to avoid false positives.',
+    },
+    {
+      title: '🚀 Lesson 7: Safe Template Evolution',
       content: [
         'Templates evolve, but your customizations matter.',
         'The Safe-Fail Migration Engine has 3 components:',
@@ -142,7 +190,7 @@ async function runTutorial(): Promise<void> {
       tip: 'Always run migrate (no flags) first to see what needs updating.',
     },
     {
-      title: '✨ Lesson 6: AI-Powered Bootstrapping',
+      title: '✨ Lesson 8: AI-Powered Bootstrapping',
       content: [
         'After running "cortex-tms init", documentation files contain placeholders.',
         'Instead of manually filling them, let YOUR AI agent do it!',
@@ -248,6 +296,8 @@ async function runTutorial(): Promise<void> {
   console.log(chalk.blue('  • AI Activation: cortex-tms prompt'));
   console.log(chalk.blue('  • Version Sync: pnpm run docs:sync'));
   console.log(chalk.blue('  • Health Check: cortex-tms validate'));
+  console.log(chalk.blue('  • Error Handling: Clear, actionable messages (v3.2)'));
+  console.log(chalk.blue('  • Guardian: cortex-tms review (AI code review)'));
   console.log(chalk.blue('  • Migration: cortex-tms migrate'));
   console.log(chalk.blue('  • Bootstrap: cortex-tms prompt bootstrap'));
   console.log();
@@ -258,8 +308,9 @@ async function runTutorial(): Promise<void> {
   console.log();
   console.log(chalk.gray('📚 For more details, see:'));
   console.log(chalk.gray('   • CLAUDE.md (agent workflow)'));
-  console.log(chalk.gray('   • docs/core/ARCHITECTURE.md (technical design)'));
   console.log(chalk.gray('   • docs/core/PATTERNS.md (coding standards)'));
+  console.log(chalk.gray('   • docs/core/SECURITY.md (security practices - NEW in v3.2)'));
+  console.log(chalk.gray('   • docs/guides/SECURITY-TESTING.md (testing guide - NEW)'));
   console.log();
   console.log(chalk.bold.cyan('Happy coding! 🚀\n'));
 }

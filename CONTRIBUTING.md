@@ -7,6 +7,7 @@ Thank you for considering contributing to Cortex TMS! This document provides gui
 - [Code of Conduct](#code-of-conduct)
 - [How Can I Contribute?](#how-can-i-contribute)
 - [Getting Started](#getting-started)
+- [Running Tests & Security Checks](#running-tests--security-checks)
 - [Development Workflow](#development-workflow)
 - [Pull Request Process](#pull-request-process)
 - [Contribution Guidelines](#contribution-guidelines)
@@ -93,6 +94,42 @@ Code contributions are welcome! Please follow the [Pull Request Process](#pull-r
    ```bash
    node bin/cortex-tms.js --help
    ```
+
+---
+
+## Running Tests & Security Checks
+
+**Quick start for contributors**:
+
+```bash
+# Run all tests
+pnpm test
+
+# Run only E2E tests
+pnpm test src/__tests__/*-e2e.test.ts
+
+# Run specific test file
+pnpm test src/__tests__/init-e2e.test.ts
+
+# Check for vulnerabilities
+pnpm run audit
+
+# Validate project structure
+node bin/cortex-tms.js validate --strict
+
+# Build and verify TypeScript
+pnpm run build
+```
+
+**Before submitting a PR**:
+- ✅ All tests pass (`pnpm test`)
+- ✅ No high-severity vulnerabilities (`pnpm run audit`)
+- ✅ Build succeeds (`pnpm run build`)
+- ✅ Code follows patterns in `docs/core/PATTERNS.md`
+
+**Detailed testing guide**: See [`docs/guides/SECURITY-TESTING.md`](docs/guides/SECURITY-TESTING.md) for comprehensive testing workflows, E2E test isolation, and security pattern verification.
+
+**Security concerns**: See [`docs/core/SECURITY.md`](docs/core/SECURITY.md) for threat model, mitigations, and best practices.
 
 ---
 
