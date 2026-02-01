@@ -1,0 +1,128 @@
+---
+/**
+ * Callout Component for Blog Posts
+ * Beautiful admonition boxes: tip, warning, danger
+ */
+import { Zap, AlertTriangle, Skull } from '@lucide/astro'
+
+interface Props {
+  type?: 'tip' | 'warning' | 'danger'
+  title?: string
+}
+
+const { type = 'tip', title } = Astro.props
+
+const config = {
+  tip: {
+    icon: Zap,
+    defaultTitle: 'Pro Tip',
+    color: '#10b981',
+  },
+  warning: {
+    icon: AlertTriangle,
+    defaultTitle: 'Warning',
+    color: '#f59e0b',
+  },
+  danger: {
+    icon: Skull,
+    defaultTitle: 'Critical',
+    color: '#ef4444',
+  },
+}
+
+const { icon: Icon, defaultTitle, color } = config[type]
+const displayTitle = title || defaultTitle
+---
+
+<div class={`callout callout-${type}`}>
+  <div class="callout-icon">
+    <Icon size={20} color={color} />
+  </div>
+  <div class="callout-content">
+    <span class="callout-title" style={`color: ${color}`}>{displayTitle}</span>
+    <div class="callout-body">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .callout {
+    margin: 3rem 0;
+    padding: 24px;
+    border-radius: 20px;
+    border-left: 6px solid;
+    display: flex;
+    gap: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+  }
+
+  .callout-tip {
+    border-color: #10b981;
+    background: rgba(16, 185, 129, 0.05);
+  }
+
+  .callout-warning {
+    border-color: #f59e0b;
+    background: rgba(245, 158, 11, 0.05);
+  }
+
+  .callout-danger {
+    border-color: #ef4444;
+    background: rgba(239, 68, 68, 0.05);
+  }
+
+  .callout-icon {
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .callout-content {
+    flex: 1;
+    padding-top: 6px;
+  }
+
+  .callout-title {
+    font-weight: 800;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 0.5rem;
+    letter-spacing: 0.05em;
+  }
+
+  .callout-body {
+    font-size: 1.1rem;
+    line-height: 1.6;
+  }
+
+  .callout-body :global(p) {
+    margin: 0;
+  }
+
+  .callout-body :global(p + p) {
+    margin-top: 0.75rem;
+  }
+
+  .callout-body :global(code) {
+    font-size: 0.95em;
+  }
+
+  /* Light mode */
+  :root[data-theme='light'] .callout {
+    background: rgba(255, 255, 255, 0.7);
+  }
+
+  :root[data-theme='light'] .callout-tip {
+    background: rgba(16, 185, 129, 0.1);
+  }
+
+  :root[data-theme='light'] .callout-warning {
+    background: rgba(245, 158, 11, 0.1);
+  }
+
+  :root[data-theme='light'] .callout-danger {
+    background: rgba(239, 68, 68, 0.1);
+  }
+</style>

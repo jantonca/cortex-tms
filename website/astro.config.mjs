@@ -1,5 +1,6 @@
 import { defineConfig } from 'astro/config';
 import starlight from '@astrojs/starlight';
+import mdx from '@astrojs/mdx';
 import { readFileSync } from 'fs';
 
 // Import root package.json for version sync
@@ -142,5 +143,6 @@ export default defineConfig({
         },
       ],
     }),
+    mdx(),
   ],
 });

@@ -1,0 +1,129 @@
+---
+title: 'Welcome to the Cortex TMS Blog'
+description: 'Introducing the Cortex TMS blog - insights on AI-powered development, documentation patterns, and building maintainable software.'
+pubDate: 2026-01-20
+author: 'Cortex TMS Team'
+tags: ['announcement', 'cortex-tms']
+heroImage: '/images/blog/default-hero.webp'
+draft: false
+---
+
+import { Terminal, Callout } from '../../components/blog'
+
+Welcome to the Cortex TMS blog! This is where we'll share insights, updates, and stories about building better software with AI agents. Whether you're shipping your first AI-powered project or scaling an entire platform with Claude Code, you're in the right place.
+
+## What to Expect
+
+We're here to help you navigate the new frontier of AI-assisted development. Here's what we'll be covering:
+
+- **AI-Powered Development**: How to work effectively with AI coding assistants like Claude Code and GitHub Copilot without losing control
+- **Documentation Patterns**: Best practices for keeping documentation in sync with code as your project evolves
+- **Project Governance**: Preventing "zero drift" and maintaining architectural consistency across teams
+- **Real-World Case Studies**: How teams use Cortex TMS to ship faster with AI while maintaining quality
+
+<Callout type="tip" title="Quick Start">
+New to Cortex TMS? Install it in seconds and see immediate token savings:
+
+```bash
+npm install -g cortex-tms
+cortex init my-project
+cortex status --tokens
+```
+
+Watch your context costs drop by 60-94% instantly.
+</Callout>
+
+## Coming Soon: Guardian
+
+We're launching Guardian, an AI-powered code review tool that catches architectural violations before they reach production. It's like having a senior architect review every PR, but instant and pattern-aware.
+
+<Terminal title="guardian-demo.sh" language="bash">
+# Preview Guardian in safe mode
+npx cortex-tms review src/ --safe
+
+🛡️ Guardian: Semantic Validation
+✓ Pattern compliance verified
+✓ Safe Mode: No file operations executed
+✓ 0 violations found
+
+# Run Guardian validation
+npx cortex-tms review src/commands/ --strict
+
+📊 Analysis Complete
+  ✓ 12 files scanned
+  ✓ All patterns compliant
+  ⚡ 0.8s execution time
+</Terminal>
+
+Stay tuned for deep dives on:
+
+1. **Preventing the "AI PR Tsunami" Problem** - How Guardian stops bad AI-generated code before merge
+2. **Pattern-Based Code Review** - Why semantic patterns beat traditional linting
+3. **Building with LLMs** - Lessons from shipping Guardian MVP in production
+
+<Callout type="warning" title="Why This Matters">
+AI assistants can generate code 10x faster, but without governance, you're building technical debt 10x faster too. Guardian ensures your AI-generated code follows your team's patterns from day one.
+</Callout>
+
+## The Challenge We're Solving
+
+Modern AI tools like Claude Code are incredibly powerful, but they come with a hidden cost: **context explosion**. Without Cortex TMS, your AI assistant reads:
+
+- Old documentation nobody maintains
+- Deprecated code paths
+- Irrelevant test fixtures
+- Configuration for platforms you don't use
+
+Result? **Higher costs, slower responses, worse suggestions.**
+
+<Terminal language="typescript">
+// Without Cortex TMS
+const context = await readEverything() // 66,834 tokens
+const cost = calculateCost(context)    // $0.20 per query
+
+// With Cortex TMS tiered memory
+const context = await readHotTier()    // 3,647 tokens
+const cost = calculateCost(context)    // $0.01 per query
+const savings = "94.5% reduction"      // ✨
+</Terminal>
+
+<Callout type="tip" title="Token Savings Explained">
+Cortex TMS uses a **tiered memory system** (HOT/WARM/COLD) to give AI only what it needs:
+
+- **HOT** (Active): Current work context - AI reads this
+- **WARM** (Truth): Documentation, patterns - On-demand only
+- **COLD** (Archive): Old code, deprecated files - Ignored
+
+Smart context = better AI suggestions at 10x lower cost.
+</Callout>
+
+## Stay Connected
+
+Join our growing community of developers building smarter with AI:
+
+- 🌟 **[Star us on GitHub](https://github.com/cortex-tms/cortex-tms)** - Support the project
+- 📖 **[Read the Docs](/)** - Learn the patterns
+- 💬 **[Join Discussions](https://github.com/cortex-tms/cortex-tms/discussions)** - Share your use cases
+- 🐦 **Follow Updates** - Stay tuned for Guardian launch
+
+<details>
+<summary>Want to contribute?</summary>
+<div class="details-content">
+
+We're building in public! Check out our [Contributing Guide](https://github.com/cortex-tms/cortex-tms/blob/main/CONTRIBUTING.md) to:
+
+- Report bugs or request features
+- Contribute patterns and templates
+- Share your Cortex TMS success stories
+- Help improve documentation
+
+Every contribution makes AI development better for everyone.
+
+</div>
+</details>
+
+---
+
+Thank you for being part of the Cortex TMS community. Let's build better software together - with AI as our ally, not our technical debt generator.
+
+**The Cortex TMS Team**

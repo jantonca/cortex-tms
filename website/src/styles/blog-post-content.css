@@ -1,0 +1,470 @@
+/**
+ * Blog Post Content Styles
+ * Enhanced editorial typography and reading experience
+ * Based on custom style guide with Starlight integration
+ */
+
+.post-content {
+  font-size: 1.2rem;
+  line-height: 1.8;
+  color: var(--sl-color-gray-1);
+  position: relative;
+  z-index: 3;
+  padding: 0;
+}
+
+/* ========================================
+   HEADINGS HIERARCHY
+   ======================================== */
+
+.post-content > h1 {
+  font-family: 'Noto Serif', serif;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  letter-spacing: -0.04em;
+  color: var(--sl-color-text);
+  font-weight: 700;
+}
+
+.post-content > h2 {
+  font-family: 'Noto Serif', serif;
+  font-size: 2.2rem;
+  margin: 4.5rem 0 1.5rem;
+  letter-spacing: -0.02em;
+  border-left: 6px solid var(--sl-color-accent);
+  padding-left: 20px;
+  color: var(--sl-color-text);
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.post-content > h3 {
+  font-family: 'Noto Sans', var(--sl-font), sans-serif;
+  font-size: 1.6rem;
+  margin: 3rem 0 1rem;
+  font-weight: 700;
+  color: var(--sl-color-accent);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.post-content > h4 {
+  font-family: 'Noto Sans', var(--sl-font), sans-serif;
+  font-size: 1.25rem;
+  margin: 2rem 0 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--sl-color-text);
+  line-height: 1.5;
+}
+
+/* ========================================
+   PARAGRAPHS & TEXT
+   ======================================== */
+
+.post-content > p {
+  margin-bottom: 2rem;
+}
+
+.post-content > p:last-child {
+  margin-bottom: 0;
+}
+
+/* Drop cap for first paragraph */
+.post-content .dropcap::first-letter,
+.post-content > p:first-of-type::first-letter {
+  float: left;
+  font-family: var(--sl-font-system);
+  font-size: 5rem;
+  line-height: 0.7;
+  margin: 8px 12px 0 0;
+  color: var(--sl-color-accent);
+  font-weight: 700;
+}
+
+.post-content > p strong,
+.post-content > ul > li strong,
+.post-content > ol > li strong,
+.post-content > blockquote strong {
+  font-weight: 600;
+  color: var(--sl-color-text);
+}
+
+.post-content > p em,
+.post-content > ul > li em,
+.post-content > ol > li em,
+.post-content > blockquote em {
+  font-style: italic;
+}
+
+.post-content > p mark,
+.post-content > ul > li mark,
+.post-content > ol > li mark,
+.post-content > blockquote mark {
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--sl-color-accent);
+  padding: 0 4px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* ========================================
+   LINKS
+   ======================================== */
+
+.post-content > p a,
+.post-content > ul > li a,
+.post-content > ol > li a,
+.post-content > blockquote a {
+  color: var(--sl-color-accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(249, 115, 22, 0.3);
+  text-underline-offset: 0.2em;
+  transition: all 0.2s ease;
+}
+
+.post-content > p a:hover,
+.post-content > ul > li a:hover,
+.post-content > ol > li a:hover,
+.post-content > blockquote a:hover {
+  text-decoration-color: var(--sl-color-accent);
+  color: var(--sl-color-accent-high);
+}
+
+/* ========================================
+   LISTS (UL/OL)
+   ======================================== */
+
+.post-content > ul {
+  list-style: none;
+  margin: 2rem 0 2rem 1.5rem;
+}
+
+.post-content > ul > li {
+  position: relative;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
+}
+
+.post-content > ul > li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.6em;
+  width: 10px;
+  height: 10px;
+  background: var(--sl-color-accent);
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.post-content > ol {
+  counter-reset: custom-counter;
+  list-style: none;
+  margin: 2rem 0 2rem 1.5rem;
+}
+
+.post-content > ol > li {
+  counter-increment: custom-counter;
+  position: relative;
+  padding-left: 3rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.15rem;
+}
+
+.post-content > ol > li::before {
+  content: counter(custom-counter);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--sl-color-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9rem;
+}
+
+.post-content > ul > li > p,
+.post-content > ol > li > p {
+  margin-bottom: 0.5rem;
+}
+
+/* ========================================
+   CODE & PRE
+   ======================================== */
+
+.post-content > p code,
+.post-content > ul > li code,
+.post-content > ol > li code,
+.post-content > blockquote code,
+.post-content > h2 code,
+.post-content > h3 code,
+.post-content > h4 code {
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--sl-color-accent-high);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.95rem;
+  font-family: var(--sl-font-mono);
+  font-weight: 500;
+}
+
+.post-content > pre {
+  margin: 3rem 0;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--sl-color-gray-5);
+}
+
+.post-content > pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-weight: 400;
+  font-size: 0.95rem;
+}
+
+/* ========================================
+   BLOCKQUOTES
+   ======================================== */
+
+.post-content > blockquote {
+  border-left: 6px solid var(--sl-color-accent);
+  background: rgba(249, 115, 22, 0.05);
+  padding: 1.25rem 1.5rem;
+  margin: 3rem 0;
+  border-radius: 0 0.75rem 0.75rem 0;
+  font-style: italic;
+  color: var(--sl-color-gray-2);
+}
+
+.post-content > blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+/* ========================================
+   IMAGES & FIGURES
+   ======================================== */
+
+.post-content > img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 3.5rem auto;
+  display: block;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+.post-content > figure {
+  margin: 3.5rem 0;
+  text-align: center;
+}
+
+.post-content > figure img {
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.post-content > figure figcaption {
+  margin-top: 1rem;
+  font-style: italic;
+  color: var(--sl-color-gray-3);
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   TABLES
+   ======================================== */
+
+.post-content > table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin: 3rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.post-content > table th {
+  padding: 20px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--sl-color-accent);
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.post-content > table td {
+  padding: 18px 20px;
+  border-top: 1px solid var(--sl-color-gray-5);
+  transition: background 0.2s;
+}
+
+.post-content > table tr:hover td {
+  background: rgba(249, 115, 22, 0.05);
+}
+
+/* ========================================
+   HR DIVIDER
+   ======================================== */
+
+.post-content > hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--sl-color-gray-5),
+    transparent
+  );
+  margin: 3rem 0;
+}
+
+/* ========================================
+   DETAILS/SUMMARY (Accordions)
+   ======================================== */
+
+.post-content > details {
+  margin: 2rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.post-content > details summary {
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--sl-color-accent);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-content > details summary::after {
+  content: '+';
+  font-size: 1.5rem;
+  transition: transform 0.3s;
+}
+
+.post-content > details[open] summary::after {
+  transform: rotate(45deg);
+}
+
+.post-content > details .details-content {
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--sl-color-gray-5);
+  padding-top: 15px;
+}
+
+.post-content > details .details-content p {
+  margin-bottom: 1rem;
+  font-size: 1.05rem;
+}
+
+.post-content > details .details-content p:last-child {
+  margin-bottom: 0;
+}
+
+.post-content > details .details-content ul {
+  list-style: none;
+  margin: 0.5rem 0 1rem 1rem;
+  padding-left: 0;
+}
+
+.post-content > details .details-content ul li {
+  position: relative;
+  padding-left: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.post-content > details .details-content ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 8px;
+  height: 8px;
+  background: var(--sl-color-accent);
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+/* ========================================
+   LIGHT MODE ADJUSTMENTS
+   ======================================== */
+
+:root[data-theme='light'] .post-content > pre {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='light'] .post-content > img,
+:root[data-theme='light'] .post-content > figure img {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .post-content > table {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+:root[data-theme='light'] .post-content > details {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .post-content {
+    font-size: 1.1rem;
+  }
+
+  .post-content > h1 {
+    font-size: 2.5rem;
+  }
+
+  .post-content > h2 {
+    font-size: 1.875rem;
+    margin: 3rem 0 1.25rem;
+  }
+
+  .post-content > h3 {
+    font-size: 1.5rem;
+  }
+
+  .post-content > h4 {
+    font-size: 1.125rem;
+  }
+
+  .post-content .dropcap::first-letter,
+  .post-content > p:first-of-type::first-letter {
+    font-size: 3.5rem;
+  }
+
+  .post-content > ul,
+  .post-content > ol {
+    margin-left: 0.5rem;
+  }
+}

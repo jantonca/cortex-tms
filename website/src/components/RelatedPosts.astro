@@ -1,0 +1,200 @@
+---
+import type { CollectionEntry } from 'astro:content'
+
+interface Props {
+  posts: CollectionEntry<'blog'>[]
+}
+
+const { posts } = Astro.props
+
+const formatDate = (date: Date) => {
+  return new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }).format(date)
+}
+
+const calculateReadingTime = (text: string) => {
+  const wordsPerMinute = 200
+  const words = text.trim().split(/\s+/).length
+  const minutes = Math.ceil(words / wordsPerMinute)
+  return `${minutes} min read`
+}
+---
+
+{
+  posts.length > 0 && (
+    <section class='related-posts'>
+      <h2 class='related-title'>Related Articles</h2>
+      <div class='related-grid'>
+        {posts.map((post) => (
+          <article class='related-card'>
+            <a href={`/blog/${post.slug}/`} class='card-link'>
+              {post.data.heroImage && (
+                <div class='card-image'>
+                  <img
+                    src={post.data.heroImage}
+                    alt={post.data.heroAlt ?? post.data.title}
+                    loading='lazy'
+                  />
+                </div>
+              )}
+              <div class='card-content'>
+                {post.data.tags && post.data.tags.length > 0 && (
+                  <div class='card-tags'>
+                    {post.data.tags.slice(0, 2).map((tag) => (
+                      <span class='tag'>{tag}</span>
+                    ))}
+                  </div>
+                )}
+                <h3 class='card-title'>{post.data.title}</h3>
+                <p class='card-description'>{post.data.description}</p>
+                <div class='card-meta'>
+                  <span>{formatDate(post.data.pubDate)}</span>
+                  <span>·</span>
+                  <span>{calculateReadingTime(post.body)}</span>
+                </div>
+              </div>
+            </a>
+          </article>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .related-posts {
+    margin: 3rem auto;
+    padding: 3rem 0;
+    max-width: 1200px;
+  }
+
+  .related-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--sl-color-text);
+    margin: 0 0 3rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--sl-color-gray-5);
+  }
+
+  .related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+
+  .related-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--sl-color-gray-5);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .related-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--sl-color-accent);
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .card-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    height: 100%;
+  }
+
+  .card-image {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--sl-color-gray-6);
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+
+  .related-card:hover .card-image img {
+    transform: scale(1.05);
+  }
+
+  .card-content {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .card-tags {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+
+  .tag {
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border);
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: var(--sl-color-gray-3);
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--sl-color-text);
+    margin: 0;
+    line-height: 1.3;
+  }
+
+  .card-description {
+    font-size: 0.9375rem;
+    color: var(--sl-color-gray-3);
+    line-height: 1.5;
+    margin: 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .card-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--sl-color-gray-4);
+    margin-top: auto;
+  }
+
+  :root[data-theme='light'] .related-card {
+    background: rgba(0, 0, 0, 0.02);
+  }
+
+  :root[data-theme='light'] .related-card:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  :root[data-theme='light'] .tag {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    .related-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    .related-title {
+      font-size: 2rem;
+    }
+  }
+</style>

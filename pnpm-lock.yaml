@@ -66,6 +66,9 @@ importers:
 
   website:
     dependencies:
+      '@astrojs/mdx':
+        specifier: ^4.3.13
+        version: 4.3.13(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
       '@astrojs/rss':
         specifier: ^4.0.15
         version: 4.0.15

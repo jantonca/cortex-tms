@@ -1,0 +1,181 @@
+---
+/**
+ * Terminal Component for Blog Posts
+ * Beautiful code blocks with macOS-style header and copy button
+ */
+interface Props {
+  title?: string
+  language?: string
+}
+
+const { title, language } = Astro.props
+const id = `terminal-${Math.random().toString(36).substr(2, 9)}`
+---
+
+<div class="terminal">
+  <div class="terminal-header">
+    <div class="t-dots">
+      <div class="t-dot" style="background: #ff5f56"></div>
+      <div class="t-dot" style="background: #ffbd2e"></div>
+      <div class="t-dot" style="background: #27c93f"></div>
+    </div>
+    {title && <span class="terminal-title">{title}</span>}
+    <button class="copy-btn" data-terminal-id={id}>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+      </svg>
+      <span class="copy-text">Copy</span>
+    </button>
+  </div>
+  <pre id={id} class={language ? `language-${language}` : ''}><code><slot /></code></pre>
+</div>
+
+<style>
+  .terminal {
+    margin: 3rem 0;
+    background: #0f172a;
+    border-radius: 20px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.2);
+  }
+
+  .terminal-header {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .t-dots {
+    display: flex;
+    gap: 8px;
+  }
+
+  .t-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+
+  .terminal-title {
+    flex: 1;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.75rem;
+    font-family: var(--sl-font-mono);
+  }
+
+  .copy-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: #94a3b8;
+    padding: 5px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.2s;
+    font-family: var(--sl-font);
+  }
+
+  .copy-btn:hover {
+    background: var(--sl-color-accent);
+    color: white;
+  }
+
+  .copy-btn.copied {
+    background: #10b981;
+    color: white;
+  }
+
+  pre {
+    padding: 24px;
+    overflow-x: auto;
+    color: #e2e8f0;
+    font-family: var(--sl-font-mono);
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+  }
+
+  code {
+    font-family: var(--sl-font-mono);
+  }
+
+  /* Reset any MDX-processed elements inside code */
+  code h1,
+  code h2,
+  code h3,
+  code h4,
+  code h5,
+  code h6,
+  code p,
+  code ul,
+  code ol,
+  code li {
+    all: unset;
+    display: inline;
+    font-family: var(--sl-font-mono);
+    font-size: 0.95rem;
+    color: inherit;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  code h1::before,
+  code h2::before,
+  code h3::before,
+  code h4::before,
+  code h5::before,
+  code h6::before {
+    content: '# ';
+  }
+</style>
+
+<script>
+  // Copy functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const copyButtons = document.querySelectorAll('.copy-btn')
+
+    copyButtons.forEach((button) => {
+      button.addEventListener('click', async () => {
+        const terminalId = button.getAttribute('data-terminal-id')
+        if (!terminalId) return
+
+        const pre = document.getElementById(terminalId)
+        if (!pre) return
+
+        const code = pre.querySelector('code')
+        const text = code?.textContent || pre.textContent || ''
+
+        try {
+          await navigator.clipboard.writeText(text.trim())
+
+          // Visual feedback
+          const copyText = button.querySelector('.copy-text')
+          if (copyText) {
+            copyText.textContent = 'Copied!'
+          }
+          button.classList.add('copied')
+
+          setTimeout(() => {
+            if (copyText) {
+              copyText.textContent = 'Copy'
+            }
+            button.classList.remove('copied')
+          }, 2000)
+        } catch (err) {
+          console.error('Failed to copy:', err)
+        }
+      })
+    })
+  })
+</script>
