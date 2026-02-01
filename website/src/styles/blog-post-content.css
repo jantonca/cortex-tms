@@ -17,7 +17,7 @@
    HEADINGS HIERARCHY
    ======================================== */
 
-.post-content :global(h1) {
+.post-content h1 {
   font-family: 'Noto Serif', serif;
   font-size: clamp(2.5rem, 8vw, 4rem);
   line-height: 1.1;
@@ -27,7 +27,7 @@
   font-weight: 700;
 }
 
-.post-content :global(h2) {
+.post-content h2 {
   font-family: 'Noto Serif', serif;
   font-size: 2.2rem;
   margin: 4.5rem 0 1.5rem;
@@ -39,7 +39,7 @@
   line-height: 1.3;
 }
 
-.post-content :global(h3) {
+.post-content h3 {
   font-family: 'Noto Sans', var(--sl-font), sans-serif;
   font-size: 1.6rem;
   margin: 3rem 0 1rem;
@@ -49,7 +49,7 @@
   letter-spacing: -0.01em;
 }
 
-.post-content :global(h4) {
+.post-content h4 {
   font-family: 'Noto Sans', var(--sl-font), sans-serif;
   font-size: 1.25rem;
   margin: 2rem 0 1rem;
@@ -64,17 +64,17 @@
    PARAGRAPHS & TEXT
    ======================================== */
 
-.post-content :global(p) {
+.post-content p {
   margin-bottom: 2rem;
 }
 
-.post-content :global(p:last-child) {
+.post-content p:last-child {
   margin-bottom: 0;
 }
 
 /* Drop cap for first paragraph */
-.post-content :global(.dropcap::first-letter),
-.post-content :global(p:first-of-type::first-letter) {
+.post-content .dropcap::first-letter,
+.post-content p:first-of-type::first-letter {
   float: left;
   font-family: var(--sl-font-system);
   font-size: 5rem;
@@ -84,16 +84,16 @@
   font-weight: 700;
 }
 
-.post-content :global(strong) {
+.post-content strong {
   font-weight: 600;
   color: var(--sl-color-text);
 }
 
-.post-content :global(em) {
+.post-content em {
   font-style: italic;
 }
 
-.post-content :global(mark) {
+.post-content mark {
   background: rgba(249, 115, 22, 0.1);
   color: var(--sl-color-accent);
   padding: 0 4px;
@@ -105,7 +105,7 @@
    LINKS
    ======================================== */
 
-.post-content :global(a) {
+.post-content a {
   color: var(--sl-color-accent);
   text-decoration: underline;
   text-decoration-color: rgba(249, 115, 22, 0.3);
@@ -113,7 +113,7 @@
   transition: all 0.2s ease;
 }
 
-.post-content :global(a:hover) {
+.post-content a:hover {
   text-decoration-color: var(--sl-color-accent);
   color: var(--sl-color-accent-high);
 }
@@ -122,19 +122,19 @@
    LISTS (UL/OL)
    ======================================== */
 
-.post-content :global(ul) {
+.post-content ul {
   list-style: none;
   margin: 2rem 0 2rem 1.5rem;
 }
 
-.post-content :global(ul li) {
+.post-content ul li {
   position: relative;
   padding-left: 2rem;
   margin-bottom: 1rem;
   font-size: 1.15rem;
 }
 
-.post-content :global(ul li::before) {
+.post-content ul li::before {
   content: '';
   position: absolute;
   left: 0;
@@ -146,13 +146,13 @@
   transform: rotate(45deg);
 }
 
-.post-content :global(ol) {
+.post-content ol {
   counter-reset: custom-counter;
   list-style: none;
   margin: 2rem 0 2rem 1.5rem;
 }
 
-.post-content :global(ol li) {
+.post-content ol li {
   counter-increment: custom-counter;
   position: relative;
   padding-left: 3rem;
@@ -160,7 +160,7 @@
   font-size: 1.15rem;
 }
 
-.post-content :global(ol li::before) {
+.post-content ol li::before {
   content: counter(custom-counter);
   position: absolute;
   left: 0;
@@ -177,7 +177,7 @@
   font-size: 0.9rem;
 }
 
-.post-content :global(li p) {
+.post-content li p {
   margin-bottom: 0.5rem;
 }
 
@@ -185,7 +185,7 @@
    CODE & PRE
    ======================================== */
 
-.post-content :global(code) {
+.post-content code {
   background: rgba(249, 115, 22, 0.1);
   color: var(--sl-color-accent-high);
   padding: 0.2em 0.4em;
@@ -195,7 +195,7 @@
   font-weight: 500;
 }
 
-.post-content :global(pre) {
+.post-content pre {
   margin: 3rem 0;
   padding: 1.5rem;
   border-radius: 0.75rem;
@@ -204,7 +204,7 @@
   border: 1px solid var(--sl-color-gray-5);
 }
 
-.post-content :global(pre code) {
+.post-content pre code {
   background: none;
   color: inherit;
   padding: 0;
@@ -216,7 +216,7 @@
    BLOCKQUOTES
    ======================================== */
 
-.post-content :global(blockquote) {
+.post-content blockquote {
   border-left: 6px solid var(--sl-color-accent);
   background: rgba(249, 115, 22, 0.05);
   padding: 1.25rem 1.5rem;
@@ -226,7 +226,7 @@
   color: var(--sl-color-gray-2);
 }
 
-.post-content :global(blockquote p:last-child) {
+.post-content blockquote p:last-child {
   margin-bottom: 0;
 }
 
@@ -234,7 +234,7 @@
    IMAGES & FIGURES
    ======================================== */
 
-.post-content :global(img) {
+.post-content img {
   max-width: 100%;
   height: auto;
   border-radius: 0.75rem;
@@ -243,19 +243,19 @@
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
 
-.post-content :global(figure) {
+.post-content figure {
   margin: 3.5rem 0;
   text-align: center;
 }
 
-.post-content :global(figure img) {
+.post-content figure img {
   width: 100%;
   border-radius: 24px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   margin: 0 auto;
 }
 
-.post-content :global(figcaption) {
+.post-content figcaption {
   margin-top: 1rem;
   font-style: italic;
   color: var(--sl-color-gray-3);
@@ -266,7 +266,7 @@
    TABLES
    ======================================== */
 
-.post-content :global(table) {
+.post-content table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
@@ -278,7 +278,7 @@
   overflow: hidden;
 }
 
-.post-content :global(th) {
+.post-content th {
   padding: 20px;
   font-size: 0.75rem;
   text-transform: uppercase;
@@ -288,13 +288,13 @@
   letter-spacing: 0.05em;
 }
 
-.post-content :global(td) {
+.post-content td {
   padding: 18px 20px;
   border-top: 1px solid var(--sl-color-gray-5);
   transition: background 0.2s;
 }
 
-.post-content :global(tr:hover td) {
+.post-content tr:hover td {
   background: rgba(249, 115, 22, 0.05);
 }
 
@@ -302,7 +302,7 @@
    HR DIVIDER
    ======================================== */
 
-.post-content :global(hr) {
+.post-content hr {
   border: none;
   height: 1px;
   background: linear-gradient(
@@ -318,7 +318,7 @@
    DETAILS/SUMMARY (Accordions)
    ======================================== */
 
-.post-content :global(details) {
+.post-content details {
   margin: 2rem 0;
   background: rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(10px);
@@ -327,7 +327,7 @@
   overflow: hidden;
 }
 
-.post-content :global(summary) {
+.post-content summary {
   padding: 16px 20px;
   cursor: pointer;
   font-weight: 700;
@@ -338,17 +338,17 @@
   align-items: center;
 }
 
-.post-content :global(summary::after) {
+.post-content summary::after {
   content: '+';
   font-size: 1.5rem;
   transition: transform 0.3s;
 }
 
-.post-content :global(details[open] summary::after) {
+.post-content details[open] summary::after {
   transform: rotate(45deg);
 }
 
-.post-content :global(details > *:not(summary)) {
+.post-content details > *:not(summary) {
   padding: 0 20px 20px;
   border-top: 1px solid var(--sl-color-gray-5);
   padding-top: 15px;
@@ -358,20 +358,20 @@
    LIGHT MODE ADJUSTMENTS
    ======================================== */
 
-:root[data-theme='light'] .post-content :global(pre) {
+:root[data-theme='light'] .post-content pre {
   background: rgba(0, 0, 0, 0.05);
 }
 
-:root[data-theme='light'] .post-content :global(img),
-:root[data-theme='light'] .post-content :global(figure img) {
+:root[data-theme='light'] .post-content img,
+:root[data-theme='light'] .post-content figure img {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-:root[data-theme='light'] .post-content :global(table) {
+:root[data-theme='light'] .post-content table {
   background: rgba(255, 255, 255, 0.7);
 }
 
-:root[data-theme='light'] .post-content :global(details) {
+:root[data-theme='light'] .post-content details {
   background: rgba(255, 255, 255, 0.7);
 }
 
@@ -384,30 +384,30 @@
     font-size: 1.1rem;
   }
 
-  .post-content :global(h1) {
+  .post-content h1 {
     font-size: 2.5rem;
   }
 
-  .post-content :global(h2) {
+  .post-content h2 {
     font-size: 1.875rem;
     margin: 3rem 0 1.25rem;
   }
 
-  .post-content :global(h3) {
+  .post-content h3 {
     font-size: 1.5rem;
   }
 
-  .post-content :global(h4) {
+  .post-content h4 {
     font-size: 1.125rem;
   }
 
-  .post-content :global(.dropcap::first-letter),
-  .post-content :global(p:first-of-type::first-letter) {
+  .post-content .dropcap::first-letter,
+  .post-content p:first-of-type::first-letter {
     font-size: 3.5rem;
   }
 
-  .post-content :global(ul),
-  .post-content :global(ol) {
+  .post-content ul,
+  .post-content ol {
     margin-left: 0.5rem;
   }
 }
