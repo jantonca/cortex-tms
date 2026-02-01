@@ -107,6 +107,37 @@ const id = `terminal-${Math.random().toString(36).substr(2, 9)}`
   code {
     font-family: var(--sl-font-mono);
   }
+
+  /* Reset any MDX-processed elements inside code */
+  code h1,
+  code h2,
+  code h3,
+  code h4,
+  code h5,
+  code h6,
+  code p,
+  code ul,
+  code ol,
+  code li {
+    all: unset;
+    display: inline;
+    font-family: var(--sl-font-mono);
+    font-size: 0.95rem;
+    color: inherit;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+  }
+
+  code h1::before,
+  code h2::before,
+  code h3::before,
+  code h4::before,
+  code h5::before,
+  code h6::before {
+    content: '# ';
+  }
 </style>
 
 <script>
