@@ -45,6 +45,7 @@ const formattedDate = pubDate
 ---
 
 <GlassPanel variant="bordered" liquidBlob class="featured-blog-post blog-card">
+  <a href={`/blog/${slug}/`} class="card-overlay" aria-label={title}></a>
   {heroImage && (
     <div class="post-image-wrapper">
       <img

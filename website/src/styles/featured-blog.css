@@ -23,6 +23,22 @@
   display: contents;
 }
 
+.blog-card {
+  position: relative;
+  cursor: pointer;
+}
+
+.card-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+.blog-card .post-actions {
+  position: relative;
+  z-index: 2;
+}
+
 .post-image-wrapper {
   position: relative;
   width: 100%;
