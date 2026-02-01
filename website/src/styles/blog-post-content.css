@@ -1,53 +1,109 @@
 /**
  * Blog Post Content Styles
- * Elegant typography and reading experience
+ * Enhanced editorial typography and reading experience
+ * Based on custom style guide with Starlight integration
  */
 
 .post-content {
-  font-size: 1.125rem;
-  line-height: 1.85;
+  font-size: 1.2rem;
+  line-height: 1.8;
   color: var(--sl-color-gray-1);
   position: relative;
   z-index: 3;
   padding: 0;
 }
 
-.post-content :global(h2) {
-  margin-top: 3rem;
-  margin-bottom: 1.25rem;
-  font-size: 2rem;
-  font-weight: 700;
+/* ========================================
+   HEADINGS HIERARCHY
+   ======================================== */
+
+.post-content :global(h1) {
+  font-family: var(--sl-font-system);
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  line-height: 1.1;
+  margin-bottom: 2rem;
+  letter-spacing: -0.04em;
   color: var(--sl-color-text);
-  line-height: 1.3;
+  font-weight: 700;
+}
+
+.post-content :global(h2) {
+  font-family: var(--sl-font-system);
+  font-size: 2.2rem;
+  margin: 4.5rem 0 1.5rem;
   letter-spacing: -0.02em;
+  border-left: 6px solid var(--sl-color-accent);
+  padding-left: 20px;
+  color: var(--sl-color-text);
+  font-weight: 700;
+  line-height: 1.3;
 }
 
 .post-content :global(h3) {
-  margin-top: 2.5rem;
-  margin-bottom: 1rem;
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--sl-color-text);
+  font-family: var(--sl-font);
+  font-size: 1.6rem;
+  margin: 3rem 0 1rem;
+  font-weight: 700;
+  color: var(--sl-color-accent);
   line-height: 1.4;
   letter-spacing: -0.01em;
 }
 
 .post-content :global(h4) {
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  font-family: var(--sl-font);
   font-size: 1.25rem;
-  font-weight: 600;
+  margin: 2rem 0 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
   color: var(--sl-color-text);
   line-height: 1.5;
 }
 
+/* ========================================
+   PARAGRAPHS & TEXT
+   ======================================== */
+
 .post-content :global(p) {
-  margin-bottom: 1.5rem;
+  margin-bottom: 2rem;
 }
 
 .post-content :global(p:last-child) {
   margin-bottom: 0;
 }
+
+/* Drop cap for first paragraph */
+.post-content :global(.dropcap::first-letter),
+.post-content :global(p:first-of-type::first-letter) {
+  float: left;
+  font-family: var(--sl-font-system);
+  font-size: 5rem;
+  line-height: 0.7;
+  margin: 8px 12px 0 0;
+  color: var(--sl-color-accent);
+  font-weight: 700;
+}
+
+.post-content :global(strong) {
+  font-weight: 600;
+  color: var(--sl-color-text);
+}
+
+.post-content :global(em) {
+  font-style: italic;
+}
+
+.post-content :global(mark) {
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--sl-color-accent);
+  padding: 0 4px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+/* ========================================
+   LINKS
+   ======================================== */
 
 .post-content :global(a) {
   color: var(--sl-color-accent);
@@ -62,60 +118,85 @@
   color: var(--sl-color-accent-high);
 }
 
-.post-content :global(strong) {
-  font-weight: 600;
-  color: var(--sl-color-text);
-}
-
-.post-content :global(em) {
-  font-style: italic;
-}
-
-.post-content :global(ul),
-.post-content :global(ol) {
-  margin-bottom: 1.5rem;
-  padding-left: 1.75rem;
-}
+/* ========================================
+   LISTS (UL/OL)
+   ======================================== */
 
 .post-content :global(ul) {
   list-style: none;
+  margin: 2rem 0 2rem 1.5rem;
 }
 
 .post-content :global(ul li) {
   position: relative;
-  margin-bottom: 0.75rem;
-  padding-left: 0.5rem;
+  padding-left: 2rem;
+  margin-bottom: 1rem;
+  font-size: 1.15rem;
 }
 
 .post-content :global(ul li::before) {
-  content: '→';
+  content: '';
   position: absolute;
-  left: -1.25rem;
-  color: var(--sl-color-accent);
-  font-weight: 600;
+  left: 0;
+  top: 0.6em;
+  width: 10px;
+  height: 10px;
+  background: var(--sl-color-accent);
+  border-radius: 2px;
+  transform: rotate(45deg);
+}
+
+.post-content :global(ol) {
+  counter-reset: custom-counter;
+  list-style: none;
+  margin: 2rem 0 2rem 1.5rem;
 }
 
 .post-content :global(ol li) {
-  margin-bottom: 0.75rem;
-  padding-left: 0.5rem;
+  counter-increment: custom-counter;
+  position: relative;
+  padding-left: 3rem;
+  margin-bottom: 1.5rem;
+  font-size: 1.15rem;
+}
+
+.post-content :global(ol li::before) {
+  content: counter(custom-counter);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 32px;
+  height: 32px;
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--sl-color-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 0.9rem;
 }
 
 .post-content :global(li p) {
   margin-bottom: 0.5rem;
 }
 
+/* ========================================
+   CODE & PRE
+   ======================================== */
+
 .post-content :global(code) {
   background: rgba(249, 115, 22, 0.1);
   color: var(--sl-color-accent-high);
   padding: 0.2em 0.4em;
   border-radius: 0.25rem;
-  font-size: 0.9em;
+  font-size: 0.95rem;
   font-family: var(--sl-font-mono);
   font-weight: 500;
 }
 
 .post-content :global(pre) {
-  margin: 2rem 0;
+  margin: 3rem 0;
   padding: 1.5rem;
   border-radius: 0.75rem;
   overflow-x: auto;
@@ -128,14 +209,19 @@
   color: inherit;
   padding: 0;
   font-weight: 400;
+  font-size: 0.95rem;
 }
 
+/* ========================================
+   BLOCKQUOTES
+   ======================================== */
+
 .post-content :global(blockquote) {
-  border-left: 4px solid var(--sl-color-accent);
+  border-left: 6px solid var(--sl-color-accent);
   background: rgba(249, 115, 22, 0.05);
   padding: 1.25rem 1.5rem;
-  margin: 2rem 0;
-  border-radius: 0 0.5rem 0.5rem 0;
+  margin: 3rem 0;
+  border-radius: 0 0.75rem 0.75rem 0;
   font-style: italic;
   color: var(--sl-color-gray-2);
 }
@@ -144,13 +230,77 @@
   margin-bottom: 0;
 }
 
+/* ========================================
+   IMAGES & FIGURES
+   ======================================== */
+
 .post-content :global(img) {
   max-width: 100%;
   height: auto;
   border-radius: 0.75rem;
-  margin: 2.5rem 0;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  margin: 3.5rem auto;
+  display: block;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
 }
+
+.post-content :global(figure) {
+  margin: 3.5rem 0;
+  text-align: center;
+}
+
+.post-content :global(figure img) {
+  width: 100%;
+  border-radius: 24px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  margin: 0 auto;
+}
+
+.post-content :global(figcaption) {
+  margin-top: 1rem;
+  font-style: italic;
+  color: var(--sl-color-gray-3);
+  font-size: 0.9rem;
+}
+
+/* ========================================
+   TABLES
+   ======================================== */
+
+.post-content :global(table) {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  margin: 3rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.post-content :global(th) {
+  padding: 20px;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  color: var(--sl-color-accent);
+  background: rgba(255, 255, 255, 0.05);
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.post-content :global(td) {
+  padding: 18px 20px;
+  border-top: 1px solid var(--sl-color-gray-5);
+  transition: background 0.2s;
+}
+
+.post-content :global(tr:hover td) {
+  background: rgba(249, 115, 22, 0.05);
+}
+
+/* ========================================
+   HR DIVIDER
+   ======================================== */
 
 .post-content :global(hr) {
   border: none;
@@ -164,11 +314,100 @@
   margin: 3rem 0;
 }
 
-/* Light mode adjustments */
+/* ========================================
+   DETAILS/SUMMARY (Accordions)
+   ======================================== */
+
+.post-content :global(details) {
+  margin: 2rem 0;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid var(--sl-color-gray-5);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.post-content :global(summary) {
+  padding: 16px 20px;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--sl-color-accent);
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.post-content :global(summary::after) {
+  content: '+';
+  font-size: 1.5rem;
+  transition: transform 0.3s;
+}
+
+.post-content :global(details[open] summary::after) {
+  transform: rotate(45deg);
+}
+
+.post-content :global(details > *:not(summary)) {
+  padding: 0 20px 20px;
+  border-top: 1px solid var(--sl-color-gray-5);
+  padding-top: 15px;
+}
+
+/* ========================================
+   LIGHT MODE ADJUSTMENTS
+   ======================================== */
+
 :root[data-theme='light'] .post-content :global(pre) {
   background: rgba(0, 0, 0, 0.05);
 }
 
-:root[data-theme='light'] .post-content :global(img) {
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+:root[data-theme='light'] .post-content :global(img),
+:root[data-theme='light'] .post-content :global(figure img) {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+:root[data-theme='light'] .post-content :global(table) {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+:root[data-theme='light'] .post-content :global(details) {
+  background: rgba(255, 255, 255, 0.7);
+}
+
+/* ========================================
+   RESPONSIVE
+   ======================================== */
+
+@media (max-width: 768px) {
+  .post-content {
+    font-size: 1.1rem;
+  }
+
+  .post-content :global(h1) {
+    font-size: 2.5rem;
+  }
+
+  .post-content :global(h2) {
+    font-size: 1.875rem;
+    margin: 3rem 0 1.25rem;
+  }
+
+  .post-content :global(h3) {
+    font-size: 1.5rem;
+  }
+
+  .post-content :global(h4) {
+    font-size: 1.125rem;
+  }
+
+  .post-content :global(.dropcap::first-letter),
+  .post-content :global(p:first-of-type::first-letter) {
+    font-size: 3.5rem;
+  }
+
+  .post-content :global(ul),
+  .post-content :global(ol) {
+    margin-left: 0.5rem;
+  }
 }
