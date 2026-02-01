@@ -5,6 +5,7 @@ import SimpleLayout from '../../layouts/SimpleLayout.astro'
 import { Calendar, Clock, RefreshCw } from '@lucide/astro'
 import SocialShare from '../../components/SocialShare.astro'
 import RelatedPosts from '../../components/RelatedPosts.astro'
+import TableOfContents from '../../components/TableOfContents.astro'
 import '../../styles/blog-post-content.css'
 
 export const getStaticPaths = (async () => {
@@ -19,7 +20,7 @@ export const getStaticPaths = (async () => {
 }) satisfies GetStaticPaths
 
 const { entry } = Astro.props
-const { Content } = await entry.render()
+const { Content, headings } = await entry.render()
 
 // Get all published blog posts for related posts and navigation
 const allPosts = await getCollection('blog', ({ data }) => {
@@ -194,7 +195,8 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
   {/* Ambient background gradients */}
   <div class='liquid-ambient-bg'></div>
 
-  <article class='blog-post'>
+  <div class='blog-container'>
+    <article class='blog-post'>
     <header class='post-header'>
       {
         entry.data.tags && entry.data.tags.length > 0 && (
@@ -272,6 +274,11 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
     </footer>
   </article>
 
+  <aside class='toc-sidebar'>
+    <TableOfContents headings={headings} />
+  </aside>
+</div>
+
   {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
 
   {
@@ -317,12 +324,26 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
       transition: width 0.1s ease-out;
     }
 
+    .blog-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+      display: grid;
+      grid-template-columns: 1fr 300px;
+      gap: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
     .blog-post {
       max-width: 900px;
-      margin: 2rem auto;
       padding: 2rem 3rem;
       position: relative;
       z-index: 1;
+    }
+
+    .toc-sidebar {
+      position: relative;
     }
 
     .post-header {
@@ -518,10 +539,31 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
       background: rgba(0, 0, 0, 0.04);
     }
 
+    /* Hide TOC on tablet and below */
+    @media (max-width: 1024px) {
+      .blog-container {
+        grid-template-columns: 1fr;
+        gap: 0;
+      }
+
+      .toc-sidebar {
+        display: none;
+      }
+
+      .blog-post {
+        max-width: 900px;
+        margin: 0 auto;
+      }
+    }
+
     @media (max-width: 768px) {
+      .blog-container {
+        padding: 0 1rem;
+        margin: 1rem auto;
+      }
+
       .blog-post {
         padding: 2rem 1.5rem;
-        margin: 1rem;
       }
 
       .post-header h1 {
