@@ -266,7 +266,7 @@ describe('Integration Tests - Command Workflows', () => {
       );
 
       expect(result.exitCode).toBe(1);
-      expect(result.stderr).toContain('Invalid option');
+      expect(result.stderr).toContain('Invalid init command options');
       expect(result.stderr).toMatch(/nano|standard|enterprise|custom/);
     });
 

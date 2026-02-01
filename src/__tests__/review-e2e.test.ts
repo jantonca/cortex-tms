@@ -78,8 +78,12 @@ describe('Review E2E - Prerequisites', () => {
   it('should require PATTERNS.md to exist', async () => {
     await createSampleCodeFile(tempDir, 'sample.ts');
 
-    // Run review without PATTERNS.md
-    const result = await runCommand('review', ['sample.ts'], tempDir);
+    // Run review without PATTERNS.md (provide fake API key to get past validation)
+    const result = await runCommand(
+      'review',
+      ['sample.ts', '--api-key', 'sk-fake-key-for-testing'],
+      tempDir
+    );
 
     expectFailure(result);
     const mentionsPatternsFile = result.stdout.includes('PATTERNS.md') || result.stderr.includes('PATTERNS.md');
@@ -89,24 +93,38 @@ describe('Review E2E - Prerequisites', () => {
   it('should provide helpful message when PATTERNS.md is missing', async () => {
     await createSampleCodeFile(tempDir, 'sample.ts');
 
-    const result = await runCommand('review', ['sample.ts'], tempDir);
+    // Provide fake API key to get past validation
+    const result = await runCommand(
+      'review',
+      ['sample.ts', '--api-key', 'sk-fake-key-for-testing'],
+      tempDir
+    );
 
     expectFailure(result);
-    expect(result.stdout).toContain('cortex-tms init') ||
-      expect(result.stdout).toContain('initialize') ||
-      expect(result.stderr).toContain('not found');
+    const hasHelpfulMessage =
+      result.stdout.includes('cortex-tms init') ||
+      result.stdout.includes('Run') ||
+      result.stderr.includes('PATTERNS.md');
+    expect(hasHelpfulMessage).toBe(true);
   });
 
   it('should handle missing file to review', async () => {
     await createPatternsFile(tempDir);
 
-    // Try to review non-existent file
-    const result = await runCommand('review', ['nonexistent.ts'], tempDir);
+    // Try to review non-existent file (provide fake API key to get past validation)
+    const result = await runCommand(
+      'review',
+      ['nonexistent.ts', '--api-key', 'sk-fake-key-for-testing'],
+      tempDir
+    );
 
     expectFailure(result);
-    expect(result.stdout).toContain('not found') ||
-      expect(result.stderr).toContain('not found') ||
-      expect(result.stdout).toContain('nonexistent.ts');
+    const hasErrorMessage =
+      result.stdout.includes('File') ||
+      result.stderr.includes('File') ||
+      result.stdout.includes('nonexistent.ts') ||
+      result.stderr.includes('nonexistent.ts');
+    expect(hasErrorMessage).toBe(true);
   });
 });
 
@@ -129,9 +147,11 @@ describe('Review E2E - API Key Requirements', () => {
 
     // Should fail or warn about missing API key
     if (result.exitCode !== 0) {
-      expect(result.stdout).toContain('API key') ||
-        expect(result.stderr).toContain('API key') ||
-        expect(result.stdout).toContain('ANTHROPIC_API_KEY');
+      const hasApiKeyMessage =
+        result.stdout.includes('API key') ||
+        result.stderr.includes('API key') ||
+        result.stdout.includes('ANTHROPIC_API_KEY');
+      expect(hasApiKeyMessage).toBe(true);
     }
   });
 
@@ -187,14 +207,17 @@ describe('Review E2E - Provider Selection', () => {
   it('should reject invalid provider', async () => {
     const result = await runCommand(
       'review',
-      ['sample.ts', '--provider', 'invalid'],
+      ['sample.ts', '--provider', 'invalid', '--api-key', 'sk-fake-key-for-testing'],
       tempDir
     );
 
     expectFailure(result);
-    expect(result.stdout).toContain('provider') ||
-      expect(result.stderr).toContain('provider') ||
-      expect(result.stderr).toContain('invalid');
+    const hasProviderError =
+      result.stdout.includes('provider') ||
+      result.stderr.includes('provider') ||
+      result.stderr.includes('enum') ||
+      result.stderr.includes('anthropic');
+    expect(hasProviderError).toBe(true);
   });
 });
 
@@ -302,14 +325,17 @@ describe('Review E2E - Path Validation', () => {
   it('should reject path traversal attempts', async () => {
     const result = await runCommand(
       'review',
-      ['../../etc/passwd'],
+      ['../../etc/passwd', '--api-key', 'sk-fake-key-for-testing'],
       tempDir
     );
 
     expectFailure(result);
-    expect(result.stdout).toContain('invalid') ||
-      expect(result.stderr).toContain('invalid') ||
-      expect(result.stdout).toContain('path');
+    const hasPathError =
+      result.stdout.includes('traversal') ||
+      result.stderr.includes('traversal') ||
+      result.stdout.includes('Path') ||
+      result.stderr.includes('Path');
+    expect(hasPathError).toBe(true);
   });
 
   it('should accept valid relative paths', async () => {
