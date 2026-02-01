@@ -34,7 +34,7 @@ const posts = allPosts.sort((a, b) => {
       maintainable software.
     </p>
 
-    <div class='posts-grid glass-grid'>
+    <div class='posts-grid'>
       {
         posts.length === 0 ? (
           <p class='no-posts'>No blog posts yet. Check back soon!</p>
@@ -86,6 +86,7 @@ const posts = allPosts.sort((a, b) => {
     }
 
     .posts-grid {
+      display: grid;
       gap: 2.5rem;
       grid-template-columns: 1fr;
       max-width: 100%;
