@@ -1,0 +1,109 @@
+<!-- Social Preview Image for GitHub - 1200x630px -->
+<svg width="1200" height="630" viewBox="0 0 1200 630" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#111;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#1a1a1a;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#f97316;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#facc15;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0ea5a4;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Subtle grid pattern -->
+  <g opacity="0.05">
+    <line x1="0" y1="157.5" x2="1200" y2="157.5" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="315" x2="1200" y2="315" stroke="#fff" stroke-width="1"/>
+    <line x1="0" y1="472.5" x2="1200" y2="472.5" stroke="#fff" stroke-width="1"/>
+    <line x1="300" y1="0" x2="300" y2="630" stroke="#fff" stroke-width="1"/>
+    <line x1="600" y1="0" x2="600" y2="630" stroke="#fff" stroke-width="1"/>
+    <line x1="900" y1="0" x2="900" y2="630" stroke="#fff" stroke-width="1"/>
+  </g>
+
+  <!-- Accent bar top -->
+  <rect x="0" y="0" width="1200" height="4" fill="url(#accent)"/>
+
+  <!-- Logo (simplified version) -->
+  <g transform="translate(80, 120)">
+    <circle cx="60" cy="60" r="55" fill="#f97316" opacity="0.2"/>
+    <circle cx="60" cy="60" r="45" fill="#facc15" opacity="0.3"/>
+    <circle cx="60" cy="60" r="35" fill="#0ea5a4" opacity="0.4"/>
+    <circle cx="60" cy="60" r="25" fill="#f97316"/>
+  </g>
+
+  <!-- Title -->
+  <text x="200" y="200" font-family="system-ui, -apple-system, sans-serif" font-size="72" font-weight="700" fill="#ffffff">
+    Cortex TMS
+  </text>
+
+  <!-- Tagline -->
+  <text x="200" y="260" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="400" fill="#a0a0a0">
+    AI Governance Platform
+  </text>
+
+  <!-- Value Props -->
+  <g transform="translate(200, 320)">
+    <!-- Cost Efficiency -->
+    <g>
+      <rect x="0" y="0" width="6" height="50" fill="#facc15" rx="3"/>
+      <text x="25" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="600" fill="#facc15">
+        💰 40-60% Cost Reduction
+      </text>
+      <text x="25" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#808080">
+        Intelligent context management
+      </text>
+    </g>
+
+    <!-- Quality -->
+    <g transform="translate(0, 80)">
+      <rect x="0" y="0" width="6" height="50" fill="#0ea5a4" rx="3"/>
+      <text x="25" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="600" fill="#0ea5a4">
+        ✅ Zero Hallucinations
+      </text>
+      <text x="25" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#808080">
+        Semantic validation for AI agents
+      </text>
+    </g>
+
+    <!-- Sustainability -->
+    <g transform="translate(0, 160)">
+      <rect x="0" y="0" width="6" height="50" fill="#f97316" rx="3"/>
+      <text x="25" y="20" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="600" fill="#f97316">
+        🌱 60-70% Less Compute
+      </text>
+      <text x="25" y="45" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#808080">
+        Green governance for developers
+      </text>
+    </g>
+  </g>
+
+  <!-- Footer -->
+  <g transform="translate(80, 580)">
+    <text x="0" y="0" font-family="system-ui, -apple-system, monospace" font-size="18" fill="#606060">
+      cortex-tms.org
+    </text>
+    <text x="300" y="0" font-family="system-ui, -apple-system, monospace" font-size="18" fill="#606060">
+      •
+    </text>
+    <text x="330" y="0" font-family="system-ui, -apple-system, monospace" font-size="18" fill="#606060">
+      MIT License
+    </text>
+    <text x="510" y="0" font-family="system-ui, -apple-system, monospace" font-size="18" fill="#606060">
+      •
+    </text>
+    <text x="540" y="0" font-family="system-ui, -apple-system, monospace" font-size="18" fill="#606060">
+      ⭐ 146 Stars
+    </text>
+    <text x="720" y="0" font-family="system-ui, -apple-system, monospace" font-size="18" fill="#606060">
+      •
+    </text>
+    <text x="750" y="0" font-family="system-ui, -apple-system, monospace" font-size="18" fill="#f97316">
+      Production Ready
+    </text>
+  </g>
+</svg>

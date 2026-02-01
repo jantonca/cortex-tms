@@ -1,0 +1,103 @@
+# Dependabot configuration for automated dependency updates
+# https://docs.github.com/en/code-security/dependabot/dependabot-version-updates
+
+version: 2
+updates:
+  # Main project dependencies (npm/pnpm)
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 5
+    reviewers:
+      - "cortex-tms/maintainers"
+    labels:
+      - "dependencies"
+      - "automated"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+    # Group minor and patch updates together to reduce PR noise
+    groups:
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+    # Separate major updates (require more attention)
+    ignore:
+      # Let's handle major TypeScript updates manually
+      - dependency-name: "typescript"
+        update-types: ["version-update:semver-major"]
+
+  # Website dependencies
+  - package-ecosystem: "npm"
+    directory: "/website"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "website"
+      - "automated"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(dev-deps)"
+      include: "scope"
+    groups:
+      astro-ecosystem:
+        patterns:
+          - "@astrojs/*"
+          - "astro"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # Example app dependencies
+  - package-ecosystem: "npm"
+    directory: "/examples/todo-app"
+    schedule:
+      interval: "monthly"
+      day: "monday"
+      time: "09:00"
+      timezone: "UTC"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "examples"
+      - "automated"
+    commit-message:
+      prefix: "chore(deps)"
+      include: "scope"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    open-pull-requests-limit: 2
+    labels:
+      - "dependencies"
+      - "github-actions"
+      - "automated"
+    commit-message:
+      prefix: "chore(ci)"
+      include: "scope"
+
+# Security updates are handled automatically regardless of schedule
+# Dependabot will create PRs immediately for security vulnerabilities
+
+# Benefits:
+# - Automatic security patches
+# - Grouped minor/patch updates (less PR noise)
+# - Separate major updates (need review)
+# - Consistent commit message format
+# - Weekly cadence matches sprint cycles
+# - Reviewers automatically assigned

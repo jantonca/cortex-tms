@@ -1,0 +1,35 @@
+# GitHub Sponsors & Funding Options
+# These links will appear on your repository's "Sponsor" button
+
+# GitHub Sponsors (recommended - no fees)
+# github: [username]
+
+# Open Collective (good for transparency)
+# open_collective: cortex-tms
+
+# Ko-fi (simple one-time donations)
+# ko_fi: username
+
+# Patreon (recurring support)
+# patreon: username
+
+# Buy Me a Coffee (simple, popular)
+# custom: ['https://www.buymeacoffee.com/username']
+
+# Instructions:
+# 1. Choose your preferred platform(s)
+# 2. Uncomment and fill in your username/URL
+# 3. Set up your sponsor profile on the chosen platform(s)
+# 4. Commit and push this file
+#
+# Recommended setup for Cortex TMS:
+# - GitHub Sponsors (primary) - best integration, no fees
+# - Ko-fi or Buy Me a Coffee (secondary) - for one-time supporters
+#
+# Benefits:
+# - "Sponsor" button appears on your repo
+# - Shows community you're committed to maintaining the project
+# - Helps cover infrastructure costs (domain, hosting, etc.)
+# - Validates the project's value
+#
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/displaying-a-sponsor-button-in-your-repository
