@@ -66,26 +66,24 @@ const calculateReadingTime = (text: string) => {
 
 <style>
   .related-posts {
-    margin: 3rem 0;
+    margin: 3rem auto;
     padding: 3rem 0;
-    border-top: 1px solid var(--sl-color-gray-5);
-    border-bottom: 1px solid var(--sl-color-gray-5);
+    max-width: 1200px;
   }
 
   .related-title {
-    font-size: 1.75rem;
+    font-size: 2.5rem;
     font-weight: 700;
     color: var(--sl-color-text);
-    margin: 0 0 2rem 0;
-    text-align: center;
+    margin: 0 0 3rem 0;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--sl-color-gray-5);
   }
 
   .related-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
   }
 
   .related-card {
@@ -196,7 +194,7 @@ const calculateReadingTime = (text: string) => {
     }
 
     .related-title {
-      font-size: 1.5rem;
+      font-size: 2rem;
     }
   }
 </style>
