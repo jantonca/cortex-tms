@@ -160,8 +160,12 @@
 .post-actions {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 1rem;
   flex-wrap: wrap;
+  margin-top: 0.5rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Light theme */
@@ -179,6 +183,10 @@
 
 :root[data-theme='light'] .tag {
   background: rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='light'] .post-actions {
+  border-top-color: rgba(0, 0, 0, 0.1);
 }
 
 /* Responsive */
