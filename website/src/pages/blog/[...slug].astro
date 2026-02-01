@@ -307,6 +307,12 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
   }
 
   <style>
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 6rem;
+    }
+
     .progress-bar-container {
       position: fixed;
       top: 0;
