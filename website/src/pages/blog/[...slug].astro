@@ -4,6 +4,7 @@ import type { GetStaticPaths } from 'astro'
 import SimpleLayout from '../../layouts/SimpleLayout.astro'
 import { Calendar, Clock, RefreshCw } from '@lucide/astro'
 import SocialShare from '../../components/SocialShare.astro'
+import RelatedPosts from '../../components/RelatedPosts.astro'
 
 export const getStaticPaths = (async () => {
   const blogEntries = await getCollection('blog', ({ data }) => {
@@ -18,6 +19,39 @@ export const getStaticPaths = (async () => {
 
 const { entry } = Astro.props
 const { Content } = await entry.render()
+
+// Get all published blog posts for related posts and navigation
+const allPosts = await getCollection('blog', ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true
+})
+
+// Sort posts by date (newest first)
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+)
+
+// Find current post index
+const currentIndex = sortedPosts.findIndex((post) => post.slug === entry.slug)
+
+// Get next and previous posts
+const nextPost = currentIndex > 0 ? sortedPosts[currentIndex - 1] : null
+const prevPost =
+  currentIndex < sortedPosts.length - 1 ? sortedPosts[currentIndex + 1] : null
+
+// Get related posts based on shared tags (limit to 3)
+const relatedPosts = entry.data.tags
+  ? sortedPosts
+      .filter((post) => {
+        // Exclude current post
+        if (post.slug === entry.slug) return false
+        // Check if post has any shared tags
+        return (
+          post.data.tags &&
+          post.data.tags.some((tag) => entry.data.tags?.includes(tag))
+        )
+      })
+      .slice(0, 3)
+  : []
 
 const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat('en-US', {
@@ -236,6 +270,33 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
       >
     </footer>
   </article>
+
+  {relatedPosts.length > 0 && <RelatedPosts posts={relatedPosts} />}
+
+  {
+    (prevPost || nextPost) && (
+      <nav class='post-navigation'>
+        <div class='nav-container'>
+          {prevPost ? (
+            <a href={`/blog/${prevPost.slug}/`} class='nav-link prev-link'>
+              <span class='nav-label'>← Previous Post</span>
+              <span class='nav-title'>{prevPost.data.title}</span>
+            </a>
+          ) : (
+            <div />
+          )}
+          {nextPost ? (
+            <a href={`/blog/${nextPost.slug}/`} class='nav-link next-link'>
+              <span class='nav-label'>Next Post →</span>
+              <span class='nav-title'>{nextPost.data.title}</span>
+            </a>
+          ) : (
+            <div />
+          )}
+        </div>
+      </nav>
+    )
+  }
 
   <style>
     .progress-bar-container {
@@ -473,6 +534,67 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
       color: var(--sl-color-accent-high);
     }
 
+    .post-navigation {
+      max-width: 900px;
+      margin: 2rem auto;
+      padding: 0 3rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .nav-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+      padding: 2rem 0;
+      border-top: 1px solid var(--sl-color-gray-5);
+    }
+
+    .nav-link {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      text-decoration: none;
+      padding: 1.5rem;
+      border: 1px solid var(--sl-color-gray-5);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      transition: all 0.3s ease;
+    }
+
+    .nav-link:hover {
+      transform: translateY(-2px);
+      border-color: var(--sl-color-accent);
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+    .next-link {
+      text-align: right;
+    }
+
+    .nav-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--sl-color-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-title {
+      font-size: 1.125rem;
+      font-weight: 500;
+      color: var(--sl-color-text);
+      line-height: 1.4;
+    }
+
+    :root[data-theme='light'] .nav-link {
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    :root[data-theme='light'] .nav-link:hover {
+      background: rgba(0, 0, 0, 0.04);
+    }
+
     @media (max-width: 768px) {
       .blog-post {
         padding: 2rem 1.5rem;
@@ -502,6 +624,20 @@ const canonicalURL = new URL(`/blog/${entry.slug}/`, Astro.site).toString()
 
       .meta-content {
         font-size: 0.8125rem;
+      }
+
+      .post-navigation {
+        padding: 0 1.5rem;
+        margin: 1rem;
+      }
+
+      .nav-container {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .next-link {
+        text-align: left;
       }
     }
   </style>
