@@ -8,13 +8,9 @@ heroImage: '/images/blog/why-ai-agents-need-more-than-readme.webp'
 draft: false
 ---
 
-When we started building Cortex TMS with Claude Code, we did what everyone does: wrote a detailed README and expected the AI agent to remember it.
+import { Terminal, Callout } from '../../components/blog'
 
-It didn't work.
-
-Not because the README was bad. Because AI agents don't work like human developers.
-
-This is what we learned building a CLI tool with heavy AI assistance over 6 months.
+When we started building Cortex TMS with Claude Code, we did what everyone does: wrote a detailed README and expected the AI agent to remember it. It didn't work. Not because the README was bad. Because AI agents don't work like human developers. This is what we learned building a CLI tool with heavy AI assistance over 6 months.
 
 ---
 
@@ -76,7 +72,13 @@ Think of it like this: a human developer maintains mental "tiers" of knowledge:
 
 AI agents don't naturally separate these tiers. Everything competes for the same context window.
 
-**Important**: This is our interpretation based on observing Claude Code's behavior. We don't have access to how Claude processes context internally. This could be wrong.
+<Callout
+  type='warning'
+  title='Important Disclaimer'
+>
+  This is our interpretation based on observing Claude Code's behavior. We don't
+  have access to how Claude processes context internally. This could be wrong.
+</Callout>
 
 ---
 
@@ -150,12 +152,14 @@ We tried something different: organize documentation by access frequency, not co
 
 ### After Tiered System (v2.2-v2.7, ~330 commits)
 
+<Callout type="tip" title="Results Overview">
 **What we measured**:
 
 - Pattern violation rate: ~8% of commits needed corrections (80% reduction)
 - Back-and-forth cycles: 1-2 rounds per feature (50% reduction)
 - Repeated questions: Rare (AI references NEXT-TASKS.md consistently)
 - Archive burden: Clear triggers, automated with validation
+</Callout>
 
 **What improved**:
 
@@ -193,15 +197,17 @@ Here's a concrete example from our development:
 
 **NEXT-TASKS.md**:
 
-```markdown
-## Active Sprint: v2.6 Integrity & Atomicity
+<Terminal
+  title="NEXT-TASKS.md"
+  language="markdown"
+  content={`## Active Sprint: v2.6 Integrity & Atomicity
 
 **Remaining Work**:
 
 - [ ] Migration 7/7: cortex-orchestrator
   - Follow migration checklist in docs/core/PATTERNS.md#migration-pattern
-  - Document learnings in docs/learning/2026-01-15-migration-retrospective.md
-```
+  - Document learnings in docs/learning/2026-01-15-migration-retrospective.md`}
+    />
 
 **Result**:
 
@@ -220,11 +226,14 @@ This system has real costs. Here's when you shouldn't use it:
 
 ### 1. Small Projects (< 50 commits)
 
+<Callout type="warning" title="Overhead vs Benefits">
 **The problem**: Overhead of maintaining three tiers outweighs benefits.
 
 **Why it fails**: For small projects, a single README works fine. The forgetting problem only appears when project complexity exceeds what fits in one document.
 
 **Our recommendation**: Start with README. Migrate to tiered system when you notice AI forgetting decisions.
+
+</Callout>
 
 ### 2. Solo Developers Without AI Assistance
 
@@ -260,6 +269,7 @@ This system has real costs. Here's when you shouldn't use it:
 
 ### Prerequisites for Success
 
+<Callout type="tip" title="Prerequisites Checklist">
 Only adopt tiered memory if:
 
 - ✅ You're using AI coding assistants for 30%+ of development
@@ -269,6 +279,8 @@ Only adopt tiered memory if:
 - ✅ Your architecture is reasonably stable
 
 **The math**: Maintaining tiered system costs ~30 min/week. If that doesn't save more time than it costs, don't use it.
+
+</Callout>
 
 ---
 
@@ -289,9 +301,11 @@ Don't migrate everything at once. We evolved the system over 4 sprints:
 
 Manual enforcement doesn't work. We built validation into our CLI:
 
-```bash
-cortex validate --strict
-```
+<Terminal
+  title='validate.sh'
+  language='bash'
+  content='cortex validate --strict'
+/>
 
 **What it checks**:
 
@@ -319,22 +333,26 @@ HOT tier references WARM tier, doesn't duplicate it:
 
 ❌ **Bad** (duplicating pattern in NEXT-TASKS.md):
 
-```markdown
-## Migration Checklist
+<Terminal
+  title="NEXT-TASKS.md (Bad Example)"
+  language="markdown"
+  content={`## Migration Checklist
 
 1. Run cortex init
 2. Copy docs/
 3. Update README
-   [20 more lines duplicated from PATTERNS.md]
-```
+   [20 more lines duplicated from PATTERNS.md]`}
+   />
 
 ✅ **Good** (referencing pattern):
 
-```markdown
-## Migration Checklist
+<Terminal
+  title="NEXT-TASKS.md (Good Example)"
+  language="markdown"
+  content={`## Migration Checklist
 
-Follow: `docs/core/PATTERNS.md#migration-pattern`
-```
+Follow: \`docs/core/PATTERNS.md#migration-pattern\``}
+/>
 
 **Why it matters**: Duplication causes drift. When pattern updates, duplicates go stale.
 
@@ -346,6 +364,7 @@ After 6 months with tiered memory, here are open questions we don't have good an
 
 ### 1. Optimal HOT Tier Size
 
+<Callout type="warning" title="Open Question">
 We enforce 200 lines for `NEXT-TASKS.md`, but is that right?
 
 **What we've observed**:
@@ -357,6 +376,8 @@ We enforce 200 lines for `NEXT-TASKS.md`, but is that right?
 **Our guess**: Somewhere between 150-200 lines is optimal, but this likely varies by AI model and task complexity.
 
 **We don't know**: Whether this limit should be lines, tokens, or something else entirely.
+
+</Callout>
 
 ### 2. When to Split WARM Tier Docs
 
@@ -383,10 +404,12 @@ We aggressively archive completed tasks to COLD tier. But should we keep recent 
 
 The tiered memory system is built into Cortex TMS templates:
 
-```bash
-npm install -g cortex-tms
-cortex init
-```
+<Terminal
+  title='install.sh'
+  language='bash'
+  content={`npm install -g cortex-tms
+cortex init`}
+/>
 
 **What you get**:
 
@@ -409,6 +432,7 @@ cortex init
 
 This is our experience with one project, one AI coding assistant (Claude Code), and one maintainer.
 
+<Callout type="warning" title="Research Gaps">
 **We don't know**:
 
 - Whether this works for larger teams (5+ developers)
@@ -421,6 +445,7 @@ This is our experience with one project, one AI coding assistant (Claude Code), 
 - Do other teams experience the "forgetting problem" with AI assistants?
 - Have you found different solutions that work better?
 - What tier sizes work for your projects?
+</Callout>
 
 If you're experimenting with AI-assisted development, we'd love to hear what you're learning.
 
