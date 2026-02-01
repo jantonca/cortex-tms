@@ -97,6 +97,15 @@ import Default from '@astrojs/starlight/components/Header.astro'
   :root[data-theme='light'] .mobile-preferences {
     background: rgba(255, 255, 255, 0.95);
   }
+
+  /* Fix Starlight mobile sidebar visibility */
+  @media (max-width: 50rem) {
+    nav.sidebar {
+      z-index: 110 !important; /* Ensure sidebar is above the header */
+      background-color: var(--sl-color-bg);
+      padding-bottom: 2rem;
+    }
+  }
 </style>
 
 <!-- Add Blog link via JavaScript for better compatibility -->
