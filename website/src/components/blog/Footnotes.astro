@@ -1,0 +1,47 @@
+---
+/**
+ * Footnotes Component for Blog Posts
+ * Styled section for footnotes and references
+ */
+---
+
+<div class="footnotes">
+  <slot />
+</div>
+
+<style>
+  .footnotes {
+    margin-top: 6rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--sl-color-gray-5);
+    font-size: 0.9rem;
+    color: var(--sl-color-gray-3);
+  }
+
+  .footnotes :global(p) {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+
+  .footnotes :global(p:last-child) {
+    margin-bottom: 0;
+  }
+
+  .footnotes :global(a) {
+    color: var(--sl-color-accent);
+    text-decoration: underline;
+    text-decoration-color: rgba(249, 115, 22, 0.3);
+    text-underline-offset: 0.2em;
+    transition: all 0.2s ease;
+  }
+
+  .footnotes :global(a:hover) {
+    text-decoration-color: var(--sl-color-accent);
+    color: var(--sl-color-accent-high);
+  }
+
+  /* Light mode adjustments */
+  :root[data-theme='light'] .footnotes {
+    border-top-color: var(--sl-color-gray-5);
+  }
+</style>
