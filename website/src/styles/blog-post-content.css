@@ -1,0 +1,174 @@
+/**
+ * Blog Post Content Styles
+ * Elegant typography and reading experience
+ */
+
+.post-content {
+  font-size: 1.125rem;
+  line-height: 1.85;
+  color: var(--sl-color-gray-1);
+  position: relative;
+  z-index: 3;
+  padding: 0;
+}
+
+.post-content :global(h2) {
+  margin-top: 3rem;
+  margin-bottom: 1.25rem;
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--sl-color-text);
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+}
+
+.post-content :global(h3) {
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--sl-color-text);
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
+
+.post-content :global(h4) {
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--sl-color-text);
+  line-height: 1.5;
+}
+
+.post-content :global(p) {
+  margin-bottom: 1.5rem;
+}
+
+.post-content :global(p:last-child) {
+  margin-bottom: 0;
+}
+
+.post-content :global(a) {
+  color: var(--sl-color-accent);
+  text-decoration: underline;
+  text-decoration-color: rgba(249, 115, 22, 0.3);
+  text-underline-offset: 0.2em;
+  transition: all 0.2s ease;
+}
+
+.post-content :global(a:hover) {
+  text-decoration-color: var(--sl-color-accent);
+  color: var(--sl-color-accent-high);
+}
+
+.post-content :global(strong) {
+  font-weight: 600;
+  color: var(--sl-color-text);
+}
+
+.post-content :global(em) {
+  font-style: italic;
+}
+
+.post-content :global(ul),
+.post-content :global(ol) {
+  margin-bottom: 1.5rem;
+  padding-left: 1.75rem;
+}
+
+.post-content :global(ul) {
+  list-style: none;
+}
+
+.post-content :global(ul li) {
+  position: relative;
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.post-content :global(ul li::before) {
+  content: '→';
+  position: absolute;
+  left: -1.25rem;
+  color: var(--sl-color-accent);
+  font-weight: 600;
+}
+
+.post-content :global(ol li) {
+  margin-bottom: 0.75rem;
+  padding-left: 0.5rem;
+}
+
+.post-content :global(li p) {
+  margin-bottom: 0.5rem;
+}
+
+.post-content :global(code) {
+  background: rgba(249, 115, 22, 0.1);
+  color: var(--sl-color-accent-high);
+  padding: 0.2em 0.4em;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  font-family: var(--sl-font-mono);
+  font-weight: 500;
+}
+
+.post-content :global(pre) {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  border-radius: 0.75rem;
+  overflow-x: auto;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--sl-color-gray-5);
+}
+
+.post-content :global(pre code) {
+  background: none;
+  color: inherit;
+  padding: 0;
+  font-weight: 400;
+}
+
+.post-content :global(blockquote) {
+  border-left: 4px solid var(--sl-color-accent);
+  background: rgba(249, 115, 22, 0.05);
+  padding: 1.25rem 1.5rem;
+  margin: 2rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-style: italic;
+  color: var(--sl-color-gray-2);
+}
+
+.post-content :global(blockquote p:last-child) {
+  margin-bottom: 0;
+}
+
+.post-content :global(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 2.5rem 0;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+}
+
+.post-content :global(hr) {
+  border: none;
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    var(--sl-color-gray-5),
+    transparent
+  );
+  margin: 3rem 0;
+}
+
+/* Light mode adjustments */
+:root[data-theme='light'] .post-content :global(pre) {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+:root[data-theme='light'] .post-content :global(img) {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
