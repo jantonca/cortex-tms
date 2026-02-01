@@ -37,8 +37,10 @@ Watch your context costs drop by 60-94% instantly.
 
 We're launching Guardian, an AI-powered code review tool that catches architectural violations before they reach production. It's like having a senior architect review every PR, but instant and pattern-aware.
 
-<Terminal title="guardian-demo.sh" language="bash">
-# Preview Guardian in safe mode
+<Terminal
+  title="guardian-demo.sh"
+  language="bash"
+  content={`# Preview Guardian in safe mode
 npx cortex-tms review src/ --safe
 
 🛡️ Guardian: Semantic Validation
@@ -52,8 +54,8 @@ npx cortex-tms review src/commands/ --strict
 📊 Analysis Complete
   ✓ 12 files scanned
   ✓ All patterns compliant
-  ⚡ 0.8s execution time
-</Terminal>
+  ⚡ 0.8s execution time`}
+/>
 
 Stay tuned for deep dives on:
 
@@ -76,16 +78,17 @@ Modern AI tools like Claude Code are incredibly powerful, but they come with a h
 
 Result? **Higher costs, slower responses, worse suggestions.**
 
-<Terminal language="typescript">
-// Without Cortex TMS
+<Terminal
+  language="typescript"
+  content={`// Without Cortex TMS
 const context = await readEverything() // 66,834 tokens
 const cost = calculateCost(context)    // $0.20 per query
 
 // With Cortex TMS tiered memory
 const context = await readHotTier()    // 3,647 tokens
 const cost = calculateCost(context)    // $0.01 per query
-const savings = "94.5% reduction"      // ✨
-</Terminal>
+const savings = "94.5% reduction"      // ✨`}
+/>
 
 <Callout type="tip" title="Token Savings Explained">
 Cortex TMS uses a **tiered memory system** (HOT/WARM/COLD) to give AI only what it needs:

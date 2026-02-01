@@ -8,6 +8,8 @@ heroImage: "/images/blog/preventing-ai-pr-tsunami.webp"
 draft: false
 ---
 
+import { Terminal, Callout } from '../../components/blog'
+
 **tldraw**, a popular React drawing library, recently announced they're [pausing external contributions](https://github.com/tldraw/tldraw/issues/7695) due to challenges with AI-generated pull requests.
 
 > "Like many other open-source projects on GitHub, tldraw has recently seen a significant increase in contributions generated entirely by AI tools. While some of these pull requests are formally correct, most suffer from incomplete or misleading context, misunderstanding of the codebase, and little to no follow-up engagement from their authors."
@@ -91,10 +93,10 @@ Guardian is Cortex TMS's new CLI tool that audits code against your project's do
 
 **Step 1**: Document your patterns (you should already be doing this)
 
-```markdown
-# docs/core/PATTERNS.md
-
-## Data Fetching Pattern
+<Terminal
+  title="docs/core/PATTERNS.md"
+  language="markdown"
+  content={`# Data Fetching Pattern
 
 ❌ Don't: Custom useEffect hooks for API calls
 ✅ Do: Use React Query for all server state
@@ -102,26 +104,28 @@ Guardian is Cortex TMS's new CLI tool that audits code against your project's do
 **Why**: Prevents stale data, reduces boilerplate, standardizes error handling
 
 ## Example
-\`\`\`typescript
+
 // ❌ Violates pattern
 const [data, setData] = useState(null);
 useEffect(() => { fetch('/api/users').then(setData) }, []);
 
 // ✅ Follows pattern
-const { data } = useQuery({ queryKey: ['users'], queryFn: fetchUsers });
-\`\`\`
-```
+const { data } = useQuery({ queryKey: ['users'], queryFn: fetchUsers });`}
+/>
 
 **Step 2**: Run Guardian on AI-generated code
 
-```bash
-cortex review src/components/UserList.tsx
-```
+<Terminal
+  title="review.sh"
+  language="bash"
+  content="cortex review src/components/UserList.tsx"
+/>
 
 **Step 3**: Guardian catches violations
 
-```
-🔍 Reviewing src/components/UserList.tsx
+<Terminal
+  title="guardian-output.txt"
+  content={`🔍 Reviewing src/components/UserList.tsx
 
 ❌ Pattern Violation (Line 12-18)
 Pattern: Data Fetching
@@ -138,8 +142,8 @@ Suggestion: Replace useEffect with useQuery hook
 ✅ Domain Logic: Proper error boundary usage
 ❌ Pattern Compliance: 1 violation found
 
-Review complete. Fix violations before committing.
-```
+Review complete. Fix violations before committing.`}
+/>
 
 **Step 4**: Fix before committing
 
@@ -151,7 +155,9 @@ No more "oops, I'll fix that in the next PR."
 
 We've been testing Guardian on Cortex TMS itself. Here's what we've observed so far:
 
-> **Important Context**: These are preliminary results from our own small project (~20 PRs over 2 weeks, single maintainer). This is not independent verification or proof of effectiveness at scale.
+<Callout type="warning" title="Important Context">
+These are preliminary results from our own small project (~20 PRs over 2 weeks, single maintainer). This is not independent verification or proof of effectiveness at scale.
+</Callout>
 
 ### Before Guardian (AI-assisted development, manual review)
 - ⏱️ **Review time**: 20-30 min per PR (our experience)
@@ -202,8 +208,11 @@ Here's a real commit from Cortex TMS development where Guardian caught an issue:
 **PR**: Add blog infrastructure (TMS-284a)
 
 **Guardian Review**:
-```bash
-$ cortex review website/src/pages/blog/index.astro
+
+<Terminal
+  title="review.sh"
+  language="bash"
+  content={`cortex review website/src/pages/blog/index.astro
 
 ❌ Pattern Violation (Line 8)
 Pattern: Component Imports
@@ -212,8 +221,8 @@ Found: Manual grid implementation
 
 Reference: docs/core/PATTERNS.md#starlight-components
 
-✅ Fixed before commit
-```
+✅ Fixed before commit`}
+/>
 
 **Result**: Clean PR, no maintainer back-and-forth, pattern consistency maintained.
 
@@ -222,23 +231,32 @@ Reference: docs/core/PATTERNS.md#starlight-components
 ## Get Started: Three Ways to Use Guardian
 
 ### 1. Pre-Commit Hook (Recommended)
-```bash
-# .husky/pre-commit
-cortex review $(git diff --staged --name-only --diff-filter=d | grep -E '\.(ts|tsx|js|jsx)$')
-```
+
+<Terminal
+  title=".husky/pre-commit"
+  language="bash"
+  content={`# .husky/pre-commit
+cortex review $(git diff --staged --name-only --diff-filter=d | grep -E '\\.(ts|tsx|js|jsx)$')`}
+/>
 
 ### 2. Manual Review Before PR
-```bash
-# Review your changes before committing
-cortex review src/
-```
+
+<Terminal
+  title="manual-review.sh"
+  language="bash"
+  content={`# Review your changes before committing
+cortex review src/`}
+/>
 
 ### 3. CI/CD Integration
-```yaml
-# .github/workflows/guardian.yml
+
+<Terminal
+  title=".github/workflows/guardian.yml"
+  language="yaml"
+  content={`# .github/workflows/guardian.yml
 - name: Guardian Review
-  run: cortex review --strict src/
-```
+  run: cortex review --strict src/`}
+/>
 
 ---
 
@@ -279,11 +297,13 @@ Guardian is an experiment, and like all tools, it has real costs and limitations
 
 ### 1. False Positive Noise
 
-**The risk**: Guardian can flag violations that aren't actually violations (hallucinations).
+<Callout type="warning" title="False Positive Risk">
+Guardian can flag violations that aren't actually violations (hallucinations).
 
 **Impact**: Instead of reducing review burden, this creates a NEW type of noise—developers have to evaluate whether Guardian's feedback is correct.
 
 **Our current mitigation**: We treat Guardian as a "second opinion," not ground truth. When Guardian flags something, we manually review and decide whether to fix or dismiss it.
+</Callout>
 
 **Future work**: We're considering adding `// guardian-ignore` comments or a CLI flag to suppress specific checks. This would make the "dismiss" decision explicit and portable.
 
@@ -291,19 +311,20 @@ Guardian is an experiment, and like all tools, it has real costs and limitations
 
 ### 2. Documentation Drift (Architectural Debt)
 
-**The risk**: Guardian enforces whatever is in `PATTERNS.md`. If your team changes a pattern but forgets to update the doc, Guardian will enforce outdated rules.
+<Callout type="warning" title="Documentation Drift">
+Guardian enforces whatever is in `PATTERNS.md`. If your team changes a pattern but forgets to update the doc, Guardian will enforce outdated rules.
 
 **Impact**: Developers get frustrated when Guardian enforces patterns the team no longer follows. This creates architectural debt—the gap between documented patterns and actual practices grows.
 
 **Our mitigation**: We treat PATTERNS.md as "living documentation"—when we change a pattern in code, we update the doc in the same PR. Guardian actually helps here by forcing us to keep docs current.
+</Callout>
 
 **The upside**: This friction surfaces documentation drift immediately, preventing the accumulation of architectural debt caused by lack of shared context.
 
 ### 3. Cost & Latency
 
-**The risk**: Running an LLM on every pre-commit hook adds latency (5-15 seconds) and API costs ($0.01-0.05 per review).
-
-**Impact**: Slows down the "inner loop" of development. Frequent commits become more expensive.
+<Callout type="tip" title="Cost Transparency">
+Running an LLM on every pre-commit hook adds latency (5-15 seconds) and API costs ($0.01-0.05 per review).
 
 **Our approach: Two deployment modes**
 
@@ -315,13 +336,14 @@ Guardian is an experiment, and like all tools, it has real costs and limitations
 - **Pre-commit**: Individual contributor pays (uses their API key)
 - **CI/CD**: Project maintainer/org pays (API key stored in CI secrets)
 
-**Cost example**: At ~$0.03 per review and 20 reviews/week, that's ~$0.60/week or ~$30/year per developer. For open source projects, contributors bear the pre-commit cost; maintainers bear the CI cost. Budget accordingly.
+**Cost example**: At ~$0.03 per review and 20 reviews/week, that's ~$0.60/week or ~$30/year per developer.
+</Callout>
 
 **Our workflow**: We use pre-commit for features (learning mode) and CI for hotfixes (safety net mode).
 
 ### When You Shouldn't Use Guardian
 
-Skip Guardian if:
+<Callout type="danger" title="Skip Guardian If">
 - Your team already has strong pattern adherence (no AI-assisted development)
 - Your patterns aren't clearly documented yet (Guardian will be confused)
 - You're optimizing for commit speed over review quality
@@ -329,6 +351,7 @@ Skip Guardian if:
 - You can't afford the latency (~10 seconds) or cost (~$0.03 per review)
 
 **Remember**: Guardian is a bet that ~10 seconds of pre-commit checking saves 10+ minutes of human review. If that math doesn't work for your team, don't use it.
+</Callout>
 
 ---
 
@@ -336,28 +359,31 @@ Skip Guardian if:
 
 Guardian is part of Cortex TMS v2.7 (released January 2026). **It's new and experimental**—we're still learning what works.
 
-```bash
-# Install globally
+<Terminal
+  title="install-guardian.sh"
+  language="bash"
+  content={`# Install globally
 npm install -g cortex-tms
 
 # Initialize in your project
 cortex init
 
 # Review code against your patterns
-cortex review src/
-```
+cortex review src/`}
+/>
 
 **Requirements**:
 - `docs/core/PATTERNS.md` (document your conventions)
 - OpenAI or Anthropic API key (BYOK - bring your own key)
 
-**Current limitations**:
+<Callout type="warning" title="Current Limitations">
 - Early stage tool - expect false positives and false negatives
 - Target accuracy: 70%+ on architectural violations (unverified)
 - Works best when patterns are clearly documented
 - LLM API costs apply (you provide your own key)
 
 **We'd love your feedback** on whether this approach is useful for your project.
+</Callout>
 
 ---
 

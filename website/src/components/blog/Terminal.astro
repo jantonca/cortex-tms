@@ -6,10 +6,12 @@
 interface Props {
   title?: string
   language?: string
+  content?: string
 }
 
-const { title, language } = Astro.props
+const { title, language, content } = Astro.props
 const id = `terminal-${Math.random().toString(36).substr(2, 9)}`
+const hasSlot = Astro.slots.has('default')
 ---
 
 <div class="terminal">
@@ -28,7 +30,7 @@ const id = `terminal-${Math.random().toString(36).substr(2, 9)}`
       <span class="copy-text">Copy</span>
     </button>
   </div>
-  <pre id={id} class={language ? `language-${language}` : ''}><code><slot /></code></pre>
+  <pre id={id} class={language ? `language-${language}` : ''}><code>{content || ''}<slot /></code></pre>
 </div>
 
 <style>
@@ -108,35 +110,13 @@ const id = `terminal-${Math.random().toString(36).substr(2, 9)}`
     font-family: var(--sl-font-mono);
   }
 
-  /* Reset any MDX-processed elements inside code */
-  code h1,
-  code h2,
-  code h3,
-  code h4,
-  code h5,
-  code h6,
-  code p,
-  code ul,
-  code ol,
-  code li {
-    all: unset;
-    display: inline;
-    font-family: var(--sl-font-mono);
-    font-size: 0.95rem;
-    color: inherit;
-    font-weight: normal;
-    margin: 0;
-    padding: 0;
-    line-height: 1.6;
+  /* Light mode adjustments */
+  :root[data-theme='light'] .terminal {
+    background: #1e293b;
   }
 
-  code h1::before,
-  code h2::before,
-  code h3::before,
-  code h4::before,
-  code h5::before,
-  code h6::before {
-    content: '# ';
+  :root[data-theme='light'] pre {
+    color: #e2e8f0;
   }
 </style>
 
