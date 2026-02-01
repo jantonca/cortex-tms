@@ -16,8 +16,10 @@ This document describes the patterns used when designing and maintaining Cortex 
 | Clean templates | Pattern 8: No Meta-Documentation | 250 |
 | When to archive | Pattern 9: Archive Trigger Events | 283 |
 | Testing templates | Pattern 10: Validation with AI Agents | 313 |
+| Website design | Pattern 11: Website Design System | 672 |
 | Error handling | Pattern 12: Centralized Error Handling | 367 |
 | Input validation | Pattern 13: Zod Input Validation | 460 |
+| Blog post creation | Pattern 14: Blog Post Creation (MDX) | 809 |
 
 ---
 
@@ -804,5 +806,271 @@ const { variant = 'default', tilt = 'subtle' } = Astro.props;
 
 **References**:
 - **Learning**: `docs/learning/2026-01-21-liquid-glass-design-retrospective.md`
+
+---
+
+## Pattern 14: Blog Post Creation (MDX)
+
+**Rule**: All blog posts use MDX format with specialized components for enhanced visual hierarchy and reading experience.
+
+### ✅ File Structure
+
+**Location**: `website/src/content/blog/`
+
+**File Format**: `.mdx` (Markdown + JSX components)
+
+**Required frontmatter**:
+```mdx
+---
+title: 'Post Title'
+description: 'Brief description for SEO and previews'
+pubDate: 2026-01-27
+author: 'Cortex TMS Team'
+tags: ['ai', 'documentation', 'developer-experience']
+heroImage: '/images/blog/post-slug.webp'
+draft: false
+---
+
+import { Terminal, Callout, Figure, Footnotes } from '../../components/blog'
+```
+
+### ✅ Component Usage Guidelines
+
+**Terminal Component** - For code blocks and command examples:
+
+```mdx
+<Terminal
+  title="install.sh"
+  language="bash"
+  content={`npm install cortex-tms
+pnpm add cortex-tms`}
+/>
+```
+
+**When to use**:
+- Shell commands and scripts
+- Code examples that users might copy
+- Configuration files
+- Multi-line code blocks
+
+**Key rule**: Always use `content` prop with template literals (not `<slot />`). This ensures proper copy functionality in MDX.
+
+**Callout Component** - For important notes and warnings:
+
+```mdx
+<Callout type="tip" title="Pro Tip">
+Use the content prop for Terminal components to ensure copy functionality works correctly.
+</Callout>
+
+<Callout type="warning" title="Important">
+These are early metrics. Will update after 30-60 days in production.
+</Callout>
+
+<Callout type="danger" title="Critical Risk">
+Never commit sensitive files like .env or credentials.json to version control.
+</Callout>
+```
+
+**Valid types**: `tip`, `warning`, `danger` (no other types allowed)
+
+**When to use**:
+- `tip`: Best practices, pro tips, helpful hints
+- `warning`: Important caveats, limitations, early results
+- `danger`: Critical issues, security warnings, breaking changes
+
+**Figure Component** - For images with captions:
+
+```mdx
+<Figure
+  src="/images/blog/architecture-diagram.png"
+  alt="System architecture showing microservices layout"
+  caption="Fig 1.1 - Our microservices architecture with API gateway and service mesh"
+/>
+```
+
+**When to use**:
+- Diagrams and architecture illustrations
+- Screenshots that need explanation
+- Charts and graphs
+- Any image that benefits from a caption
+
+**Footnotes Component** - For references and citations:
+
+```mdx
+<Footnotes>
+
+[1] Referential integrity is the cornerstone of modern state reconciliation in React and Vue.
+
+[2] For more information, see the [Immutable.js documentation](https://immutable-js.com/).
+
+</Footnotes>
+```
+
+**When to use**:
+- Reference citations
+- Additional context that doesn't fit inline
+- Links to external resources
+- Notes about data sources or methodology
+
+### ✅ MDX-Specific Rules
+
+**Critical: Closing Tag Indentation**
+
+```mdx
+<!-- ✅ Good: Closing tag at column 0 -->
+- List item with callout
+<Callout type="tip">
+Content here
+</Callout>
+
+<!-- ❌ Bad: Indented closing tag (MDX parse error) -->
+- List item with callout
+  <Callout type="tip">
+  Content here
+  </Callout>  <!-- This will fail! -->
+```
+
+**Why it matters**: MDX parser requires component closing tags to be at column 0 when used inside list items or other block elements.
+
+**Template Literal Syntax for Code**:
+
+```mdx
+<!-- ✅ Good: Using content prop -->
+<Terminal
+  content={`code here`}
+/>
+
+<!-- ❌ Bad: Using slot pattern -->
+<Terminal>
+code here
+</Terminal>
+```
+
+**Why it matters**: MDX processes content inside component slots, breaking code formatting and copy functionality.
+
+### ✅ Standard Markdown Features
+
+These work automatically with enhanced styling:
+
+- **Drop caps**: First paragraph automatically gets large first letter
+- **Headings**: H2 with left border, H3 in accent color, H4 uppercase
+- **Lists**: Bullet lists get diamond bullets, numbered lists get circular badges
+- **Tables**: Automatically styled with glass effect
+- **Inline code**: `code` gets accent background
+- **Bold/italic**: **bold** and *italic* work as expected
+- **Links**: Styled with accent color and hover effects
+
+### ❌ Anti-Patterns
+
+```mdx
+<!-- Bad: Invalid Callout type -->
+<Callout type="important">  <!-- No such type! Use tip/warning/danger -->
+
+<!-- Bad: Using slot instead of content prop -->
+<Terminal language="bash">
+npm install
+</Terminal>
+
+<!-- Bad: Indented closing tags in lists -->
+- Item
+  <Callout type="tip">
+  Text
+  </Callout>  <!-- Parse error! -->
+
+<!-- Bad: Inline style blocks (not supported in MDX) -->
+<style>
+.custom-class { color: red; }
+</style>
+
+<!-- Bad: Forgetting to import components -->
+<Terminal content="code" />  <!-- Error: Terminal is not defined -->
+
+<!-- Bad: Using HTML img instead of Figure -->
+<img src="/image.png" />  <!-- Use Figure component for consistency -->
+```
+
+**Why they fail**:
+- Invalid Callout types cause runtime errors
+- Slot pattern breaks copy functionality in MDX
+- Indented closing tags fail MDX parsing
+- Inline styles not supported in MDX
+- Undefined components cause build errors
+- Direct HTML doesn't match design system
+
+### ✅ Complete Example
+
+```mdx
+---
+title: 'Building with AI Agents'
+description: 'How we use Claude Code for 80% of our development'
+pubDate: 2026-02-01
+author: 'Cortex TMS Team'
+tags: ['ai', 'development']
+heroImage: '/images/blog/ai-development.webp'
+draft: false
+---
+
+import { Terminal, Callout, Figure, Footnotes } from '../../components/blog'
+
+Modern development workflows are changing. We're seeing teams ship faster by working with AI agents rather than against them.
+
+## Getting Started
+
+First, install the tools you'll need:
+
+<Terminal
+  title="setup.sh"
+  language="bash"
+  content={`npm install -g cortex-tms
+cortex init`}
+/>
+
+<Callout type="tip" title="Pro Tip">
+Run `cortex validate` after setup to ensure everything is configured correctly.
+</Callout>
+
+## Architecture Overview
+
+Our system follows a tiered memory pattern:
+
+<Figure
+  src="/images/blog/tiered-memory.png"
+  alt="Diagram showing HOT, WARM, and COLD tiers"
+  caption="Fig 1 - The three-tier memory architecture"
+/>
+
+<Callout type="warning" title="Early Results">
+These metrics are based on 6 months of internal use. Your results may vary.
+</Callout>
+
+## References
+
+<Footnotes>
+
+[1] For more on AI collaboration patterns, see our [AI Collaboration Policy](/community/about/).
+
+[2] Tiered memory concept adapted from CPU cache architecture principles.
+
+</Footnotes>
+```
+
+### ✅ Migration Checklist
+
+When converting existing `.md` files to `.mdx`:
+
+- [ ] Rename file from `.md` to `.mdx`
+- [ ] Add component imports after frontmatter
+- [ ] Convert code blocks to `<Terminal>` components
+- [ ] Add `<Callout>` components for warnings/tips
+- [ ] Replace `<img>` tags with `<Figure>` components
+- [ ] Ensure all Callout closing tags are at column 0
+- [ ] Use `content` prop for Terminal components
+- [ ] Test build: `pnpm build`
+- [ ] Verify in browser (light and dark modes)
+
+**References**:
+- **Components**: `website/src/components/blog/`
+- **Guide**: `tmp/mdx-components-guide.md` (temporary reference)
+- **Design**: `/home/jma/repos-ubuntu/github/cortex-tms-internal/branding/designs/blog-styles.html`
 
 <!-- @cortex-tms-version 3.1.0 -->
