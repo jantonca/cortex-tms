@@ -12,11 +12,11 @@
     "@astrojs/mdx": "^4.3.13",
     "@astrojs/rss": "^4.0.15",
     "@astrojs/starlight": "^0.37.5",
-    "@fontsource-variable/noto-sans": "5.1.1",
-    "@fontsource-variable/noto-serif": "5.1.1",
-    "@fontsource/noto-sans-mono": "5.1.0",
-    "@lucide/astro": "^0.562.0",
+    "@fontsource-variable/noto-sans": "5.2.10",
+    "@fontsource-variable/noto-serif": "5.2.9",
+    "@fontsource/noto-sans-mono": "5.2.10",
+    "@lucide/astro": "^0.563.0",
     "astro": "^5.17.1",
-    "sharp": "0.33.5"
+    "sharp": "0.34.5"
   }
 }
