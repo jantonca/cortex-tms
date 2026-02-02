@@ -43,8 +43,8 @@ importers:
         specifier: ^9.0.7
         version: 9.0.9
       '@types/node':
-        specifier: ^20.19.30
-        version: 20.19.30
+        specifier: ^25.2.0
+        version: 25.2.0
       eslint:
         specifier: ^9.17.0
         version: 9.39.2
@@ -62,19 +62,19 @@ importers:
         version: 5.9.3
       vitest:
         specifier: ^4.0.18
-        version: 4.0.18(@types/node@20.19.30)(tsx@4.21.0)
+        version: 4.0.18(@types/node@25.2.0)(tsx@4.21.0)
 
   website:
     dependencies:
       '@astrojs/mdx':
         specifier: ^4.3.13
-        version: 4.3.13(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
+        version: 4.3.13(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
       '@astrojs/rss':
         specifier: ^4.0.15
         version: 4.0.15
       '@astrojs/starlight':
         specifier: ^0.37.5
-        version: 0.37.5(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
+        version: 0.37.5(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
       '@fontsource-variable/noto-sans':
         specifier: 5.1.1
         version: 5.1.1
@@ -86,10 +86,10 @@ importers:
         version: 5.1.0
       '@lucide/astro':
         specifier: ^0.562.0
-        version: 0.562.0(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
+        version: 0.562.0(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
       astro:
         specifier: ^5.17.1
-        version: 5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
+        version: 5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
       sharp:
         specifier: 0.33.5
         version: 0.33.5
@@ -1119,11 +1119,11 @@ packages:
   '@types/node@17.0.45':
     resolution: {integrity: sha512-w+tIMs3rq2afQdsPJlODhoUEKzFP1ayaoyl1CcnwtIlsVe7K7bA1NGm4s3PraqTLlXnbIN84zuBlxBWo1u9BLw==}
 
-  '@types/node@20.19.30':
-    resolution: {integrity: sha512-WJtwWJu7UdlvzEAUm484QNg5eAoq5QR08KDNx7g45Usrs2NtOPiX8ugDqmKdXkyL03rBqU5dYNYVQetEpBHq2g==}
-
   '@types/node@22.19.7':
     resolution: {integrity: sha512-MciR4AKGHWl7xwxkBa6xUGxQJ4VBOmPTF7sL+iGzuahOFaO0jHCsuEfS80pan1ef4gWId1oWOweIhrDEYLuaOw==}
+
+  '@types/node@25.2.0':
+    resolution: {integrity: sha512-DZ8VwRFUNzuqJ5khrvwMXHmvPe+zGayJhr2CDNiKB1WBE1ST8Djl00D0IC4vvNmHMdj6DlbYRIaFE7WHjlDl5w==}
 
   '@types/sax@1.2.7':
     resolution: {integrity: sha512-rO73L89PJxeYM3s3pPPjiPgVVcymqU490g0YO5n5By0k2Erzj6tay/4lr1CHAAU4JyOWd1rpQ8bCf6cZfHU96A==}
@@ -2658,6 +2658,9 @@ packages:
   undici-types@6.21.0:
     resolution: {integrity: sha512-iwDZqg0QAGrg9Rav5H4n0M64c3mkR59cJ6wQp+7C4nI0gsmExaedaYLNO44eT4AtBBwjbTiGPMlt2Md0T9H9JQ==}
 
+  undici-types@7.16.0:
+    resolution: {integrity: sha512-Zz+aZWSj8LE6zoxD+xrjh4VfkIG8Ya6LvYkZqtUQGJPZjYl53ypCaUwWqo7eI0x66KBGeRo+mlBEkMSeSZ38Nw==}
+
   unified@11.0.5:
     resolution: {integrity: sha512-xKvGhPWw3k84Qjh8bI3ZeJjqnyadK+GEFtazSfZv/rKeTkTjOJho6mFqh2SM96iIcZokxiOpg78GazTSg8+KHA==}
 
@@ -3014,12 +3017,12 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@astrojs/mdx@4.3.13(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))':
+  '@astrojs/mdx@4.3.13(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.10
       '@mdx-js/mdx': 3.1.1
       acorn: 8.15.0
-      astro: 5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
+      astro: 5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
       es-module-lexer: 1.7.0
       estree-util-visit: 2.0.0
       hast-util-to-html: 9.0.5
@@ -3048,17 +3051,17 @@ snapshots:
       stream-replace-string: 2.0.0
       zod: 3.25.76
 
-  '@astrojs/starlight@0.37.5(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))':
+  '@astrojs/starlight@0.37.5(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))':
     dependencies:
       '@astrojs/markdown-remark': 6.3.10
-      '@astrojs/mdx': 4.3.13(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
+      '@astrojs/mdx': 4.3.13(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
       '@astrojs/sitemap': 3.7.0
       '@pagefind/default-ui': 1.4.0
       '@types/hast': 3.0.4
       '@types/js-yaml': 4.0.9
       '@types/mdast': 4.0.4
-      astro: 5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
-      astro-expressive-code: 0.41.6(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
+      astro: 5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
+      astro-expressive-code: 0.41.6(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))
       bcp-47: 2.1.0
       hast-util-from-html: 2.0.3
       hast-util-select: 6.0.4
@@ -3653,9 +3656,9 @@ snapshots:
 
   '@jridgewell/sourcemap-codec@1.5.5': {}
 
-  '@lucide/astro@0.562.0(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))':
+  '@lucide/astro@0.562.0(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3))':
     dependencies:
-      astro: 5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
+      astro: 5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
 
   '@mdx-js/mdx@3.1.1':
     dependencies:
@@ -3847,7 +3850,7 @@ snapshots:
   '@types/fs-extra@11.0.4':
     dependencies:
       '@types/jsonfile': 6.1.4
-      '@types/node': 20.19.30
+      '@types/node': 25.2.0
 
   '@types/hast@3.0.4':
     dependencies:
@@ -3864,7 +3867,7 @@ snapshots:
 
   '@types/jsonfile@6.1.4':
     dependencies:
-      '@types/node': 20.19.30
+      '@types/node': 25.2.0
 
   '@types/mdast@4.0.4':
     dependencies:
@@ -3876,7 +3879,7 @@ snapshots:
 
   '@types/mute-stream@0.0.4':
     dependencies:
-      '@types/node': 20.19.30
+      '@types/node': 25.2.0
 
   '@types/nlcst@2.0.3':
     dependencies:
@@ -3884,21 +3887,21 @@ snapshots:
 
   '@types/node@17.0.45': {}
 
-  '@types/node@20.19.30':
-    dependencies:
-      undici-types: 6.21.0
-
   '@types/node@22.19.7':
     dependencies:
       undici-types: 6.21.0
 
+  '@types/node@25.2.0':
+    dependencies:
+      undici-types: 7.16.0
+
   '@types/sax@1.2.7':
     dependencies:
-      '@types/node': 20.19.30
+      '@types/node': 25.2.0
 
   '@types/through@0.0.33':
     dependencies:
-      '@types/node': 20.19.30
+      '@types/node': 25.2.0
 
   '@types/unist@2.0.11': {}
 
@@ -3917,13 +3920,13 @@ snapshots:
       chai: 6.2.2
       tinyrainbow: 3.0.3
 
-  '@vitest/mocker@4.0.18(vite@7.3.1(@types/node@20.19.30)(tsx@4.21.0))':
+  '@vitest/mocker@4.0.18(vite@7.3.1(@types/node@25.2.0)(tsx@4.21.0))':
     dependencies:
       '@vitest/spy': 4.0.18
       estree-walker: 3.0.3
       magic-string: 0.30.21
     optionalDependencies:
-      vite: 7.3.1(@types/node@20.19.30)(tsx@4.21.0)
+      vite: 7.3.1(@types/node@25.2.0)(tsx@4.21.0)
 
   '@vitest/pretty-format@4.0.18':
     dependencies:
@@ -3995,12 +3998,12 @@ snapshots:
 
   astring@1.9.0: {}
 
-  astro-expressive-code@0.41.6(astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)):
+  astro-expressive-code@0.41.6(astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)):
     dependencies:
-      astro: 5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
+      astro: 5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3)
       rehype-expressive-code: 0.41.6
 
-  astro@5.17.1(@types/node@22.19.7)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3):
+  astro@5.17.1(@types/node@25.2.0)(rollup@4.55.1)(tsx@4.21.0)(typescript@5.9.3):
     dependencies:
       '@astrojs/compiler': 2.13.0
       '@astrojs/internal-helpers': 0.7.5
@@ -4057,8 +4060,8 @@ snapshots:
       unist-util-visit: 5.0.0
       unstorage: 1.17.4
       vfile: 6.0.3
-      vite: 6.4.1(@types/node@22.19.7)(tsx@4.21.0)
-      vitefu: 1.1.1(vite@6.4.1(@types/node@22.19.7)(tsx@4.21.0))
+      vite: 6.4.1(@types/node@25.2.0)(tsx@4.21.0)
+      vitefu: 1.1.1(vite@6.4.1(@types/node@25.2.0)(tsx@4.21.0))
       xxhash-wasm: 1.1.0
       yargs-parser: 21.1.1
       yocto-spinner: 0.2.3
@@ -6077,6 +6080,8 @@ snapshots:
 
   undici-types@6.21.0: {}
 
+  undici-types@7.16.0: {}
+
   unified@11.0.5:
     dependencies:
       '@types/unist': 3.0.3
@@ -6173,7 +6178,7 @@ snapshots:
       '@types/unist': 3.0.3
       vfile-message: 4.0.3
 
-  vite@6.4.1(@types/node@22.19.7)(tsx@4.21.0):
+  vite@6.4.1(@types/node@25.2.0)(tsx@4.21.0):
     dependencies:
       esbuild: 0.25.12
       fdir: 6.5.0(picomatch@4.0.3)
@@ -6182,11 +6187,11 @@ snapshots:
       rollup: 4.55.1
       tinyglobby: 0.2.15
     optionalDependencies:
-      '@types/node': 22.19.7
+      '@types/node': 25.2.0
       fsevents: 2.3.3
       tsx: 4.21.0
 
-  vite@7.3.1(@types/node@20.19.30)(tsx@4.21.0):
+  vite@7.3.1(@types/node@25.2.0)(tsx@4.21.0):
     dependencies:
       esbuild: 0.27.2
       fdir: 6.5.0(picomatch@4.0.3)
@@ -6195,18 +6200,18 @@ snapshots:
       rollup: 4.55.1
       tinyglobby: 0.2.15
     optionalDependencies:
-      '@types/node': 20.19.30
+      '@types/node': 25.2.0
       fsevents: 2.3.3
       tsx: 4.21.0
 
-  vitefu@1.1.1(vite@6.4.1(@types/node@22.19.7)(tsx@4.21.0)):
+  vitefu@1.1.1(vite@6.4.1(@types/node@25.2.0)(tsx@4.21.0)):
     optionalDependencies:
-      vite: 6.4.1(@types/node@22.19.7)(tsx@4.21.0)
+      vite: 6.4.1(@types/node@25.2.0)(tsx@4.21.0)
 
-  vitest@4.0.18(@types/node@20.19.30)(tsx@4.21.0):
+  vitest@4.0.18(@types/node@25.2.0)(tsx@4.21.0):
     dependencies:
       '@vitest/expect': 4.0.18
-      '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@20.19.30)(tsx@4.21.0))
+      '@vitest/mocker': 4.0.18(vite@7.3.1(@types/node@25.2.0)(tsx@4.21.0))
       '@vitest/pretty-format': 4.0.18
       '@vitest/runner': 4.0.18
       '@vitest/snapshot': 4.0.18
@@ -6223,10 +6228,10 @@ snapshots:
       tinyexec: 1.0.2
       tinyglobby: 0.2.15
       tinyrainbow: 3.0.3
-      vite: 7.3.1(@types/node@20.19.30)(tsx@4.21.0)
+      vite: 7.3.1(@types/node@25.2.0)(tsx@4.21.0)
       why-is-node-running: 2.3.0
     optionalDependencies:
-      '@types/node': 20.19.30
+      '@types/node': 25.2.0
     transitivePeerDependencies:
       - jiti
       - less
