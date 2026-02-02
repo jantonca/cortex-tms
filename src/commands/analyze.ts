@@ -80,7 +80,7 @@ async function runAnalysis(): Promise<void> {
       console.log(`  ${chalk.cyan('Estimated usage:')} ${savings.monthlySessions} AI sessions/month`);
       console.log(`  ${chalk.green('Savings per session:')} ~$${savings.costSavings.perSession.toFixed(3)}`);
       console.log(`  ${chalk.green('Savings per month:')} ~$${savings.costSavings.perMonth.toFixed(2)}`);
-      console.log(chalk.gray(`  (Based on ${savings.modelUsed} pricing)`));
+      console.log(chalk.gray(`  (Estimates based on ${savings.modelUsed} pricing and a simple usage model – actual savings will vary)`));
     }
 
     // Next Steps

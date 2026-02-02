@@ -75,11 +75,11 @@ After upgrading:
 
 ## Adopting TMS in Existing Projects
 
-Most developers adopt Cortex TMS "mid-flight." This section ensures a safe integration without clobbering your existing work.
+Many developers adopt Cortex TMS "mid-flight." This section is designed to help you integrate TMS safely without clobbering your existing work.
 
 ### Overview
 
-This comprehensive guide walks you through migrating an existing project to Cortex TMS structure. Estimated time: **15 minutes to 2 hours** depending on existing documentation.
+This comprehensive guide walks you through migrating an existing project to Cortex TMS structure. Estimated time: **15 minutes to 4 hours** depending on existing documentation.
 
 **Quick Navigation**:
 - [Pre-Migration Checklist](#pre-migration-checklist) - Prepare for migration
@@ -105,7 +105,7 @@ Before starting, complete these preparation steps:
   ```bash
   npx cortex-tms analyze
   ```
-  This shows your current docs, recommended TMS scope, and potential savings.
+  This shows your current docs, recommended TMS scope, and (when available) potential token/cost savings.
 
 - [ ] **Review migration strategy**: The analyze output suggests which files to keep, migrate, or archive
 
@@ -133,7 +133,7 @@ npx cortex-tms analyze
 - Migration strategy steps
 - Potential token/cost savings
 
-**Example output**:
+**Example output** (illustrative only; your numbers will be different):
 ```
 📊 Project Overview
   Name: my-app
@@ -319,10 +319,12 @@ Check actual token reduction:
 npx cortex-tms status --tokens
 ```
 
-**Expected results**:
-- 60-80% context reduction for standard projects
+**What we typically see in our own projects**:
+- ~60-70% context reduction when using HOT/WARM/COLD tiering
 - Faster AI responses (less context to process)
 - Lower API costs per session
+
+Your results will vary based on project size, structure, and how often you use AI.
 
 #### 5. First Maintenance Cycle
 
