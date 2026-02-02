@@ -72,6 +72,17 @@ async function runAnalysis(): Promise<void> {
     console.log();
     console.log(`  ${chalk.cyan('Estimated effort:')} ~${analysis.estimatedEffort}`);
 
+    // Savings Projection (if TMS docs exist)
+    if (analysis.savingsProjection) {
+      const savings = analysis.savingsProjection;
+      console.log(chalk.bold('\n💰 Potential Savings with TMS'));
+      console.log(`  ${chalk.cyan('Context reduction:')} ${savings.tokenReduction.toLocaleString()} tokens (${savings.percentReduction.toFixed(1)}%)`);
+      console.log(`  ${chalk.cyan('Estimated usage:')} ${savings.monthlySessions} AI sessions/month`);
+      console.log(`  ${chalk.green('Savings per session:')} ~$${savings.costSavings.perSession.toFixed(3)}`);
+      console.log(`  ${chalk.green('Savings per month:')} ~$${savings.costSavings.perMonth.toFixed(2)}`);
+      console.log(chalk.gray(`  (Based on ${savings.modelUsed} pricing)`));
+    }
+
     // Next Steps
     console.log(chalk.bold('\n🚀 Next Steps'));
     console.log(chalk.gray('  1. Review the migration strategy above'));

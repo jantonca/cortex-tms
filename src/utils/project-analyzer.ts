@@ -7,6 +7,22 @@
 import { promises as fs } from 'fs';
 import path from 'path';
 import { glob } from 'glob';
+import {
+  analyzeTokenUsage,
+  MODEL_PRICING,
+  type ModelName,
+} from './token-counter.js';
+
+export interface SavingsProjection {
+  tokenReduction: number; // Tokens saved by using HOT tier only
+  percentReduction: number; // Percentage reduction
+  monthlySessions: number; // Estimated sessions per month
+  costSavings: {
+    perSession: number; // Savings per session (USD)
+    perMonth: number; // Savings per month (USD)
+  };
+  modelUsed: ModelName; // Which model pricing was used
+}
 
 export interface ProjectAnalysis {
   projectName: string;
@@ -17,6 +33,7 @@ export interface ProjectAnalysis {
   recommendedScope: 'nano' | 'standard' | 'enterprise';
   migrationStrategy: string[];
   estimatedEffort: string;
+  savingsProjection?: SavingsProjection; // Optional: only if TMS docs exist
 }
 
 export interface DocumentationFile {
@@ -52,7 +69,10 @@ export async function analyzeProject(cwd: string): Promise<ProjectAnalysis> {
   // Estimate effort
   const estimatedEffort = estimateEffort(existingDocs);
 
-  return {
+  // Calculate savings projection (optional - only if TMS docs exist)
+  const savingsProjection = await calculateSavingsProjection(cwd, fileCount, linesOfCode);
+
+  const result: ProjectAnalysis = {
     projectName,
     projectType,
     fileCount,
@@ -62,6 +82,13 @@ export async function analyzeProject(cwd: string): Promise<ProjectAnalysis> {
     migrationStrategy,
     estimatedEffort,
   };
+
+  // Only include savings projection if it exists
+  if (savingsProjection) {
+    result.savingsProjection = savingsProjection;
+  }
+
+  return result;
 }
 
 /**
@@ -288,4 +315,71 @@ function estimateEffort(existingDocs: DocumentationFile[]): string {
   }
 
   return '2-4 hours (extensive migration)';
+}
+
+/**
+ * Calculate savings projection based on project size and TMS adoption
+ */
+async function calculateSavingsProjection(
+  cwd: string,
+  fileCount: number,
+  linesOfCode: number
+): Promise<SavingsProjection | undefined> {
+  try {
+    // Try to analyze actual token usage (if TMS docs exist)
+    const tokenStats = await analyzeTokenUsage(cwd);
+
+    // Estimate monthly sessions based on project size
+    const monthlySessions = estimateMonthlySessions(fileCount, linesOfCode);
+
+    // Use Claude Sonnet 4.5 as baseline (most common model)
+    const model: ModelName = 'claude-sonnet-4.5';
+    const pricing = MODEL_PRICING[model];
+
+    // Calculate costs
+    const fullRepoTokens = tokenStats.total.tokens;
+    const hotTierTokens = tokenStats.hot.totalTokens;
+    const tokenReduction = fullRepoTokens - hotTierTokens;
+    const percentReduction = tokenStats.savings.percentReduction;
+
+    // Cost per session (input tokens only)
+    const fullRepoCostPerSession = (fullRepoTokens / 1_000_000) * pricing.input;
+    const hotTierCostPerSession = (hotTierTokens / 1_000_000) * pricing.input;
+    const savingsPerSession = fullRepoCostPerSession - hotTierCostPerSession;
+
+    // Monthly savings
+    const savingsPerMonth = savingsPerSession * monthlySessions;
+
+    return {
+      tokenReduction,
+      percentReduction,
+      monthlySessions,
+      costSavings: {
+        perSession: savingsPerSession,
+        perMonth: savingsPerMonth,
+      },
+      modelUsed: model,
+    };
+  } catch (error) {
+    // If token analysis fails (no TMS docs yet), return undefined
+    return undefined;
+  }
+}
+
+/**
+ * Estimate monthly AI coding sessions based on project size
+ */
+function estimateMonthlySessions(fileCount: number, linesOfCode: number): number {
+  // Small projects: ~20 sessions/month (1 per workday)
+  if (fileCount < 10 || linesOfCode < 1000) {
+    return 20;
+  }
+
+  // Medium projects: ~40 sessions/month (2 per workday)
+  if (fileCount < 100 || linesOfCode < 10000) {
+    return 40;
+  }
+
+  // Large projects: ~60 sessions/month (3 per workday)
+  return 60;
 }

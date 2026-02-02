@@ -36,9 +36,12 @@
 - src/utils/project-analyzer.ts (core logic)
 - src/cli.ts (command registration)
 
-#### Task 2.4: Savings Projection (3h) ⏸️
-**Status**: Planned
+#### Task 2.4: Savings Projection (3h) ✅
+**Status**: Complete
 **Goal**: Show "You'll save $X/month" estimate
+**Files**:
+- src/utils/project-analyzer.ts (added savings calculation)
+- src/commands/analyze.ts (display savings section)
 
 #### Task 2.6: Migration Guide (3h) ⏸️
 **Status**: Planned
