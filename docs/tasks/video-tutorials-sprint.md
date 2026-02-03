@@ -18,6 +18,22 @@ Create AI-generated video tutorials to:
 
 ---
 
+## ✅ Refinements Applied (2026-02-03)
+
+Based on external feedback, the following improvements were incorporated:
+
+1. **Added Phase 2 decision gate** - Evaluate engagement before committing to all 11 videos
+2. **Enhanced Phase 1 validation** - Added CTA question: "What action would you take?"
+3. **Hero script capture** - New Task 1.3 to document script for cross-channel reuse
+4. **Show failure + fix** - Quick Start tutorial demonstrates fixing validation warnings (builds trust)
+5. **Centralized video metadata** - JSON config file to avoid hardcoding across website
+6. **YouTube comment monitoring** - Process to feed support questions → docs/roadmap
+7. **Realistic success metrics** - Adjusted view counts for niche tool, prioritized retention over raw views
+8. **Product correlation tracking** - Monitor GitHub stars, npm downloads during video releases
+9. **Stable concepts focus** - Emphasize timeless concepts over volatile CLI flags
+
+---
+
 ## Phase 1: Setup & Validation (1 week)
 
 **Goal**: Prove the workflow works before committing to full series.
@@ -73,12 +89,38 @@ Create AI-generated video tutorials to:
 - [ ] Review: Check pacing, audio levels, text clarity
 
 #### Validation (30 min)
-- [ ] User test: Show 3-5 people, ask "What is this tool?"
+- [ ] User test: Show 3-5 people, ask:
+  - "What is this tool?"
+  - "What action would you take after this video?" (validates CTA strength)
 - [ ] Check: Do they understand in <60 seconds?
 - [ ] Fix: Adjust script/visuals if confused
 - [ ] Decide: Good enough to proceed with full series?
 
 **Deliverable**: 60-second hero video, workflow validated
+
+---
+
+### Task 1.3: Capture Hero Script for Reuse (30 min)
+
+**Goal**: Document the hero video script for multi-channel reuse.
+
+#### Create Script File
+**File**: `docs/marketing/hero-video-script.md`
+
+- [ ] Create `docs/marketing/` directory if it doesn't exist
+- [ ] Write verbatim script from Task 1.2
+- [ ] Add metadata: Duration, target CTA, key messages
+- [ ] Document variations for different channels:
+  - Homepage hero text
+  - Launch tweets/LinkedIn posts
+  - Future ad copy (if needed)
+
+#### Reuse Checklist
+- [ ] Extract 1-2 sentence summary for social media
+- [ ] Extract key value props for homepage copy
+- [ ] Note which phrases tested well with users
+
+**Deliverable**: Documented script ready for cross-channel adaptation
 
 ---
 
@@ -100,9 +142,13 @@ Create AI-generated video tutorials to:
    - Show: Files created in `docs/` directory
    - Explain: "9 files created—these guide your AI"
 
-3. **Validate** (30 sec)
+3. **Validate** (1 min)
    - Run: `cortex-tms validate`
    - Show: Warnings about placeholders (normal)
+   - **Show failure + fix** (builds trust):
+     - Pick 1-2 placeholders to fix
+     - Edit file, replace placeholder text
+     - Run `validate` again, show warnings cleared
 
 4. **Start AI Session** (1.5 min)
    - Run: `cortex-tms prompt init-session`
@@ -186,7 +232,32 @@ Create AI-generated video tutorials to:
 
 ---
 
-### Task 2.4: Website Integration Components (4 hours)
+### Task 2.4: Website Integration Components (5 hours)
+
+#### Video Metadata Config (30 min)
+**File**: `website/src/content/videos.json`
+
+```json
+{
+  "videos": [
+    {
+      "id": "hero-demo",
+      "youtubeId": "...",
+      "title": "60-Second Demo",
+      "description": "See Cortex TMS in action",
+      "duration": "1:00",
+      "category": "getting-started",
+      "thumbnail": "/images/thumbnails/hero-demo.jpg"
+    }
+  ]
+}
+```
+
+**Purpose**: Centralized metadata to avoid hardcoding video IDs across multiple files.
+
+- [ ] Create config file with video metadata schema
+- [ ] Add type definitions for video objects
+- [ ] Document how to add new videos
 
 #### VideoPlayer Component
 **File**: `website/src/components/VideoPlayer.tsx`
@@ -203,8 +274,13 @@ export function VideoPlayer({ videoId, title, description, thumbnail }: VideoPla
   // Lazy-load iframe on click (performance)
   // Show custom thumbnail with play button overlay
   // Full YouTube embed on play
+  // Ensure no layout shift (CLS) when iframe loads
 }
 ```
+
+- [ ] Implement lazy-load behavior
+- [ ] Test Lighthouse performance (watch CLS score)
+- [ ] Ensure compatible with Astro/Starlight setup
 
 #### Homepage Hero Video Section
 **File**: `website/src/pages/index.astro`
@@ -259,7 +335,61 @@ Description: |
 Tags: [cortex-tms, ai, llm, context-management, tiered-memory, claude, cursor, copilot]
 ```
 
-**Deliverable**: YouTube channel ready for uploads
+#### Ongoing Comment Monitoring
+- [ ] Set up weekly review of YouTube comments
+- [ ] Identify support questions → add to GitHub Discussions or docs
+- [ ] Identify feature requests → feed to roadmap (keep rationale in private repo)
+- [ ] Respond to comments to build community engagement
+
+**Deliverable**: YouTube channel ready for uploads + monitoring process established
+
+---
+
+## 🚦 Phase 2 Decision Gate: Evaluate Before Phase 3
+
+**Goal**: Decide if full 11-video series is worth the investment.
+
+### Evaluation Criteria (After Phase 2 Complete)
+
+#### Production Efficiency
+- [ ] **Time per video**: Did Phase 2 videos stay within estimates?
+  - If >50% overrun: Trim Phase 3 to highest-impact videos only
+  - If on-time: Proceed with full Phase 3
+
+#### Engagement Metrics
+- [ ] **YouTube Analytics** (2 weeks after MVP launch):
+  - Views per video: Trending up or flat?
+  - Watch time retention: >60%? (slightly lower bar than initial 70%)
+  - Comments/questions: Are people engaging?
+- [ ] **Website traffic**: Did videos drive measurable traffic to cortex-tms.org?
+- [ ] **Product metrics**: Any correlation with:
+  - GitHub stars increase?
+  - npm download bump?
+  - New GitHub Discussions posts?
+
+#### Qualitative Feedback
+- [ ] **User surveys**: Are new users mentioning videos as helpful?
+- [ ] **Community sentiment**: Positive feedback on YouTube/Reddit/Twitter?
+- [ ] **Support burden**: Did videos reduce repetitive support questions?
+
+### Decision Framework
+
+**Proceed with full Phase 3** if:
+- ✅ Production time manageable (≤50% overrun)
+- ✅ Retention >60% on MVP videos
+- ✅ Positive qualitative feedback
+- ✅ Some measurable product metric improvement
+
+**Trim Phase 3 to priority videos** if:
+- ⚠️ Production time overrun >50%
+- ⚠️ Engagement lower than expected but not zero
+- → Focus on: Migration, Team Setup, Troubleshooting, 1 Case Study
+
+**Pause or pivot** if:
+- ❌ Very low engagement (<50 views/video after 2 weeks)
+- ❌ Poor retention (<40%)
+- ❌ Negative feedback (confusing, unhelpful)
+- → Consider screencast format or written tutorials instead
 
 ---
 
@@ -312,19 +442,47 @@ Tags: [cortex-tms, ai, llm, context-management, tiered-memory, claude, cursor, c
 ### Phase 1 Success (Test Video)
 - [ ] Workflow takes <4 hours to produce 60-second video
 - [ ] 3/5 user testers understand tool in <60 seconds
+- [ ] 3/5 user testers can articulate clear next action (validates CTA)
 - [ ] Video quality acceptable for public release
 
 ### Phase 2 Success (MVP Series)
+
+#### Content Delivery
 - [ ] 3 videos published to YouTube
-- [ ] Website `/tutorials` page live
-- [ ] >100 views/video in first week
-- [ ] >70% watch time retention (YouTube Analytics)
+- [ ] Website `/tutorials` page live with video gallery
+- [ ] Video metadata centralized (not hardcoded)
+
+#### Engagement Metrics (Primary)
+- [ ] **Watch time retention**: >60% average across 3 videos
+  - *Note*: Retention matters more than raw view counts for a niche tool
+- [ ] **Viewer feedback**: >70% positive sentiment in comments/surveys
+
+#### Reach Metrics (Secondary)
+- [ ] Views per video in first 2 weeks:
+  - Realistic for niche dev tool: 50-100+ views
+  - Stretch goal: 100-200+ views
+  - *Note*: Early view counts may be modest; focus on retention + feedback
+
+#### Product Correlation Metrics (Track, Don't Optimize For)
+- [ ] GitHub stars: Track weekly trend during video releases
+- [ ] npm downloads: Track weekly trend during video releases
+- [ ] Website traffic: Measure % from YouTube referrals
+- [ ] GitHub Discussions: Note any uptick in new user questions
 
 ### Phase 3 Success (Full Series)
-- [ ] 11 videos total published
-- [ ] >1000 subscribers on YouTube channel
-- [ ] >50% of new users mention "saw video" in surveys
-- [ ] Video traffic drives >20% of website visits
+
+#### Content Complete
+- [ ] 11 videos total published (or 7-8 if Phase 2 gate trims scope)
+- [ ] Regular upload schedule maintained
+
+#### Channel Growth
+- [ ] YouTube subscribers: 200-500+ (realistic for niche tool)
+- [ ] Total channel views: 2000-5000+
+
+#### User Adoption Signal
+- [ ] >30% of new users mention "saw video" in surveys/discussions
+- [ ] Video traffic drives 10-20% of website visits
+- [ ] Reduced repetitive "how do I start?" support questions
 
 ---
 
@@ -386,9 +544,16 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
 
 ### Risk: Videos become outdated as tool evolves
 **Mitigation**:
-- Focus on concepts (timeless) over specific commands (changes)
-- Add pinned comment with updates
-- Plan refresh schedule (every 6 months)
+- **Emphasize stable concepts and commands**:
+  - Core concepts: Tiered memory (HOT/WARM/COLD), token optimization
+  - Stable commands: `init`, `validate`, `status`, `prompt init-session`
+  - Avoid deep-diving into volatile flags/options that may change
+- **Template reuse**: Create reusable intro/outro segments, terminal animations
+- **Version pinning**: Note Cortex TMS version in video description
+- **Update strategy**:
+  - Add pinned comment with updates for breaking changes
+  - Refresh videos every 6-12 months if major CLI changes
+  - For minor changes, update docs and link in comments
 
 ---
 
@@ -420,14 +585,17 @@ Co-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>"
    - Start Task 1.1: Tool Setup
 
 **Estimated Timeline**:
-- Phase 1: 1 week (6 hours focused work)
-- Phase 2: 2-3 weeks (20 hours focused work)
-- Phase 3: 4-6 weeks (40 hours focused work)
+- Phase 1: 1 week (6.5 hours focused work)
+- Phase 2: 2-3 weeks (25 hours focused work)
+- **GATE**: Evaluate Phase 2 results before Phase 3
+- Phase 3: 4-6 weeks (40 hours focused work) *if Phase 2 succeeds*
 
-**Total**: 2-3 months for full series (11 videos)
+**Total**: 2-3 months for full series (11 videos) *if both gates pass*
 
 ---
 
-**Decision Point**: After Phase 1 test video, evaluate if this approach is sustainable before committing to full series.
+**Decision Points**:
+1. **After Phase 1**: Evaluate if workflow is sustainable (<4 hours per video)
+2. **After Phase 2**: Evaluate engagement, retention, product metrics before committing to Phase 3
 
 <!-- @cortex-tms-version 3.1.0 -->
