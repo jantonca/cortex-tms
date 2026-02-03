@@ -27,7 +27,7 @@ export const BRAND_COLORS = {
 export const BRAND_FONTS = {
   sans: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif',
   serif: 'Georgia, "Times New Roman", serif',
-  mono: 'Monaco, Consolas, "Courier New", monospace',
+  mono: '"Noto Sans Mono", "SF Mono", Monaco, Consolas, monospace',
 };
 
 export const BRAND_TIMING = {
