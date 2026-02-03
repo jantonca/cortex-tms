@@ -39,7 +39,7 @@ describe('Integration Tests - Command Workflows', () => {
       );
 
       expect(initResult.exitCode).toBe(0);
-      expect(initResult.stdout).toContain('Success');
+      expect(initResult.stdout).toContain('Cortex TMS Initialized');
 
       // Verify files created
       expect(existsSync(join(tempDir, 'NEXT-TASKS.md'))).toBe(true);
