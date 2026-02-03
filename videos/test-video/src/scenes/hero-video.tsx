@@ -509,15 +509,15 @@ export default makeScene2D(function* (view) {
       ref={term}
       width={1750}
       height={850}
-      fill={'rgba(40, 35, 32, 0.65)'}
-      radius={20}
-      shadowColor={'rgba(0, 0, 0, 0.5)'}
-      shadowBlur={50}
-      shadowOffsetY={20}
+      fill={'rgba(40, 35, 32, 0.58)'}
+      radius={22}
+      shadowColor={'rgba(0, 0, 0, 0.55)'}
+      shadowBlur={60}
+      shadowOffsetY={26}
       padding={0}
       opacity={0}
-      stroke={'rgba(80, 70, 65, 0.3)'}
-      lineWidth={1}
+      stroke={'rgba(255, 255, 255, 0.08)'}
+      lineWidth={2}
     >
       <Layout
         layout
