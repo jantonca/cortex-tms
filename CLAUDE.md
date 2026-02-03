@@ -47,6 +47,44 @@ Expert Senior Developer. Follow the **"Propose, Justify, Recommend"** framework.
 ## 🛠 Operational Loop
 
 **Step 0: Git Protocol (MANDATORY)**
+
+**🚨 CRITICAL: USER APPROVAL REQUIRED FOR ACTION GIT COMMANDS 🚨**
+
+**BEFORE running ANY git command that MODIFIES state:**
+1. **STOP** - Do NOT execute the command
+2. **SHOW** the user the exact git command(s) you plan to run
+3. **WAIT** for explicit user approval
+4. **EXECUTE** only after receiving approval
+
+**Action commands requiring approval:**
+- ✋ `git commit` - ALWAYS show commit message first, wait for approval
+- ✋ `git add` - Show which files will be staged, wait for approval
+- ✋ `git push` - Show branch and remote, wait for approval
+- ✋ `git pull` - Show what will be pulled, wait for approval
+- ✋ `git merge` - Show branches involved, wait for approval
+- ✋ `git checkout` - Show branch switch, wait for approval
+- ✋ `git branch -d/-D` - Show branch deletion, wait for approval
+- ✋ `git reset` - Show reset command, wait for approval
+- ✋ `git rebase` - Show rebase operation, wait for approval
+- ✋ `git stash pop/apply` - Show stash operation, wait for approval
+
+**Read-only commands (NO approval needed):**
+- ✅ `git status` - Run freely
+- ✅ `git log` - Run freely
+- ✅ `git diff` - Run freely
+- ✅ `git show` - Run freely
+- ✅ `git branch` (listing only) - Run freely
+
+**Example workflow:**
+```
+❌ WRONG: Run `git commit -m "message"` immediately
+✅ CORRECT:
+   1. "I will run: git commit -m 'message'"
+   2. Wait for user response
+   3. Execute only if approved
+```
+
+**Other Git Rules:**
 - Before ANY code changes: Create a branch using `git checkout -b type/ID-description`
 - NEVER work directly on `main` branch
 - See `.github/copilot-instructions.md` for complete Git rules
@@ -64,9 +102,9 @@ After completing a task, follow the **Maintenance Protocol**:
 1. **Archive Completed Tasks**: Move done items from `NEXT-TASKS.md` to `docs/archive/` if needed.
 2. **Truth Syncing**: Update source of truth files (README, CHANGELOG, etc.) to reflect changes.
 3. **Run Validation**: Execute `node bin/cortex-tms.js validate --strict` to ensure project health.
-4. **Commit Changes**: Follow conventional commit format with co-authorship.
-5. **Merge to Main**: Merge feature branch to `main` (via PR or direct merge).
-6. **Branch Cleanup (MANDATORY)**:
+4. **Commit Changes**: **GET USER APPROVAL FIRST** - Show commit command and message, wait for approval, then follow conventional commit format with co-authorship.
+5. **Merge Branch**: **GET USER APPROVAL FIRST** - Show merge command and target branch (main/develop/other), wait for approval, then merge feature branch to appropriate target (via PR or direct merge).
+6. **Branch Cleanup (MANDATORY)**: **GET USER APPROVAL FIRST** - Show cleanup commands, wait for approval:
    ```bash
    git checkout main
    git pull origin main
