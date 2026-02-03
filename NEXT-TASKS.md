@@ -36,6 +36,17 @@
 
 ---
 
+## 🎬 Future Initiatives
+
+### AI Video Tutorials Sprint
+- **Status**: Planned (after v3.3.0)
+- **Description**: Create automated video tutorial series using Motion Canvas + AI voice
+- **Full Plan**: [docs/tasks/video-tutorials-sprint.md](docs/tasks/video-tutorials-sprint.md)
+- **Goal**: Reduce time-to-first-value via visual learning, increase discoverability
+- **Phases**: Setup & Validation → MVP (3 videos) → Full Series (11 videos)
+
+---
+
 **See**: [docs/archive/v3.3.0-sprint-summary.md](docs/archive/v3.3.0-sprint-summary.md) for completed v3.3.0 work
 
 **See Also**: [docs/archive/](docs/archive/) for all completed sprints | [FUTURE-ENHANCEMENTS.md](FUTURE-ENHANCEMENTS.md) for full backlog
