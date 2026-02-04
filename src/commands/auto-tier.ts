@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import ora from 'ora';
 import { glob } from 'glob';
 import { readFile, writeFile } from 'fs/promises';
-import { isGitRepo, analyzeFileHistory } from '../utils/git-history.js';
+import { isGitRepo, analyzeFileHistory, FileGitInfo } from '../utils/git-history.js';
 import { readTierTag, writeTierTag, Tier } from '../utils/tier-tags.js';
 import { GitError } from '../utils/errors.js';
 import { autoTierOptionsSchema, validateOptions } from '../utils/validation.js';
@@ -15,6 +15,7 @@ interface AutoTierOptions {
   dryRun?: boolean;
   force?: boolean;
   verbose?: boolean;
+  maxHot?: string;
 }
 
 interface TierSuggestion {
@@ -26,17 +27,101 @@ interface TierSuggestion {
   action: 'CREATE' | 'UPDATE' | 'SKIP';
 }
 
-// Files that must always remain HOT
-const MANDATORY_HOT = ['NEXT-TASKS.md', 'CLAUDE.md', '.github/copilot-instructions.md'];
+// Files that must always remain HOT (canonical HOT list)
+// These are exact path matches, not patterns
+const MANDATORY_HOT = [
+  'NEXT-TASKS.md',
+  'CLAUDE.md',
+  '.github/copilot-instructions.md',
+  'docs/core/PATTERNS.md',
+  'docs/core/GLOSSARY.md',
+];
+
+/**
+ * Check if file is in canonical HOT list (exact path match)
+ */
+function isCanonicalHot(filePath: string): boolean {
+  return MANDATORY_HOT.includes(filePath);
+}
+
+/**
+ * Calculate score for a file to determine tier priority
+ * Higher score = more likely to be HOT
+ */
+function calculateFileScore(filePath: string, daysSinceChange: number, hotDays: number): number {
+  let score = 0;
+
+  // Canonical HOT files get highest priority
+  if (isCanonicalHot(filePath)) {
+    score += 50;
+  }
+
+  // Documentation files are high value
+  if (filePath.startsWith('docs/')) {
+    score += 40;
+
+    // Core docs get extra boost
+    if (filePath.startsWith('docs/core/')) {
+      score += 10;
+    }
+
+    // Archive docs get penalty
+    if (filePath.startsWith('docs/archive/')) {
+      score -= 60; // Effectively removes them from HOT consideration
+    }
+  }
+
+  // Recency bonus (recent changes indicate active work)
+  if (daysSinceChange <= hotDays) {
+    score += 15;
+  } else if (daysSinceChange <= hotDays * 2) {
+    score += 5;
+  }
+
+  return score;
+}
+
+/**
+ * Determine tier based on file path and score
+ */
+function getDirectoryBasedTier(filePath: string): Tier | null {
+  // Archive always goes to COLD
+  if (filePath.startsWith('docs/archive/')) {
+    return 'COLD';
+  }
+
+  // Examples typically COLD
+  if (filePath.startsWith('examples/')) {
+    return 'COLD';
+  }
+
+  // Templates typically WARM
+  if (filePath.startsWith('templates/')) {
+    return 'WARM';
+  }
+
+  // Guides typically WARM
+  if (filePath.startsWith('docs/guides/')) {
+    return 'WARM';
+  }
+
+  // Tasks typically WARM
+  if (filePath.startsWith('docs/tasks/')) {
+    return 'WARM';
+  }
+
+  return null; // No directory-based tier, use scoring
+}
 
 export function createAutoTierCommand(): Command {
   const cmd = new Command('auto-tier');
 
   cmd
     .description('Analyze and apply tier tags based on git history (use --dry-run to preview)')
-    .option('--hot <days>', 'Files modified ≤N days ago → HOT', '7')
+    .option('--hot <days>', 'Files modified ≤N days ago get recency bonus', '7')
     .option('--warm <days>', 'Files modified ≤N days ago → WARM (aging beyond this stays WARM until --cold)', '30')
     .option('--cold <days>', 'Files older than N days → COLD', '90')
+    .option('--max-hot <count>', 'Maximum number of HOT files (capped)', '10')
     .option('-d, --dry-run', 'Preview changes without applying')
     .option('-f, --force', 'Overwrite existing tier tags')
     .option('-v, --verbose', 'Show detailed output')
@@ -53,6 +138,7 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
   const hotDays = validated.hot;
   const warmDays = validated.warm;
   const coldDays = validated.cold;
+  const maxHotFiles = options.maxHot ? parseInt(options.maxHot, 10) : 10;
 
   console.log(chalk.bold.cyan('\n🔄 Git-Based Auto-Tiering\n'));
 
@@ -70,7 +156,7 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
   // Find all markdown files
   const files = await glob('**/*.md', {
     cwd,
-    ignore: ['node_modules/**', '.git/**', 'dist/**'],
+    ignore: ['**/node_modules/**', '.git/**', '**/dist/**'],
   });
 
   // Analyze git history
@@ -78,47 +164,94 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
 
   spinner.text = 'Calculating tier suggestions...';
 
-  // Generate suggestions
-  const suggestions: TierSuggestion[] = [];
+  // Step 1: Calculate scores and gather candidates
+  interface ScoredFile {
+    info: FileGitInfo;
+    content: string;
+    currentTier: Tier | null;
+    score: number;
+  }
+
+  const scoredFiles: ScoredFile[] = [];
 
   for (const info of gitInfo) {
+    // Skip untracked files (not in git history)
+    if (!info.isTracked) {
+      continue;
+    }
+
     const content = await readFile(info.path, 'utf-8');
     const currentTier = readTierTag(content);
 
-    // Determine suggested tier
+    // Respect explicit tier tags unless --force is used
+    if (currentTier && !options.force) {
+      // Keep existing tier, skip scoring
+      continue;
+    }
+
+    const score = calculateFileScore(info.path, info.daysSinceChange, hotDays);
+
+    scoredFiles.push({
+      info,
+      content,
+      currentTier,
+      score,
+    });
+  }
+
+  // Step 2: Sort by score (highest first)
+  scoredFiles.sort((a, b) => b.score - a.score);
+
+  // Step 3: Assign tiers with HOT cap
+  const suggestions: TierSuggestion[] = [];
+  let hotCount = 0;
+
+  for (const scored of scoredFiles) {
+    const { info, currentTier } = scored;
     let suggestedTier: Tier;
     let reason: string;
 
-    if (MANDATORY_HOT.some(f => info.path.endsWith(f))) {
+    // Canonical HOT files always go to HOT
+    if (isCanonicalHot(info.path)) {
       suggestedTier = 'HOT';
-      reason = 'Mandatory HOT file';
-    } else if (info.isNewFile) {
+      reason = 'Canonical HOT file';
+      hotCount++;
+    }
+    // Cap HOT files at maxHotFiles
+    else if (hotCount < maxHotFiles && scored.score >= 40) {
+      // High-scoring files become HOT (if under cap)
       suggestedTier = 'HOT';
-      reason = 'New/untracked file (active work)';
-    } else if (info.daysSinceChange <= hotDays) {
-      suggestedTier = 'HOT';
-      reason = `Modified ${Math.round(info.daysSinceChange)} days ago`;
-    } else if (info.daysSinceChange <= warmDays) {
-      suggestedTier = 'WARM';
-      reason = `Modified ${Math.round(info.daysSinceChange)} days ago`;
-    } else if (info.daysSinceChange <= coldDays) {
-      suggestedTier = 'WARM';
-      reason = `Modified ${Math.round(info.daysSinceChange)} days ago (aging)`;
-    } else {
-      suggestedTier = 'COLD';
-      reason = `No changes in ${Math.round(info.daysSinceChange)} days`;
+      reason = `High-value doc (score: ${scored.score})`;
+      hotCount++;
+    }
+    // Directory-based defaults
+    else {
+      const dirTier = getDirectoryBasedTier(info.path);
+      if (dirTier) {
+        suggestedTier = dirTier;
+        reason = `Directory convention: ${info.path.split('/')[0]}/`;
+      }
+      // Time-based fallback for unclassified files
+      else if (info.daysSinceChange <= warmDays) {
+        suggestedTier = 'WARM';
+        reason = `Modified ${Math.round(info.daysSinceChange)} days ago`;
+      } else if (info.daysSinceChange <= coldDays) {
+        suggestedTier = 'WARM';
+        reason = `Modified ${Math.round(info.daysSinceChange)} days ago (aging)`;
+      } else {
+        suggestedTier = 'COLD';
+        reason = `No changes in ${Math.round(info.daysSinceChange)} days`;
+      }
     }
 
     // Determine action
     let action: TierSuggestion['action'];
     if (!currentTier) {
       action = 'CREATE';
-    } else if (currentTier !== suggestedTier && options.force) {
+    } else if (currentTier !== suggestedTier) {
       action = 'UPDATE';
-    } else if (currentTier === suggestedTier) {
-      action = 'SKIP';
     } else {
-      action = 'SKIP';  // Don't overwrite without --force
+      action = 'SKIP';
     }
 
     suggestions.push({
@@ -129,6 +262,29 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
       daysSinceChange: info.daysSinceChange,
       action,
     });
+  }
+
+  // Step 4: Add skipped files (those with explicit tags we're respecting)
+  for (const info of gitInfo) {
+    if (!info.isTracked) continue;
+
+    const content = await readFile(info.path, 'utf-8');
+    const currentTier = readTierTag(content);
+
+    // If file has explicit tier and we're not forcing, add as SKIP
+    if (currentTier && !options.force) {
+      const alreadyAdded = suggestions.some(s => s.path === info.path);
+      if (!alreadyAdded) {
+        suggestions.push({
+          path: info.path,
+          currentTier,
+          suggestedTier: currentTier,
+          reason: 'Explicit tier tag (use --force to override)',
+          daysSinceChange: info.daysSinceChange,
+          action: 'SKIP',
+        });
+      }
+    }
   }
 
   spinner.succeed(`Analyzed ${files.length} files`);
@@ -143,9 +299,10 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
 }
 
 function printSuggestions(suggestions: TierSuggestion[], verbose: boolean): void {
-  // Group by tier
+  // Group by tier (only show files that will be changed)
+  const toChange = suggestions.filter(s => s.action !== 'SKIP');
   const byTier = { HOT: [], WARM: [], COLD: [] } as Record<Tier, TierSuggestion[]>;
-  suggestions.forEach(s => byTier[s.suggestedTier].push(s));
+  toChange.forEach(s => byTier[s.suggestedTier].push(s));
 
   console.log(chalk.bold('\n📊 Tier Suggestions:\n'));
 

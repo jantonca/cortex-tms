@@ -317,7 +317,7 @@ $ npx cortex-tms status
 
 ### `auto-tier` Command
 
-Analyze git commit history to automatically suggest and apply HOT/WARM/COLD tier assignments to documentation files. This reduces manual tier management by using file recency as a signal for relevance.
+Analyze git commit history and file patterns to automatically suggest and apply HOT/WARM/COLD tier assignments to documentation files. Uses a scoring system to prioritize high-value docs while capping HOT files to prevent context bloat.
 
 #### Usage
 
@@ -329,29 +329,37 @@ cortex-tms auto-tier [options]
 
 | Option | Description | Default |
 |--------|-------------|---------|
-| `--hot <days>` | Files modified within N days → HOT tier | `7` |
+| `--hot <days>` | Files modified within N days get recency bonus in scoring | `7` |
 | `--warm <days>` | Files modified within N days → WARM tier | `30` |
 | `--cold <days>` | Files older than N days → COLD tier | `90` |
+| `--max-hot <count>` | Maximum number of HOT files (prevents context bloat) | `10` |
 | `--dry-run`, `-d` | Preview tier suggestions without applying changes | `false` |
-| `--force`, `-f` | Overwrite existing tier tags (default: skip files with tags) | `false` |
+| `--force`, `-f` | Overwrite existing tier tags (default: respect explicit tags) | `false` |
 | `--verbose`, `-v` | Show detailed reasons for each tier assignment | `false` |
 
 #### How It Works
 
-Auto-tier analyzes your git repository to determine when each Markdown file was last modified:
+Auto-tier uses a scoring system to intelligently prioritize files:
 
-1. **Scans Repository**: Finds all `*.md` files (excluding `node_modules`, `.git`, `dist`)
-2. **Checks Git History**: Uses `git log --follow` to find last commit date for each file
-3. **Calculates Recency**: Determines days since last modification
-4. **Suggests Tiers**: Applies threshold-based classification
+1. **Scans Repository**: Finds all `*.md` files (excluding `**/node_modules/**`, `.git/**`, `**/dist/**`)
+2. **Checks Git History**: Uses `git log --follow` to find last commit date (skips untracked files)
+3. **Calculates Scores**: Assigns points based on file value and recency
+4. **Applies Cap**: Limits HOT tier to top-scoring files (default: 10 files)
 5. **Adds Tags**: Inserts `<!-- @cortex-tms-tier HOT/WARM/COLD -->` comments
 
-**Tier Assignment Logic**:
-- **HOT**: Recently modified files (≤ 7 days by default) - Always loaded in AI context
-- **WARM**: Moderately recent files (≤ 30 days) - Loaded on-demand when relevant
-- **COLD**: Stale files (> 30 days) - Archived, rarely loaded
-- **Mandatory HOT**: `NEXT-TASKS.md`, `CLAUDE.md`, `.github/copilot-instructions.md` always stay HOT
-- **Untracked Files**: New files not yet in git are marked HOT (active work)
+**Scoring System** (higher score = higher priority for HOT):
+- **+50 points**: Canonical HOT files (see list below)
+- **+40 points**: Documentation files (`docs/` directory)
+- **+10 points**: Core reference docs (`docs/core/` directory)
+- **+15 points**: Recently modified (≤ 7 days by default)
+- **-60 points**: Archive files (`docs/archive/` → always COLD)
+
+**Tier Assignment Priority**:
+1. **Canonical HOT** (always HOT): `NEXT-TASKS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docs/core/PATTERNS.md`, `docs/core/GLOSSARY.md`
+2. **High-scoring files** (up to maxHotFiles cap): Top-scoring docs based on above criteria
+3. **Directory conventions**: `docs/guides/` → WARM, `examples/` → COLD, `templates/` → WARM
+4. **Time-based fallback**: Files modified ≤30 days → WARM, >90 days → COLD
+5. **Explicit tags**: Existing tier tags are always respected (use `--force` to override)
 
 #### Exit Codes
 
@@ -408,6 +416,15 @@ npx cortex-tms auto-tier --hot 14 --warm 60 --cold 180
 ```bash
 # Overwrite all tier tags based on current git state
 npx cortex-tms auto-tier --force
+```
+
+**Custom HOT Cap**
+```bash
+# Allow more HOT files for larger context windows
+npx cortex-tms auto-tier --max-hot 15
+
+# Strict cap for smaller projects
+npx cortex-tms auto-tier --max-hot 5
 ```
 
 **Verbose Output**
@@ -470,9 +487,10 @@ npx cortex-tms status --tokens
 
 **Limitations**:
 - Only processes Markdown (`.md`) files
-- Untracked files are marked HOT (assumes active work)
+- Untracked files (not in git history) are skipped entirely
 - Tier tags override path-based patterns from token counter
 - Running auto-tier and committing updates file recency (by design)
+- HOT cap applies to auto-assigned files (existing explicit tags are respected)
 
 **Performance**:
 - Typical: ~300ms for 111 files (cortex-tms repo)
@@ -530,12 +548,16 @@ Slow-paced projects (weekly commits):
 npx cortex-tms auto-tier --hot 21 --warm 60 --cold 180
 ```
 
-**5. Respect Mandatory HOT Files**
+**5. Canonical HOT Files**
 
-These files always stay HOT regardless of git history:
-- `NEXT-TASKS.md` - Current sprint (always relevant)
+These files always stay HOT regardless of git history or scoring:
+- `NEXT-TASKS.md` - Current sprint tasks (always relevant)
 - `CLAUDE.md` - Agent instructions (always needed)
 - `.github/copilot-instructions.md` - GitHub Copilot config
+- `docs/core/PATTERNS.md` - Code patterns and conventions
+- `docs/core/GLOSSARY.md` - Project terminology
+
+These count toward the `--max-hot` cap but are never demoted.
 
 #### Troubleshooting
 
