@@ -348,18 +348,20 @@ Auto-tier uses a scoring system to intelligently prioritize files:
 5. **Adds Tags**: Inserts `<!-- @cortex-tms-tier HOT/WARM/COLD -->` comments
 
 **Scoring System** (higher score = higher priority for HOT):
-- **+50 points**: Canonical HOT files (see list below)
+- **+100 points**: Canonical HOT files (highest priority - see list below)
 - **+40 points**: Documentation files (`docs/` directory)
 - **+10 points**: Core reference docs (`docs/core/` directory)
 - **+15 points**: Recently modified (≤ 7 days by default)
 - **-60 points**: Archive files (`docs/archive/` → always COLD)
 
-**Tier Assignment Priority**:
-1. **Canonical HOT** (always HOT): `NEXT-TASKS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`, `docs/core/PATTERNS.md`, `docs/core/GLOSSARY.md`
-2. **High-scoring files** (up to maxHotFiles cap): Top-scoring docs based on above criteria
-3. **Directory conventions**: `docs/guides/` → WARM, `examples/` → COLD, `templates/` → WARM
-4. **Time-based fallback**: Files modified ≤30 days → WARM, >90 days → COLD
-5. **Explicit tags**: Existing tier tags are always respected (use `--force` to override)
+**Tier Assignment Priority** (with strict maxHotFiles cap):
+1. **Sort by score**: All files ranked by score (canonical = 100, docs/core/ + recent = 65, etc.)
+2. **Apply cap**: Top N files (default: 10) become HOT, regardless of category
+3. **Canonical priority**: Canonical files have highest scores (100), so they naturally fill HOT slots first
+4. **Strict cap**: Total HOT files never exceeds --max-hot (includes canonical files)
+5. **Directory conventions**: Non-HOT files use directory rules: `docs/guides/` → WARM, `examples/` → COLD
+6. **Time-based fallback**: Unclassified files use modification time
+7. **Explicit tags**: Existing tags respected unless `--force` used (except canonical files)
 
 #### Exit Codes
 
@@ -376,22 +378,29 @@ npx cortex-tms auto-tier --dry-run
 # 🔄 Git-Based Auto-Tiering
 # 🔍 DRY RUN MODE: No files will be modified.
 #
-# ✔ Analyzed 111 files
+# ✔ Analyzed 131 files
 #
 # 📊 Tier Suggestions:
-# 🔥 HOT (94 files)
-#   ✨ README.md
+# 🔥 HOT (10 files)
+#   ✨ docs/core/GLOSSARY.md
+#   ✨ docs/core/PATTERNS.md
+#   ✨ .github/copilot-instructions.md
+#   ✨ CLAUDE.md
 #   ✨ NEXT-TASKS.md
-#   ... and 92 more
+#   ✨ docs/core/ARCHITECTURE.md
+#   ... and 4 more
 #
-# 📚 WARM (17 files)
-#   ✨ docs/guides/QUICK-START.md
-#   ... and 16 more
+# 📚 WARM (68 files)
+#   ✨ docs/core/INFRASTRUCTURE.md
+#   ✨ docs/guides/CLI-USAGE.md
+#   ... and 66 more
 #
-# ❄️  COLD (0 files)
+# ❄️  COLD (37 files)
+#   ✨ examples/todo-app/README.md
+#   ... and 36 more
 #
 # 📈 Summary:
-#   ✨ CREATE: 81 new tier tags
+#   ✨ CREATE: 115 new tier tags
 #   🔄 UPDATE: 0 tier changes
 ```
 
