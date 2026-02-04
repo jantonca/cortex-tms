@@ -222,10 +222,12 @@ cortex-tms auto-tier --force            # Overwrite existing tags
 
 **How It Works**:
 
-- Analyzes git commit history to determine file modification recency
-- Assigns HOT/WARM/COLD tiers based on days since last change
+- Analyzes git commit history and file paths to calculate priority scores
+- **Scoring system**: Canonical files (100 pts) > docs/ (40 pts) + recency (15 pts)
+- **Strict cap**: Maximum 10 HOT files (prevents context bloat)
+- **Smart defaults**: `docs/archive/` → COLD, `docs/guides/` → WARM, canonical files always HOT
 - Adds `<!-- @cortex-tms-tier HOT -->` tags to markdown files
-- Default thresholds: HOT ≤ 7 days, WARM ≤ 30 days, COLD > 30 days
+- Respects explicit tier tags unless `--force` is used
 
 **Why Auto-Tier?**
 

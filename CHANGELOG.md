@@ -175,6 +175,35 @@ The following improvements were completed on Jan 30, 2026 but not released as v3
 - **Solution**: Remove `.glass-grid` class from blog index, add `display: grid` to scoped styles
 - **Commit**: `f612a54`
 
+#### Auto-Tier Scoring System & HOT Cap (FIX-AUTO-TIER) ✅
+- **Fixed**: `auto-tier` command now correctly limits HOT files to exactly 10 (was suggesting 526 HOT files)
+- **Root causes**:
+  - Missing `dot: true` in glob options → `.github/copilot-instructions.md` not processed
+  - No strict cap enforcement → HOT tier could grow unbounded
+  - Canonical files could be overridden by --force without re-tagging
+  - Weak scoring allowed non-docs to become HOT
+- **Solutions implemented**:
+  - **Strict HOT cap**: Total HOT files ≤ `--max-hot` (default: 10), including canonical files
+  - **Scoring system**: Canonical (100) > docs/core/+recent (65) > docs/ (40) > recent (15)
+  - **Extended canonical list**: Added `docs/core/PATTERNS.md`, `docs/core/GLOSSARY.md`, `.github/copilot-instructions.md`
+  - **Stable sorting**: Tie-breaker by path for deterministic results
+  - **Glob fix**: Added `dot: true` to process hidden directories
+  - **Validation**: Added Zod validation for `--max-hot` (must be ≥ 1)
+- **Behavior changes**:
+  - Canonical files can now be re-tagged without `--force` (they override explicit tags)
+  - Archive docs (`docs/archive/`) excluded from HOT consideration (score -60)
+  - Root files default to WARM (score 15) unless recent
+- **Test updates**:
+  - Updated 7 E2E tests to match new scoring behavior
+  - All 18 auto-tier E2E tests passing (100% pass rate)
+  - Fixed expectations: root → WARM, docs/ → HOT, untracked → skipped
+- **Documentation**:
+  - Updated `CLI-USAGE.md`: Scoring table (canonical = 100), example output (10 HOT files)
+  - Updated `auto-tier.mdx`: Strict cap behavior, canonical override behavior
+- **Implementation feedback**: GPT-5.2 provided 3 rounds of review to ensure correctness
+- **Files**: `src/commands/auto-tier.ts`, `src/utils/validation.ts`, `src/__tests__/auto-tier-e2e.test.ts`
+- **Commits**: `dcd8ddb` (initial), `5b29f0e` (GPT-5.2 feedback fixes), `c6d3c24` (merge)
+
 ### Changed
 
 #### Test Infrastructure
