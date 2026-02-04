@@ -1,0 +1,8 @@
+# Ignore video exports (upload to YouTube/hosting instead)
+*.mp4
+*.webm
+*.mov
+output/
+
+# Keep source code only
+!README.md

@@ -1,14 +1,20 @@
 :root {
-  /* Brand Colors */
+  /* Brand Colors - Official Palette (cortex-tms-internal/branding/colors/palette.scss) */
+  --cortex-onyx: #111111; /* Onyx - deep black */
+  --cortex-pumpkin-spice: #f97316; /* Pumpkin Spice - primary orange */
+  --cortex-bright-amber: #facc15; /* Bright Amber - yellow/gold */
+  --cortex-light-sea-green: #0ea5a4; /* Light Sea Green - teal */
+
+  /* Starlight theme mapping */
   --sl-color-accent: #f97316; /* Pumpkin Spice - primary brand color */
   --sl-color-accent-low: #f9731626; /* Pumpkin Spice with low opacity */
   --sl-color-accent-high: #ff8c42; /* Lighter pumpkin for highlights */
   --sl-color-black: #111111; /* Onyx - deep black */
   --sl-color-white: #ffffff; /* Pure white */
 
-  /* Semantic colors */
-  --sl-color-green: #20b2aa; /* Light Sea Green - success states */
-  --sl-color-orange: #ffa500; /* Bright Amber - warnings */
+  /* Semantic colors - Using official palette */
+  --sl-color-green: #0ea5a4; /* Light Sea Green (official teal) - success states */
+  --sl-color-orange: #facc15; /* Bright Amber (official yellow) - warnings/highlights */
 
   /* Typography - Noto Font Family */
   --sl-font:

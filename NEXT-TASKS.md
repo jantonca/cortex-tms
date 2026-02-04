@@ -1,6 +1,6 @@
 # NEXT: Upcoming Tasks
 
-**Last Updated**: 2026-02-03
+**Last Updated**: 2026-02-04
 
 ---
 
@@ -36,14 +36,22 @@
 
 ---
 
-## 🎬 Future Initiatives
+## 🎬 Active Initiatives
 
 ### AI Video Tutorials Sprint
-- **Status**: Planned (after v3.3.0)
-- **Description**: Create automated video tutorial series using Motion Canvas + AI voice
+- **Status**: 🚧 Phase 1 - In Progress (95% complete)
+- **Branch**: `feat/video-tutorials-setup`
+- **Description**: Create automated video tutorial series using Motion Canvas
 - **Full Plan**: [docs/tasks/video-tutorials-sprint.md](docs/tasks/video-tutorials-sprint.md)
 - **Goal**: Reduce time-to-first-value via visual learning, increase discoverability
 - **Phases**: Setup & Validation → MVP (3 videos) → Full Series (11 videos)
+
+**Current Progress**:
+- ✅ Motion Canvas toolchain setup
+- ✅ Hero video animation built (60-second demo, 5 scenes)
+- ✅ Hero script documented with cross-channel variations
+- ✅ Component library organized for reusability
+- ⏳ **Next**: Export video, run user validation tests
 
 ---
 

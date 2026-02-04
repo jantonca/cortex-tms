@@ -1,18 +1,25 @@
 // Cortex TMS Brand Identity
-// Colors from logo and website
+// Source: cortex-tms-internal/branding/colors/palette.scss
+// Official palette: https://coolors.co/111111-f97316-facc15-0ea5a4
 
 export const BRAND_COLORS = {
-  // Primary brand colors (from logo)
-  orange: '#f97316',      // Pumpkin Spice - primary
-  yellow: '#facc15',      // Gold accent
-  teal: '#0ea5a4',        // Cyan/teal accent
-  black: '#111111',       // Onyx
+  // Official brand palette (4 core colors)
+  onyx: '#111111',        // Onyx - deep black
+  pumpkinSpice: '#f97316', // Pumpkin Spice - primary orange
+  brightAmber: '#facc15',  // Bright Amber - yellow/gold
+  lightSeaGreen: '#0ea5a4', // Light Sea Green - teal
+
+  // Aliases for convenience
+  orange: '#f97316',      // Pumpkin Spice (alias)
+  yellow: '#facc15',      // Bright Amber (alias)
+  teal: '#0ea5a4',        // Light Sea Green (alias)
+  black: '#111111',       // Onyx (alias)
   white: '#ffffff',       // Pure white
 
   // Semantic colors
-  success: '#20b2aa',     // Light Sea Green
-  warning: '#ffa500',     // Bright Amber
-  error: '#f44336',       // Red
+  success: '#0ea5a4',     // Light Sea Green (official teal)
+  warning: '#facc15',     // Bright Amber (official yellow)
+  error: '#f44336',       // Red (not in official palette, but needed)
 
   // Backgrounds
   bgDark: '#0a0a0a',      // Very dark (video background)
@@ -24,10 +31,17 @@ export const BRAND_COLORS = {
   textMuted: '#666666',
 };
 
+// Official typography (from website/src/styles/custom.css)
+// Note: Motion Canvas uses canvas rendering, so fonts must be installed on system
+// or loaded via @font-face in the HTML. Fallbacks ensure rendering works.
 export const BRAND_FONTS = {
-  sans: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif',
-  serif: 'Georgia, "Times New Roman", serif',
-  mono: '"Noto Sans Mono", "SF Mono", Monaco, Consolas, monospace',
+  // Noto font family (official brand fonts)
+  sans: '"Noto Sans Variable", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, sans-serif',
+  serif: '"Noto Serif Variable", Georgia, "Times New Roman", serif',
+  mono: '"Noto Sans Mono", "Fira Code", "Consolas", "Monaco", "Courier New", ui-monospace, monospace',
+
+  // Heading font (uses serif)
+  heading: '"Noto Serif Variable", Georgia, serif',
 };
 
 export const BRAND_TIMING = {

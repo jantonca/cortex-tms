@@ -1,6 +1,6 @@
 import {Rect, Txt, Circle, Layout, Node} from '@motion-canvas/2d';
 import {makeRef, Reference} from '@motion-canvas/core';
-import {BRAND_COLORS, BRAND_FONTS, BRAND_EFFECTS} from '../brand';
+import {BRAND_COLORS, BRAND_FONTS, BRAND_EFFECTS} from '../../brand';
 
 export interface TerminalProps {
   width?: number;

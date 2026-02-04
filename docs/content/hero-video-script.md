@@ -1,9 +1,9 @@
-# Hero Video Script - 60-Second Demo
+# Hero Video Script - Hero Demo
 
-**Duration**: 60 seconds
+**Duration**: ~45-50 seconds (optimized for homepage hero)
 **Format**: Text-only animation (no voiceover)
 **Target**: Homepage hero section, YouTube intro
-**CTA**: Install via npm
+**CTA**: Try instantly via npx
 
 **Design Choice**: Text-only format chosen deliberately for:
 - Faster production and iteration
@@ -16,71 +16,78 @@
 
 ## Full Script with Timestamps
 
-### Scene 1: The Problem (0:00-0:10)
+### Scene 1: The Problem (0:00-0:08)
 **Text**: "Tired of AI agents hallucinating project conventions?"
 
 **Visual Direction**:
-- Dark background with subtle grid
+- Ambient animated background (orange/amber glows)
+- Logo appears at top
+- Red warning icon (⚠️) with pulse effect
 - Text fades in, center-aligned
-- Red warning icon or glitch effect
-- Fade to white for emphasis
+- Orange tagline: "There's a better way."
 
 **Timing**:
-- Fade in: 0.5s
-- Hold: 2s
-- Fade out: 0.5s
+- Logo + warning: ~2s
+- Problem text types in: ~2s
+- Tagline appears: ~2s
+- Fade out: ~2s
 
 ---
 
-### Scene 2: The Solution (0:10-0:20)
+### Scene 2: The Solution (0:08-0:17)
 **Text**: "Cortex TMS organizes your docs into tiers—HOT, WARM, COLD."
 
 **Visual Direction**:
-- 3-tier pyramid appears
-- Each tier labeled and color-coded:
-  - HOT: Bright green (#4CAF50)
-  - WARM: Orange (#FF9800)
-  - COLD: Blue (#2196F3)
-- HOT tier pulses/highlights
+- Title: "Cortex TMS"
+- Subtitle: "Tiered Memory System" (orange)
+- 3-tier pyramid builds bottom-to-top:
+  - COLD: Teal (#0ea5a4) - "Archives, history"
+  - WARM: Yellow (#facc15) - "Recent decisions"
+  - HOT: Orange (#f97316) - "Active sprint, patterns"
+- HOT tier emphasizes with scale/glow
 
 **Timing**:
-- Pyramid builds: 1s
-- Tier labels appear: 0.5s each
-- Hold: 1s
+- Title appears: ~1s
+- Pyramid builds: ~5s
+- HOT emphasis: ~2s
+- Fade out: ~1s
 
 ---
 
-### Scene 3: The Value (0:20-0:35)
+### Scene 3: The Value (0:17-0:25)
 **Text**: "Your AI reads only what matters. Faster. Cheaper. No drift."
 
 **Visual Direction**:
-- Split into 3 benefits, each appearing sequentially:
-  - "⚡ Faster" (green)
-  - "💰 Cheaper" (green)
-  - "🎯 No drift" (green)
-- Checkmarks appear next to each
-- Background gradient shift
+- Title: "Your AI reads only what matters."
+- 3 benefit cards appear sequentially:
+  - ⚡ Faster (orange)
+  - 💰 Cheaper (yellow)
+  - 🎯 No drift (teal)
+- Each with checkmark
 
 **Timing**:
-- Each benefit: 1s appearance + 1s hold
-- Total: ~4s
+- Title: ~1s
+- Cards cascade: ~5s
+- Hold: ~2s
 
 ---
 
-### Scene 4: Demo - Terminal Commands (0:35-0:50)
-**Text**: Terminal mockup showing:
+### Scene 4: Demo - Terminal Commands (0:25-0:42)
+**Text**: Terminal mockup showing (stylized view):
 ```
-$ cortex-tms init
+$ npx cortex-tms init
 ✓ Created 9 documentation files
 
-$ cortex-tms status
-💰 Context Savings (Estimate)
-  HOT tier (active): 32,450 tokens
+$ npx cortex-tms status --tokens
+📊 Token Analysis
+  HOT (Active): 32,450 tokens
+  WARM (Truth): 18,230 tokens
+  COLD (Archive): 50,554 tokens
   Full repository: 101,234 tokens
-  Reduction: 68%
+  💰 68% reduction
 ```
 
-**Note**: Output matches actual CLI format for authenticity.
+**Note**: Terminal output is **stylized for clarity** (conceptual dashboard view). Actual CLI output may vary slightly. The 68% reduction is based on real project examples.
 
 **Visual Direction**:
 - Terminal window (dark theme, green text)
@@ -90,34 +97,38 @@ $ cortex-tms status
 - Percentage emphasized (larger font)
 
 **Timing**:
-- Command 1 types: 2s
-- Output appears: 2s
-- Command 2 types: 2s
-- Stats appear: 3s
-- Hold on final stats: 2s
+- Terminal appears: ~1s
+- Command 1 types: ~2s
+- Output appears: ~1s
+- Command 2 types: ~2s
+- Stats cascade: ~5s
+- Emphasize 68%: ~2s
+- Fade out: ~1s
 
 ---
 
-### Scene 5: Call to Action (0:50-1:00)
+### Scene 5: Call to Action (0:42-0:50)
 **Text**:
 ```
-Install now:
-npm install -g cortex-tms
+Try it now:
+npx cortex-tms init
 
 cortex-tms.org
 ```
 
 **Visual Direction**:
 - Clean, centered layout
-- Install command in code block (easy to read)
-- Website URL below
-- Logo watermark (subtle, bottom corner)
+- Command in highlighted box (orange glow, easy to read)
+- Website URL below (orange)
+- Tagline: "Tiered Memory for AI Agents"
 - Fade to black
 
 **Timing**:
-- Fade in: 0.5s
-- Hold: 2.5s
-- Fade out: 0.5s
+- Title appears: ~1s
+- Command box with pulse: ~2s
+- Website + tagline: ~2s
+- Hold for copying: ~2s
+- Fade out: ~1s
 
 ---
 
@@ -136,7 +147,7 @@ cortex-tms.org
 "~60-70% context reduction in real projects" (or use specific example: "68% reduction")
 
 ### CTA
-"npm install -g cortex-tms"
+"npx cortex-tms init" (instant try, no install needed)
 
 ---
 
@@ -149,7 +160,7 @@ cortex-tms.org
 Cortex TMS organizes your docs into HOT, WARM, and COLD tiers.
 Your AI reads only what matters—faster, cheaper, with no drift.
 
-[Install Now] [Watch Demo]
+[Try Now: npx cortex-tms init] [Watch Demo]
 ```
 
 ### Twitter/X Post (280 chars)
@@ -162,7 +173,7 @@ Cortex TMS uses tiered docs (HOT/WARM/COLD) so your AI reads only what matters.
 💰 Lower costs
 🎯 No drift
 
-npm install -g cortex-tms
+Try it: npx cortex-tms init
 ```
 
 ### LinkedIn Post
@@ -177,7 +188,7 @@ COLD tier: Archives (out of the way)
 
 Result: Your AI stays focused. Often 60-70% context reduction in real projects, lower costs, zero drift.
 
-Try it: npm install -g cortex-tms
+Try it instantly: npx cortex-tms init
 Docs: cortex-tms.org
 ```
 
@@ -242,21 +253,22 @@ After showing test viewers (3-5 people):
 ## Export Settings
 
 - **Resolution**: 1920x1080 (1080p)
-- **Frame rate**: 30fps (sufficient for text)
+- **Frame rate**: 30fps (sufficient for text animations)
 - **Format**: MP4 (H.264)
-- **File size target**: <10MB for 60 seconds
+- **File size target**: <8MB for ~45-50 seconds
 - **Aspect ratio**: 16:9 (YouTube standard)
+- **Homepage use**: Autoplay with mute, loop recommended
 
 ---
 
 ## Success Criteria
 
-- [ ] Script timing totals 60 seconds (±2s)
-- [ ] All key messages present
-- [ ] CTA clear and actionable
-- [ ] Terminal demo shows real output
-- [ ] 3/5 testers understand the tool
-- [ ] 3/5 testers can state next action
+- [x] Script timing optimized for homepage (~45-50s, not 60s - shorter is better for hero)
+- [x] All key messages present
+- [x] CTA clear and actionable (npx for instant try)
+- [x] Terminal demo shows stylized but authentic output
+- [ ] 3/5 testers understand the tool in under 50 seconds
+- [ ] 3/5 testers can state next action ("try npx command" or "visit website")
 
 ---
 

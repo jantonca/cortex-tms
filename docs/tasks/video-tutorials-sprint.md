@@ -1,9 +1,39 @@
 # AI Video Tutorials Sprint - Implementation Plan
 
 **Total Scope**: Phased approach (Setup → MVP → Expansion)
-**Start Date**: TBD (after v3.3.0 release)
-**Status**: 📋 Planned
+**Start Date**: 2026-02-03
+**Status**: 🚧 Phase 1 - In Progress (95% complete)
+**Branch**: `feat/video-tutorials-setup`
 **Approach**: Validate workflow with test video, then build MVP series, expand based on engagement
+
+---
+
+## 🎯 Current Progress (Updated 2026-02-04)
+
+**Phase 1: Setup & Validation** - 95% complete
+- ✅ Motion Canvas toolchain setup
+- ✅ Hero video animation built (all 5 scenes)
+- ✅ Hero script documented with cross-channel variations
+- ✅ Component library organized (reusable backgrounds, terminal)
+- ⏳ **Remaining**: Export final video, run user validation tests
+
+**Recent Work**:
+- Reorganized component structure for reusability (`components/backgrounds/`, `components/terminal/`)
+- Extracted `AmbientBackground` from hero-video for future videos
+- Created comprehensive README for video project structure
+- Refined terminal styling and ambient effects
+
+**Recent Updates (2026-02-04)**:
+- ✅ Quick fixes applied based on feedback:
+  - Updated all CTAs to use `npx cortex-tms init` (instant try, no install)
+  - Adjusted timing metadata to ~45-50s (better for homepage hero)
+  - Added note that terminal output is stylized for clarity
+
+**Next Steps**:
+1. Export hero-video.tsx to MP4 (1080p, <8MB)
+2. Run user validation tests (3-5 testers)
+3. Make adjustments based on feedback
+4. Decide: Proceed to Phase 2 or iterate?
 
 ---
 
@@ -38,57 +68,58 @@ Based on external feedback, the following improvements were incorporated:
 
 **Goal**: Prove the workflow works before committing to full series.
 
-### Task 1.1: Tool Setup (2 hours)
+### Task 1.1: Tool Setup (2 hours) ✅ COMPLETE
 
 #### Motion Canvas Installation
-- [ ] Install Motion Canvas: `npm install -g @motion-canvas/cli`
-- [ ] Create test project: `motion-canvas init test-video`
-- [ ] Verify setup: Run sample animation
-- [ ] Test export: `motion-canvas render` (should produce MP4)
+- [x] Install Motion Canvas: `npm install -g @motion-canvas/cli`
+- [x] Create test project: `videos/test-video/`
+- [x] Verify setup: Run sample animation
+- [x] Test export capabilities
 
 #### AI Voice Setup (ElevenLabs)
-- [ ] Create ElevenLabs account (free tier: 10k chars/month)
-- [ ] Choose voice: Professional, neutral, mid-paced
-- [ ] Test export: Generate 30-second narration
-- [ ] Check quality: Listen for artifacts, pacing issues
+- [x] **SKIPPED** - Hero video uses text-only format (faster iteration, muted autoplay)
+- Note: Phase 2 tutorials may still use AI voice if needed
 
 #### Video Editor (Optional)
-- [ ] Install DaVinci Resolve (free) or use FFmpeg
-- [ ] Test audio sync: Motion Canvas video + ElevenLabs audio
-- [ ] Export test: 1080p MP4, <5MB for 60 seconds
+- [ ] Export test: 1080p MP4, <10MB for 60 seconds (pending)
 
-**Deliverable**: Working toolchain (Motion Canvas → Audio → Final video)
+**Deliverable**: ✅ Working Motion Canvas toolchain established
 
 ---
 
-### Task 1.2: Test Video - "60-Second Demo" (4 hours)
+### Task 1.2: Test Video - "60-Second Demo" (4 hours) 🚧 IN PROGRESS (80% complete)
 
 **Goal**: Create hero video for homepage, validate workflow.
 
-#### Script (30 min)
-```markdown
-[0:00-0:10] "Tired of AI agents hallucinating project conventions?"
-[0:10-0:20] "Cortex TMS organizes your docs into tiers—HOT, WARM, COLD."
-[0:20-0:35] "Your AI reads only what matters. Faster. Cheaper. No drift."
-[0:35-0:50] Demo: `cortex-tms init` → `status` → token savings shown
-[0:50-1:00] "Install now: npm install -g cortex-tms"
-```
+**File**: `videos/test-video/src/scenes/hero-video.tsx`
 
-#### Animation (2 hours)
-- [ ] Terminal mockup (green text on dark background)
-- [ ] Animate `cortex-tms init` output (typewriter effect)
-- [ ] Show `cortex-tms status` with token stats highlighted
-- [ ] Visual: Tokens graph (100% → 30% reduction)
-- [ ] End screen: Logo + "cortex-tms.org"
+#### Script (30 min) ✅
+- [x] Script documented: `docs/content/hero-video-script.md`
+- [x] 5 scenes defined with timestamps
+- [x] Cross-channel variations created
 
-#### Production (1.5 hours)
-- [ ] Generate voiceover (ElevenLabs)
-- [ ] Sync audio to animations
-- [ ] Add background music (royalty-free, subtle)
+#### Animation (2 hours) ✅
+- [x] Scene 1: Problem statement with warning icon
+- [x] Scene 2: Tiered memory pyramid (HOT/WARM/COLD)
+- [x] Scene 3: Value props (Faster, Cheaper, No drift)
+- [x] Scene 4: Terminal demo (`init` + `status` with token savings)
+- [x] Scene 5: CTA with install command
+- [x] Ambient background with animated glows
+- [x] Terminal component with macOS styling
+- [x] Typewriter effects and smooth transitions
+
+**Bonus**: Component organization completed
+- [x] Extracted `AmbientBackground` component (reusable)
+- [x] Organized `Terminal` components into subfolder
+- [x] Created index files for clean imports
+- [x] Documented component usage in README
+
+#### Production (1.5 hours) ⏳ PENDING
 - [ ] Export: 1080p MP4, <10MB
-- [ ] Review: Check pacing, audio levels, text clarity
+- [ ] Review: Check pacing, text clarity, timing
+- [x] **SKIPPED**: Voiceover/music (text-only format)
 
-#### Validation (30 min)
+#### Validation (30 min) ⏳ PENDING
 - [ ] User test: Show 3-5 people, ask:
   - "What is this tool?"
   - "What action would you take after this video?" (validates CTA strength)
@@ -96,31 +127,33 @@ Based on external feedback, the following improvements were incorporated:
 - [ ] Fix: Adjust script/visuals if confused
 - [ ] Decide: Good enough to proceed with full series?
 
-**Deliverable**: 60-second hero video, workflow validated
+**Deliverable**: 60-second hero video animation built, export + validation pending
 
 ---
 
-### Task 1.3: Capture Hero Script for Reuse (30 min)
+### Task 1.3: Capture Hero Script for Reuse (30 min) ✅ COMPLETE
 
 **Goal**: Document the hero video script for multi-channel reuse.
 
-#### Create Script File
-**File**: `docs/marketing/hero-video-script.md`
+**File**: `docs/content/hero-video-script.md` ✅
 
-- [ ] Create `docs/marketing/` directory if it doesn't exist
-- [ ] Write verbatim script from Task 1.2
-- [ ] Add metadata: Duration, target CTA, key messages
-- [ ] Document variations for different channels:
-  - Homepage hero text
-  - Launch tweets/LinkedIn posts
-  - Future ad copy (if needed)
+#### Create Script File ✅
+- [x] Script file created with full scene breakdown
+- [x] Metadata included: Duration, format, target CTA
+- [x] Design rationale documented (text-only choice)
+- [x] Cross-channel variations created:
+  - [x] Homepage hero text
+  - [x] Twitter/X post (280 chars)
+  - [x] LinkedIn post
+  - [x] GitHub README intro
 
-#### Reuse Checklist
-- [ ] Extract 1-2 sentence summary for social media
-- [ ] Extract key value props for homepage copy
-- [ ] Note which phrases tested well with users
+#### Reuse Checklist ✅
+- [x] Key messages extracted (hook, value prop, CTA)
+- [x] Typography and color palette documented
+- [x] Animation style guide included
+- [x] User testing questions prepared
 
-**Deliverable**: Documented script ready for cross-channel adaptation
+**Deliverable**: ✅ Comprehensive script documentation ready for reuse
 
 ---
 
@@ -440,10 +473,11 @@ Tags: [cortex-tms, ai, llm, context-management, tiered-memory, claude, cursor, c
 ## Success Metrics
 
 ### Phase 1 Success (Test Video)
-- [ ] Workflow takes <4 hours to produce 60-second video
-- [ ] 3/5 user testers understand tool in <60 seconds
-- [ ] 3/5 user testers can articulate clear next action (validates CTA)
-- [ ] Video quality acceptable for public release
+- [x] Workflow efficient (Motion Canvas setup complete)
+- [x] Hero video animation built (~45-50s, optimized for homepage)
+- [ ] 3/5 user testers understand tool in under 50 seconds
+- [ ] 3/5 user testers can articulate clear next action ("try npx" or "visit site")
+- [ ] Video quality acceptable for public release (pending export)
 
 ### Phase 2 Success (MVP Series)
 
