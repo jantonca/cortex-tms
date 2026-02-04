@@ -51,9 +51,9 @@ function isCanonicalHot(filePath: string): boolean {
 function calculateFileScore(filePath: string, daysSinceChange: number, hotDays: number): number {
   let score = 0;
 
-  // Canonical HOT files get highest priority
+  // Canonical HOT files get highest priority (must be > docs+core+recent = 65)
   if (isCanonicalHot(filePath)) {
-    score += 50;
+    score += 100;
   }
 
   // Documentation files are high value
@@ -82,32 +82,32 @@ function calculateFileScore(filePath: string, daysSinceChange: number, hotDays: 
 }
 
 /**
- * Determine tier based on file path and score
+ * Determine tier based on file path and return matched directory
  */
-function getDirectoryBasedTier(filePath: string): Tier | null {
+function getDirectoryBasedTier(filePath: string): { tier: Tier; directory: string } | null {
   // Archive always goes to COLD
   if (filePath.startsWith('docs/archive/')) {
-    return 'COLD';
+    return { tier: 'COLD', directory: 'docs/archive/' };
   }
 
   // Examples typically COLD
   if (filePath.startsWith('examples/')) {
-    return 'COLD';
+    return { tier: 'COLD', directory: 'examples/' };
   }
 
   // Templates typically WARM
   if (filePath.startsWith('templates/')) {
-    return 'WARM';
+    return { tier: 'WARM', directory: 'templates/' };
   }
 
   // Guides typically WARM
   if (filePath.startsWith('docs/guides/')) {
-    return 'WARM';
+    return { tier: 'WARM', directory: 'docs/guides/' };
   }
 
   // Tasks typically WARM
   if (filePath.startsWith('docs/tasks/')) {
-    return 'WARM';
+    return { tier: 'WARM', directory: 'docs/tasks/' };
   }
 
   return null; // No directory-based tier, use scoring
@@ -138,7 +138,7 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
   const hotDays = validated.hot;
   const warmDays = validated.warm;
   const coldDays = validated.cold;
-  const maxHotFiles = options.maxHot ? parseInt(options.maxHot, 10) : 10;
+  const maxHotFiles = validated.maxHot ?? 10;
 
   console.log(chalk.bold.cyan('\n🔄 Git-Based Auto-Tiering\n'));
 
@@ -153,9 +153,10 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
 
   const spinner = ora('Analyzing git history...').start();
 
-  // Find all markdown files
+  // Find all markdown files (including dot-directories like .github/)
   const files = await glob('**/*.md', {
     cwd,
+    dot: true,
     ignore: ['**/node_modules/**', '.git/**', '**/dist/**'],
   });
 
@@ -184,7 +185,8 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
     const currentTier = readTierTag(content);
 
     // Respect explicit tier tags unless --force is used
-    if (currentTier && !options.force) {
+    // EXCEPT: Canonical HOT files are always included (they must always be HOT)
+    if (currentTier && !options.force && !isCanonicalHot(info.path)) {
       // Keep existing tier, skip scoring
       continue;
     }
@@ -199,8 +201,13 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
     });
   }
 
-  // Step 2: Sort by score (highest first)
-  scoredFiles.sort((a, b) => b.score - a.score);
+  // Step 2: Sort by score (highest first), with path as tie-breaker for stability
+  scoredFiles.sort((a, b) => {
+    const scoreDiff = b.score - a.score;
+    if (scoreDiff !== 0) return scoreDiff;
+    // Tie-breaker: alphabetical by path
+    return a.info.path.localeCompare(b.info.path);
+  });
 
   // Step 3: Assign tiers with HOT cap
   const suggestions: TierSuggestion[] = [];
@@ -211,25 +218,21 @@ async function runAutoTier(options: AutoTierOptions): Promise<void> {
     let suggestedTier: Tier;
     let reason: string;
 
-    // Canonical HOT files always go to HOT
-    if (isCanonicalHot(info.path)) {
+    // Strict cap: canonical and high-scoring files compete for HOT slots
+    // Canonical files have highest scores, so they naturally get priority
+    if (hotCount < maxHotFiles && (isCanonicalHot(info.path) || scored.score >= 40)) {
       suggestedTier = 'HOT';
-      reason = 'Canonical HOT file';
-      hotCount++;
-    }
-    // Cap HOT files at maxHotFiles
-    else if (hotCount < maxHotFiles && scored.score >= 40) {
-      // High-scoring files become HOT (if under cap)
-      suggestedTier = 'HOT';
-      reason = `High-value doc (score: ${scored.score})`;
+      reason = isCanonicalHot(info.path)
+        ? 'Canonical HOT file'
+        : `High-value doc (score: ${scored.score})`;
       hotCount++;
     }
     // Directory-based defaults
     else {
-      const dirTier = getDirectoryBasedTier(info.path);
-      if (dirTier) {
-        suggestedTier = dirTier;
-        reason = `Directory convention: ${info.path.split('/')[0]}/`;
+      const dirResult = getDirectoryBasedTier(info.path);
+      if (dirResult) {
+        suggestedTier = dirResult.tier;
+        reason = `Directory convention: ${dirResult.directory}`;
       }
       // Time-based fallback for unclassified files
       else if (info.daysSinceChange <= warmDays) {

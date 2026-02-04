@@ -5,7 +5,7 @@ description: Automatically assign HOT/WARM/COLD tiers based on git commit histor
 
 import { Card, CardGrid, Tabs, TabItem, Steps, Aside } from '@astrojs/starlight/components';
 
-The `cortex-tms auto-tier` command analyzes your git repository's commit history to automatically suggest and apply tier tags to documentation files. It uses file recency as an objective signal for relevance, keeping your tiering system aligned with actual work patterns.
+The `cortex-tms auto-tier` command analyzes your git repository's commit history and file patterns to automatically suggest and apply tier tags to documentation files. It uses a scoring system to prioritize high-value documentation while capping HOT files to prevent context bloat, keeping your tiering system aligned with actual work patterns.
 
 ## Synopsis
 
@@ -15,9 +15,9 @@ cortex-tms auto-tier [options]
 
 ## Description
 
-**Automatic tier management using git history**. Auto-tier solves the problem of manually deciding which files should be HOT, WARM, or COLD by using an objective signal: when was each file last modified?
+**Automatic tier management using git history and intelligent scoring**. Auto-tier solves the problem of manually deciding which files should be HOT, WARM, or COLD by combining multiple signals: file importance (canonical docs, core patterns), location (docs structure), and recency (when last modified).
 
-Think of it as `git-aware memory management` for your documentation. Files you've touched recently are likely relevant to current work, so they stay HOT (always in AI context). Files untouched for weeks or months become WARM or COLD (loaded only when needed).
+Think of it as `intelligent memory management` for your documentation. Critical reference docs stay HOT, high-value documentation is prioritized, and a hard cap prevents HOT tier explosion. Files are scored and ranked to ensure AI agents see the most relevant context without bloat.
 
 **Typical usage**:
 ```bash
@@ -41,11 +41,12 @@ Auto-tier addresses the ["Lost in the Middle"](https://arxiv.org/abs/2307.03172)
 
 | Option | Default | Description |
 |--------|---------|-------------|
-| `--hot <days>` | `7` | Files modified within N days → HOT tier |
+| `--hot <days>` | `7` | Files modified within N days get recency bonus in scoring |
 | `--warm <days>` | `30` | Files modified within N days → WARM tier |
 | `--cold <days>` | `90` | Files older than N days → COLD tier |
+| `--max-hot <count>` | `10` | Maximum number of HOT files (prevents context bloat) |
 | `--dry-run`, `-d` | `false` | Preview tier suggestions without applying changes |
-| `--force`, `-f` | `false` | Overwrite existing tier tags (default: skip tagged files) |
+| `--force`, `-f` | `false` | Overwrite existing tier tags (default: respect explicit tags) |
 | `--verbose`, `-v` | `false` | Show detailed reasons for each tier assignment |
 
 ---
@@ -56,28 +57,32 @@ Auto-tier addresses the ["Lost in the Middle"](https://arxiv.org/abs/2307.03172)
 
 1. **Repository Scan**
 
-   Finds all `*.md` files in your repository (excluding `node_modules`, `.git`, `dist`)
+   Finds all `*.md` files in your repository (excluding `**/node_modules/**`, `.git/**`, `**/dist/**`)
 
 2. **Git History Analysis**
 
-   For each file, runs `git log --follow` to find the last commit timestamp
+   For each tracked file, runs `git log --follow` to find the last commit timestamp
    - Uses `--follow` to track files across renames
-   - Untracked files are treated as HOT (active work)
+   - Untracked files are skipped (not in git history)
 
-3. **Recency Calculation**
+3. **Score Calculation**
 
-   Calculates days since last modification:
-   ```
-   daysSinceChange = (now - lastCommitTimestamp) / 86400
-   ```
+   Assigns points to each file based on value signals:
+   - **+100 points**: Canonical HOT files (NEXT-TASKS.md, CLAUDE.md, etc.) - highest priority
+   - **+40 points**: Documentation files (`docs/` directory)
+   - **+10 points**: Core reference docs (`docs/core/` directory)
+   - **+15 points**: Recently modified (≤ 7 days by default)
+   - **-60 points**: Archive files (`docs/archive/` → always COLD)
 
-4. **Tier Assignment**
+4. **Tier Assignment with Strict Cap**
 
-   Applies threshold-based classification:
-   - `daysSinceChange ≤ hotDays` → HOT
-   - `daysSinceChange ≤ warmDays` → WARM
-   - `daysSinceChange > warmDays` → COLD
-   - Mandatory files (`NEXT-TASKS.md`, `CLAUDE.md`, `.github/copilot-instructions.md`) always stay HOT
+   Sorts files by score and applies tiering:
+   - **Sort by score**: All files ranked (canonical=100, docs/core/+recent=65, etc.)
+   - **Apply strict cap**: Top N files (default: 10) become HOT, including canonical
+   - **Canonical priority**: Score 100 ensures canonical files naturally fill HOT slots first
+   - **Directory conventions**: Non-HOT files use directory rules: `docs/guides/` → WARM, `examples/` → COLD
+   - **Time-based fallback**: Unclassified files use modification time
+   - **Explicit tags**: Respected unless `--force` used (except canonical files which can be re-tagged)
 
 5. **Tag Insertion**
 
@@ -89,7 +94,7 @@ Auto-tier addresses the ["Lost in the Middle"](https://arxiv.org/abs/2307.03172)
 
 ## Example Output
 
-**Dry run on cortex-tms repository** (111 files analyzed):
+**Dry run on cortex-tms repository** (131 files analyzed):
 
 ```bash
 $ cortex-tms auto-tier --dry-run
@@ -98,55 +103,76 @@ $ cortex-tms auto-tier --dry-run
 
 🔍 DRY RUN MODE: No files will be modified.
 
-✔ Analyzed 111 files
+✔ Analyzed 131 files
 
 📊 Tier Suggestions:
 
-🔥 HOT (94 files)
-  ✨ README.md
+🔥 HOT (10 files)
+  ✨ docs/core/PATTERNS.md
+  ✨ docs/core/GLOSSARY.md
   ✨ NEXT-TASKS.md
-  ✨ PROMPTS.md
-  ✨ FUTURE-ENHANCEMENTS.md
-  ✨ CONTRIBUTING.md
   ✨ CLAUDE.md
-  ... and 88 more
+  ✨ docs/core/TROUBLESHOOTING.md
+  ✨ docs/core/SECURITY.md
+  ✨ docs/core/SCHEMA.md
+  ✨ docs/core/INFRASTRUCTURE.md
+  ✨ docs/core/GIT-STANDARDS.md
+  ✨ docs/core/DOMAIN-LOGIC.md
 
-📚 WARM (17 files)
-  ✨ docs/guides/QUICK-START.md
-  ✨ docs/guides/MIGRATION-GUIDE.md
-  ✨ docs/archive/v1.0-CHANGELOG.md
-  ... and 14 more
+📚 WARM (57 files)
+  ✨ docs/core/DECISIONS.md
+  ✨ docs/core/ARCHITECTURE.md
+  ✨ docs/guides/CLI-USAGE.md
+  ... and 54 more
 
-❄️  COLD (0 files)
+❄️  COLD (35 files)
+  ✨ examples/todo-app/README.md
+  ✨ docs/archive/sprint-v3.1-jan-2026.md
+  ... and 33 more
 
 📈 Summary:
-  ✨ CREATE: 81 new tier tags
+  ✨ CREATE: 102 new tier tags
   🔄 UPDATE: 0 tier changes
 ```
 
-**Performance**: ~300ms for 111 files
+**Performance**: ~300ms for 131 files
 
 ---
 
 ## Tier Assignment Logic
 
-### Default Thresholds
+### Scoring System
 
-| Tier | Threshold | Meaning | AI Context Behavior |
-|------|-----------|---------|---------------------|
-| **HOT** | ≤ 7 days | Recently modified | Always loaded in AI context |
-| **WARM** | ≤ 30 days | Moderately recent | Loaded on-demand when relevant |
-| **COLD** | > 30 days | Stale/archived | Excluded from context |
+Files are scored based on multiple signals (higher score = higher priority for HOT):
+
+| Signal | Points | Description |
+|--------|--------|-------------|
+| **Canonical HOT** | +100 | Must-have files (NEXT-TASKS.md, CLAUDE.md, etc.) - highest priority |
+| **Documentation** | +40 | Files in `docs/` directory |
+| **Core docs** | +10 | Additional boost for `docs/core/` |
+| **Recent changes** | +15 | Modified within `--hot` days (default: 7) |
+| **Archive penalty** | -60 | Files in `docs/archive/` (always COLD) |
+
+### HOT Tier Cap (Strict)
+
+**Maximum HOT files**: Default 10 (configurable via `--max-hot`)
+
+**Strict cap enforcement**: Total HOT files (including canonical) never exceeds --max-hot. Files are sorted by score, and the top N become HOT. Canonical files have highest scores (100), ensuring they naturally fill HOT slots first.
 
 ### Special Cases
 
-**Mandatory HOT Files** (never demoted):
+**Canonical HOT Files** (always HOT, never demoted):
 - `NEXT-TASKS.md` - Current sprint tasks
 - `CLAUDE.md` - Agent instructions
 - `.github/copilot-instructions.md` - GitHub Copilot config
+- `docs/core/PATTERNS.md` - Code patterns and conventions
+- `docs/core/GLOSSARY.md` - Project terminology
 
 **Untracked Files** (not in git):
-- Marked as HOT (assumed to be active work)
+- Skipped entirely (not scored or tiered)
+
+**Explicit Tier Tags**:
+- Always respected unless `--force` is used
 
 **Renamed Files**:
 - `git log --follow` tracks history across renames
@@ -216,7 +242,7 @@ $ cortex-tms auto-tier --dry-run
     ```bash
     # Balanced for most projects
     cortex-tms auto-tier
-    # (equivalent to: --hot 7 --warm 30 --cold 90)
+    # (equivalent to: --hot 7 --warm 30 --cold 90 --max-hot 10)
 
     # Last week is HOT
     # Files from 1-4 weeks ago are WARM
@@ -224,6 +250,21 @@ $ cortex-tms auto-tier --dry-run
     ```
 
     **Use case**: Standard development cadence, weekly sprints
+  </TabItem>
+
+  <TabItem label="Custom HOT Cap">
+    ```bash
+    # Allow more HOT files for larger context windows
+    cortex-tms auto-tier --max-hot 15
+
+    # Strict cap for smaller projects
+    cortex-tms auto-tier --max-hot 5
+
+    # No cap (use scoring only, not recommended)
+    cortex-tms auto-tier --max-hot 999
+    ```
+
+    **Use case**: Adjust based on context window size and project complexity
   </TabItem>
 </Tabs>
 
@@ -307,21 +348,23 @@ $ cortex-tms auto-tier --dry-run --verbose
 
 🔍 DRY RUN MODE: No files will be modified.
 
-✔ Analyzed 111 files
+✔ Analyzed 131 files
 
 📊 Tier Suggestions:
 
-🔥 HOT (94 files)
-  ✨ README.md
-      Modified 1 days ago
+🔥 HOT (10 files)
   ✨ NEXT-TASKS.md
-      Mandatory HOT file
-  ✨ PROMPTS.md
-      Modified 2 days ago
+      Canonical HOT file
+  ✨ CLAUDE.md
+      Canonical HOT file
+  ✨ docs/core/PATTERNS.md
+      Canonical HOT file
+  ✨ docs/core/TROUBLESHOOTING.md
+      High-value doc (score: 65)
   ... (detailed reasons for each file)
 ```
 
-**Use case**: Understanding why files are tiered the way they are
+**Use case**: Understanding why files are tiered the way they are (shows scoring results)
 
 ---
 
@@ -468,16 +511,20 @@ cortex-tms auto-tier  # ❌ Error: Not a git repository
 
 **Untracked Files**:
 ```bash
-# Untracked files are marked HOT
+# Untracked files are skipped (not scored or tiered)
 echo "# New Doc" > new-file.md
 cortex-tms auto-tier --dry-run
 
-# Output:
-# ✨ new-file.md
-#     New/untracked file (active work)
+# Output: new-file.md won't appear
+# (not in git history, so skipped)
+
+# To tier it: commit first
+git add new-file.md
+git commit -m "Add new doc"
+cortex-tms auto-tier --dry-run
 ```
 
-**Rationale**: If you're creating a file, it's likely relevant now
+**Rationale**: Only committed files have history to analyze
 
 ---
 
@@ -510,7 +557,8 @@ For very large repos (1000+ files), consider:
 git init
 cortex-tms auto-tier
 
-# All files marked HOT (no history to analyze)
+# No files tiered (no committed files to analyze)
+# Must commit files first for auto-tier to work
 ```
 
 ---

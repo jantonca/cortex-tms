@@ -67,7 +67,7 @@ describe('Auto-Tier E2E - Basic Workflows', () => {
     await cleanupTempDir(tempDir);
   });
 
-  it('should tag fresh files as HOT (modified today)', async () => {
+  it('should tag fresh root files as WARM (scoring-based)', async () => {
     // Create file with today's date
     const today = new Date().toISOString();
     await createAndCommitFileWithDate(tempDir, 'fresh.md', '# Fresh File', today);
@@ -76,12 +76,13 @@ describe('Auto-Tier E2E - Basic Workflows', () => {
     const result = await runCommand('auto-tier', [], tempDir);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('HOT');
+    expect(result.stdout).toContain('WARM');
     expect(result.stdout).toContain('fresh.md');
 
     // Verify tier tag was applied
+    // Root files get WARM (score=15 from recent bonus, not enough for HOT)
     const tier = await getFileTierTag(tempDir, 'fresh.md');
-    expect(tier).toBe('HOT');
+    expect(tier).toBe('WARM');
   });
 
   it('should tag old files as COLD (modified 100+ days ago)', async () => {
@@ -150,12 +151,15 @@ describe('Auto-Tier E2E - Basic Workflows', () => {
     const result = await runCommand('auto-tier', [], tempDir);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('HOT (1 files)');
-    expect(result.stdout).toContain('WARM (1 files)');
+    // With new scoring: root files get low scores
+    // hot.md: score=15 (recent) → WARM
+    // warm.md: score=0 → WARM
+    // cold.md: score=0, old → COLD
+    expect(result.stdout).toContain('WARM (2 files)');
     expect(result.stdout).toContain('COLD (1 files)');
 
     // Verify tier tags
-    expect(await getFileTierTag(tempDir, 'hot.md')).toBe('HOT');
+    expect(await getFileTierTag(tempDir, 'hot.md')).toBe('WARM');
     expect(await getFileTierTag(tempDir, 'warm.md')).toBe('WARM');
     expect(await getFileTierTag(tempDir, 'cold.md')).toBe('COLD');
   });
@@ -226,12 +230,14 @@ describe('Auto-Tier E2E - Command Options', () => {
     await createAndCommitFileWithDate(tempDir, 'file-50d.md', '# 50 days', fiftyDaysAgo.toISOString());
 
     // Custom thresholds: hot=10, warm=40, cold=60
-    // Expected: 5d→HOT, 20d→WARM, 50d→WARM (aging, not yet cold)
+    // With scoring: root files get low scores (not HOT unless in docs/)
+    // All three files are root files with no special location → all WARM
     const result1 = await runCommand('auto-tier', ['--dry-run', '--hot', '10', '--warm', '40', '--cold', '60'], tempDir);
 
-    expect(result1.stdout).toContain('HOT');
+    expect(result1.stdout).toContain('WARM (3 files)'); // All root files → WARM
     expect(result1.stdout).toContain('file-5d.md');
-    expect(result1.stdout).toContain('WARM (2 files)'); // Both 20d and 50d are WARM
+    expect(result1.stdout).toContain('file-20d.md');
+    expect(result1.stdout).toContain('file-50d.md');
 
     // Different thresholds: hot=10, warm=25, cold=40
     // Expected: 5d→HOT, 20d→WARM, 50d→COLD
@@ -258,13 +264,13 @@ describe('Auto-Tier E2E - Command Options', () => {
     let tier = await getFileTierTag(tempDir, 'test.md');
     expect(tier).toBe('COLD');
 
-    // Run with --force (should update to HOT)
+    // Run with --force (should update based on scoring)
     const secondResult = await runCommand('auto-tier', ['--force'], tempDir);
     expect(secondResult.exitCode).toBe(0);
 
-    // Tier should now be HOT
+    // Tier should now be WARM (root file with recent modification = score 15)
     tier = await getFileTierTag(tempDir, 'test.md');
-    expect(tier).toBe('HOT');
+    expect(tier).toBe('WARM');
   });
 
   it('should show detailed output with --verbose', async () => {
@@ -293,19 +299,19 @@ describe('Auto-Tier E2E - Edge Cases', () => {
     await cleanupTempDir(tempDir);
   });
 
-  it('should tag untracked files as HOT', async () => {
+  it('should skip untracked files (not in git history)', async () => {
     // Create file but don't commit it
     await writeFile(join(tempDir, 'untracked.md'), '# Untracked File');
 
     const result = await runCommand('auto-tier', [], tempDir);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('HOT');
-    expect(result.stdout).toContain('untracked.md');
+    // Untracked file should not appear in output
+    expect(result.stdout).not.toContain('untracked.md');
 
-    // Verify tier tag
+    // Verify no tier tag was added
     const tier = await getFileTierTag(tempDir, 'untracked.md');
-    expect(tier).toBe('HOT');
+    expect(tier).toBeNull();
   });
 
   it('should always tag NEXT-TASKS.md as HOT (mandatory)', async () => {
@@ -350,9 +356,7 @@ describe('Auto-Tier E2E - Edge Cases', () => {
     expect(tier).toBe('HOT');
   });
 
-  // Note: glob by default doesn't match files in hidden directories (.github)
-  // This would require adding { dot: true } to glob options in auto-tier.ts
-  it.skip('should always tag copilot-instructions.md as HOT (mandatory)', async () => {
+  it('should always tag copilot-instructions.md as HOT (canonical)', async () => {
     // Create .github directory and copilot-instructions.md
     await mkdir(join(tempDir, '.github'));
 
@@ -442,15 +446,21 @@ describe('Auto-Tier E2E - Real-World Scenarios', () => {
     const result = await runCommand('auto-tier', [], tempDir);
 
     expect(result.exitCode).toBe(0);
-    expect(result.stdout).toContain('HOT (2 files)');
-    expect(result.stdout).toContain('WARM (2 files)');
+    // New scoring system: canonical + high-scoring docs go to HOT
+    expect(result.stdout).toContain('HOT (3 files)');
+    expect(result.stdout).toContain('WARM (1 files)');
     expect(result.stdout).toContain('COLD (1 files)');
 
-    // Verify categorization
-    expect(await getFileTierTag(tempDir, 'README.md')).toBe('HOT');
+    // Verify categorization with new scoring
+    // README.md: Root file (score=15) → WARM
+    // NEXT-TASKS.md: Canonical (score=100) → HOT
+    // docs/ARCHITECTURE.md: docs/ file (score=40) → HOT
+    // docs/API.md: docs/ file (score=40) → HOT
+    // docs/archive/old-design.md: archive (score=-20) → COLD
+    expect(await getFileTierTag(tempDir, 'README.md')).toBe('WARM');
     expect(await getFileTierTag(tempDir, 'NEXT-TASKS.md')).toBe('HOT');
-    expect(await getFileTierTag(tempDir, 'docs/ARCHITECTURE.md')).toBe('WARM');
-    expect(await getFileTierTag(tempDir, 'docs/API.md')).toBe('WARM');
+    expect(await getFileTierTag(tempDir, 'docs/ARCHITECTURE.md')).toBe('HOT');
+    expect(await getFileTierTag(tempDir, 'docs/API.md')).toBe('HOT');
     expect(await getFileTierTag(tempDir, 'docs/archive/old-design.md')).toBe('COLD');
   });
 
@@ -470,7 +480,8 @@ describe('Auto-Tier E2E - Real-World Scenarios', () => {
 
     // Tier should not change
     expect(firstTier).toBe(secondTier);
-    expect(secondTier).toBe('HOT');
+    // Root files get WARM (score=15, not enough for HOT)
+    expect(secondTier).toBe('WARM');
   });
 
   it('should format ValidationError context in stderr output', async () => {

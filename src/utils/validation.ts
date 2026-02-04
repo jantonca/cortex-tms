@@ -77,6 +77,18 @@ export const autoTierOptionsSchema = z
       }
       return num;
     }),
+    maxHot: z.string().optional().transform((val, ctx) => {
+      if (val === undefined) return undefined;
+      const num = parseInt(val, 10);
+      if (isNaN(num) || num < 1) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          message: '--max-hot must be a positive number (at least 1)',
+        });
+        return z.NEVER;
+      }
+      return num;
+    }),
     dryRun: dryRunFlag,
     force: forceFlag,
     verbose: verboseFlag,
