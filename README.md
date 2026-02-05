@@ -141,7 +141,7 @@ Traditional repos drown AI agents in thousands of lines of historical tasks and 
 
 **For Developers**: See [Security Testing Guide](docs/guides/SECURITY-TESTING.md) for how to verify security patterns.
 
-**Full Details**: [CHANGELOG.md](CHANGELOG.md#320---unreleased)
+**Full Details**: [CHANGELOG.md](CHANGELOG.md#320---2026-02-05)
 
 ---
 
