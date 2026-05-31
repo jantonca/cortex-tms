@@ -63,6 +63,7 @@ export interface InitCommandOptions {
   dryRun?: boolean; // Preview changes without writing to disk
   preset?: GovernancePreset; // Ecosystem-specific content preset
   withSkills?: boolean; // Install cortex-validate and cortex-review Claude Code skills
+  overwriteInherited?: boolean; // Override inherited-rules protection in AGENTS.md (requires --force)
 }
 
 /**
@@ -136,6 +137,7 @@ export interface ValidateCommandOptions {
   strict?: boolean; // Treat warnings as errors
   verbose?: boolean; // Show detailed output
   skipStaleness?: boolean; // Skip staleness detection checks
+  repin?: boolean; // Re-pin rule source hashes (acknowledge drift)
 }
 
 /**
@@ -186,7 +188,14 @@ export interface CortexConfig {
     docs?: {
       [docPath: string]: string[];
     };
+    /** Per-rule-source staleness thresholds */
+    ruleSources?: {
+      [name: string]: RuleSourceStalenessConfig;
+    };
   };
+
+  /** External rule sources consumed by reference (not embedded) */
+  ruleSources?: RuleSourcesConfig;
 
   /** Git hooks configuration */
   hooks?: {
@@ -242,4 +251,50 @@ export interface AutoTierOptions {
  */
 export interface McpCommandOptions {
   printConfig?: boolean;
+}
+
+/**
+ * Rule source type discriminator
+ * v1 only supports "local-path"; git-ref and mcp-uri are deferred.
+ */
+export type RuleSourceType = "local-path";
+
+/**
+ * A single rule source entry (global, operatingModes, or a domain entry)
+ */
+export interface RuleSource {
+  type: RuleSourceType;
+  path: string;
+  name?: string;
+}
+
+/**
+ * Rule sources configuration — external behavioral rules consumed by reference
+ */
+export interface RuleSourcesConfig {
+  global?: RuleSource;
+  operatingModes?: RuleSource;
+  domains?: RuleSource[];
+}
+
+/**
+ * Staleness configuration for a specific rule source
+ */
+export interface RuleSourceStalenessConfig {
+  maxAgeDays: number;
+}
+
+/**
+ * Lock entry for a pinned rule source digest
+ */
+export interface RuleSourceLockEntry {
+  sha256: string;
+  pinnedAt: string;
+}
+
+/**
+ * Lock file schema for .cortex/rule-sources.lock.json
+ */
+export interface RuleSourcesLock {
+  [name: string]: RuleSourceLockEntry;
 }

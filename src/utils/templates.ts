@@ -269,6 +269,7 @@ export async function copyTemplates(
     customFiles?: string[]; // Only used when scope is 'custom'
     dryRun?: boolean; // Preview changes without writing
     preset?: string; // Governance preset for ecosystem-specific content
+    excludeFiles?: string[]; // Files to skip (e.g., AGENTS.md when protected)
   } = {},
 ): Promise<{ copied: number; skipped: number; changes?: FileChange[] }> {
   const {
@@ -277,6 +278,7 @@ export async function copyTemplates(
     customFiles,
     dryRun = false,
     preset,
+    excludeFiles = [],
   } = options;
 
   const allFiles = await getTemplateFiles(templatesDir);
@@ -302,6 +304,11 @@ export async function copyTemplates(
   const filesToCopy = allFiles.filter((f) => {
     // Always exclude examples directory
     if (f.category === "example") {
+      return false;
+    }
+
+    // Skip excluded files (e.g., AGENTS.md when protected by inherited rules)
+    if (excludeFiles.includes(f.destination)) {
       return false;
     }
 

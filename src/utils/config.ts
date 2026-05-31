@@ -141,6 +141,13 @@ export function getConfigPath(cwd: string): string {
 }
 
 /**
+ * Get the path to .cortexrc.local in a directory
+ */
+export function getLocalConfigPath(cwd: string): string {
+  return join(cwd, ".cortexrc.local");
+}
+
+/**
  * Check if a .cortexrc file exists
  */
 export function hasConfig(cwd: string): boolean {
@@ -148,7 +155,37 @@ export function hasConfig(cwd: string): boolean {
 }
 
 /**
- * Load .cortexrc configuration from a directory
+ * Deep-merge two objects. Arrays in overlay replace base (not concatenate).
+ * Only merges plain objects; other types are replaced by overlay.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function deepMerge(base: any, overlay: any): any {
+  const result = { ...base };
+
+  for (const key of Object.keys(overlay)) {
+    const baseVal = base[key];
+    const overlayVal = overlay[key];
+
+    if (
+      baseVal !== null &&
+      overlayVal !== null &&
+      typeof baseVal === "object" &&
+      typeof overlayVal === "object" &&
+      !Array.isArray(baseVal) &&
+      !Array.isArray(overlayVal)
+    ) {
+      result[key] = deepMerge(baseVal, overlayVal);
+    } else if (overlayVal !== undefined) {
+      result[key] = overlayVal;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Load .cortexrc configuration from a directory.
+ * Deep-merges .cortexrc.local overlay if present.
  */
 export async function loadConfig(cwd: string): Promise<CortexConfig | null> {
   const configPath = getConfigPath(cwd);
@@ -159,7 +196,14 @@ export async function loadConfig(cwd: string): Promise<CortexConfig | null> {
 
   try {
     const content = await readFile(configPath, "utf-8");
-    const config = JSON.parse(content) as CortexConfig;
+    let config = JSON.parse(content) as CortexConfig;
+
+    const localPath = getLocalConfigPath(cwd);
+    if (existsSync(localPath)) {
+      const localContent = await readFile(localPath, "utf-8");
+      const localOverlay = JSON.parse(localContent) as Partial<CortexConfig>;
+      config = deepMerge(config, localOverlay);
+    }
 
     // Validate version (for future migrations)
     if (config.version !== CONFIG_VERSION) {
@@ -210,6 +254,7 @@ export function mergeConfig(
     ...(userConfig.staleness && { staleness: userConfig.staleness }),
     ...(userConfig.hooks && { hooks: userConfig.hooks }),
     ...(userConfig.metadata && { metadata: userConfig.metadata }),
+    ...(userConfig.ruleSources && { ruleSources: userConfig.ruleSources }),
   };
 }
 

@@ -86,6 +86,10 @@ export function createValidateCommand(): Command {
       "--skip-staleness",
       "Skip staleness detection checks (faster validation)",
     )
+    .option(
+      "--repin",
+      "Re-pin rule source hashes (acknowledge drift in inherited rules)",
+    )
     .action(async (options: ValidateCommandOptions) => {
       await runValidate(options);
     });
@@ -114,6 +118,43 @@ async function runValidate(options: ValidateCommandOptions): Promise<void> {
     });
 
     spinner.stop();
+
+    // If --repin flag is present, re-pin rule source hashes
+    if (options.repin) {
+      const { loadConfig } = await import("../utils/config.js");
+      const { pinAndWriteLock } = await import("../utils/rule-sources.js");
+      const config = await loadConfig(cwd);
+      if (config?.ruleSources) {
+        const repinSpinner = ora("Re-pinning rule source hashes...").start();
+        try {
+          // Never overwrite the lock with a partial pin: pinAndWriteLock leaves
+          // the existing lock untouched if any source failed the safety guard.
+          const { written, warnings } = await pinAndWriteLock(
+            cwd,
+            config.ruleSources,
+          );
+
+          if (written) {
+            repinSpinner.succeed("Rule source hashes re-pinned");
+          } else {
+            repinSpinner.fail(
+              "Re-pin aborted — rule source(s) failed validation; existing lock left unchanged",
+            );
+            for (const warning of warnings) {
+              console.log(chalk.red(`  ✗ ${warning}`));
+            }
+            process.exitCode = 1;
+          }
+        } catch {
+          repinSpinner.fail("Failed to re-pin rule source hashes");
+          process.exitCode = 1;
+        }
+      } else {
+        console.log(
+          chalk.yellow("No ruleSources configured — nothing to re-pin."),
+        );
+      }
+    }
 
     // If --fix flag is present, attempt to fix issues
     if (options.fix) {

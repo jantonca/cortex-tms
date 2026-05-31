@@ -10,6 +10,10 @@ import { pathExists } from "fs-extra";
 import { loadConfig, SCOPE_PRESETS } from "./config.js";
 import { validateSafePath } from "./validation.js";
 import { CortexConfigMissingError } from "./errors.js";
+import {
+  getDeclaredRuleSourceEntries,
+  validateRuleSourcePath,
+} from "./rule-sources.js";
 
 // ============================================================================
 // Registry
@@ -216,6 +220,30 @@ export async function discoverResources(
       mimeType: entry.mimeType,
       path: diskPath,
     });
+  }
+
+  // Discover external rule sources (cortex://rules/*)
+  if (config.ruleSources) {
+    const ruleEntries = getDeclaredRuleSourceEntries(config.ruleSources);
+    const declaredPaths: Record<string, string> = {};
+    for (const [name, resolvedPath] of Object.entries(ruleEntries)) {
+      declaredPaths[name] = resolvedPath;
+    }
+
+    for (const [name, resolvedPath] of Object.entries(ruleEntries)) {
+      if (!(await pathExists(resolvedPath))) continue;
+
+      const safety = await validateRuleSourcePath(resolvedPath, declaredPaths);
+      if (!safety.isValid) continue;
+
+      resources.push({
+        uri: `cortex://rules/${name}`,
+        name: `Rule Source: ${name}`,
+        description: `External rule source from .cortexrc ruleSources`,
+        mimeType: "text/markdown",
+        path: safety.resolvedPath!,
+      });
+    }
   }
 
   return resources;

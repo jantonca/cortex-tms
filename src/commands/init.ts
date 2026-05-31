@@ -8,6 +8,8 @@ import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
 import { basename, join } from "path";
+import { readFile } from "fs/promises";
+import { existsSync } from "fs";
 import { detectContext, isSafeToInitialize } from "../utils/detection.js";
 import { detectPackageManager } from "../utils/package-manager.js";
 import {
@@ -20,8 +22,12 @@ import {
   copyTemplates,
   generateReplacements,
 } from "../utils/templates.js";
-import { createConfigFromScope, saveConfig } from "../utils/config.js";
+import { createConfigFromScope, saveConfig, loadConfig } from "../utils/config.js";
 import { initOptionsSchema, validateOptions, validateSafePath } from "../utils/validation.js";
+import {
+  detectInheritedProtection,
+  applyInheritedRules,
+} from "../utils/rule-sources.js";
 import type { InitCommandOptions } from "../types/cli.js";
 
 /**
@@ -50,6 +56,10 @@ export function createInitCommand(): Command {
     .option(
       "--with-skills",
       "Install cortex-validate and cortex-review Claude Code skills into .claude/skills/",
+    )
+    .option(
+      "--overwrite-inherited",
+      "Override inherited-rules protection in AGENTS.md (requires --force)",
     )
     .action(async (options: InitCommandOptions) => {
       await runInit(options);
@@ -215,6 +225,32 @@ async function runInit(options: InitCommandOptions): Promise<void> {
     console.log();
   }
 
+  // Step 5b: Check AGENTS.md inherited-rules protection
+  const agentsPath = join(cwd, "AGENTS.md");
+  let skipAgentsMd = false;
+  if (existsSync(agentsPath) && (validated.force || answers.overwrite)) {
+    const agentsContent = await readFile(agentsPath, "utf-8");
+    const protection = detectInheritedProtection(agentsContent);
+
+    if (protection === "hard" || protection === "soft") {
+      if (!validated.overwriteInherited) {
+        skipAgentsMd = true;
+        if (protection === "soft") {
+          console.log(
+            chalk.yellow(
+              "\n⚠️  AGENTS.md contains inherited rules references — skipping.",
+            ),
+          );
+          console.log(
+            chalk.gray(
+              "  Use --force --overwrite-inherited to override this protection.",
+            ),
+          );
+        }
+      }
+    }
+  }
+
   // Step 6: Copy templates (or analyze in dry-run mode)
   const copySpinner = ora(
     validated.dryRun ? "Analyzing changes..." : "Copying templates...",
@@ -230,6 +266,7 @@ async function runInit(options: InitCommandOptions): Promise<void> {
       dryRun: validated.dryRun ?? false,
       ...(answers.customFiles && { customFiles: answers.customFiles }),
       ...(validated.preset && { preset: validated.preset }),
+      ...(skipAgentsMd && { excludeFiles: ["AGENTS.md"] }),
     });
 
     copySpinner.succeed(
@@ -291,6 +328,42 @@ async function runInit(options: InitCommandOptions): Promise<void> {
       } catch (error) {
         configSpinner.fail("Failed to save configuration");
         throw error;
+      }
+    }
+
+    // Step 8b: Config-first anchor rendering (skip in dry-run mode)
+    if (!validated.dryRun) {
+      const resolvedConfig = await loadConfig(cwd);
+      if (resolvedConfig?.ruleSources) {
+        const anchorSpinner = ora("Generating inherited rules anchors...").start();
+        try {
+          // Step 8b honors AGENTS.md protection (skipAgentsMd) and never
+          // persists a partial lock — see applyInheritedRules.
+          const { warnings } = await applyInheritedRules(
+            cwd,
+            resolvedConfig.ruleSources,
+            { skipAgentsMd },
+          );
+
+          if (warnings.length > 0) {
+            anchorSpinner.warn(
+              "Inherited rules anchors generated — lock NOT written (rule source validation failed)",
+            );
+            for (const warning of warnings) {
+              console.log(chalk.yellow(`  ⚠ ${warning}`));
+            }
+          } else {
+            anchorSpinner.succeed("Inherited rules anchors generated");
+          }
+        } catch (error) {
+          anchorSpinner.fail("Failed to generate inherited rules anchors");
+          if (validated.verbose) {
+            console.error(
+              chalk.gray("Error details:"),
+              error instanceof Error ? error.message : "Unknown error",
+            );
+          }
+        }
       }
     }
 

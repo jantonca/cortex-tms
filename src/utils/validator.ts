@@ -14,6 +14,7 @@ import type {
   LineLimits,
   MandatoryFile,
   ProjectScope,
+  CortexConfig,
 } from "../types/cli.js";
 import {
   loadConfig,
@@ -25,6 +26,12 @@ import {
 } from "./config.js";
 import { getTemplatesDir, processTemplate } from "./templates.js";
 import { checkDocStaleness, isShallowClone } from "./git-staleness.js";
+import {
+  getDeclaredRuleSourceEntries,
+  validateRuleSourcePath,
+  readLockFile,
+  checkDrift,
+} from "./rule-sources.js";
 
 /**
  * Default line limits for TMS files (Rule 4)
@@ -579,6 +586,138 @@ function validateRecommendedFiles(
 }
 
 /**
+ * Validate external rule sources (v1 checks: exists, servable, drift, age)
+ */
+async function validateRuleSources(
+  cwd: string,
+  config: CortexConfig,
+): Promise<ValidationCheck[]> {
+  const checks: ValidationCheck[] = [];
+  const ruleSources = config.ruleSources;
+
+  if (!ruleSources) return checks;
+
+  checks.push({
+    name: "Rule Source Configured",
+    passed: true,
+    level: "info",
+    message: "ruleSources field present in .cortexrc",
+  });
+
+  const entries = getDeclaredRuleSourceEntries(ruleSources);
+  const lock = await readLockFile(cwd);
+  const stalenessConfig = config.staleness?.ruleSources || {};
+
+  // Report missing lock state when ruleSources are configured
+  if (!lock && Object.keys(entries).length > 0) {
+    checks.push({
+      name: "Rule Source Lock",
+      passed: false,
+      level: "warning",
+      message: "Rule sources configured but no lock file found",
+      details: "Run 'cortex-tms validate --repin' to generate .cortex/rule-sources.lock.json",
+    });
+  }
+
+  for (const [name, resolvedPath] of Object.entries(entries)) {
+    if (!existsSync(resolvedPath)) {
+      checks.push({
+        name: `Rule Source Exists: ${name}`,
+        passed: false,
+        level: "error",
+        message: `External rule source file not found: ${resolvedPath}`,
+      });
+      continue;
+    }
+
+    // Use realpath-aware guard (same as MCP) to check servability
+    const declaredPaths: Record<string, string> = {};
+    for (const [n, p] of Object.entries(entries)) {
+      declaredPaths[n] = p;
+    }
+    const safetyCheck = await validateRuleSourcePath(resolvedPath, declaredPaths);
+
+    if (!safetyCheck.isValid) {
+      checks.push({
+        name: `Rule Source Servable: ${name}`,
+        passed: false,
+        level: "error",
+        message: `Rule source is not servable: ${safetyCheck.error}`,
+      });
+      continue;
+    }
+
+    checks.push({
+      name: `Rule Source Servable: ${name}`,
+      passed: true,
+      level: "info",
+      message: `Rule source ${name} is servable`,
+    });
+
+    if (lock) {
+      const sourceEntry =
+        name === "global"
+          ? ruleSources.global
+          : name === "operatingModes"
+            ? ruleSources.operatingModes
+            : ruleSources.domains?.find(
+                (d) => `domain:${d.name}` === name,
+              );
+
+      if (sourceEntry) {
+        const driftResult = await checkDrift(name, sourceEntry.path, lock);
+
+        if (driftResult.missing) {
+          checks.push({
+            name: `Rule Source Drift: ${name}`,
+            passed: false,
+            level: "error",
+            message: `Rule source file missing: ${sourceEntry.path}`,
+          });
+        } else if (driftResult.drifted) {
+          checks.push({
+            name: `Rule Source Drift: ${name}`,
+            passed: false,
+            level: "warning",
+            message: `Inherited rules (${name}) changed since last review`,
+            details:
+              "Re-review for compatibility, then re-pin with validate --repin.",
+          });
+        } else if (!driftResult.noLock) {
+          checks.push({
+            name: `Rule Source Drift: ${name}`,
+            passed: true,
+            level: "info",
+            message: `Rule source ${name} matches pinned hash`,
+          });
+        }
+      }
+    }
+
+    const lockEntry = lock?.[name];
+    const maxAgeDays = stalenessConfig[name]?.maxAgeDays;
+    if (lockEntry && maxAgeDays) {
+      const pinnedDate = new Date(lockEntry.pinnedAt);
+      const ageDays = Math.floor(
+        (Date.now() - pinnedDate.getTime()) / (1000 * 60 * 60 * 24),
+      );
+
+      if (ageDays > maxAgeDays) {
+        checks.push({
+          name: `Rule Source Age: ${name}`,
+          passed: true,
+          level: "info",
+          message: `Rule source ${name} last reviewed ${ageDays} days ago`,
+          details: `Consider re-reviewing for drift (threshold: ${maxAgeDays} days).`,
+        });
+      }
+    }
+  }
+
+  return checks;
+}
+
+/**
  * Run all validation checks
  */
 export async function validateProject(
@@ -605,6 +744,7 @@ export async function validateProject(
     placeholderChecks,
     archiveChecks,
     stalenessChecks,
+    ruleSourceChecks,
   ] = await Promise.all([
     validateFileSizes(cwd, limits),
     Promise.resolve(validateMandatoryFiles(cwd, config.scope)),
@@ -614,6 +754,7 @@ export async function validateProject(
     skipStaleness
       ? Promise.resolve([])
       : validateDocStaleness(cwd, config),
+    validateRuleSources(cwd, config),
   ]);
 
   const recommendedChecks = validateRecommendedFiles(cwd, config.scope);
@@ -625,6 +766,7 @@ export async function validateProject(
     ...placeholderChecks,
     ...archiveChecks,
     ...stalenessChecks,
+    ...ruleSourceChecks,
     ...recommendedChecks,
   ];
 

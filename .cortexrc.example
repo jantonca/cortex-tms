@@ -9,6 +9,10 @@
       "docs/core/PATTERNS.md": ["src/"],
       "docs/core/ARCHITECTURE.md": ["src/", "infrastructure/"],
       "docs/core/DOMAIN-LOGIC.md": ["src/"]
+    },
+    "ruleSources": {
+      "global": { "maxAgeDays": 90 },
+      "operatingModes": { "maxAgeDays": 90 }
     }
   },
   "validation": {
@@ -17,5 +21,22 @@
   "limits": {
     "NEXT-TASKS.md": 200,
     "FUTURE-ENHANCEMENTS.md": 500
+  },
+  "ruleSources": {
+    "global": {
+      "type": "local-path",
+      "path": "[Set machine-specific path in .cortexrc.local]"
+    },
+    "operatingModes": {
+      "type": "local-path",
+      "path": "[Set machine-specific path in .cortexrc.local]"
+    },
+    "domains": [
+      {
+        "type": "local-path",
+        "path": "[Set machine-specific path in .cortexrc.local]",
+        "name": "frontend"
+      }
+    ]
   }
 }

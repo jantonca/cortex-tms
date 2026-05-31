@@ -129,6 +129,23 @@ describe("Zod Input Validation", () => {
       expect(result.verbose).toBeUndefined();
       expect(result.dryRun).toBeUndefined();
     });
+
+    it("should accept --overwrite-inherited with --force", () => {
+      const result = initOptionsSchema.parse({
+        force: true,
+        overwriteInherited: true,
+      });
+      expect(result.force).toBe(true);
+      expect(result.overwriteInherited).toBe(true);
+    });
+
+    it("should reject --overwrite-inherited without --force", () => {
+      expect(() =>
+        initOptionsSchema.parse({
+          overwriteInherited: true,
+        }),
+      ).toThrow("--overwrite-inherited requires --force");
+    });
   });
 
   describe("validateOptionsSchema", () => {

@@ -7,7 +7,7 @@
 
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import { join } from "path";
-import { writeFile, mkdir } from "fs/promises";
+import { writeFile, mkdir, symlink } from "fs/promises";
 import { createTempDir, cleanupTempDir } from "./utils/temp-dir.js";
 import {
   validateProject,
@@ -608,5 +608,96 @@ describe("Validate Command - Strict Mode", () => {
     expect(normalResult.summary.errors).toBeGreaterThan(0);
     expect(normalResult.passed).toBe(false);
     expect(strictResult.passed).toBe(false);
+  });
+});
+
+// ============================================================================
+// Rule Source Validation Tests
+// ============================================================================
+
+describe("Rule Source Validation", () => {
+  let tempDir: string;
+
+  beforeEach(async () => {
+    tempDir = await createTempDir();
+  });
+
+  afterEach(async () => {
+    await cleanupTempDir(tempDir);
+  });
+
+  it("should pass when rule source is a valid .md file", async () => {
+    await createMinimalProject(tempDir);
+
+    // Create a valid rule source
+    const rulePath = join(tempDir, "rules.md");
+    await writeFile(rulePath, "# Rules\n");
+
+    // Update config to include rule source
+    const config = createConfigFromScope("standard", "test-project");
+    config.ruleSources = {
+      global: { type: "local-path", path: rulePath },
+    };
+    await saveConfig(tempDir, config);
+
+    const result = await validateProject(tempDir);
+    const servableCheck = result.checks.find(
+      (c) => c.name === "Rule Source Servable: global",
+    );
+
+    expect(servableCheck).toBeDefined();
+    expect(servableCheck?.passed).toBe(true);
+  });
+
+  it("should fail when rule source is a symlink to a secret", async () => {
+    await createMinimalProject(tempDir);
+
+    // Create a secret file
+    const secretPath = join(tempDir, ".env");
+    await writeFile(secretPath, "SECRET=value\n");
+
+    // Create a symlink to the secret
+    const linkPath = join(tempDir, "rules.md");
+    await symlink(secretPath, linkPath);
+
+    // Update config to include the symlink
+    const config = createConfigFromScope("standard", "test-project");
+    config.ruleSources = {
+      global: { type: "local-path", path: linkPath },
+    };
+    await saveConfig(tempDir, config);
+
+    const result = await validateProject(tempDir);
+    const servableCheck = result.checks.find(
+      (c) => c.name === "Rule Source Servable: global",
+    );
+
+    expect(servableCheck).toBeDefined();
+    expect(servableCheck?.passed).toBe(false);
+    expect(servableCheck?.level).toBe("error");
+  });
+
+  it("should warn when rule sources configured but no lock file exists", async () => {
+    await createMinimalProject(tempDir);
+
+    // Create a valid rule source
+    const rulePath = join(tempDir, "rules.md");
+    await writeFile(rulePath, "# Rules\n");
+
+    // Update config to include rule source but don't create lock file
+    const config = createConfigFromScope("standard", "test-project");
+    config.ruleSources = {
+      global: { type: "local-path", path: rulePath },
+    };
+    await saveConfig(tempDir, config);
+
+    const result = await validateProject(tempDir);
+    const lockCheck = result.checks.find(
+      (c) => c.name === "Rule Source Lock",
+    );
+
+    expect(lockCheck).toBeDefined();
+    expect(lockCheck?.passed).toBe(false);
+    expect(lockCheck?.level).toBe("warning");
   });
 });

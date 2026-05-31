@@ -108,15 +108,30 @@ export const autoTierOptionsSchema = z
 /**
  * Schema for init command options
  */
-export const initOptionsSchema = z.object({
-  force: forceFlag,
-  minimal: booleanFlag,
-  verbose: verboseFlag,
-  scope: z.enum(["nano", "standard", "enterprise", "custom"]).optional(),
-  dryRun: dryRunFlag,
-  preset: z.enum(["node", "python", "go"]).optional(),
-  withSkills: booleanFlag,
-});
+export const initOptionsSchema = z
+  .object({
+    force: forceFlag,
+    minimal: booleanFlag,
+    verbose: verboseFlag,
+    scope: z.enum(["nano", "standard", "enterprise", "custom"]).optional(),
+    dryRun: dryRunFlag,
+    preset: z.enum(["node", "python", "go"]).optional(),
+    withSkills: booleanFlag,
+    overwriteInherited: booleanFlag,
+  })
+  .refine(
+    (data) => {
+      // --overwrite-inherited requires --force
+      if (data.overwriteInherited && !data.force) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "--overwrite-inherited requires --force",
+      path: ["overwriteInherited"],
+    },
+  );
 
 /**
  * Schema for validate command options
@@ -126,6 +141,7 @@ export const validateOptionsSchema = z.object({
   verbose: verboseFlag,
   fix: booleanFlag,
   skipStaleness: booleanFlag,
+  repin: booleanFlag,
 });
 
 /**
