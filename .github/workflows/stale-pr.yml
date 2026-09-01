@@ -15,7 +15,7 @@ jobs:
 
     steps:
       - name: Mark stale PRs and issues
-        uses: actions/stale@v9
+        uses: actions/stale@v11
         with:
           # PR settings
           stale-pr-message: |
